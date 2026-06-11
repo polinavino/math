@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# Coq / Rocq build artifacts
+*.vo
+*.vok
+*.vos
+*.glob
+*.aux
+*.cache
+.lia.cache
+.nia.cache
+.coq-native/
+.csdp.cache
+CoqMakefile
+CoqMakefile.conf
+Makefile
+Makefile.conf
+Makefile.coq
+Makefile.coq.conf
+.Makefile.d
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# Editors
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
