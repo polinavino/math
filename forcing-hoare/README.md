@@ -116,7 +116,7 @@ visible without machinery getting in the way.
 
 ## How to build
 
-From the project root (`~/Documents/math/forcing-hoare/`):
+From the project root :
 
 ```
 coq_makefile -f _CoqProject -o Makefile
