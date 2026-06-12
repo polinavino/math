@@ -67,56 +67,123 @@ theorem rather than a hand-waved argument.
 
 ### What we have done
 
-- [coq/Phase1_Forcing.v](coq/Phase1_Forcing.v) — the propositional
-  layer. We define forcing conditions (natural numbers), step-indexed
-  propositions (downward-closed predicates on conditions), the
-  Heyting-algebra connectives (`⊤`, `⊥`, `∧`, `∨`, `→`), and the
-  later modality `▷`. We prove the standard intuitionistic
-  introduction and elimination rules, the basic laws of `▷`, and
-  **Löb's rule** `(▷ φ → φ) ⊢ φ`, which is the engine of all
-  step-indexed recursive reasoning. We also include a sanity check
-  showing that `▷ ⊥` and `⊥` are not equivalent, witnessing that
-  step-indexing genuinely changes the propositional theory rather
-  than collapsing to ordinary intuitionistic logic.
+**Phase 1 — propositional layer.**
+[coq/Phase1_Forcing.v](coq/Phase1_Forcing.v) defines forcing conditions
+(natural numbers, with smaller naturals reading as stronger conditions
+— this is the topos-of-trees / Iris orientation; the dictionary with
+the standard Cohen-style ordering is given in the file header). It
+defines step-indexed propositions as downward-closed predicates on
+conditions, the Heyting-algebra connectives (`⊤`, `⊥`, `∧`, `∨`, `→`)
+in their Kripke form, and the later modality `▷`. It proves the
+standard intuitionistic introduction and elimination rules, the basic
+laws of `▷`, and **Löb's rule** `(▷ φ → φ) ⊢ φ`, which is the engine
+of all step-indexed recursive reasoning. A sanity check shows that
+`▷ ⊥` and `⊥` are not interderivable, witnessing that step-indexing
+genuinely changes the propositional theory rather than collapsing to
+ordinary intuitionistic logic.
 
-The Phase 1 file uses no external Coq libraries (only `Arith` and
-`Lia` from the standard library), so the conceptual content is
-visible without machinery getting in the way.
+No external Coq libraries are used in Phase 1 beyond `Arith` and `Lia`.
+
+**Phase 2 — IMP and its Hoare logic.**
+
+- [coq/Phase2a_IMP.v](coq/Phase2a_IMP.v) defines the IMP language
+  (a small imperative language with mutable state and standard
+  control-flow constructs) and gives it a call-by-value small-step
+  operational semantics. Each small step corresponds to one decrement
+  of the step-index clock.
+
+- [coq/Phase2b_Hoare.v](coq/Phase2b_Hoare.v) defines a step-indexed
+  weakest precondition for IMP commands and lifts both the wp and the
+  Hoare triple itself to step-indexed propositions over the forcing
+  semantics from Phase 1. It proves soundness of the structural rules:
+  `skip`, assignment, sequencing, the conditional, and the rule of
+  consequence.
+
+- [coq/Phase2c_While.v](coq/Phase2c_While.v) proves soundness of the
+  `while` rule by induction on the step index, which is precisely
+  the meta-level form of Löb's rule. It then packages all six
+  soundness rules into a single theorem `imp_hoare_rules`. (At this
+  point the *propositional* Löb's rule from Phase 1 is not yet
+  invoked directly; an internal-Löb derivation is on the list for
+  later — see notes below.)
+
+For IMP, step-indexing is genuinely overkill: every non-terminal
+command can step, so the wp is a partial-correctness predicate that
+could equivalently be defined without any indexing at all. Phase 2 is
+the calibration phase, where the forcing reading is at its crispest
+and most explanatory, but does not yet do technical work the
+non-step-indexed version could not.
+
+**Phase 3a — an untyped λ-calculus with general recursion.**
+[coq/Phase3a_Lambda.v](coq/Phase3a_Lambda.v) defines a small
+higher-order language (variables in de Bruijn style, integer
+constants, addition, a zero-test conditional, λ-abstraction,
+application, and a fix-point operator), all the standard de Bruijn
+machinery for shift and substitution, and a call-by-value small-step
+semantics. `EFix` is treated as a value and self-unfolds when applied,
+so the language has general recursion without recursive types as a
+separate construct.
+
+This is the substrate for the rest of Phase 3. With `fix` in the
+language, the wp predicate becomes essentially recursive in the
+program being analysed, and step-indexing stops being optional.
 
 ### What the plan is
 
-- **Phase 2** — A simple imperative language (IMP: assignment,
-  sequencing, branching, loops, mutable state) with operational
-  semantics, and Hoare triples `{P} c {Q}` interpreted as a
-  step-indexed proposition over the forcing semantics from Phase 1.
-  Soundness of the standard Hoare rules — including the `while` rule,
-  which is where Löb earns its keep — should follow with little fuss.
-  This phase is mainly a calibration exercise: at this level of
-  expressiveness, step-indexing is overkill, but the forcing reading
-  is at its crispest and most explanatory.
+- **Phase 3b** — step-indexed wp for the λ-calculus, lifted to an
+  `iProp` as in Phase 2b. Soundness for the *non-`fix`* constructs:
+  values, application, arithmetic, conditional. Unlike Phase 2, the
+  wp here will need an explicit safety conjunct, because λ-calculus
+  has stuck terms (e.g. applying an integer as if it were a function).
 
-- **Phase 3** — A higher-order language with recursive types. This is
-  where step-indexing is actually necessary, and where the forcing
-  reading should pay technical rather than just pedagogical dividends.
-  The goal is a clean soundness proof for a Hoare-style logic over
-  this language, mechanized end-to-end. We will likely need Iris or
-  at least `stdpp` at this stage; we will reach for them only when
-  the bare-Coq development becomes unwieldy.
+- **Phase 3c** — the payoff. Soundness for `fix`, using the
+  propositional Löb rule from Phase 1 directly at the `iProp` level,
+  not by meta-level induction on `n`. This is where the forcing
+  framework is supposed to do real technical work, and where the
+  ramification story becomes load-bearing rather than just
+  decorative.
 
-- **Phase 4** — The writeup, in `paper/`. The contribution will be
-  decided by what comes out of Phases 2 and 3, but at minimum the
-  paper should argue that step-indexed Hoare logic is *ramified*
-  forcing over `(ω, ≤)`, with the `▷` modality as the explicit
-  level-descent operator; and that the reason step-indexing resists
-  "unramification" (unlike modern set-theoretic forcing, where
-  Shoenfield showed the explicit level hierarchy can be eliminated)
-  is that the propositions over which we recurse are themselves
-  built impredicatively in higher-order languages, so the level
-  filtration is doing real work.
+- **Phase 3d** — a worked example (likely factorial via `fix`) that
+  exhibits the full system end-to-end, partly as a sanity check and
+  partly to make the reasoning concrete for the paper.
+
+- **Phase 4** — writeup, in `paper/`. The concrete shape of the
+  contribution will be decided by what comes out of Phase 3, but the
+  central thesis is: step-indexed Hoare logic is *ramified* forcing
+  over `(ω, ≤)`, with `▷` as the explicit level-descent operator.
+  The reason step-indexing resists "unramification" (unlike modern
+  set-theoretic forcing, where Shoenfield showed the explicit level
+  hierarchy can be eliminated) is that the propositions over which
+  we recurse are themselves built impredicatively in higher-order
+  languages, so the level filtration is doing real work.
+
+### Known gaps and refinements to come
+
+- The wp predicate in Phase 2b does not literally enforce safety
+  (non-stuckness): a stuck non-`CSkip` configuration would satisfy
+  it vacuously. For IMP this is invisible because IMP has no stuck
+  terms, but it means the doc comment on `wp_at` slightly overclaims.
+  Phase 3b will introduce a wp that does enforce safety explicitly,
+  because the λ-calculus needs it.
+
+- The `while` rule in Phase 2c is currently proved by induction on
+  the step index. Conceptually this is the same as Löb, but the
+  *internal* (`iProp`-level) Löb rule from Phase 1 is not yet
+  threaded through. We will produce an alternative `hoare_while`
+  proof that goes through `iLob` once the higher-order setting
+  makes the framework reasoning natural.
+
+- The Phase 4 thesis as stated above is, at present, an aspiration.
+  It is what Phase 3 should *test*: if the soundness proof for `fix`
+  goes through cleanly *only* via Löb-at-`iProp`, the thesis is
+  vindicated; if it can be done equally cleanly by direct meta-level
+  induction, the thesis weakens to "ramified forcing is a nice way
+  to talk about step-indexing" rather than "ramification is doing
+  real work that cannot be eliminated."
 
 ## How to build
 
-From the project root :
+From the project root (`~/Documents/math/forcing-hoare/`):
 
 ```
 coq_makefile -f _CoqProject -o Makefile

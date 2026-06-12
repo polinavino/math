@@ -1,0 +1,1 @@
+args = ["-Q", "coq", "ForcingHoare"]
