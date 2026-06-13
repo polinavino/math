@@ -50,6 +50,51 @@ Proof.
            ++ intros c'' s'' Hstep'. inversion Hstep'.
 Qed.
 
+(** ** Alternative proof of [hoare_while] using the internal Löb rule
+
+    The proof of [hoare_while] above goes by induction on the step
+    index, which is the meta-level enactment of Löb's rule.  Here we
+    give an alternative proof that invokes the propositional [iLob]
+    from Phase 1 directly, by first showing [⊤ ⊢ ▷ φ → φ] for
+    [φ := hoare P (CWhile b c) (P ∧ ¬b)] and then applying [iLob].
+    This is the same idiom as [wp_fix] in Phase 3c: the internal Löb
+    is the load-bearing tool, and the proof contains no induction on
+    [nat] at the meta level.
+
+    Both proofs establish the same theorem.  The induction version is
+    more concise and standard; the [iLob] version makes explicit that
+    the recursive structure of the rule is carried entirely by the
+    internal modal logic. *)
+
+Lemma hoare_while_iLob P b c :
+  hoare_valid (fun s => P s /\ beval s b = true) c P ->
+  hoare_valid P (CWhile b c) (fun s => P s /\ beval s b = false).
+Proof.
+  intros HC. rewrite hoare_valid_alt in HC. unfold hoare_valid.
+  apply ientails_trans with
+    (iLater (hoare P (CWhile b c) (fun s => P s /\ beval s b = false)) →
+     hoare P (CWhile b c) (fun s => P s /\ beval s b = false)).
+  - (* ⊤ ⊢ ▷ φ → φ *)
+    intros n _ m Hmn Hlater s HP.
+    destruct m as [|m'].
+    + simpl. trivial.
+    + simpl in Hlater. rewrite wp_at_S. split.
+      * discriminate.
+      * intros c' s' Hstep. inversion Hstep; subst.
+        -- (* StepWhileTrue *)
+           apply wp_seq.
+           eapply wp_at_post_mono.
+           2: { apply HC; split; [exact HP | assumption]. }
+           intros s'' HP''. apply Hlater. exact HP''.
+        -- (* StepWhileFalse *)
+           destruct m' as [|m''].
+           ++ simpl. trivial.
+           ++ rewrite wp_at_S. split.
+              ** intros _. split; assumption.
+              ** intros c'' s'' Hstep'. inversion Hstep'.
+  - apply iLob.
+Qed.
+
 (** ** Demonstration: a trivially terminating loop
 
     [{ True } while (false) do skip { True ∧ false = false }]

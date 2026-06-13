@@ -5,3 +5,7 @@ coq/Phase2a_IMP.v
 coq/Phase2b_Hoare.v
 coq/Phase2c_While.v
 coq/Phase3a_Lambda.v
+coq/Phase3b_Wp.v
+coq/Phase3c_Fix.v
+coq/Phase3d_Example.v
+coq/Phase4_Abstract.v
