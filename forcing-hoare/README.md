@@ -185,13 +185,16 @@ the internal Löb rule is the natural tool.
   `FS : ForcingStructure`): `iProp` (downward-closed predicates),
   `ientails` / `⊢`, `iTrue`/`iFalse`/`iAnd`/`iImpl`, `iLater` as
   *universal-over-strict-predecessors* (`▷ φ at p := ∀ p' ≺ p,
-  p' ⊩ φ`). At the top level: `nat_FS`, the instantiation at the
-  natural numbers with `≤` / `<`.
+  p' ⊩ φ`). At the top level: `nat_FS` (the instantiation at the
+  natural numbers); `prod_FS` (a second, non-trivially-different
+  instance: `nat × nat` with the pointwise product order, motivated
+  by independent step-indices for parallel components).
 - **Proves:** `ientails_refl`, `ientails_trans`, monotonicity
   helpers, and **`iLob`** (proved by `apply (well_founded_ind
-  (fs_lt_wf FS))`). At the end, `Check iLob nat_FS` confirms the
-  framework instantiates correctly at the natural numbers, recovering
-  Phase 1's `iLob`.
+  (fs_lt_wf FS))`). Well-foundedness of `lt_pair` (via the
+  measure `fst p + snd p`). `Check iLob nat_FS` and `Check iLob
+  prod_FS` confirm the framework instantiates at both structures
+  without any change to the abstract development.
 
 The conceptual point: the "ramification" in "ramified forcing" is
 *not* specifically the `nat`-indexed stratification. Any well-founded
@@ -203,10 +206,51 @@ between Löb's rule and well-founded induction: `iLob` is literally
 `well_founded_ind` on the strict order, viewed internally rather than
 externally.
 
+#### Phase 5 — metatheoretic result: Löb's rule is essential
+
+[coq/Phase5_Metatheory.v](coq/Phase5_Metatheory.v)
+- **Defines:** a "would-be" iProp framework over `Z` (the integers,
+  which are not well-founded under `<`), including `iPropZ`,
+  `ientailsZ`, `iFalseZ`, `iImplZ`, `iLaterZ` — all the same
+  constructions as in Phase 4, but without invoking well-foundedness.
+- **Proves:** `lob_premise_at` — the premise `(▷ ⊥) → ⊥` is forced
+  at every condition (vacuously, because `Z` has no minimum so
+  `▷ ⊥` is never forced); `lob_conclusion_fails` — `⊥` is forced
+  at no condition; **`lob_fails_over_Z`** — the entailment
+  `(▷ ⊥ → ⊥) ⊢ ⊥` does not hold.
+
+The upshot: the `fs_lt_wf` axiom in `ForcingStructure` cannot be
+dropped. This is the step-indexed analog of the well-known
+characterisation in modal logic (Gödel–Löb axiom is sound on the
+class of transitive converse-well-founded Kripke frames). The
+"ramification" in ramified forcing is not a presentation convenience —
+it is *constitutive* of the modal logic.
+
+#### Phase 6 — bridge to forcing translations
+
+[coq/Phase6_Bridge.v](coq/Phase6_Bridge.v)
+- **Defines:** the constant embedding `embed : Prop → iProp`,
+  notation `⌜·⌝`, mapping a meta-level proposition to the iProp
+  constantly forced (or constantly unforced) at every condition.
+- **Proves:** that `⌜·⌝` is a Heyting algebra homomorphism — it
+  commutes with `True`/`False`/`∧`/`∨`/`→` in both directions
+  (`embed_True_l`/`r`, `embed_False_l`/`r`, `embed_and_intro`/`elim`,
+  `embed_or_intro`/`elim`, `embed_impl_intro`/`elim`); the genuine
+  new content of `iProp` over the embedded image is `▷`
+  (`embed_later_distinct` — `▷ ⌜False⌝ ⊬ ⌜False⌝`).
+
+The conceptual claim: `iProp FS` of Phase 4 is *literally* the
+propositional fragment of the Jaber–Tabareau–Sozeau forcing
+translation of CIC, instantiated at the forcing structure `FS`. The
+`▷` modality is the step-indexed-specific addition — produced by the
+well-founded strict refinement, and giving rise to Löb's rule via the
+construction in Phase 4. A full mechanization of the JTS translation
+is future work.
+
 ### What the plan is
 
-- **Phase 5** — the writeup, in `paper/`. The central thesis is now
-  supported by the mechanization on two fronts:
+- **Phase 7** — the writeup, in `paper/`. The central thesis is now
+  supported by the mechanization on four fronts:
 
   1. *In higher-order settings, Löb's rule is the load-bearing
      reasoning principle for recursion* (Phase 3c): the meta-level
@@ -218,9 +262,16 @@ externally.
      (Phase 4): step-indexing is not tied to ω; it is well-founded
      induction over an arbitrary forcing structure, and Löb's rule
      is *equivalent to* this well-founded induction at the meta
-     level. The "ramified forcing" label is appropriate because
-     ramification means well-founded level stratification, with no
-     commitment to any specific order.
+     level.
+
+  3. *Well-foundedness is essential* (Phase 5): without it, Löb's
+     rule fails. The "ramification" in ramified forcing is
+     constitutive of the modal logic, not a presentation choice.
+
+  4. *The framework is the propositional fragment of the
+     Jaber–Tabareau–Sozeau forcing translation* (Phase 6),
+     with `▷` as the step-indexed-specific addition that
+     well-founded forcing makes available.
 
   The paper will work through this, position it against existing
   step-indexed work (Iris, topos-of-trees, Appel–McAllester, Ahmed,

@@ -169,3 +169,65 @@ Definition nat_FS : ForcingStructure :=
     (The framework's [iLob] takes [FS] as a first argument; here we
     just check that the [nat] instance is well-typed.) *)
 Check iLob nat_FS.
+
+(** ** A second instance: [nat × nat] with pointwise order
+
+    The pointwise (product) order on [nat × nat] is genuinely a
+    different poset from [nat] — it is not totally ordered.  Its
+    natural interpretation is independent step-indices for two
+    parallel components (two threads of a concurrent computation,
+    two independent observers, etc.). The framework applies without
+    change. *)
+
+Definition le_pair (p q : nat * nat) : Prop :=
+  fst p <= fst q /\ snd p <= snd q.
+
+Definition lt_pair (p q : nat * nat) : Prop :=
+  le_pair p q /\ ~ (fst p = fst q /\ snd p = snd q).
+
+Lemma le_pair_refl p : le_pair p p.
+Proof. unfold le_pair; lia. Qed.
+
+Lemma le_pair_trans p q r :
+  le_pair p q -> le_pair q r -> le_pair p r.
+Proof. unfold le_pair; intros [] []; lia. Qed.
+
+Lemma lt_pair_le_pair p q : lt_pair p q -> le_pair p q.
+Proof. intros [Hle _]; exact Hle. Qed.
+
+Lemma lt_pair_le_pair_lt p q r :
+  lt_pair p q -> le_pair q r -> lt_pair p r.
+Proof.
+  intros [Hpq Hneq] Hqr. split.
+  - eapply le_pair_trans; eauto.
+  - intros [Hf Hs]. apply Hneq.
+    destruct p, q, r; simpl in *.
+    unfold le_pair in *; simpl in *.
+    split; lia.
+Qed.
+
+Lemma lt_pair_wf : well_founded lt_pair.
+Proof.
+  apply (well_founded_lt_compat _ (fun p => fst p + snd p)).
+  intros p q [[Hf Hs] Hneq].
+  destruct p, q; simpl in *.
+  destruct (Nat.eq_dec n n1).
+  - subst. destruct (Nat.eq_dec n0 n2).
+    + subst. exfalso. apply Hneq. split; reflexivity.
+    + lia.
+  - lia.
+Qed.
+
+Definition prod_FS : ForcingStructure :=
+  {| fs_cond := nat * nat;
+     fs_le := le_pair;
+     fs_lt := lt_pair;
+     fs_le_refl := le_pair_refl;
+     fs_le_trans := le_pair_trans;
+     fs_lt_le := lt_pair_le_pair;
+     fs_lt_le_lt := lt_pair_le_pair_lt;
+     fs_lt_wf := lt_pair_wf
+  |}.
+
+(** Sanity: the abstract [iLob] instantiates here too. *)
+Check iLob prod_FS.
