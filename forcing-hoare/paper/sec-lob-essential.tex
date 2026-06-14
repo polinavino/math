@@ -1,0 +1,164 @@
+\section{Well-foundedness is Essential}
+\label{sec:lob-essential}
+
+The abstract framework of Section~\ref{sec:abstract} carries one
+distinctive axiom: \texttt{fs\_lt\_wf}, the well-foundedness of the
+strict refinement relation.  Every other axiom of
+\texttt{ForcingStructure} is an order-theoretic structural one ---
+reflexivity, transitivity, compatibility.  Well-foundedness is the
+exception, and the only axiom that uses any form of induction
+principle to state.  It is natural to ask whether it is essential:
+could we drop it and still get a sensible Löb's rule for some other
+reason?
+
+The answer is no, and we now make this precise.  We will exhibit a
+``would-be'' iProp framework over the integers $\mathbb{Z}$, in which
+the carrier and the order satisfy every part of
+\texttt{ForcingStructure} \emph{except} well-foundedness.  All the
+constructions of Sections~\ref{sec:prop} and~\ref{sec:abstract} go
+through: we can build \texttt{iPropZ}, \texttt{iImplZ}, \texttt{iLaterZ}.
+But Löb's rule fails.
+
+\paragraph{The setup.}
+We work with the integers under $\le$ and $<$ in the obvious way.
+Define \texttt{iPropZ} as a record of downward-closed predicates on
+$\mathbb{Z}$:
+
+\begin{lstlisting}
+Record iPropZ : Type := MkPropZ {
+  iholdZ : Z -> Prop;
+  imonoZ : forall p q, (q <= p)%Z -> iholdZ p -> iholdZ q
+}.
+
+Definition ientailsZ (φ ψ : iPropZ) : Prop :=
+  forall p, iholdZ φ p -> iholdZ ψ p.
+\end{lstlisting}
+
+\noindent
+The connectives follow the same definitions as before.  We give the
+ones we need explicitly:
+
+\begin{lstlisting}
+Definition iFalseZ : iPropZ :=
+  MkPropZ (fun _ => False) (fun _ _ _ H => H).
+
+Definition iImplZ (φ ψ : iPropZ) : iPropZ :=
+  MkPropZ
+    (fun p => forall q, (q <= p)%Z ->
+                          iholdZ φ q -> iholdZ ψ q)
+    (iImplZ_mono φ ψ).
+
+Definition iLaterZ (φ : iPropZ) : iPropZ :=
+  MkPropZ
+    (fun p => forall p', (p' < p)%Z -> iholdZ φ p')
+    (iLaterZ_mono φ).
+\end{lstlisting}
+
+\noindent
+The definitions are the same as in Section~\ref{sec:abstract}, with
+$\mathtt{fs\_cond} := \mathbb{Z}$, $\mathtt{fs\_le} := \le_\mathbb{Z}$,
+and $\mathtt{fs\_lt} := <_\mathbb{Z}$.  The order axioms hold: $\le$
+is a preorder, $<$ is contained in $\le$, and $<$ is compatible with
+$\le$ on the right.  Only well-foundedness fails: there is no
+minimum and so no base case for an inductive argument.
+
+\paragraph{The counterexample.}
+Consider $\triangleright \bot$, the iProp asserting that
+\texttt{False} holds at every strict predecessor.  We claim this is
+forced at \emph{no} condition.  Indeed, $p \Vdash \triangleright \bot$
+would say ``for every $p' < p$, $\bot$ holds at $p'$'', i.e., ``for
+every integer strictly less than $p$, \texttt{False} is true''.
+There is at least one such integer, namely $p - 1$, and
+\texttt{False} fails there.  So $\triangleright \bot$ is the empty
+iProp:
+
+\begin{lstlisting}
+Lemma lob_premise_at p :
+  p ⊩ (iImplZ (iLaterZ iFalseZ) iFalseZ).
+Proof.
+  intros q Hqp Hlater.
+  apply (Hlater (q - 1)); lia.
+Qed.
+\end{lstlisting}
+
+\noindent
+The lemma actually shows something more: at every $p$, the
+implication $\triangleright \bot \to \bot$ is forced.  The reason is
+the same as just above.  The antecedent $\triangleright \bot$ is
+empty, so any implication from it is vacuously forced.  Spelled out:
+at $p$, $p \Vdash (\triangleright \bot \to \bot)$ unfolds to ``for
+every $q \le p$, if $q \Vdash \triangleright \bot$ then $q \Vdash
+\bot$''; for every $q$, the antecedent $q \Vdash \triangleright \bot$
+is itself false (apply \texttt{Hlater} at $q - 1$, contradiction), so
+the conditional is vacuously satisfied.
+
+The conclusion of Löb's rule says $\bot$ is forced at every
+condition.  This obviously fails:
+
+\begin{lstlisting}
+Lemma lob_conclusion_fails :
+  ~ (forall p, iholdZ iFalseZ p).
+Proof. intros H. exact (H 0). Qed.
+\end{lstlisting}
+
+\noindent
+Combining the two: the entailment $(\triangleright \bot \to \bot)
+\vDash \bot$ is the statement ``for every condition, if
+$(\triangleright \bot \to \bot)$ is forced there then $\bot$ is forced
+there''; the premise is forced everywhere, the conclusion is forced
+nowhere, so the entailment fails.
+
+\begin{lstlisting}
+Theorem lob_fails_over_Z :
+  ~ (iImplZ (iLaterZ iFalseZ) iFalseZ ⊨⊢ iFalseZ).
+Proof.
+  intros Hent. apply lob_conclusion_fails.
+  intros p. apply Hent. apply lob_premise_at.
+Qed.
+\end{lstlisting}
+
+This concludes the counterexample: there is a forcing-like structure
+over $\mathbb{Z}$ in which every other piece of the abstract
+framework of Section~\ref{sec:abstract} goes through, but Löb's rule
+is not derivable.
+
+\paragraph{Connection to G\"odel--L\"ob.}
+The result is the step-indexed analog of a classical observation in
+modal logic.  The G\"odel--L\"ob provability logic \textsf{GL} is
+sound and complete for the class of transitive Kripke frames whose
+accessibility relation is converse well-founded
+\cite{smorynski1985,boolos1993}.  Frames where the accessibility
+relation is \emph{not} converse well-founded --- the integers under
+$<$ are the canonical example --- falsify the Löb axiom.  Our
+counterexample is the obvious instantiation of that classical fact
+into the step-indexed Hoare logic setting: forcing conditions are
+the worlds, strict refinement is the converse of the accessibility
+relation, $\triangleright$ is the necessity modality, and Löb's rule
+is the Löb axiom.  Well-foundedness of the strict refinement is
+exactly converse well-foundedness of the accessibility relation.
+
+\paragraph{Methodological upshot.}
+The ``ramification'' in ramified forcing is not a presentation
+convenience to be eliminated.  Shoenfield's unramification of
+set-theoretic forcing showed that for forcing the explicit ordinal
+hierarchy can be absorbed into a single recursion on rank ---
+because the relevant induction principle is already available at the
+meta level.  In the step-indexed setting, the analogous move is
+\emph{not} available, because Löb's rule depends on a property of
+the forcing notion (well-foundedness) that cannot be supplied by any
+amount of recursion at the meta level: it has to be a property of
+the conditions themselves.  The well-foundedness is constitutive of
+the modal logic and not eliminable.
+
+The classical literature contains the corresponding result for
+\textsf{GL}: the soundness of Löb's axiom for converse-well-founded
+Kripke frames is folklore in modal logic, and Solovay's arithmetical
+completeness theorem \cite{solovay1976} ties it to the
+well-foundedness of the proof-theoretic ``provability in PA''
+modality.  Our contribution is to translate the result into
+step-indexed Hoare logic --- where it amounts to a soundness
+desideratum for any forcing-like step-indexed semantics --- and to
+mechanize the counterexample.  As far as we are aware, the statement
+in this form has not previously appeared in the PL verification
+literature.
+

@@ -19,6 +19,9 @@ Makefile.conf
 Makefile.coq
 Makefile.coq.conf
 .Makefile.d
+# The paper Makefile is hand-written and should be tracked
+!paper/Makefile
+!forcing-hoare/paper/Makefile
 
 # LaTeX build artifacts
 *.aux
@@ -44,3 +47,6 @@ Makefile.coq.conf
 *~
 .vscode/
 .idea/
+
+# Claude Code local settings
+.claude/

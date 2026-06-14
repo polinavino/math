@@ -1,0 +1,182 @@
+\section{The Propositional Layer}
+\label{sec:prop}
+
+Before defining a Hoare logic we need a propositional logic to express
+the pre- and post-conditions in.  To make explicit the connection to
+forcing, we build this propositional logic as a Kripke-style forcing
+semantics: a proposition is not a single truth value but a
+\emph{family} of truth values indexed over a poset of
+\emph{conditions}, and entailment is forcing at every condition.
+
+The simplest forcing notion that supports step-indexed reasoning is
+the natural numbers with the usual order.  Each natural number stands
+for an ``observation depth'': condition $n$ records that we have
+consumed $n$ program steps and committed to a partial view of the
+computation.  Following the topos-of-trees and Iris convention, we
+take \emph{smaller} naturals to be \emph{stronger} conditions: $0$ is
+the weakest condition (we have observed nothing and are committed to
+nothing), and larger $n$ are stronger (we are committed to a deeper
+approximation).  Under this orientation, the forcing extension order
+is the converse of $\le_\mathbb{N}$, and a forcing-style proposition
+must be \emph{downward closed} in $\le_\mathbb{N}$: a proposition
+forced at depth $n$ is forced at every shallower depth $m \le n$.
+
+\begin{lstlisting}
+Definition cond : Type := nat.
+
+Record iProp : Type := MkProp {
+  ihold : cond -> Prop;
+  imono : forall n m, m <= n -> ihold n -> ihold m
+}.
+
+Notation "n ⊩ φ" := (ihold φ n).
+\end{lstlisting}
+
+The notation $n \Vdash \varphi$ matches the classical forcing notation,
+and it is more than analogical: an \texttt{iProp}, taken with its
+\texttt{imono} field, is exactly a presheaf on $(\omega, \le)$, hence
+an object of the topos of trees \cite{birkedal-et-al-2012} --- which
+is exactly the Kripke model of intuitionistic logic with worlds in
+$\omega$, and hence (Section~\ref{sec:topos}) the forcing-style
+semantics with conditions in $\omega$.
+
+Entailment is forcing at every condition:
+\begin{lstlisting}
+Definition ientails (φ ψ : iProp) : Prop :=
+  forall n, n ⊩ φ -> n ⊩ ψ.
+
+Notation "φ ⊢ ψ" := (ientails φ ψ).
+\end{lstlisting}
+
+\paragraph{Connectives.}
+The Heyting-algebra connectives have the standard Kripke
+interpretation.  Truth and falsity are the constant predicates;
+conjunction and disjunction are pointwise; implication is the
+Kripke implication, quantified over all stronger conditions:
+
+\begin{lstlisting}
+Definition iAnd (φ ψ : iProp) : iProp :=
+  MkProp (fun n => n ⊩ φ /\ n ⊩ ψ) (iAnd_mono φ ψ).
+
+Definition iImpl (φ ψ : iProp) : iProp :=
+  MkProp (fun n => forall m, m <= n -> m ⊩ φ -> m ⊩ ψ)
+         (iImpl_mono φ ψ).
+\end{lstlisting}
+
+The quantification ``$\forall m \le n$'' in \texttt{iImpl} is the
+characteristic move of intuitionistic Kripke semantics; without it,
+the framework would collapse to classical logic with a step index.
+The monotonicity proofs \texttt{iAnd\_mono} and \texttt{iImpl\_mono}
+are routine; in each case the proof simply transports the membership
+witness through the order.
+
+\paragraph{The later modality.}
+The genuinely new ingredient over the standard Kripke interpretation
+of intuitionistic logic is the \emph{later} modality $\triangleright$.
+It is the operator that says ``to talk about a proposition here, you
+must drop one level''.  In our $(\omega, \le)$ orientation, $\triangleright \varphi$ at depth $n$ holds if $n = 0$ (we are at the weakest condition and the modality is vacuously satisfied) or if $\varphi$ holds at the shallower depth $n - 1$:
+
+\begin{lstlisting}
+Definition iLater (φ : iProp) : iProp :=
+  MkProp (fun n => match n with
+                   | 0 => True
+                   | S k => k ⊩ φ
+                   end) (iLater_mono_helper φ).
+
+Notation "▷ φ" := (iLater φ).
+\end{lstlisting}
+
+Two readings of this operator are worth stating explicitly.  In
+step-indexed-logic terms, $\triangleright \varphi$ is ``$\varphi$ when
+we look at the computation one step later'', and the shift is what
+guards self-referential definitions against circularity.  In
+forcing terms, $\triangleright$ is the explicit level-descent
+operator: at level $n+1$ we may consult level $n$.  This is precisely
+the ramification of Cohen's original construction (Section~\ref{sec:related}, ``Forcing in set theory''): the recursive
+definition of forcing at level $\alpha$ may invoke forcing only at
+strictly lower levels, and $\triangleright$ is the syntactic device
+that makes the descent explicit.
+
+\paragraph{Heyting algebra rules.}
+With the connectives in hand, the standard intuitionistic
+introduction and elimination rules become direct consequences of
+their Kripke definitions.  We mechanize the full set:
+
+\begin{lstlisting}
+Lemma iAnd_intro φ ψ χ : φ ⊢ ψ -> φ ⊢ χ -> φ ⊢ ψ ∧ χ.
+Lemma iAnd_proj_l φ ψ : φ ∧ ψ ⊢ φ.
+Lemma iOr_intro_l φ ψ : φ ⊢ φ ∨ ψ.
+Lemma iOr_elim φ ψ χ : φ ⊢ χ -> ψ ⊢ χ -> φ ∨ ψ ⊢ χ.
+Lemma iImpl_intro φ ψ χ : φ ∧ ψ ⊢ χ -> φ ⊢ (ψ → χ).
+Lemma iImpl_elim φ ψ : (φ → ψ) ∧ φ ⊢ ψ.
+\end{lstlisting}
+
+\noindent
+Each proof simply moves the assumed monotonicity through the
+relevant connective; the work is small but worth doing
+mechanically because it confirms that the framework is genuinely a
+Heyting algebra without any informal appeal to topos-theoretic
+abstractions.
+
+The basic laws of the later modality follow the same pattern.  We
+prove that $\triangleright$ is monotone in the entailment order,
+that any proposition entails its own later
+($\varphi \vdash \triangleright \varphi$), that $\triangleright$
+distributes over $\wedge$ in both directions, and that
+$\triangleright \top$ is interderivable with $\top$.
+
+\paragraph{Löb's rule.}
+The technical heart of the propositional layer is Löb's rule:
+\begin{theorem}[Löb's rule]
+For every \texttt{iProp} $\varphi$, $(\triangleright \varphi \to
+\varphi) \vdash \varphi$.
+\end{theorem}
+
+\noindent
+We give the rule the standard step-indexed proof, by induction on
+$n$:
+
+\begin{lstlisting}
+Lemma iLob φ : (▷ φ → φ) ⊢ φ.
+Proof.
+  intros n Hn.
+  induction n as [|n IH].
+  - apply (Hn 0); [lia | exact I].
+  - apply (Hn (S n)); [lia | simpl].
+    apply IH.
+    intros m Hm Hlate.
+    apply (Hn m); [lia | exact Hlate].
+Qed.
+\end{lstlisting}
+
+It is worth noticing what this proof actually uses.  The base case
+relies on the fact that $\triangleright \varphi$ at $n=0$ is
+\emph{vacuously} \texttt{True}; the inductive step uses the
+hypothesis at $n+1$ together with the induction hypothesis at $n$.
+In other words, Löb's rule is, at the meta level, well-founded
+induction on the forcing order $\omega$.  This observation will
+return in Section~\ref{sec:abstract}: we will see there that in the
+abstract framework Löb's rule \emph{is} \texttt{well\_founded\_ind}
+on the strict refinement relation.
+
+\paragraph{Step-indexing is not collapsing.}
+A useful sanity check is that the later modality changes the
+propositional theory: it is not the case that
+$\triangleright \bot$ entails $\bot$.  At $n = 0$, the proposition
+$\triangleright \bot$ is \texttt{True} by definition, whereas $\bot$
+is \texttt{False}, so the entailment fails at $n = 0$:
+
+\begin{lstlisting}
+Lemma iLater_False_distinct : ~ (▷ ⊥ ⊢ ⊥).
+Proof. intros H. apply (H 0); simpl; exact I. Qed.
+\end{lstlisting}
+
+\noindent
+This is the canonical witness that step-indexing genuinely extends
+the propositional theory, rather than collapsing to ordinary
+intuitionistic logic.  We will revisit it in
+Section~\ref{sec:lob-essential} to make the converse point: if we
+\emph{drop} the well-foundedness of the forcing order, then
+$\triangleright \bot$ becomes equivalent to $\bot$ in a way that
+breaks Löb's rule entirely.
+

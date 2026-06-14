@@ -247,37 +247,56 @@ well-founded strict refinement, and giving rise to Löb's rule via the
 construction in Phase 4. A full mechanization of the JTS translation
 is future work.
 
-### What the plan is
+#### The paper
 
-- **Phase 7** — the writeup, in `paper/`. The central thesis is now
-  supported by the mechanization on four fronts:
+[paper/main.tex](paper/main.tex) — draft of the writeup, in CPP
+(`acmart` `sigplan`) format, currently 18 pages. The paper's central
+thesis is supported by the mechanization on four fronts:
 
-  1. *In higher-order settings, Löb's rule is the load-bearing
-     reasoning principle for recursion* (Phase 3c): the meta-level
-     induction shortcut available for IMP-style recursion (Phase 2c)
-     is not the natural tool when the soundness predicate is itself
-     recursive in the program.
+1. *In higher-order settings, Löb's rule is the load-bearing
+   reasoning principle for recursion* (Phase 3c): the meta-level
+   induction shortcut available for IMP-style recursion (Phase 2c)
+   is not the natural tool when the soundness predicate is itself
+   recursive in the program.
 
-  2. *The framework is genuinely abstract over the forcing notion*
-     (Phase 4): step-indexing is not tied to ω; it is well-founded
-     induction over an arbitrary forcing structure, and Löb's rule
-     is *equivalent to* this well-founded induction at the meta
-     level.
+2. *The framework is genuinely abstract over the forcing notion*
+   (Phase 4): step-indexing is not tied to ω; it is well-founded
+   induction over an arbitrary forcing structure, and Löb's rule
+   is *equivalent to* this well-founded induction at the meta
+   level.
 
-  3. *Well-foundedness is essential* (Phase 5): without it, Löb's
-     rule fails. The "ramification" in ramified forcing is
-     constitutive of the modal logic, not a presentation choice.
+3. *Well-foundedness is essential* (Phase 5): without it, Löb's
+   rule fails. The "ramification" in ramified forcing is
+   constitutive of the modal logic, not a presentation choice.
 
-  4. *The framework is the propositional fragment of the
-     Jaber–Tabareau–Sozeau forcing translation* (Phase 6),
-     with `▷` as the step-indexed-specific addition that
-     well-founded forcing makes available.
+4. *The framework is the propositional fragment of the
+   Jaber–Tabareau–Sozeau forcing translation* (Phase 6),
+   with `▷` as the step-indexed-specific addition that
+   well-founded forcing makes available.
 
-  The paper will work through this, position it against existing
-  step-indexed work (Iris, topos-of-trees, Appel–McAllester, Ahmed,
-  Birkedal), and connect to the set-theoretic forcing literature
-  (Cohen's ramified construction, Shoenfield's unramification, the
-  forcing-translations literature in type theory).
+The paper is split into per-section fragment files, with
+[main.tex](paper/main.tex) doing only the preamble, frontmatter,
+and `\input` of each section, plus the bibliography:
+
+| File | Contents |
+|---|---|
+| [paper/intro.tex](paper/intro.tex) | Introduction |
+| [paper/sec-prop.tex](paper/sec-prop.tex) | The propositional layer (Phase 1) |
+| [paper/sec-imp.tex](paper/sec-imp.tex) | Hoare logic for IMP (Phase 2) |
+| [paper/sec-lam.tex](paper/sec-lam.tex) | Hoare logic for the λ-calculus + fix (Phase 3) |
+| [paper/sec-comparison.tex](paper/sec-comparison.tex) | The Phase 2c vs 3c diagnostic |
+| [paper/sec-abstract.tex](paper/sec-abstract.tex) | Abstract forcing framework (Phase 4) |
+| [paper/sec-lob-essential.tex](paper/sec-lob-essential.tex) | Löb's rule is essential (Phase 5) |
+| [paper/sec-bridge.tex](paper/sec-bridge.tex) | Bridge to JTS forcing translations (Phase 6) |
+| [paper/sec-related-work.tex](paper/sec-related-work.tex) | Related work |
+| [paper/sec-conclusion.tex](paper/sec-conclusion.tex) | Conclusion |
+| [paper/refs.bib](paper/refs.bib) | Bibliography (~38 entries) |
+| [paper/Makefile](paper/Makefile) | `make` to build, `make clean` to clean intermediates |
+
+Venue plan: primary target is CPP (deadline October, conference
+January); fallback ITP (deadline February–March, conference July).
+No overlap, so we can submit to CPP first and to ITP if not
+accepted.
 
 ### Known gaps
 
@@ -296,6 +315,8 @@ is future work.
 
 ## How to build
 
+### Rocq development
+
 From the project root:
 
 ```
@@ -303,7 +324,20 @@ coq_makefile -f _CoqProject -o Makefile
 make
 ```
 
-Requires Coq 8.18 or compatible. Tested against Coq 8.18.0.
+Requires Coq 8.18 or compatible. Tested against Coq 8.18.0. No
+external libraries beyond `Arith`, `Lia`, `ZArith`, `Wellfounded`,
+`Wf_nat`.
+
+### Paper
+
+From `paper/`:
+
+```
+make
+```
+
+Requires `pdflatex` and `bibtex`. The `acmart` document class is
+distributed with TeX Live. Output is `paper/main.pdf`.
 
 ## References (for the reader who wants to go further)
 

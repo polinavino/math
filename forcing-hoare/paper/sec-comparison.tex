@@ -1,0 +1,101 @@
+\section{Why the Two Proofs Look Different}
+\label{sec:imp-vs-lam}
+
+We have now mechanized two Hoare-style soundness theorems against
+the same propositional forcing semantics: the \texttt{while} rule
+of Section~\ref{sec:imp} and the \texttt{wp\_fix} rule of
+Section~\ref{sec:lam}.  Both are statements about recursively
+defined programs.  Both go by some form of recursion in the proof.
+But the proofs look structurally different, and that difference is
+the main technical observation we want to articulate.
+
+The IMP proof of \texttt{hoare\_while} proceeds by an explicit outer
+induction on the step index $n$.  The base case discharges the wp at
+depth $0$ (which is \texttt{True}).  The inductive step unfolds the
+wp at depth $n+1$, case-analyses on the step taken by \texttt{CWhile b
+c}, and in the recursive branch uses the induction hypothesis at
+depth $n$ to discharge the obligation for \texttt{CWhile b c} itself.
+The proof can also be done by an appeal to the internal Löb rule, as
+the \texttt{hoare\_while\_iLob} alternative shows; but the two
+proofs are structurally identical, and the choice between them is
+cosmetic.
+
+The $\lambda$-calculus proof of \texttt{wp\_fix} also goes by some
+form of recursion --- it has to, because the goal is the soundness
+of a recursive function --- but it does not contain any induction on
+$n$ at all.  It factors the goal through Löb's form
+$\triangleright \varphi \to \varphi$ and lets the recursion happen
+inside \texttt{iLob}.  The interior of the factored proof is finite,
+non-recursive step-indexed reasoning: a single case analysis on the
+step index supplied by the \texttt{iImpl}, one unfolding of the
+fix-application step via \texttt{wp\_pure\_step\_at}, and one
+appeal to the Lipschitz hypothesis on the body.
+
+\paragraph{Why does the difference arise?}
+The structural reason is what we call a difference in the
+\emph{recursion locus} of the soundness predicate.
+
+For \texttt{while}, the wp predicate
+$\mathtt{wp\_at}\, n\, (\mathtt{CWhile}\, b\, c)\, Q\, s$
+unfolds at depth $n+1$ into an obligation that mentions
+$\mathtt{wp\_at}\, n\, (\mathtt{CWhile}\, b\, c)\, Q\, s'$ at depth
+$n$ for some state $s'$.  The proposition recursive at the lower
+depth is \emph{the very same proposition}, decremented in the index.
+At the meta level, this is just induction on $n$: each level of the
+recursion consumes one step index and we run out of indices in
+finitely many steps.  No specifically modal reasoning is needed
+because the recursive obligation is parameterised solely by $n$.
+
+For \texttt{fix}, the picture is different.  The proposition
+$\mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ at depth
+$n+1$ unfolds, after one fix-unfolding step, into an obligation
+about the same $\mathtt{EFix}\, body$ at depth $n$ ---
+\emph{but only because the body's behaviour at the recursive call site is
+guaranteed by the same proposition at depth $n$.}  In other words,
+the recursive proposition appears both inside and outside the
+recursion: as the spec we are trying to prove for $\mathtt{EFix}\, body$, and as the hypothesis we need at the recursive call.  At the
+meta level, an outer induction on $n$ can in principle reach the
+recursive call --- one can always recurse on $n$ --- but the proof
+obligation at the recursive call is no longer a statement purely
+about smaller step indices; it is a statement about
+$\mathtt{EFix}\, body$ itself at a smaller step index.  This is
+exactly the shape that Löb's rule was designed to handle:
+``assume the spec holds later, prove it holds now'', where ``later''
+means ``at a strictly smaller condition''.  Internalizing the
+recursion into Löb's rule is what frees the proof from carrying an
+outer induction on $n$.
+
+\paragraph{A diagnostic.}
+We can state this as a working slogan:
+\begin{quote}
+\textbf{If the soundness predicate is itself recursive in the
+program} --- if its definition at one depth refers to its definition
+for the same program at a lower depth --- then internal Löb is the
+natural soundness tool, and a meta-level induction on the step index
+fights the structure of the predicate.  If the soundness predicate
+is only recursive in the depth, an outer induction is interchangeable
+with Löb and either is cheap.
+\end{quote}
+\noindent
+The IMP \texttt{wp\_at}, $\mathtt{hoare}$, and \texttt{while} fall on
+the easy side of the diagnostic.  The recursive-spec
+$\mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ falls on the
+hard side, and Löb earns its keep there.
+
+\paragraph{What this says about step-indexed Hoare logic.}
+In the verification literature, Löb's rule is sometimes presented as
+a convenience: a tactic available in the Iris proof mode, used when
+recursion is involved, but conceptually equivalent to ``the
+step-indexed argument''.  Our diagnostic says this is right for
+first-order recursion (the IMP case) but understates what is
+happening in higher-order recursion (the $\lambda$-fix case).  When
+the soundness predicate is genuinely self-referential in the
+program, an outer induction on $n$ is still possible but is no
+longer playing to the structure of the predicate.  The internal Löb
+rule is what plays to that structure --- and it is, at bottom,
+well-founded induction on the forcing order, internalized into the
+logic so that it can act on the recursive proposition directly.
+Section~\ref{sec:abstract} will make precise what
+``internalized'' means by showing the abstract framework's Löb
+rule is literally an appeal to \texttt{well\_founded\_ind}.
+

@@ -18,9 +18,67 @@
 \renewcommand\footnotetextcopyrightpermission[1]{}
 \pagestyle{plain}
 
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{listings}
+% acmart already provides amsmath, amssymb, amsthm. Avoid the \Bbbk clash by
+% not reloading amssymb directly.
+\usepackage{listingsutf8}
 \usepackage{microtype}
+
+% --- Coq listing setup -------------------------------------------------
+\lstdefinelanguage{Coq}{
+  morekeywords={Definition,Fixpoint,Lemma,Theorem,Corollary,Example,
+                Record,Inductive,Variable,Hypothesis,Section,End,
+                forall,exists,fun,match,with,end,let,in,if,then,else,
+                Prop,Type,Set,nat,bool,true,false,O,S,Z,
+                Context,Parameter,Notation,Proof,Qed,intros,apply,
+                destruct,simpl,split,exact,reflexivity,rewrite,
+                induction,lia,inversion,subst,eauto,assumption,trivial,
+                eexists,eapply,unfold,revert,clear,refine,specialize,
+                discriminate,contradiction,exfalso,case,if,then,else,as,
+                MkProp,MkFS,MkPropZ,return},
+  sensitive=true,
+  morecomment=[s]{(*}{*)},
+  literate=
+    {->}{{$\rightarrow$}}{2}
+    {<=}{{$\le$}}{2}
+    {>=}{{$\ge$}}{2}
+    {<>}{{$\ne$}}{2}
+    {→}{{$\rightarrow$}}{1}
+    {↔}{{$\leftrightarrow$}}{1}
+    {⇒}{{$\Rightarrow$}}{1}
+    {⊩}{{$\Vdash$}}{1}
+    {⊢}{{$\vdash$}}{1}
+    {⊨}{{$\vDash$}}{1}
+    {≼}{{$\preceq$}}{1}
+    {≺}{{$\prec$}}{1}
+    {▷}{{$\triangleright$}}{1}
+    {∀}{{$\forall$}}{1}
+    {∃}{{$\exists$}}{1}
+    {∧}{{$\wedge$}}{1}
+    {∨}{{$\vee$}}{1}
+    {⊤}{{$\top$}}{1}
+    {⊥}{{$\bot$}}{1}
+    {⌜}{{$\lceil$}}{1}
+    {⌝}{{$\rceil$}}{1}
+    {φ}{{$\varphi$}}{1}
+    {ψ}{{$\psi$}}{1}
+    {χ}{{$\chi$}}{1}
+    {α}{{$\alpha$}}{1}
+    {β}{{$\beta$}}{1}
+    {λ}{{$\lambda$}}{1}
+}
+\lstset{
+  language=Coq,
+  inputencoding=utf8/latin1,
+  extendedchars=true,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  showstringspaces=false,
+  breaklines=true,
+  xleftmargin=1em,
+  aboveskip=0.6em,
+  belowskip=0.6em,
+}
 
 \acmConference[CPP '27]{Certified Programs and Proofs}{January 2027}{(submitted)}
 \acmYear{2027}
@@ -114,762 +172,34 @@ The complete development is approximately 800 lines of Rocq across
 \maketitle
 
 %% =====================================================================
-\section{Introduction}
-\label{sec:intro}
-
-Step-indexed reasoning has become the standard semantic technique
-for verifying higher-order programming languages with mutable state,
-recursive types, and concurrency. From Appel and McAllester's
-original step-indexed model of recursive types
-\cite{appel-mcallester2001} to the modern Iris
-ecosystem~\cite{jung-et-al-2018}, the same basic idea recurs: instead
-of asking whether a program satisfies a specification, ask whether it
-satisfies the specification \emph{at every finite observation depth
-$n$}, then recover the unindexed statement as the limit. Each level
-of the hierarchy of approximations is defined without circularity by
-appeal only to lower levels, and a ``later'' modality $\triangleright$
-mediates the descent from one level to the next.
-
-What the step-indexed literature does not usually say is that this
-technique is, in classical set-theoretic terms, \emph{forcing}. Cohen
-introduced forcing in 1963 to prove the independence of the continuum
-hypothesis~\cite{cohen1963-independence-i, cohen1966}. In its
-original presentation --- called \emph{ramified forcing} after the
-ramified type theory of Russell and
-Whitehead~\cite{russell-whitehead-PM} --- the construction of the
-generic extension is stratified by a well-founded hierarchy of
-\emph{levels}, with recursion at level $\alpha$ permitted to consult
-only levels strictly below $\alpha$. Shoenfield's 1971
-reformulation~\cite{shoenfield1971} eliminated the ramification for
-the set-theoretic application: the modern textbook presentation of
-forcing does not use it. But the structure --- well-founded
-stratification, level descent, a forcing relation
-$p \Vdash \varphi$ that is monotone in the strength of $p$ --- is
-exactly the structure of step-indexed logic.
-
-In this paper we make the correspondence precise. The forcing
-\emph{conditions} of step-indexed Hoare logic are the natural numbers
-$\omega$ with the order $\le$; the forcing \emph{relation}
-$n \Vdash \varphi$ is monotone in $n$ (downward closure); the
-\emph{later} modality $\triangleright$ is the level descent operator
-of ramified forcing; and Löb's rule, which underwrites all
-recursive reasoning in step-indexed systems, is precisely
-well-founded induction on the forcing order, internalized into the
-logic.
-
-\paragraph{Why does this matter?}
-The forcing reading is not just a re-labelling. It clarifies three
-things that are otherwise scattered across the step-indexed
-literature.
-
-First, it explains \emph{why} the technique has the shape it does.
-The well-founded stratification is not a presentation convenience to
-be eliminated; it is constitutive of the soundness of the modal
-logic. Section~\ref{sec:lob-essential} makes this precise: we exhibit
-a non-well-founded forcing notion (the integers $\mathbb{Z}$) where
-every other piece of the framework goes through, but Löb's rule
-fails.
-
-Second, it diagnoses where the internal Löb rule earns its keep.
-Section~\ref{sec:imp-vs-lam} compares two mechanized soundness proofs
-of recursive Hoare rules: the \texttt{while} rule for IMP
-(Section~\ref{sec:imp}) and the \texttt{fix} rule for the untyped
-$\lambda$-calculus (Section~\ref{sec:lam}). The first admits an
-unproblematic meta-level proof by induction on the step index; the
-second does not, and the natural proof invokes the internal Löb rule
-directly. The structural reason --- that the soundness predicate is
-itself recursive in the \texttt{fix} case --- is made precise by the
-forcing reading.
-
-Third, it identifies step-indexed Hoare logic as the propositional
-fragment of an existing construction in the type-theory literature:
-the Jaber--Tabareau--Sozeau forcing translation of
-CIC~\cite{jaber-tabareau-sozeau-2012}. Section~\ref{sec:bridge}
-formalizes this identification via a constant embedding
-$\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that is a Heyting
-algebra homomorphism, with $\triangleright$ appearing as the
-step-indexed-specific addition.
-
-\paragraph{Contributions.}
-
-\begin{enumerate}
-
-\item A mechanized re-presentation of step-indexed Hoare logic as
-ramified forcing, in Rocq. The propositional layer
-(Section~\ref{sec:prop}) gives a forcing semantics for an
-intuitionistic logic with the later modality and Löb's rule. The
-Hoare layer is constructed over IMP (Section~\ref{sec:imp}) and over
-an untyped $\lambda$-calculus with general recursion
-(Section~\ref{sec:lam}).
-
-\item An explicit comparison of the IMP \texttt{while} rule and the
-$\lambda$-calculus \texttt{fix} rule that diagnoses where the
-internal Löb rule is essential (Section~\ref{sec:imp-vs-lam}). For
-IMP, soundness goes through either via meta-level induction on the
-step index or via the internal Löb rule; we exhibit both proofs and
-observe their structural identity. For the $\lambda$-calculus with
-\texttt{fix}, the natural soundness proof must invoke the internal
-Löb rule, because the soundness predicate is itself recursive in the
-program. This is the strongest piece of evidence for the slogan that
-``Löb is what makes step-indexed Hoare logic work in higher-order
-settings.''
-
-\item An abstract forcing framework (Section~\ref{sec:abstract})
-parametric over an arbitrary well-founded forcing structure. We
-exhibit two instances: $(\omega, \le)$, recovering the standard
-step-indexed semantics; and $(\omega \times \omega, \le_{\mathrm{pw}})$,
-with the pointwise order, modelling independent step-indices for
-parallel components. The internal Löb rule, in the abstract setting,
-is proved by \texttt{well\_founded\_ind} on the strict refinement
-order. This makes precise the equivalence: \emph{internal Löb is
-well-founded induction on the forcing order, internalized}.
-
-\item A small new metatheoretic result: \emph{well-foundedness of the
-forcing notion is essential} (Section~\ref{sec:lob-essential}). We
-exhibit a non-well-founded ``would-be'' forcing structure over
-$\mathbb{Z}$, in which every iProp construction goes through except
-Löb's rule. The premise of Löb's rule $(\triangleright \bot) \to \bot$
-is forced at every condition --- vacuously, since $\mathbb{Z}$ has no
-minimum --- while $\bot$ is forced at none. This is a special case of
-the model theory of the Gödel--Löb provability
-logic~\cite{solovay1976,boolos1993}, brought into the step-indexed
-Hoare logic setting and mechanized.
-
-\item A partial bridge to the Jaber--Tabareau--Sozeau forcing
-translation of CIC~\cite{jaber-tabareau-sozeau-2012}
-(Section~\ref{sec:bridge}). We formalize the constant embedding
-$\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ as a Heyting algebra
-homomorphism, and observe that the $\triangleright$ modality is the
-genuinely new content of the iProp universe over the embedded image
-of Prop. A full mechanization of the type-level JTS translation is
-future work.
-
-\end{enumerate}
-
-\paragraph{What is and is not new.}
-The individual ingredients are largely known to specialists in
-neighbouring fields. The topos-of-trees perspective on
-step-indexing~\cite{birkedal-et-al-2012} is implicitly a forcing
-semantics; the Gödel--Löb modal logic of provability is the modal
-logic of provability and well-foundedness; the JTS forcing
-translation of CIC is the type-theoretic analog of forcing. What is
-new is the assembly: a single mechanized account that makes the
-forcing reading explicit, diagnoses the role of the internal Löb
-rule, and gives a parametric framework with the metatheoretic
-guarantee that well-foundedness cannot be relaxed.
-
-\paragraph{Outline.}
-Section~\ref{sec:prop} gives the propositional layer of the forcing
-semantics, including the Heyting-algebra connectives, the later
-modality, and Löb's rule. Section~\ref{sec:imp} develops Hoare logic
-for IMP and proves the \texttt{while} rule by meta-level induction;
-Section~\ref{sec:lam} develops Hoare logic for an untyped
-$\lambda$-calculus with \texttt{fix} and proves the soundness rule
-for \texttt{fix} via the internal Löb rule. Section~\ref{sec:imp-vs-lam}
-compares these two proofs explicitly and articulates the diagnostic
-claim. Section~\ref{sec:abstract} gives the abstract forcing
-framework. Section~\ref{sec:lob-essential} proves Löb's rule fails
-without well-foundedness. Section~\ref{sec:bridge} establishes the
-constant-embedding bridge to JTS forcing translations.
-Section~\ref{sec:related} positions the contribution against the
-literature. Section~\ref{sec:conclusion} concludes.
-
-\paragraph{Rocq development.}
-The complete Rocq development is approximately 800 lines across 11
-files, building cleanly against the Rocq standard library only (no
-external libraries such as Iris or stdpp).
+\input{intro}
 
 %% =====================================================================
-\section{The Propositional Layer}
-\label{sec:prop}
-
-\noindent\textit{[TBD: forcing semantics for propositional
-intuitionistic logic with the later modality and Löb's rule. Covers:
-conditions as $\mathbb{N}$ with $\le$; \texttt{iProp} as
-downward-closed predicates with monotonicity; Heyting connectives
-$\top, \bot, \wedge, \vee, \to$; the later modality $\triangleright$;
-Löb's rule $(\triangleright\varphi \to \varphi) \vdash \varphi$, proved
-by induction on the step index; the sanity check that
-$\triangleright\bot \not\vdash \bot$. References Phase 1 of the Rocq
-development.]}
+\input{sec-prop}
 
 %% =====================================================================
-\section{Hoare Logic for IMP}
-\label{sec:imp}
-
-\noindent\textit{[TBD: the first-order calibration setting. Covers the
-IMP language and its small-step semantics; the step-indexed
-\texttt{wp\_at} predicate and the Hoare triple as an
-\texttt{iProp}; soundness of \texttt{skip}, assignment, sequencing,
-conditional, and consequence. Then the \texttt{while} rule, proved
-by induction on the step index, and an alternative proof invoking
-the internal Löb rule via \texttt{ientails\_trans} and \texttt{iLob}.
-References Phases 2a/2b/2c.]}
+\input{sec-imp}
 
 %% =====================================================================
-\section{Hoare Logic for an Untyped $\lambda$-Calculus with Recursion}
-\label{sec:lam}
-
-\noindent\textit{[TBD: the higher-order setting where step-indexing
-becomes essential. Covers the untyped $\lambda$-calculus with
-\texttt{fix} (de Bruijn syntax, CBV small-step semantics with
-$\beta$ and fix-unfolding); the step-indexed \texttt{wp\_at} with
-an explicit safety conjunct (because the $\lambda$-calculus has
-stuck terms); the \texttt{wp\_value} and \texttt{wp\_pure\_step}
-rules. The \texttt{wp\_fix} soundness rule, proved by
-\texttt{apply ientails\_trans} to reduce to the form
-$\top \vdash \triangleright\varphi \to \varphi$, then \texttt{apply
-iLob}. No meta-level induction. The worked example
-\texttt{recursive\_id} (a fix-based identity) and \texttt{bottom}
-(canonical divergent fix-point). References Phases 3a/3b/3c/3d.]}
+\input{sec-lam}
 
 %% =====================================================================
-\section{Why the Two Proofs Look Different}
-\label{sec:imp-vs-lam}
-
-\noindent\textit{[TBD: the central diagnostic section. Compares the
-two soundness proofs of Sections~\ref{sec:imp} and~\ref{sec:lam} side
-by side. In IMP, the wp predicate for \texttt{while} reduces to an
-induction on the step count without further recursion in the
-predicate itself. In the $\lambda$-calculus with \texttt{fix}, the
-wp predicate for \texttt{fix} is intrinsically recursive in the
-self-reference, and unrolling the recursion at the meta level
-requires the (well-founded) induction principle that Löb's rule
-internalizes. The structural diagnostic: \emph{when the soundness
-predicate is itself recursive in the program, internal Löb is the
-natural tool; otherwise it is interchangeable with outer induction
-on the step index.}]}
+\input{sec-comparison}
 
 %% =====================================================================
-\section{An Abstract Forcing Framework}
-\label{sec:abstract}
-
-\noindent\textit{[TBD: Phase 4. The
-\texttt{ForcingStructure} record packaging a preorder $\le$, a strict
-relation $<$, the standard order axioms, and well-foundedness of
-$<$. Over an arbitrary \texttt{ForcingStructure}, the
-\texttt{iProp}, Heyting connectives, and the later modality
-$\triangleright\varphi$ defined as universal-over-strict-predecessors:
-$p \Vdash \triangleright\varphi$ iff $\forall p' \prec p, p' \Vdash
-\varphi$. Löb's rule proved by \texttt{well\_founded\_ind} on
-$<$. Two instances: \texttt{nat\_FS} (the standard $(\omega, \le)$
-recovering Phase 1) and \texttt{prod\_FS} (the pointwise product
-$\omega \times \omega$). The conceptual claim: at the meta level,
-internal Löb's rule \emph{is} well-founded induction on the forcing
-order, viewed internally.]}
+\input{sec-abstract}
 
 %% =====================================================================
-\section{Well-foundedness is Essential}
-\label{sec:lob-essential}
-
-\noindent\textit{[TBD: Phase 5. The metatheoretic observation that
-the $\texttt{fs\_lt\_wf}$ axiom in \texttt{ForcingStructure} cannot
-be dropped. We construct a ``would-be'' iProp framework over
-$\mathbb{Z}$, in which all of \texttt{iPropZ},
-\texttt{iImplZ}, \texttt{iLaterZ} go through with their standard
-definitions. We show: (i) the premise of Löb's rule,
-$(\triangleright \bot) \to \bot$, is forced at every condition,
-because $\mathbb{Z}$ has no minimum and so $\triangleright \bot$ is
-forced at no condition; (ii) $\bot$ itself is not forced at every
-condition; (iii) hence the entailment
-$(\triangleright \bot \to \bot) \vdash \bot$ does not hold.
-This is the step-indexed analog of the modal logic fact that GL is
-sound on the class of converse-well-founded Kripke frames and not
-on the integers. The methodological upshot: the ``ramification'' in
-ramified forcing is not a presentation convenience; it is
-constitutive of the modal logic.]}
+\input{sec-lob-essential}
 
 %% =====================================================================
-\section{Bridge to Forcing Translations}
-\label{sec:bridge}
-
-\noindent\textit{[TBD: Phase 6. The constant embedding $\mathsf{Prop}
-\hookrightarrow \mathtt{iProp}$ defined as
-$\lceil P \rceil := \texttt{MkProp}\, (\lambda \_, P)\, \cdots$. We
-prove it is a Heyting algebra homomorphism: it commutes with $\top$,
-$\bot$, $\wedge$, $\vee$, $\to$ in both directions of entailment.
-The genuine new content of \texttt{iProp} over the embedded image is
-the $\triangleright$ modality, witnessed by
-$\triangleright \lceil \mathrm{False} \rceil \not\vdash
-\lceil \mathrm{False} \rceil$. The framework of
-Section~\ref{sec:abstract} is therefore the propositional fragment of
-the Jaber--Tabareau--Sozeau forcing translation of CIC
-\cite{jaber-tabareau-sozeau-2012}, instantiated at an arbitrary
-forcing structure. A full mechanization of the type-level JTS
-translation is future work.]}
+\input{sec-bridge}
 
 %% =====================================================================
-\section{Related Work}
-\label{sec:related}
-
-This section is organized into seven literature threads:
-(i) step-indexing in programming language semantics; (ii) forcing in
-set theory, ramified and unramified; (iii) topos-theoretic models of
-step-indexing; (iv) forcing translations in type theory; (v) the
-modal logic of provability (\textsf{GL}) and well-foundedness;
-(vi) constructive modal logic for guarded recursion; (vii)
-predicativity and ramified hierarchies in foundations of
-mathematics. A final subsection states the gap this paper fills.
-
-\subsection{Step-indexing in programming language semantics}
-
-Step-indexed logical relations were introduced by Appel and
-McAllester \cite{appel-mcallester2001} to give a semantic account of
-recursive types in the setting of foundational proof-carrying code.
-The technique gives a meaning to recursive types not via a fixed
-point construction in some semantic domain, but by approximating the
-intended meaning at every finite ``observation depth'' $n$. Two terms
-are equivalent at index $n$ if they cannot be distinguished by any
-context running for at most $n$ steps; the desired equivalence is then
-the limit (intersection) of all $n$-equivalences. Appel and McAllester
-show that this gives a sound model for recursive types and that the
-resulting logical relation is preserved under reduction --- the
-canonical \emph{step-down} property that we will recognise as the
-monotonicity of step-indexed propositions.
-
-Ahmed's PhD thesis \cite{ahmed2004} extended step-indexing to
-languages with mutable references, including general references that
-can store functions of any type (``higher-order store''). This is the
-classical setting in which step-indexing is essential rather than
-merely convenient: the standard set-theoretic recursion on type
-structure is blocked by the circularity that comes from storing
-higher-order functions in mutable cells. Ahmed shows how the
-step-indexed approach absorbs this circularity into the index
-hierarchy.
-
-Birkedal and collaborators have extended these ideas in two
-directions. In one direction, \emph{topos-theoretic} reformulations
-(see Section~\ref{sec:topos} below) replaced the explicit step
-indices with categorical structure. In the other, the technique was
-scaled up to richer programming languages and verification settings;
-see Birkedal et al.\
-\cite{birkedal-et-al-2011-stepindexed} on step-indexed Kripke models
-for capability calculi.
-
-The current state of the art on the programming-languages side is
-the \emph{Iris} family of separation logics
-\cite{jung-et-al-2018,krebbers-jung-bizjak-birkedal-dreyer-2017}.
-Iris extends step-indexed separation logic with higher-order ghost
-state, invariants, and a powerful set of derived rules. Its
-soundness theorem is mechanized in Coq against a model built
-ultimately on step-indexed propositions. The internal logic of Iris
-is itself a step-indexed modal logic with a ``later'' modality
-$\triangleright$ and a Löb rule; substantial libraries of Coq
-tactics support reasoning within it. Other recent step-indexed
-systems include VST \cite{appel2014vst} and Transfinite Iris
-\cite{spies2021transfinite}.
-
-Two technical observations from this literature are essential for
-our work. First, the ``later'' modality has been a unifying device
-since at least Appel et al.\ \cite{appel-melham-mcallester2007}, who
-introduced it as the very-modal $\triangleright$ for guarded
-recursion. Second, the soundness proof of every step-indexed logic
-relies on a Löb-style argument --- either as an explicit lemma in
-the internal logic, or implicitly through induction on the step index
-in the soundness proof. Our paper takes seriously the question of
-which formulation is more natural in which setting, and argues that
-for higher-order recursion the internal Löb form is strictly
-preferable.
-
-\subsection{Forcing in set theory: ramified and unramified}
-
-Cohen introduced forcing in his 1963 papers
-\cite{cohen1963-independence-i, cohen1963-independence-ii} to prove
-the independence of the continuum hypothesis from \textsf{ZFC}, and
-gave a book-length treatment in 1966 \cite{cohen1966}. The original
-presentation is what we will call \emph{ramified forcing}: the
-construction of the generic extension $M[G]$ is stratified by ordinal
-levels mimicking Gödel's constructible hierarchy. A ``ramified
-language'' $\mathcal{L}^*$ has a type symbol for each ordinal
-$\alpha$ below some sufficient bound, and a variable of type $\alpha$
-ranges only over sets at levels strictly below $\alpha$. The forcing
-relation $p \Vdash_\alpha \varphi$ is defined level by level: forcing
-of a level-$\alpha$ formula recurses only on forcing at levels
-strictly below $\alpha$.
-
-The two features that make this presentation ``ramified'' are
-predicative stratification (a level-$\alpha$ formula only quantifies
-over levels strictly below $\alpha$) and explicit level descent (the
-recursive definition of forcing is structured by ordinal predecessor).
-Both features are inherited from the ramified theory of types of
-Russell and Whitehead \cite{russell-whitehead-PM} and from the broader
-tradition of predicative analysis \cite{weyl1918,feferman1998}.
-
-Shoenfield's 1971 lecture \cite{shoenfield1971} reformulated forcing
-without the ramification: forcing conditions and $P$-names are
-defined by transfinite recursion on rank, and the forcing relation is
-defined by recursion on formula complexity, without explicit
-stratification by syntactic level. Shoenfield's presentation is
-mathematically equivalent to Cohen's --- the same generic extensions
-are produced --- but it is simpler, and it has become the standard
-modern presentation in textbooks \cite{kunen2011,jech2003}.
-Boolean-valued models, due to Scott and Solovay
-\cite{scott-solovay1967}, give yet another equivalent presentation.
-
-What is preserved across these reformulations is the underlying
-\emph{forcing relation} $p \Vdash \varphi$ together with its
-fundamental properties. What was eliminated --- the explicit ramified
-syntactic hierarchy --- is exactly what we will argue is \emph{not}
-eliminable in the step-indexed setting.
-
-\subsection{Topos-theoretic models of step-indexing}
-\label{sec:topos}
-
-The connection between step-indexing and category-theoretic
-constructions was made explicit by Birkedal, Møgelberg,
-Schwinghammer, and Støvring \cite{birkedal-et-al-2012} via the
-\emph{topos of trees}, the presheaf topos on the partially ordered
-set $(\omega, \le)$. They observed that step-indexed propositions are
-the propositions of the internal logic of this topos, and that the
-``later'' modality $\triangleright$ arises naturally as a particular
-endofunctor on objects of the topos. Their paper introduces
-\emph{synthetic guarded domain theory}, in which all of the
-step-indexed semantics is internalized: rather than indexing
-manually, one works in a type theory whose intrinsic semantics is
-the topos of trees.
-
-The presheaf-topos perspective makes precise much of what the early
-step-indexed literature handled informally. In particular, the
-monotonicity condition on step-indexed propositions corresponds
-exactly to the presheaf condition (functoriality), and the soundness
-of the Löb rule is the existence of a fixed point of the
-$\triangleright$ functor (the unique fixed point of $\triangleright X
-= F(X)$ for a contractive $F$, or equivalently the well-foundedness
-of $(\omega, <)$ as the index domain). Subsequent work has refined
-the categorical setting and used it to model more sophisticated
-languages \cite{bizjak-grathwohl-clouston-mogelberg-birkedal-2016}.
-
-The presheaf-topos perspective is implicitly a forcing-style
-semantics in the model-theoretic sense: a presheaf topos on
-$(P, \le)$ is exactly the topos of sheaves with respect to the
-trivial Grothendieck topology on $P$, and these are exactly the
-Kripke models of intuitionistic logic with worlds in $P$. The
-topos's truth value object plays the role of a Heyting algebra-valued
-``forcing'' truth value. To our knowledge, this connection has not
-been emphasized in the topos-of-trees literature, and the word
-``forcing'' has not been prominent in it. Our paper makes this
-terminological and conceptual connection explicit.
-
-\subsection{Forcing translations in type theory}
-\label{sec:jts}
-
-A parallel literature, originating in the constructive type theory
-community, develops syntactic \emph{forcing translations} of type
-theories. The seminal work here is Jaber, Tabareau, and Sozeau
-\cite{jaber-tabareau-sozeau-2012}, who give a forcing translation of
-the Calculus of Constructions: given a forcing notion (a poset
-$P$), they exhibit a syntactic translation that takes a CIC term
-$M : T$ to a forced term $M^P : T^P$, where the type translation
-$T \mapsto T^P$ corresponds to ``the forced version of $T$.'' For
-propositions, $T^P$ is a downward-closed predicate on $P$ ---
-exactly our \texttt{iProp} of Section~\ref{sec:prop}.
-
-This line was extended in \cite{jaber-et-al-2016} (the
-``definitional side of the forcing''), which gives a refined
-translation that preserves more of the computational structure of
-the original type theory. Coquand and collaborators have related
-work on constructive presentations of forcing in type-theoretic
-settings \cite{coquand-jaber2010}.
-
-The Jaber et al.\ translations are the type-theoretic version of
-ramified forcing for type theory: a parametric construction of a
-``forced universe'' that supports the same operations as the
-unforced one. Our Phase 4 abstract framework recovers the
-propositional fragment of this translation by direct construction in
-Rocq. The Phase 6 file makes the embedding precise via a constant
-embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that is a
-Heyting algebra homomorphism.
-
-What our work does not do --- and what the Jaber et al.\ line does
---- is give a translation of the \emph{full} type theory, including
-dependent types. A natural future direction is to formalize the
-restriction of the Jaber et al.\ translation to the propositional
-fragment in Rocq and check (mechanically) that it produces our
-\texttt{iProp} up to definitional equality.
-
-\subsection{Modal logic of provability and well-foundedness}
-\label{sec:gl}
-
-The Gödel--Löb provability logic \textsf{GL} is the modal logic
-characterized by the axiom $\Box(\Box \varphi \to \varphi) \to
-\Box \varphi$ (the ``Löb axiom''), together with the standard
-$\mathsf{K}$ axioms. Solovay's arithmetical completeness theorem
-\cite{solovay1976} establishes that \textsf{GL} is sound and complete
-for arithmetical interpretations of $\Box$ as ``it is provable in
-Peano Arithmetic that\ldots''. From the model-theoretic side,
-\textsf{GL} is sound and complete for the class of transitive
-Kripke frames whose accessibility relation $R$ is
-\emph{converse well-founded} (no infinite ascending chain
-$w_0 R w_1 R w_2 R \cdots$); see Smoryński \cite{smorynski1985} and
-Boolos \cite{boolos1993} for textbook treatments.
-
-The model theory of \textsf{GL} is directly relevant to our work.
-The ``later'' modality $\triangleright$ of step-indexed logic is
-formally exactly a \textsf{GL}-style provability $\Box$ once we
-identify the strict refinement order $\prec$ on conditions with the
-converse of the \textsf{GL} accessibility relation. Löb's rule of
-step-indexed logic is the Löb axiom of \textsf{GL}. The fact that
-$\triangleright$ requires well-foundedness for Löb's rule to hold
-is the dual of \textsf{GL}'s requirement that the accessibility
-relation be converse well-founded. Our Phase 5 result --- that Löb
-fails over $\mathbb{Z}$ --- is therefore a special case of (the
-converse of) the soundness of \textsf{GL} for converse-well-founded
-frames.
-
-What our paper adds to this picture is the observation that the
-familiar PL-style step-indexed logic, including its mechanizations
-in Iris and elsewhere, is in fact a propositional fragment of
-\textsf{GL} indexed over a particular kind of \textsf{GL}-frame
-(one with well-founded strict refinement). This connection is
-folklore in modal logic but, as far as we are aware, has not been
-made explicit or mechanized for the step-indexed Hoare logic
-setting.
-
-\subsection{Constructive modal logic and guarded recursion}
-
-A separate line of work, with substantial overlap with synthetic
-guarded domain theory, develops constructive modal logics for
-guarded recursion. Atkey and McBride \cite{atkey-mcbride2013} use
-the $\triangleright$ modality to characterize \emph{productive
-coprogramming}: a corecursive function is productive iff each
-recursive call sits under a $\triangleright$. Clouston, Bizjak,
-Grathwohl, and Birkedal
-\cite{clouston-et-al-2015,clouston-et-al-2017} develop guarded
-$\lambda$-calculi with $\triangleright$ as a primitive type former,
-supporting recursive types via a guarded fixed-point operator.
-Møgelberg and others \cite{mogelberg2014,bizjak-mogelberg-2018}
-extend these systems to dependent types and provide categorical
-semantics.
-
-This literature is closely allied with synthetic guarded domain
-theory: both treat $\triangleright$ as a built-in modal operator and
-exploit its compatibility with recursion. The work is structured
-mostly around \emph{computational} and \emph{type-theoretic}
-questions (``how do we type recursion productively?''), rather than
-\emph{semantic} questions (``what does the step-indexed semantics
-look like as a forcing construction?''). Our paper is complementary:
-we work on the semantic side, with the forcing reading as our
-organizing principle.
-
-\subsection{Predicativity and ramified hierarchies}
-
-The word ``ramified'' belongs to a tradition older than Cohen's
-forcing. Russell and Whitehead \cite{russell-whitehead-PM}
-introduced the ramified theory of types in \emph{Principia
-Mathematica} to resolve the set-theoretic paradoxes via a
-stratification of propositions by ``order,'' where a proposition of
-order $n$ may quantify only over propositions of order $< n$. The
-same idea animates Weyl's predicative analysis \cite{weyl1918}, in
-which the real numbers are constructed within an arithmetical
-hierarchy without appeal to impredicative set-theoretic principles.
-Feferman's program of \emph{predicativity given the natural numbers}
-\cite{feferman1998} develops this into a comprehensive foundation
-for substantial parts of classical mathematics.
-
-The thread connecting ramified type theory to ramified forcing is
-that both stratify quantification by a well-founded hierarchy, and
-both treat the hierarchy itself as part of the syntactic apparatus
-rather than as a meta-level convenience. Shoenfield's unramification
-of forcing showed that for forcing the stratification can be
-absorbed into a single recursion on rank; what we argue, by
-mechanizing step-indexed Hoare logic in higher-order settings, is
-that for step-indexing the analogous unramification \emph{cannot} be
-performed. The well-founded forcing notion is doing real work, not
-just structuring the proof.
-
-This connection also clarifies why the Iris-style internal logic
-``feels predicative'': step-indexed propositions are stratified by a
-well-founded hierarchy, and any recursive definition that does not
-respect the hierarchy --- by mediating recursion through a
-$\triangleright$ --- is rejected. The system is not just
-predicative in spirit; it is precisely a ramified predicative system
-in the technical sense.
-
-\subsection{Hoare logic and program verification}
-
-We omit a survey of classical Hoare logic and separation logic,
-referring the reader to standard sources
-\cite{hoare1969,ohearn-reynolds-yang-2001,brookes2007}. Two points
-are worth noting. First, our IMP development in
-Section~\ref{sec:imp} uses the plain (non-separation) version of
-Hoare logic, since separation machinery is not needed for the
-conceptual point we want to make about the \texttt{while} rule.
-Second, Cook's relative completeness theorem \cite{cook1978} for
-Hoare logic shows that the classical proof system is as complete as
-can be hoped given any reasonable specification language; our
-results are orthogonal to this --- we study how the soundness side
-is best organized, not the proof system.
-
-\subsection{The gap this paper fills}
-
-The summaries above suggest that almost every ingredient of our work
-is, individually, well-known to specialists in some adjacent
-community. The topos-of-trees perspective on step-indexing is
-familiar in synthetic guarded domain theory; the \textsf{GL} modal
-logic of provability is familiar to modal logicians; the
-ramified-forcing presentation of Cohen is familiar to set theorists;
-the JTS forcing translation is familiar to the type theory
-community; and the predicative reading of ramification is familiar
-to foundations researchers.
-
-What does \emph{not} appear in the literature, to our knowledge, is
-a single mechanized account of step-indexed Hoare logic that
-(i)~frames step-indexing explicitly as ramified forcing, making the
-connection to Cohen's original presentation precise rather than
-implicit in the topos-theoretic literature; (ii)~demonstrates that
-internal Löb is the load-bearing soundness tool for higher-order
-recursion by mechanizing both an IMP-style and a
-$\lambda$-calculus-with-\texttt{fix} Hoare logic and exhibiting
-both the meta-level and internal forms of the \texttt{while} rule's
-soundness proof; (iii)~generalizes the framework to abstract
-forcing notions parametrically, exhibiting at least one second
-instance and recovering the standard $(\omega, \le)$ instance;
-(iv)~proves the well-foundedness of the forcing notion is essential
-by an explicit counterexample over $\mathbb{Z}$ where the iProp
-constructions go through but Löb's rule fails; (v)~verifies the
-bridge to the JTS forcing translation by formalizing the constant
-embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ as a
-Heyting algebra homomorphism and identifying $\triangleright$ as the
-step-indexed-specific addition.
-
-The contribution is therefore not the introduction of any single
-new construction but the \emph{integration} of several existing
-threads into one mechanized account, plus the small new technical
-result of Section~\ref{sec:lob-essential} and the explicit
-comparison of Sections~\ref{sec:imp} and \ref{sec:lam} that
-diagnoses where internal Löb earns its keep.
+\input{sec-related-work}
 
 %% =====================================================================
-\section{Conclusion}
-\label{sec:conclusion}
-
-We have given a forcing-style semantics for step-indexed Hoare logic,
-mechanized in Rocq across the propositional layer, an IMP Hoare
-logic, and an untyped $\lambda$-calculus with general recursion. The
-forcing reading places the step-indexed technique in direct
-correspondence with Cohen's ramified forcing construction: the
-natural numbers are the forcing conditions, the later modality
-$\triangleright$ is the level-descent operator, and Löb's rule is
-well-founded induction on the forcing order, internalized into the
-logic.
-
-\paragraph{What we found.}
-Two observations stand out. First, in the first-order setting of
-IMP, the \texttt{while} rule admits two structurally identical
-soundness proofs: an outer induction on the step index, and an
-appeal to the internal Löb rule. The two proofs have the same
-content because at the meta level, Löb's rule \emph{is} induction on
-the step index. Mechanizing both side by side, as we do, makes the
-equivalence concrete rather than analogical.
-
-Second, in the higher-order setting of the untyped $\lambda$-calculus
-with \texttt{fix}, the analogous soundness proof has a different
-shape. The soundness predicate for a recursive function is itself
-defined in terms of the function being verified, and unrolling this
-self-reference at the meta level produces a non-trivial induction
-that does not arise from the program's step count alone. The natural
-proof, which we mechanize, invokes the internal Löb rule directly:
-``show that under the assumption $\triangleright \varphi$ we have
-$\varphi$, then conclude $\varphi$ by Löb.'' No meta-level induction
-on a step count is needed. This is, in our opinion, the simplest
-diagnostic for the slogan that \emph{Löb is what makes step-indexed
-Hoare logic work for higher-order recursion}.
-
-\paragraph{Three further observations.}
-The abstract framework of Section~\ref{sec:abstract} makes precise
-that the choice of $\omega$ as the step-index domain is a
-\emph{computational} convenience rather than a foundational one. Any
-well-founded forcing notion supports the same internal logic, with
-$\triangleright$ defined uniformly as ``forces at every strict
-predecessor'' and Löb derived by well-founded induction. We exhibit
-the pointwise product $\omega \times \omega$ as a second instance, but
-the framework is generic.
-
-Section~\ref{sec:lob-essential} shows that the well-foundedness
-cannot be dropped: we construct a non-well-founded forcing notion
-over $\mathbb{Z}$ in which Löb's rule fails. This is a special case
-of the model theory of \textsf{GL}, but the statement for step-indexed
-Hoare logic does not, as far as we are aware, appear in the
-verification literature. The claim has methodological weight:
-step-indexed Hoare logic is not just ``Hoare logic with a step
-counter''; it requires a well-founded forcing notion to be sound at
-all.
-
-Section~\ref{sec:bridge} verifies that the iProp framework is the
-propositional fragment of the Jaber--Tabareau--Sozeau forcing
-translation of CIC, via a constant embedding
-$\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that we prove to be a
-Heyting algebra homomorphism. The $\triangleright$ modality is the
-genuinely new content of iProp over the embedded image, and arises
-uniformly from the well-founded strict refinement on conditions.
-
-\paragraph{Limitations.}
-The Hoare logic for the $\lambda$-calculus in
-Section~\ref{sec:lam} is, at present, restricted to partial
-correctness against a single specification predicate $S$ that
-serves as both pre- and post-condition. The fix soundness rule
-\texttt{wp\_fix} (Section~\ref{sec:lam}) accordingly handles only
-this case. A more general rule with distinct pre/post-conditions, a
-rule for fix at higher types, and an integration with separation
-logic on a heap are all natural directions but lie outside the
-present development.
-
-The bridge to JTS forcing translations of Section~\ref{sec:bridge}
-formalizes only the constant embedding. A full mechanization of the
-type-level translation, against an explicit forcing structure and
-with the propositional rules verified to match our \texttt{iProp},
-is the natural next step.
-
-The abstract framework of Section~\ref{sec:abstract} parametrizes the
-propositional layer over arbitrary well-founded forcing structures,
-but the IMP and $\lambda$-calculus developments of
-Sections~\ref{sec:imp}--\ref{sec:lam} are presented at the specific
-$(\omega, \le)$ instance for clarity. Lifting them to be parametric
-in the forcing structure is straightforward and not done here.
-
-\paragraph{Future directions.}
-Several extensions suggest themselves.
-
-\begin{itemize}
-
-\item \emph{Mechanizing the full JTS translation} (or a useful
-fragment) and verifying that its propositional fragment coincides
-definitionally with our \texttt{iProp} at the corresponding forcing
-structure. This would convert the heuristic correspondence of
-Section~\ref{sec:bridge} into a theorem.
-
-\item \emph{Step-indexing over richer forcing structures} ---
-transfinite ordinals (cf.\ Transfinite Iris
-\cite{spies2021transfinite}), branching conditions for genuinely
-concurrent step counters, or mixed structures combining several
-step-index dimensions. The abstract framework already supports these
-in principle; the work is to exhibit non-trivial verifications at
-the new instances.
-
-\item \emph{Lifting the Hoare-logic developments to the abstract
-framework}, so that IMP and the $\lambda$-calculus admit
-verifications parametric in the forcing structure. This is
-straightforward but bookkeeping-heavy; it would make the parametric
-story of Section~\ref{sec:abstract} the primary presentation rather
-than an afterthought.
-
-\item \emph{An integration with separation logic} along the lines
-of Iris, lifting the forcing reading from the propositional logic
-to the resource-aware extension. This is a substantial undertaking
-but would let the forcing perspective speak directly to
-state-of-the-art verification.
-
-\end{itemize}
-
-The broader point we hope the paper makes is that step-indexed
-reasoning, viewed as a forcing construction, sits at the
-intersection of three research traditions that do not usually talk
-to each other: set-theoretic forcing, modal logic of provability,
-and step-indexed semantics for verification. Each tradition contains
-piece-of-the-picture insights that the other two could profit from.
-The mechanization that accompanies this paper is intended both as
-evidence for the technical claims and as a starting point for
-others wishing to explore the intersection further.
+\input{sec-conclusion}
 
 %% =====================================================================
 \bibliographystyle{ACM-Reference-Format}

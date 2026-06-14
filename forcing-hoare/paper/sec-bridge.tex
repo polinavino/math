@@ -1,0 +1,143 @@
+\section{Bridge to Forcing Translations}
+\label{sec:bridge}
+
+A parallel literature, alongside the topos-of-trees account of
+step-indexing surveyed in Section~\ref{sec:topos}, develops
+\emph{syntactic} forcing translations of type theories.  Jaber,
+Tabareau, and Sozeau \cite{jaber-tabareau-sozeau-2012} give a forcing
+translation of the Calculus of Constructions: for any forcing notion
+$P$, they produce a syntactic translation that takes a CIC term
+$M : T$ to a forced term $M^P : T^P$, where the type translation
+$T \mapsto T^P$ corresponds to ``the $P$-forced version of $T$''.  At
+the level of propositions, the forced version of $\mathsf{Prop}$ is
+essentially a downward-closed presheaf on the forcing conditions
+\cite{jaber-et-al-2016} --- which is the type of our $\mathtt{iProp}$.
+
+The framework of Section~\ref{sec:abstract} is therefore, up to
+definitional choices, the propositional fragment of the JTS forcing
+translation of CIC, instantiated at an arbitrary forcing structure.
+This identification is conceptually clean but not formally
+mechanized, because we have not formalized the type-level JTS
+translation in Rocq.  What we have mechanized is the
+\emph{embedding} of the unforced theory ($\mathsf{Prop}$ in the
+ambient meta-theory) into the forced one ($\mathtt{iProp}$ in our
+framework): the constant embedding.  This is the easy half of the
+correspondence; it makes precise what the forcing translation does to
+a meta-level proposition that is to be lifted into the forced logic
+unchanged.
+
+\paragraph{The constant embedding.}
+The embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ sends a
+meta-level proposition $P$ to the iProp that is forced everywhere if
+$P$ is true and forced nowhere if $P$ is false.  Either way it is
+trivially downward-closed in the forcing order, since it does not
+depend on the condition:
+
+\begin{lstlisting}
+Definition embed (P : Prop) : iProp :=
+  MkProp (fun _ => P) (embed_mono P).
+
+Notation "⌜ P ⌝" := (embed P).
+\end{lstlisting}
+
+\noindent
+This is the trivial part of the forcing translation: classical
+propositional reasoning lifts to the forcing framework without
+change.  We will see in a moment that the genuinely new content of
+the forcing translation --- the $\triangleright$ modality --- is
+\emph{not} in the image of $\lceil \cdot \rceil$.
+
+\paragraph{Commutation with the Heyting connectives.}
+The embedding is a Heyting algebra homomorphism: it commutes with
+each of $\top$, $\bot$, $\wedge$, $\vee$, $\to$ in both directions of
+entailment.  The proofs are short and structural:
+
+\begin{lstlisting}
+Lemma embed_True_l : ⌜ True ⌝ ⊢ iTrue.
+Lemma embed_True_r : iTrue ⊢ ⌜ True ⌝.
+Lemma embed_False_l : ⌜ False ⌝ ⊢ iFalse.
+Lemma embed_False_r : iFalse ⊢ ⌜ False ⌝.
+Lemma embed_and_intro P Q : ⌜ P /\ Q ⌝ ⊢ ⌜ P ⌝ ∧ ⌜ Q ⌝.
+Lemma embed_and_elim P Q : ⌜ P ⌝ ∧ ⌜ Q ⌝ ⊢ ⌜ P /\ Q ⌝.
+Lemma embed_or_intro P Q : ⌜ P \/ Q ⌝ ⊢ ⌜ P ⌝ ∨ ⌜ Q ⌝.
+Lemma embed_or_elim P Q : ⌜ P ⌝ ∨ ⌜ Q ⌝ ⊢ ⌜ P \/ Q ⌝.
+Lemma embed_impl_intro P Q : ⌜ P -> Q ⌝ ⊢ (⌜ P ⌝ → ⌜ Q ⌝).
+Lemma embed_impl_elim P Q : (⌜ P ⌝ → ⌜ Q ⌝) ⊢ ⌜ P -> Q ⌝.
+\end{lstlisting}
+
+\noindent
+The most interesting case is the implication direction
+$(\lceil P \rceil \to \lceil Q \rceil) \vdash \lceil P \to Q \rceil$,
+where the Kripke implication of $\to$ has to be discharged by an
+appeal to the reflexive case ``$n \le n$''.  Given an inhabitant of
+the Kripke implication at depth $n$, we apply it at $n$ itself, with
+the witness of $n \le n$ given by \texttt{Nat.le\_refl}, and obtain
+the meta-level implication.  The other cases are direct unfoldings
+of the connectives' Kripke definitions.
+
+\paragraph{Why this matters.}
+Each commutation lemma corresponds to a clause of the propositional
+fragment of the JTS forcing translation.  Specifically, the
+translation $\llbracket P \rrbracket^P$ at the level of propositions
+commutes with the standard connectives in exactly the way our
+$\lceil \cdot \rceil$ does --- a translated conjunction is the
+conjunction of translations, and so on \cite{jaber-tabareau-sozeau-2012}.
+Our framework therefore captures the propositional fragment of the
+translation.  What we do not formalize is the dependent fragment, in
+which the translation acts non-trivially on universally quantified
+types and on the universes themselves.  That is the part of the
+correspondence which would, if mechanized, turn the present
+informal-correspondence claim into a definitional-equality theorem.
+
+\paragraph{The later modality is new content.}
+The constant embedding is not surjective.  In particular, its image
+is not closed under $\triangleright$: there is a meta-level
+proposition $P$ such that $\triangleright \lceil P \rceil$ is not
+entailment-equivalent to $\lceil P \rceil$.  We exhibit the
+witness:
+
+\begin{lstlisting}
+Lemma embed_later_distinct :
+  ~ (▷ ⌜ False ⌝ ⊢ ⌜ False ⌝).
+Proof.
+  intros H. apply (H 0). simpl. trivial.
+Qed.
+\end{lstlisting}
+
+\noindent
+At depth $0$, $\triangleright \lceil \mathrm{False} \rceil$ is
+vacuously \texttt{True}, whereas $\lceil \mathrm{False} \rceil$ at
+depth $0$ is the constant \texttt{False}.  The entailment from one to
+the other therefore fails at depth $0$, which is exactly the
+witness that $\triangleright$ produces a proposition outside the
+embedded image.
+
+This makes precise what the step-indexed-specific content of our
+framework is.  The Heyting algebra structure of $\mathtt{iProp}$ ---
+all the way through $\top, \bot, \wedge, \vee, \to$ --- is
+captured by the embedded image of $\mathsf{Prop}$.  What the
+step-indexed framework adds is the $\triangleright$ modality, and
+the rules that come with it (monotonicity, $\varphi \vdash
+\triangleright \varphi$, distribution over $\wedge$, and Löb's
+rule).  In the JTS picture, this is the structure that comes from
+the forcing notion specifically, rather than from the structural
+machinery of the type theory; in our picture, it is the structure
+that comes from the well-founded strict refinement of the forcing
+conditions, rather than from the constant embedding.
+
+\paragraph{A summary correspondence.}
+The picture that emerges is this.  Step-indexed Hoare logic, as
+practiced in Iris and elsewhere, has two layers of structure: a
+Heyting-algebra fragment, which lifts from the meta-theory by a
+constant embedding and which therefore has no forcing-specific
+content; and a modal fragment ($\triangleright$, $\mathtt{iLob}$,
+the rules around them), which is specifically the structure that the
+well-founded forcing notion contributes.  The JTS forcing
+translation is the type-theoretic analog of this picture: for any
+forcing notion $P$, it gives a translation of CIC that adds
+$P$-specific structure to the embedded image of the unforced
+theory.  At the level of propositions, the correspondence we
+formalize is the constant embedding; a full correspondence at all
+levels of the universe would require mechanizing the JTS
+translation itself, which we leave as future work.
+
