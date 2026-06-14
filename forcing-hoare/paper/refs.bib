@@ -1,18 +1,6 @@
-@book{cohen1966,
-  author = {Paul J. Cohen},
-  title = {Set Theory and the Continuum Hypothesis},
-  publisher = {W. A. Benjamin},
-  year = {1966}
-}
-
-@article{shoenfield1971,
-  author = {Joseph R. Shoenfield},
-  title = {Unramified Forcing},
-  journal = {Axiomatic Set Theory, Proc. Symp. Pure Math.},
-  volume = {13},
-  pages = {357--381},
-  year = {1971}
-}
+% ===========================================================
+% Step-indexing in PL semantics
+% ===========================================================
 
 @article{appel-mcallester2001,
   author = {Andrew W. Appel and David A. McAllester},
@@ -31,15 +19,25 @@
   year = {2004}
 }
 
-@article{birkedal-et-al-2012,
-  author = {Lars Birkedal and Rasmus Ejlers M{\o}gelberg and
-            Jan Schwinghammer and Kristian St{\o}vring},
-  title = {First Steps in Synthetic Guarded Domain Theory: Step-Indexing
-           in the Topos of Trees},
-  journal = {Logical Methods in Computer Science},
-  volume = {8},
-  number = {4},
-  year = {2012}
+@article{appel-melham-mcallester2007,
+  author = {Andrew W. Appel and Paul-Andr{\'e} Melli{\`e}s and
+            Christopher D. Richards and Jerome Vouillon},
+  title = {A Very Modal Model of a Modern, Major, General Type System},
+  journal = {ACM SIGPLAN Notices (POPL)},
+  volume = {42},
+  number = {1},
+  pages = {109--122},
+  year = {2007},
+  note = {Often referred to as ``the very-modal model''; introduces $\triangleright$ for step-indexed logical relations.}
+}
+
+@inproceedings{birkedal-et-al-2011-stepindexed,
+  author = {Lars Birkedal and Bernhard Reus and Jan Schwinghammer and
+            Kristian St{\o}vring and Jacob Thamsborg and Hongseok Yang},
+  title = {Step-Indexed Kripke Models over Recursive Worlds},
+  booktitle = {POPL},
+  pages = {119--132},
+  year = {2011}
 }
 
 @article{jung-et-al-2018,
@@ -52,10 +50,127 @@
   year = {2018}
 }
 
+@inproceedings{krebbers-jung-bizjak-birkedal-dreyer-2017,
+  author = {Robbert Krebbers and Ralf Jung and Ale{\v{s}} Bizjak and
+            Jacques-Henri Jourdan and Derek Dreyer and Lars Birkedal},
+  title = {The Essence of Higher-Order Concurrent Separation Logic},
+  booktitle = {ESOP},
+  pages = {696--723},
+  year = {2017}
+}
+
+@book{appel2014vst,
+  author = {Andrew W. Appel and others},
+  title = {Program Logics for Certified Compilers},
+  publisher = {Cambridge University Press},
+  year = {2014},
+  note = {The VST (Verified Software Toolchain) framework.}
+}
+
+@article{spies2021transfinite,
+  author = {Simon Spies and Niklas M{\"u}ck and Hoang-Hai Dang and
+            Manuel Rigger and Michael Sammler and Joseph Tassarotti and
+            Robbert Krebbers and Derek Dreyer},
+  title = {Transfinite {I}ris: Resolving an Existential Dilemma of Step-Indexed Separation Logic},
+  journal = {PLDI},
+  year = {2021},
+  note = {Extends Iris with transfinite step indices.}
+}
+
+% ===========================================================
+% Forcing in set theory
+% ===========================================================
+
+@article{cohen1963-independence-i,
+  author = {Paul J. Cohen},
+  title = {The Independence of the Continuum Hypothesis},
+  journal = {Proc. National Academy of Sciences},
+  volume = {50},
+  pages = {1143--1148},
+  year = {1963}
+}
+
+@article{cohen1963-independence-ii,
+  author = {Paul J. Cohen},
+  title = {The Independence of the Continuum Hypothesis, {II}},
+  journal = {Proc. National Academy of Sciences},
+  volume = {51},
+  pages = {105--110},
+  year = {1964}
+}
+
+@book{cohen1966,
+  author = {Paul J. Cohen},
+  title = {Set Theory and the Continuum Hypothesis},
+  publisher = {W. A. Benjamin},
+  year = {1966}
+}
+
+@article{shoenfield1971,
+  author = {Joseph R. Shoenfield},
+  title = {Unramified Forcing},
+  journal = {Axiomatic Set Theory, Proc. Symp. Pure Math.},
+  volume = {13},
+  pages = {357--381},
+  year = {1971}
+}
+
+@inproceedings{scott-solovay1967,
+  author = {Dana Scott and Robert M. Solovay},
+  title = {Boolean-Valued Models for Set Theory},
+  booktitle = {Proc. American Math. Soc. Summer Inst. on Axiomatic Set Theory},
+  year = {1967},
+  note = {Unpublished; Boolean-valued model presentation of forcing.}
+}
+
+@book{kunen2011,
+  author = {Kenneth Kunen},
+  title = {Set Theory},
+  publisher = {College Publications},
+  year = {2011}
+}
+
+@book{jech2003,
+  author = {Thomas Jech},
+  title = {Set Theory},
+  edition = {3rd},
+  publisher = {Springer},
+  year = {2003}
+}
+
+% ===========================================================
+% Topos of trees and synthetic guarded domain theory
+% ===========================================================
+
+@article{birkedal-et-al-2012,
+  author = {Lars Birkedal and Rasmus Ejlers M{\o}gelberg and
+            Jan Schwinghammer and Kristian St{\o}vring},
+  title = {First Steps in Synthetic Guarded Domain Theory: Step-Indexing
+           in the Topos of Trees},
+  journal = {Logical Methods in Computer Science},
+  volume = {8},
+  number = {4},
+  year = {2012}
+}
+
+@inproceedings{bizjak-grathwohl-clouston-mogelberg-birkedal-2016,
+  author = {Ale{\v{s}} Bizjak and Hans Bugge Grathwohl and Ranald Clouston
+            and Rasmus Ejlers M{\o}gelberg and Lars Birkedal},
+  title = {Guarded Dependent Type Theory With Coinductive Types},
+  booktitle = {FoSSaCS},
+  pages = {20--35},
+  year = {2016}
+}
+
+% ===========================================================
+% Forcing translations in type theory
+% ===========================================================
+
 @inproceedings{jaber-tabareau-sozeau-2012,
   author = {Guilhem Jaber and Nicolas Tabareau and Matthieu Sozeau},
   title = {Extending Type Theory With Forcing},
   booktitle = {LICS},
+  pages = {395--404},
   year = {2012}
 }
 
@@ -64,8 +179,122 @@
             and Matthieu Sozeau and Nicolas Tabareau},
   title = {The Definitional Side of the Forcing},
   booktitle = {LICS},
+  pages = {367--376},
   year = {2016}
 }
+
+@article{coquand-jaber2010,
+  author = {Thierry Coquand and Guilhem Jaber},
+  title = {A Note on Forcing and Type Theory},
+  journal = {Fundamenta Informaticae},
+  volume = {100},
+  pages = {43--52},
+  year = {2010}
+}
+
+% ===========================================================
+% Modal logic of provability and well-foundedness
+% ===========================================================
+
+@article{solovay1976,
+  author = {Robert M. Solovay},
+  title = {Provability Interpretations of Modal Logic},
+  journal = {Israel J. Math.},
+  volume = {25},
+  pages = {287--304},
+  year = {1976}
+}
+
+@book{smorynski1985,
+  author = {Craig Smory{\'n}ski},
+  title = {Self-Reference and Modal Logic},
+  publisher = {Springer},
+  year = {1985}
+}
+
+@book{boolos1993,
+  author = {George S. Boolos},
+  title = {The Logic of Provability},
+  publisher = {Cambridge University Press},
+  year = {1993}
+}
+
+% ===========================================================
+% Constructive modal logic and guarded recursion
+% ===========================================================
+
+@inproceedings{atkey-mcbride2013,
+  author = {Robert Atkey and Conor McBride},
+  title = {Productive Coprogramming With Guarded Recursion},
+  booktitle = {ICFP},
+  pages = {197--208},
+  year = {2013}
+}
+
+@inproceedings{clouston-et-al-2015,
+  author = {Ranald Clouston and Ale{\v{s}} Bizjak and
+            Hans Bugge Grathwohl and Lars Birkedal},
+  title = {Programming and Reasoning With Guarded Recursion for Coinductive Types},
+  booktitle = {FoSSaCS},
+  pages = {407--421},
+  year = {2015}
+}
+
+@article{clouston-et-al-2017,
+  author = {Ranald Clouston and Ale{\v{s}} Bizjak and
+            Hans Bugge Grathwohl and Lars Birkedal},
+  title = {The Guarded Lambda-Calculus: Programming and Reasoning With
+           Guarded Recursion for Coinductive Types},
+  journal = {Logical Methods in Computer Science},
+  volume = {12},
+  number = {3},
+  year = {2017}
+}
+
+@inproceedings{mogelberg2014,
+  author = {Rasmus Ejlers M{\o}gelberg},
+  title = {A Type Theory for Productive Coprogramming Via Guarded Recursion},
+  booktitle = {CSL-LICS},
+  year = {2014}
+}
+
+@inproceedings{bizjak-mogelberg-2018,
+  author = {Ale{\v{s}} Bizjak and Rasmus Ejlers M{\o}gelberg},
+  title = {Denotational Semantics for Guarded Dependent Type Theory},
+  booktitle = {FoSSaCS},
+  year = {2018}
+}
+
+% ===========================================================
+% Predicativity and ramified hierarchies
+% ===========================================================
+
+@book{russell-whitehead-PM,
+  author = {Bertrand Russell and Alfred N. Whitehead},
+  title = {Principia Mathematica},
+  publisher = {Cambridge University Press},
+  year = {1910--1913}
+}
+
+@book{weyl1918,
+  author = {Hermann Weyl},
+  title = {Das Kontinuum},
+  publisher = {Veit},
+  address = {Leipzig},
+  year = {1918},
+  note = {Translated as ``The Continuum: A Critical Examination of the Foundation of Analysis,'' Dover, 1994.}
+}
+
+@book{feferman1998,
+  author = {Solomon Feferman},
+  title = {In the Light of Logic},
+  publisher = {Oxford University Press},
+  year = {1998}
+}
+
+% ===========================================================
+% Hoare logic and program verification
+% ===========================================================
 
 @article{hoare1969,
   author = {C. A. R. Hoare},
@@ -77,16 +306,29 @@
   year = {1969}
 }
 
-@book{russell-whitehead-PM,
-  author = {Bertrand Russell and Alfred N. Whitehead},
-  title = {Principia Mathematica},
-  publisher = {Cambridge University Press},
-  year = {1910--1913}
+@article{ohearn-reynolds-yang-2001,
+  author = {Peter W. O'Hearn and John C. Reynolds and Hongseok Yang},
+  title = {Local Reasoning About Programs That Alter Data Structures},
+  journal = {CSL},
+  year = {2001}
 }
 
-@book{feferman1998,
-  author = {Solomon Feferman},
-  title = {In the Light of Logic},
-  publisher = {Oxford University Press},
-  year = {1998}
+@article{brookes2007,
+  author = {Stephen Brookes},
+  title = {A Semantics for Concurrent Separation Logic},
+  journal = {Theoretical Computer Science},
+  volume = {375},
+  number = {1--3},
+  pages = {227--270},
+  year = {2007}
+}
+
+@article{cook1978,
+  author = {Stephen A. Cook},
+  title = {Soundness and Completeness of an Axiom System for Program Verification},
+  journal = {SIAM Journal on Computing},
+  volume = {7},
+  number = {1},
+  pages = {70--90},
+  year = {1978}
 }
