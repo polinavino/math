@@ -150,6 +150,30 @@ amount of recursion at the meta level: it has to be a property of
 the conditions themselves.  The well-foundedness is constitutive of
 the modal logic and not eliminable.
 
+\paragraph{What this means for someone designing a step-indexed
+logic.}
+The choice of step-index domain is the choice that decides whether
+Löb's rule will be available.  Any attempt to build a step-indexed
+semantics on a non-well-founded index structure --- as one might be
+tempted to do for, say, integer-offset reasoning, signed step
+counters that can decrement past zero, bidirectional approximation
+indices, or any setting where the index is allowed to descend
+without bound --- will produce all of the iProp connectives without
+issue, including a perfectly well-typed $\triangleright$ modality
+and a derivable monotonicity rule for it.  The first thing that will
+break is Löb's rule, in exactly the way Section~\ref{sec:lob-essential}
+shows: the premise $(\triangleright \bot) \to \bot$ becomes valid
+vacuously, while $\bot$ stays unforced.  Every soundness proof in
+the framework that secretly depends on Löb's rule --- which, by the
+diagnostic of Section~\ref{sec:imp-vs-lam}, is every soundness proof
+whose predicate is recursive in the program --- silently relies on a
+rule that does not in fact hold.  A practitioner who wants
+unsigned-integer offsets, ordinal step indices, or any other
+non-standard index structure has to first verify that the structure
+is well-founded; otherwise the framework will look like it works
+but its soundness proofs for higher-order recursion will be
+incorrect.
+
 The classical literature contains the corresponding result for
 \textsf{GL}: the soundness of Löb's axiom for converse-well-founded
 Kripke frames is folklore in modal logic, and Solovay's arithmetical

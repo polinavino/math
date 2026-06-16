@@ -71,12 +71,16 @@ We can state this as a working slogan:
 \textbf{If the soundness predicate is itself recursive in the
 program} --- if its definition at one depth refers to its definition
 for the same program at a lower depth --- then internal Löb is the
-natural soundness tool, and a meta-level induction on the step index
-fights the structure of the predicate.  If the soundness predicate
-is only recursive in the depth, an outer induction is interchangeable
-with Löb and either is cheap.
+\emph{natural} soundness tool: it has the recursive obligation built
+into its conclusion, and discharging it requires no machinery beyond
+the rule itself.  Meta-level induction on the step index remains
+\emph{available} --- it does not become impossible --- but it has to
+manufacture the recursive reasoning from outside the predicate it is
+proving, instead of finding it already inside.  If the soundness
+predicate is only recursive in the depth, an outer induction is
+interchangeable with Löb and either is cheap.
 \end{quote}
-\noindent
+The claim is a structural-naturalness one, not an impossibility one.
 The IMP \texttt{wp\_at}, \texttt{hoare}, and \texttt{while} fall on
 the easy side of this diagnostic.  The
 $\lambda$-calculus \texttt{recursive\_spec} for \texttt{EFix body}
