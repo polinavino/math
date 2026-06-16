@@ -77,10 +77,11 @@ is only recursive in the depth, an outer induction is interchangeable
 with Löb and either is cheap.
 \end{quote}
 \noindent
-The IMP \texttt{wp\_at}, $\mathtt{hoare}$, and \texttt{while} fall on
-the easy side of the diagnostic.  The recursive-spec
-$\mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ falls on the
-hard side, and Löb earns its keep there.
+The IMP \texttt{wp\_at}, \texttt{hoare}, and \texttt{while} fall on
+the easy side of this diagnostic.  The
+$\lambda$-calculus \texttt{recursive\_spec} for \texttt{EFix body}
+with predicate $S$ falls on the hard side, and Löb earns its keep
+there.
 
 \paragraph{What this says about step-indexed Hoare logic.}
 In the verification literature, Löb's rule is sometimes presented as

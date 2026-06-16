@@ -100,6 +100,21 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
+% Allow TeX more flexibility in line breaking to fix overfull \hbox
+% caused by long Coq identifiers and inline math.
+\emergencystretch=3em
+\hyphenation{
+  Forc-ing-Struct-ure
+  wp-at-post-mono wp-at-mono wp-at-S wp-pure-step wp-pure-step-at
+  hoare-while hoare-while-i-Lob hoare-valid hoare-valid-alt hoare-skip
+  hoare-assign hoare-seq hoare-if hoare-conse-quence
+  re-cur-sive-spec re-cur-sive-id step-fix-det step-fix-progress
+  not-value-app-fix wp-value wp-fix wp-seq i-Prop i-Prop-Z
+  i-La-ter i-Im-pl i-And i-Or i-True i-False i-Lob
+  i-en-tails-trans i-en-tails-re-fl
+  prod-FS nat-FS lt-pair-wf well-founded-ind well-founded-lt-compat
+}
+
 \begin{document}
 
 \title{Step-Indexed Hoare Logic as Ramified Forcing}
