@@ -120,3 +120,55 @@ Proof.
   - (* The internal Löb rule closes the gap. *)
     apply iLob.
 Qed.
+
+(** ** Generalised soundness rule: distinct pre- and postconditions
+
+    The [recursive_spec] above is the specialisation of a more general
+    recursive-spec shape to the case where the precondition on the
+    argument and the postcondition on the result coincide.  In a
+    standard Hoare-triple setting, one wants a precondition [P] on the
+    argument and a postcondition [Q] on the result, with the two
+    distinct.  We give that generalisation here and prove the
+    corresponding fix-point soundness rule by exactly the same
+    Löb-based argument as [wp_fix]. *)
+
+Lemma recursive_spec_pp_mono (e : expr) (P Q : expr -> Prop) :
+  forall n m, m <= n ->
+    (forall v, value v -> P v -> wp_at n (EApp e v) Q) ->
+    (forall v, value v -> P v -> wp_at m (EApp e v) Q).
+Proof.
+  intros n m Hle H v Hval HP. eapply wp_at_mono; eauto.
+Qed.
+
+Definition recursive_spec_pp (e : expr) (P Q : expr -> Prop) : iProp :=
+  MkProp (fun n => forall v, value v -> P v -> wp_at n (EApp e v) Q)
+         (recursive_spec_pp_mono e P Q).
+
+Theorem wp_fix_pp (body : expr) (P Q : expr -> Prop) :
+  (forall e_self,
+     value e_self ->
+     recursive_spec_pp e_self P Q
+       ⊢ recursive_spec_pp (subst e_self body) P Q) ->
+  ⊤ ⊢ recursive_spec_pp (EFix body) P Q.
+Proof.
+  intros Hbody.
+  apply ientails_trans with
+    (iLater (recursive_spec_pp (EFix body) P Q)
+       → recursive_spec_pp (EFix body) P Q).
+  - intros n _ m Hmn Hlater.
+    destruct m as [|m'].
+    + intros v Hvalue HP. simpl. trivial.
+    + simpl in Hlater. intros v Hvalue HP.
+      apply (wp_pure_step_at m' (EApp (EFix body) v)
+                                (EApp (subst (EFix body) body) v) Q).
+      * apply not_value_app_fix.
+      * apply step_fix_progress; exact Hvalue.
+      * intros e' Hs. apply step_fix_det; auto.
+      * apply (Hbody (EFix body) (VFix body) m' Hlater v Hvalue HP).
+  - apply iLob.
+Qed.
+
+(** The original [wp_fix] is a corollary of [wp_fix_pp] specialised
+    to [P = Q = S].  We keep the dedicated proof of [wp_fix] above
+    for its pedagogical clarity (the more focused statement is what
+    we use in the worked examples of Phase 3d). *)

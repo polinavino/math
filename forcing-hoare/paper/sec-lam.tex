@@ -211,6 +211,34 @@ being verified, and so the natural soundness proof must invoke
 induction we would have to manufacture that recursion from outside;
 the internal Löb rule has it built in.
 
+\paragraph{Distinct pre- and postconditions.}
+The single-predicate \texttt{recursive\_spec} is the cleanest shape
+for stating the diagnostic of Section~\ref{sec:imp-vs-lam}, but it is
+not the most general one.  In a standard Hoare-triple setting one
+wants a precondition $P$ on the argument and a postcondition $Q$ on
+the result, with the two distinct.  The mechanization includes the
+generalised form:
+\begin{lstlisting}
+Definition recursive_spec_pp (e : expr) (P Q : expr -> Prop) : iProp :=
+  MkProp (fun n => forall v, value v -> P v -> wp_at n (EApp e v) Q)
+         (recursive_spec_pp_mono e P Q).
+
+Theorem wp_fix_pp body P Q :
+  (forall e_self, value e_self ->
+     recursive_spec_pp e_self P Q ⊢
+       recursive_spec_pp (subst e_self body) P Q) ->
+  ⊤ ⊢ recursive_spec_pp (EFix body) P Q.
+\end{lstlisting}
+The proof of \texttt{wp\_fix\_pp} is structurally identical to the
+proof of \texttt{wp\_fix}: the same factoring through
+$\triangleright \varphi \to \varphi$ for the corresponding $\varphi$,
+the same \texttt{wp\_pure\_step\_at} for the fix-unfolding step, the
+same closing \texttt{apply iLob}.  The locus argument of
+Section~\ref{sec:imp-vs-lam} carries over without change.  The
+single-predicate form is what we use in the worked examples below,
+because it makes the verifications shortest; the generalised form is
+the one to reach for in actual program verification.
+
 \paragraph{Worked examples.}
 We close the section with two short verifications that exercise
 the framework end-to-end.  The first is a fix-based identity ---

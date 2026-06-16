@@ -58,30 +58,40 @@ step-indexed Hoare logic is not just ``Hoare logic with a step
 counter''; it requires a well-founded forcing notion to be sound at
 all.
 
-Section~\ref{sec:bridge} verifies that the iProp framework is the
-propositional fragment of the Jaber--Tabareau--Sozeau forcing
-translation of CIC, via a constant embedding
-$\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that we prove to be a
-Heyting algebra homomorphism. The $\triangleright$ modality is the
-genuinely new content of iProp over the embedded image, and arises
-uniformly from the well-founded strict refinement on conditions.
+Section~\ref{sec:bridge} formalizes the embedding of meta-level
+$\mathsf{Prop}$ into the propositional fragment of the
+Jaber--Tabareau--Sozeau forcing translation of CIC, via a constant
+embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that we prove
+to be a Heyting algebra homomorphism. The $\triangleright$ modality
+is the genuinely new content of iProp over the embedded image, and
+arises uniformly from the well-founded strict refinement on
+conditions.
 
 \paragraph{Limitations.}
-The Hoare logic for the $\lambda$-calculus in
-Section~\ref{sec:lam} is, at present, restricted to partial
-correctness against a single specification predicate $S$ that
-serves as both pre- and post-condition. The fix soundness rule
-\texttt{wp\_fix} (Section~\ref{sec:lam}) accordingly handles only
-this case. A more general rule with distinct pre/post-conditions, a
-rule for fix at higher types, and an integration with separation
-logic on a heap are all natural directions but lie outside the
-present development.
+We work at the level of plain Hoare triples and a partial-correctness
+wp predicate.  We do not develop a separation logic, do not model a
+heap, and do not address concurrency.  The forcing reading we
+present therefore applies to the soundness machinery of step-indexed
+Hoare logic at the level abstracted by the abstract framework of
+Section~\ref{sec:abstract}; whether it scales gracefully to
+Iris-style separation logic, resource state, invariants, and
+concurrent step counters is an open question that this paper does
+not answer.  Our contribution is the diagnostic and the negative
+result above, not the Iris-scale framework.
 
-The bridge to JTS forcing translations of Section~\ref{sec:bridge}
-formalizes only the constant embedding. A full mechanization of the
-type-level translation, against an explicit forcing structure and
-with the propositional rules verified to match our \texttt{iProp},
-is the natural next step.
+The fix soundness rule has been mechanized in both single-predicate
+form (\texttt{wp\_fix}, used in the worked examples) and the
+generalised distinct-precondition/postcondition form
+(\texttt{wp\_fix\_pp}, Section~\ref{sec:lam}).  A rule for fix at
+higher types, more complex specifications, and integration with
+separation logic on a heap are natural directions but lie outside
+the present development.
+
+The embedding into the JTS forcing translation in
+Section~\ref{sec:bridge} formalizes only the propositional fragment.
+A full mechanization of the type-level translation, against an
+explicit forcing structure and with the propositional rules verified
+to match our \texttt{iProp}, is the natural next step.
 
 The abstract framework of Section~\ref{sec:abstract} parametrizes the
 propositional layer over arbitrary well-founded forcing structures,

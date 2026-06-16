@@ -126,29 +126,40 @@
 \email{anonymous@example.com}
 
 \begin{abstract}
-We show that step-indexed Hoare logic is, conceptually and technically,
+We give two technical observations about step-indexed Hoare logic,
+made mechanically precise by re-presenting the technique as
 \emph{ramified forcing} --- Cohen's original forcing construction
-stratified by a well-founded hierarchy of levels. The
-``later'' modality $\triangleright$ is ramification's level-descent
-operator; Löb's rule, the central technical device of step-indexed
-recursive reasoning, is precisely well-founded induction on the
-forcing order, internalized into the logic. We make the correspondence
-precise via a Rocq mechanization that develops the forcing-style
-propositional semantics, builds Hoare logic over IMP and over an
-untyped $\lambda$-calculus with general recursion, gives an abstract
-framework parametric in the forcing notion, proves that the
-well-foundedness is essential by exhibiting a non-well-founded
-counterexample over $\mathbb{Z}$ where Löb's rule fails, and
-formalizes the bridge to the Jaber--Tabareau--Sozeau forcing
-translation of CIC via a Heyting-algebra-homomorphism embedding
-$\mathsf{Prop} \hookrightarrow \mathtt{iProp}$. A central methodological
-observation is that for higher-order recursion the natural soundness
-proof goes through the internal Löb rule directly, whereas for
-first-order IMP the same content can be obtained either via the
-internal rule or via meta-level induction on the step index. We
-mechanize both forms side by side to make the equivalence concrete.
-The complete development is approximately 800 lines of Rocq across
-11 files, with no external dependencies.
+stratified by a well-founded hierarchy of levels.
+
+First, we exhibit a structural diagnostic that distinguishes when the
+internal Löb rule is the natural soundness tool for a recursive
+Hoare-style rule.  For the \texttt{while} rule of IMP, internal Löb
+and meta-level induction on the step index produce structurally
+identical proofs; we mechanize both side by side.  For the
+\texttt{fix} rule of an untyped $\lambda$-calculus, the soundness
+predicate is itself recursive in the program being verified --- a
+difference in what we call the \emph{recursion locus} --- and only
+the internal Löb rule plays to that structure.  This is, to our
+knowledge, the first explicit and mechanized articulation of when
+the internal-Löb idiom of Iris and related systems is essential
+versus when it is a presentational choice.
+
+Second, we show that the well-foundedness of the forcing notion is
+\emph{essential}: we exhibit a would-be forcing structure over
+$\mathbb{Z}$ in which every iProp construction goes through, but
+Löb's rule fails on $\bot$.  This is a step-indexed-Hoare-logic
+counterpart of a classical fact about Gödel--Löb modal logic; the
+statement does not, as far as we can determine, appear in the
+verification literature.
+
+The two observations rest on a forcing-style re-presentation of
+step-indexed Hoare logic that we develop in Rocq alongside them: a
+propositional layer, Hoare logic over IMP and over a $\lambda$-calculus
+with \texttt{fix}, an abstract framework parametric in the forcing
+notion, and a propositional-fragment embedding of meta-level
+$\mathsf{Prop}$ into the Jaber--Tabareau--Sozeau forcing translation
+of CIC.  The complete development is approximately 800 lines of Rocq
+across 11 files, with no external dependencies.
 \end{abstract}
 
 \begin{CCSXML}
