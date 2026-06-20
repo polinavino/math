@@ -1,27 +1,17 @@
 \section{An Abstract Forcing Framework}
 \label{sec:abstract}
 
-So far, the forcing notion has been the specific poset
-$(\omega, \le)$.  The proofs of Sections~\ref{sec:prop}--\ref{sec:lam}
-have used the natural numbers throughout: as the type of conditions,
-as the index of the wp predicate, and as the well-founded order on
-which Löb's rule was proved.  But none of these uses required $\omega$
-specifically.  In this section we abstract the framework over an
-arbitrary well-founded forcing notion, and prove Löb's rule \emph{once}
-at this level of generality.
-
-The abstraction makes precise two claims that have been hovering
-over the development.  First, the choice of $\omega$ in
-Section~\ref{sec:prop} is a presentation convenience rather than a
-foundational commitment: any well-founded preorder will do.  Second,
-the relationship between Löb's rule and well-founded induction that
-we have been describing analogically becomes a literal identity in
-the abstract setting --- the abstract \texttt{iLob} is proved by
+The proofs of Sections~\ref{sec:prop}--\ref{sec:lam} used
+$(\omega, \le)$ throughout, but none required $\omega$ specifically.
+We abstract the framework over an arbitrary well-founded forcing
+notion and prove Löb's rule once at this level of generality.  Two
+claims become precise: the choice of $\omega$ is a presentation
+convenience, not a foundational commitment; and the relationship
+between Löb's rule and well-founded induction becomes a literal
+identity --- the abstract \texttt{iLob} is proved by
 \texttt{apply (well\_founded\_ind fs\_lt\_wf)}.
 
 \paragraph{The forcing structure.}
-We package the assumed structure into a record:
-
 \begin{lstlisting}
 Record ForcingStructure : Type := MkFS {
   fs_cond : Type;
@@ -33,37 +23,38 @@ Record ForcingStructure : Type := MkFS {
   fs_lt_le : forall p q, fs_lt p q -> fs_le p q;
   fs_lt_le_lt : forall p q r,
                   fs_lt p q -> fs_le q r -> fs_lt p r;
-  fs_lt_wf : well_founded fs_lt
-}.
+  fs_lt_wf : well_founded fs_lt }.
 \end{lstlisting}
+\noindent
+A forcing structure is a preorder
+$(\mathtt{fs\_cond}, \mathtt{fs\_le})$ with a strict relation
+$\mathtt{fs\_lt}$ contained in $\mathtt{fs\_le}$ and right-compatible
+with it, such that $\mathtt{fs\_lt}$ is well-founded.  The
+compatibility axiom $\mathtt{fs\_lt\_le\_lt}$ is what makes the later
+modality well-defined.
 
-A forcing structure is a preorder $(\mathtt{fs\_cond}, \mathtt{fs\_le})$ together with a strict relation $\mathtt{fs\_lt}$ contained in $\mathtt{fs\_le}$ and compatible with $\mathtt{fs\_le}$ on the right, such that $\mathtt{fs\_lt}$ is well-founded.  The compatibility axiom $\mathtt{fs\_lt\_le\_lt}$ is the technical ingredient that makes the later modality well-defined in the abstract setting; we explain this below.
-
-\paragraph{iProp, connectives, and \texttt{iLater} at the abstract level.}
-Over an arbitrary forcing structure $\mathtt{FS}$, the \texttt{iProp} record is the obvious adaptation: a downward-closed predicate on $\mathtt{fs\_cond}\, \mathtt{FS}$ with respect to $\mathtt{fs\_le}\, \mathtt{FS}$.  The propositional connectives are defined exactly as in Section~\ref{sec:prop}, with the order $\le$ replaced by $\mathtt{fs\_le}\, \mathtt{FS}$.  The interesting case is the later modality.  At the specific $(\omega, \le)$ instance, we defined $\triangleright \varphi$ at depth $n$ by a match on the structure of $n$ (\texttt{True} if $n = 0$, $\varphi$ at $n - 1$ otherwise).  At an arbitrary forcing notion, we cannot match on conditions because the carrier is not a constructive inductive type.  We instead give the modality a uniform definition: $\triangleright \varphi$ holds at a condition $p$ if and only if $\varphi$ holds at every strict predecessor of $p$:
-
+\paragraph{iProp and the later modality, abstractly.}
+Over an arbitrary $\mathtt{FS}$, \texttt{iProp} is a downward-closed
+predicate on $\mathtt{fs\_cond}\, \mathtt{FS}$; the Heyting
+connectives are defined exactly as in Section~\ref{sec:prop} with
+$\le$ replaced by $\mathtt{fs\_le}\, \mathtt{FS}$.  The interesting
+case is the later modality.  At $(\omega, \le)$ we defined
+$\triangleright \varphi$ at depth $n$ by a match on $n$.  At an
+arbitrary forcing notion we cannot match on conditions, so we give
+$\triangleright$ a uniform definition: it holds at $p$ iff $\varphi$
+holds at every strict predecessor of $p$:
 \begin{lstlisting}
 Definition iLater (φ : iProp) : iProp :=
-  MkProp
-    (fun p => forall p', fs_lt FS p' p -> p' ⊩ φ)
-    (iLater_mono_helper φ).
+  MkProp (fun p => forall p', fs_lt FS p' p -> p' ⊩ φ)
+         (iLater_mono_helper φ).
 \end{lstlisting}
-
 \noindent
-At a \emph{minimal} condition --- one with no strict predecessors ---
-this is vacuously \texttt{True}.  At a successor condition, it says
-the proposition holds at every preceding stage.  The downward-closure
-monotonicity of $\triangleright \varphi$ requires the
-$\mathtt{fs\_lt\_le\_lt}$ axiom to chain a strict predecessor of $q$
-through a $\le$-arrow $q \le p$ into a strict predecessor of $p$.
+At a minimal condition this is vacuously \texttt{True}.  At
+$(\omega, \le)$ the new definition agrees with the old one by
+downward closure: ``$\varphi$ holds at every $m < n+1$'' is, for
+downward-closed $\varphi$, the same as ``$\varphi$ holds at $n$.''
 
-The new definition agrees with the Section~\ref{sec:prop} version
-when we instantiate at $(\omega, \le)$.  At depth $0$, both definitions give \texttt{True}.  At depth $n+1$, the new definition says ``$\varphi$ holds at every $m < n+1$'', which by downward closure of $\varphi$ is equivalent to ``$\varphi$ holds at $n$'', exactly the old definition.
-
-\paragraph{Löb's rule, via well-founded induction.}
-The internal Löb rule, in the abstract framework, is a direct
-appeal to \texttt{well\_founded\_ind} on $\mathtt{fs\_lt}$:
-
+\paragraph{Löb's rule, by well-founded induction.}
 \begin{lstlisting}
 Lemma iLob (φ : iProp) : (▷ φ → φ) ⊢ φ.
 Proof.
@@ -77,130 +68,65 @@ Proof.
   eapply imono; [apply (fs_lt_le FS); exact Hp' | exact Hp].
 Qed.
 \end{lstlisting}
-
-The proof is almost mechanical given the definitions.  We do
-well-founded induction on $p$; at each $p$, the induction hypothesis
-says that for every strict predecessor $p'$ of $p$, the implication
-$\triangleright \varphi \to \varphi$ at $p'$ already gives us $\varphi$
-at $p'$.  We then use $\mathtt{Hp}$ at $p$ itself --- via the
-$\mathtt{iImpl}$'s Kripke condition with $\mathtt{fs\_le\_refl}$ to
-witness $p \le p$ --- which leaves us to prove $\triangleright \varphi$
-at $p$.  By the definition of $\triangleright$, this is the
-quantified statement that $\varphi$ holds at every strict predecessor
-$p'$; for each such $p'$, the induction hypothesis applies (we have
-$\mathtt{Hp}$ at $p'$ by downward closure).
-
-This is the precise statement of the equivalence we have been
-gesturing at: \emph{Löb's rule is well-founded induction on the
-forcing order, internalized into the logic}.  The metatheoretic
-content is the same; the proof at the meta level uses
-\texttt{well\_founded\_ind}, and the proof at the iProp level uses
-\texttt{iLob}.
+\noindent
+Well-founded induction on $p$: at each $p$, the induction hypothesis
+gives $\varphi$ at every strict predecessor $p'$.  Apply $\mathtt{Hp}$
+at $p$ itself (using $\mathtt{fs\_le\_refl}$ to witness $p \le p$),
+leaving $\triangleright \varphi$ at $p$ to prove --- which by the
+definition of $\triangleright$ is the quantified statement that
+$\varphi$ holds at every strict predecessor, available from the IH.
+This is the literal statement of the equivalence: \emph{Löb's rule is
+well-founded induction on the forcing order, internalized into the
+logic}.
 
 \paragraph{Instances.}
-We exhibit two concrete forcing structures.  The first is the
-natural numbers with their usual order:
-
+The natural numbers with their usual order:
 \begin{lstlisting}
 Definition nat_FS : ForcingStructure :=
   {| fs_cond := nat;
-     fs_le := Nat.le;
-     fs_lt := Nat.lt;
-     fs_le_refl := Nat.le_refl;
-     fs_le_trans := Nat.le_trans;
+     fs_le := Nat.le;  fs_lt := Nat.lt;
+     fs_le_refl := Nat.le_refl;  fs_le_trans := Nat.le_trans;
      fs_lt_le := Nat.lt_le_incl;
-     fs_lt_le_lt := Nat.lt_le_trans;
-     fs_lt_wf := lt_wf
-  |}.
+     fs_lt_le_lt := Nat.lt_le_trans;  fs_lt_wf := lt_wf |}.
 \end{lstlisting}
-
 \noindent
 At $\mathtt{nat\_FS}$, the abstract framework recovers
-Section~\ref{sec:prop}.  The check $\mathtt{Check}\, \mathtt{iLob}\, \mathtt{nat\_FS}$ confirms the instantiation: the abstract
-$\mathtt{iLob}$ applied to $\mathtt{nat\_FS}$ has the type we expect,
-namely an entailment about Phase 1's $\mathtt{iLater}$ and
-$\mathtt{iImpl}$ (specialized to the natural-number instance) holding
-in our Phase 1's $\mathtt{iProp}$.
+Section~\ref{sec:prop}: $\mathtt{Check}\, \mathtt{iLob}\, \mathtt{nat\_FS}$
+confirms that the abstract \texttt{iLob} specialized to the
+natural-number instance is the entailment we expect.
 
-The second instance is a non-trivially-different forcing notion: the
-pointwise product $\omega \times \omega$.
+A non-trivially-different second instance is the pointwise product
+$\omega \times \omega$.  Define
+$\mathtt{le\_pair}\, p\, q := \mathtt{fst}\, p \le \mathtt{fst}\, q \wedge \mathtt{snd}\, p \le \mathtt{snd}\, q$
+and $\mathtt{lt\_pair}\, p\, q := \mathtt{le\_pair}\, p\, q \wedge p \neq q$.
+This poset is not totally ordered: $(1,0)$ and $(0,1)$ are
+incomparable.  Well-foundedness of $\mathtt{lt\_pair}$ follows from
+the measure $\mathtt{fst}\, p + \mathtt{snd}\, p$ into $\mathbb{N}$
+via the standard library lemma $\mathtt{well\_founded\_lt\_compat}$,
+giving $\mathtt{prod\_FS} : \mathtt{ForcingStructure}$.  At this
+instance the framework provides a step-indexed logic with two
+independent step counters --- a natural model for two parallel
+components, where Löb's rule lets one reason about recursion that
+descends in either or both components.
 
-\begin{lstlisting}
-Definition le_pair (p q : nat * nat) : Prop :=
-  fst p <= fst q /\ snd p <= snd q.
+A further family we do not develop but which deserves mention is the
+\emph{transfinite} one: countable ordinals up to a bound form
+well-founded preorders, and so does the index structure used in
+Transfinite Iris~\cite{spies2021transfinite}.  At any such instance,
+the framework's \texttt{iLob} is proved by exactly the same
+\texttt{well\_founded\_ind} on $\mathtt{fs\_lt}$; the transfinite
+choice produces a stronger step-indexed logic without changing the
+soundness machinery.  The framework subsumes the index structure of
+Transfinite Iris in the same sense it subsumes the
+$(\omega, \le)$ structure of ordinary Iris --- as a particular
+instantiation of a generic well-founded-forcing framework.
 
-Definition lt_pair (p q : nat * nat) : Prop :=
-  le_pair p q /\ ~ (fst p = fst q /\ snd p = snd q).
-\end{lstlisting}
-
-\noindent
-The order $\le_{\mathrm{pw}}$ is the componentwise $\le$; the strict
-order $<_{\mathrm{pw}}$ is the obvious one (componentwise $\le$ with
-inequality in at least one component).  This poset is not totally
-ordered: the pairs $(1, 0)$ and $(0, 1)$ are incomparable.  We
-verify well-foundedness of $<_{\mathrm{pw}}$ by exhibiting the measure
-$\mathtt{fst}\, p + \mathtt{snd}\, p$ into $\mathbb{N}$, and using
-the standard library lemma $\mathtt{well\_founded\_lt\_compat}$:
-
-\begin{lstlisting}
-Lemma lt_pair_wf : well_founded lt_pair.
-Proof.
-  apply (well_founded_lt_compat _
-           (fun p => fst p + snd p)).
-  intros p q [[Hf Hs] Hneq].
-  destruct p, q; simpl in *.
-  destruct (Nat.eq_dec n n1).
-  - subst. destruct (Nat.eq_dec n0 n2).
-    + subst. exfalso. apply Hneq. split; reflexivity.
-    + lia.
-  - lia.
-Qed.
-
-Definition prod_FS : ForcingStructure :=
-  {| fs_cond := nat * nat; ... |}.
-\end{lstlisting}
-
-\noindent
-At $\mathtt{prod\_FS}$, the framework provides a step-indexed logic
-with \emph{two independent} step counters.  A natural application is
-to model two parallel components that step independently --- the
-step index measures observation depth in each component
-separately, and Löb's rule lets one reason about recursion that
-descends in either or both components.  We do not develop a Hoare
-logic over $\mathtt{prod\_FS}$ in this paper, but the existence of
-the instance is conceptually important: it shows that the framework
-is not tied to ordinal step-indices in particular, and is in
-particular applicable to the kind of branching well-founded
-structure one expects in concurrent settings.
-
-\paragraph{What is recovered.}
-At the abstract level, we have shown that:
-
-\begin{enumerate}
-
-\item the data of a step-indexed logic is captured by a
-\texttt{ForcingStructure} record;
-
-\item the propositional fragment of step-indexed Hoare logic, with
-the Heyting connectives and the later modality, is parametric in
-this data;
-
-\item the internal Löb rule, in any such structure, is a direct
-instance of well-founded induction on the strict refinement
-relation; and
-
-\item the standard $(\omega, \le)$ choice, used throughout
-Sections~\ref{sec:prop}--\ref{sec:lam} and throughout the modern
-step-indexed literature, is one instance, with at least one
-non-trivially-different alternative ($\omega \times \omega$ with the
-pointwise order).
-
-\end{enumerate}
-
-\noindent
-The IMP and $\lambda$-calculus developments of
-Sections~\ref{sec:imp}--\ref{sec:lam} could be lifted to be
-parametric in the forcing structure as well, with mostly
-bookkeeping changes; we have not done so here, for the sake of
-readability.
-
+We have shown that the data of a step-indexed logic is captured by a
+\texttt{ForcingStructure} record; that the propositional fragment is
+parametric in this data; that the internal Löb rule is, in any such
+structure, a direct instance of well-founded induction; and that the
+standard $(\omega, \le)$ choice is one instance, with at least one
+non-trivially-different alternative.  The IMP and $\lambda$-calculus
+developments of Sections~\ref{sec:imp}--\ref{sec:lam} can be lifted
+to be parametric in the forcing structure with mostly bookkeeping
+changes, not done here for readability.

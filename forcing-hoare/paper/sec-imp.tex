@@ -1,256 +1,136 @@
 \section{Hoare Logic for IMP}
 \label{sec:imp}
 
-With the propositional layer in hand we can build a Hoare logic for
-a simple imperative language.  We do this in the standard
-calibrating setting --- a small while-language with mutable state,
-which we will call IMP --- because the conceptual point of this
-section is most cleanly visible there.  IMP has no higher-order
-features, no allocation, and no concurrency, so the step indices we
-attach to assertions are not yet doing technical work.  What the
-section accomplishes is showing how the forcing-style propositional
-layer of Section~\ref{sec:prop} lifts to a sound Hoare logic, and ---
-crucially for what follows --- proving the \texttt{while} rule both
-by meta-level induction on the step index and by an explicit appeal
-to the internal Löb rule of Section~\ref{sec:prop}.  These two
-proofs establish the same theorem, and exhibiting them side by side
-makes precise the slogan that ``Löb's rule \emph{is} induction on the
-step index''.
+We build a Hoare logic for a small while-language IMP, calibrated for
+the conceptual point of this paper: showing how the forcing-style
+propositional layer lifts to a sound Hoare logic, and proving the
+\texttt{while} rule both by meta-level induction on the step index
+and by an explicit appeal to the internal Löb rule.  Exhibiting both
+proofs side by side makes precise the claim that ``Löb's rule
+\emph{is} induction on the step index.''  IMP has no higher-order
+features, no allocation, no concurrency; the step indices are not
+yet doing technical work.
 
-\paragraph{IMP and its semantics.}
-The language is standard: arithmetic expressions over an integer
-state, boolean expressions, and the usual control-flow commands.
-Variables are natural numbers and the state is a function
-\texttt{var -> Z}.
-
+IMP commands and their small-step semantics are standard:
 \begin{lstlisting}
 Inductive cmd : Type :=
-  | CSkip   : cmd
-  | CAssign : var -> aexp -> cmd
-  | CSeq    : cmd -> cmd -> cmd
-  | CIf     : bexp -> cmd -> cmd -> cmd
-  | CWhile  : bexp -> cmd -> cmd.
+  | CSkip | CAssign : var -> aexp -> cmd
+  | CSeq : cmd -> cmd -> cmd
+  | CIf : bexp -> cmd -> cmd -> cmd
+  | CWhile : bexp -> cmd -> cmd.
 \end{lstlisting}
+\noindent
+Each small step corresponds to one decrement of the step-index clock
+that the wp predicate tracks.
 
-We give a small-step operational semantics
-\texttt{step : cmd * state -> cmd * state -> Prop} with the usual
-rules: assignment updates the state and reduces to \texttt{CSkip};
-sequencing reduces its left component if not yet \texttt{CSkip} and
-otherwise advances to its right component; conditionals branch on
-the boolean evaluation; \texttt{while} either unfolds to a sequence
-or terminates as \texttt{CSkip}.  Each step in this semantics
-corresponds to one decrement of the step-index clock that the wp
-predicate is about to track.
-
-\paragraph{Step-indexed weakest precondition.}
-The wp predicate for a command is a step-indexed analogue of the
-classical Dijkstra wp: $\mathtt{wp\_at}\, n\, c\, Q\, s$ says that if
-we run $c$ from state $s$ for at most $n$ small steps, no
-intermediate configuration is bad and any final state satisfies
-the postcondition $Q$.  Because the only ``bad'' configuration in
-IMP is one that is neither \texttt{CSkip} nor able to step --- and
-in IMP every non-\texttt{CSkip} command can step --- the safety
-condition is automatic, and we do not need to record it
-explicitly.  This invisibility of safety in IMP is what makes the
-section a calibration; in Section~\ref{sec:lam} we will see what
-happens when the language is rich enough for stuck terms to exist.
-
+\paragraph{Step-indexed wp and the Hoare triple.}
+The wp predicate is the step-indexed analogue of the Dijkstra wp:
+$\mathtt{wp\_at}\, n\, c\, Q\, s$ says that running $c$ from $s$ for at
+most $n$ steps is safe and any final state satisfies $Q$.  In IMP,
+every non-\texttt{CSkip} command can step, so the safety condition is
+automatic and we do not record it explicitly; the invisibility of
+safety in IMP is what makes this section a calibration, and
+Section~\ref{sec:lam} is where it becomes visible.
 \begin{lstlisting}
 Fixpoint wp_at (n : nat) (c : cmd)
                (Q : state -> Prop) (s : state) : Prop :=
   match n with
   | O => True
-  | S k =>
-      (c = CSkip -> Q s) /\
-      (forall c' s', step (c, s) (c', s') -> wp_at k c' Q s')
+  | S k => (c = CSkip -> Q s) /\
+           (forall c' s', step (c, s) (c', s') -> wp_at k c' Q s')
   end.
 \end{lstlisting}
+\noindent
+The predicate is downward-closed in $n$ and contravariantly monotone
+in $Q$, and lifts to an \texttt{iProp} via \texttt{MkProp}.  A Hoare
+triple is the \texttt{iProp} saying ``for every $s$ with $P\, s$, the
+wp of $c$ targeting $Q$ holds.''  Validity, written
+$\mathtt{hoare\_valid}\, P\, c\, Q$, is the entailment
+$\top \vdash \mathtt{hoare}\, P\, c\, Q$; equivalently, by
+\texttt{hoare\_valid\_alt}, the meta-level statement ``for every $n$
+and $s$ with $P\, s$, the $n$-step-bounded wp holds.''
 
-The predicate is downward closed in $n$ (\texttt{wp\_at\_mono}) and
-contravariantly monotone in the postcondition $Q$
-(\texttt{wp\_at\_post\_mono}); both proofs are routine inductions on
-$n$.  Lifting to an \texttt{iProp} is then immediate:
+The five structural rules of partial-correctness Hoare logic --- skip,
+assignment, sequencing, conditional, consequence --- become small
+lemmas about \texttt{wp\_at}, each provable by routine unfolding at
+$n+1$ and inversion on the available step.  Sequencing requires a
+small auxiliary lemma \texttt{wp\_seq} decomposing the wp of
+\texttt{CSeq c1 c2} into the wp of \texttt{c1} targeting the wp of
+\texttt{c2}, with one use of \texttt{wp\_at\_mono} to align indices.
+None of these five rules uses the propositional layer; we could state
+them entirely at the meta level.  The propositional layer pays off
+for \texttt{while}.
 
-\begin{lstlisting}
-Definition wp (c : cmd) (Q : state -> Prop) (s : state) : iProp :=
-  MkProp (fun n => wp_at n c Q s) (wp_at_mono c Q s).
-\end{lstlisting}
-
-\paragraph{The Hoare triple.}
-A Hoare triple is the \texttt{iProp} that says ``for every state
-satisfying $P$, the wp of $c$ targeting $Q$ holds''.  By the
-universal quantifier, this is again a downward-closed predicate in
-$n$:
-
-\begin{lstlisting}
-Definition hoare (P : state -> Prop) (c : cmd)
-                 (Q : state -> Prop) : iProp :=
-  MkProp (fun n => forall s, P s -> wp_at n c Q s)
-         (hoare_at_mono P c Q).
-
-Definition hoare_valid P c Q : Prop := ⊤ ⊢ hoare P c Q.
-\end{lstlisting}
-
-We say the triple is \emph{valid} when it is forced at every
-condition: $\top \vdash \mathtt{hoare}\, P\, c\, Q$, which by
-unfolding is exactly the standard partial-correctness statement
-``for every $n$ and every state $s$ with $P\, s$, the
-$n$-step-bounded wp holds''.  This equivalence is the lemma
-\texttt{hoare\_valid\_alt} in the development; we will use it freely
-to move between the iProp-internal and the meta-level views of a
-Hoare triple.
-
-\paragraph{Soundness of the structural rules.}
-The standard structural rules of partial-correctness Hoare logic
-become small lemmas about \texttt{wp\_at}.  We state them in the
-validity form:
-
-\begin{lstlisting}
-Lemma hoare_skip P : hoare_valid P CSkip P.
-Lemma hoare_assign Q x a :
-  hoare_valid (asgn_pre Q x a) (CAssign x a) Q.
-Lemma hoare_seq P c1 R c2 Q :
-  hoare_valid P c1 R ->
-  hoare_valid R c2 Q ->
-  hoare_valid P (CSeq c1 c2) Q.
-Lemma hoare_if P b c1 c2 Q :
-  hoare_valid (fun s => P s /\ beval s b = true) c1 Q ->
-  hoare_valid (fun s => P s /\ beval s b = false) c2 Q ->
-  hoare_valid P (CIf b c1 c2) Q.
-Lemma hoare_consequence P P' c Q Q' :
-  (forall s, P s -> P' s) -> hoare_valid P' c Q' ->
-  (forall s, Q' s -> Q s) -> hoare_valid P c Q.
-\end{lstlisting}
-
-Each proof is a routine unfolding of the wp predicate at $n+1$,
-followed by inversion on the available step.  Sequencing requires a
-small auxiliary lemma \texttt{wp\_seq} that decomposes the wp of
-\texttt{CSeq c1 c2} as the wp of \texttt{c1} targeting the wp of
-\texttt{c2}; this is the only point where the step index moves
-between the outer and inner wp, and a use of \texttt{wp\_at\_mono} is
-needed to align the indices.  None of this requires the propositional
-layer of Section~\ref{sec:prop}; we could have written the same five
-rules entirely at the meta level, with $\mathtt{hoare\_valid}$ as a
-plain ``forall $n, s$'' statement.  The propositional layer is
-present because it will pay off in the next part of this section ---
-and again, more decisively, in Section~\ref{sec:lam}.
-
-\paragraph{The \texttt{while} rule: meta-level induction.}
-The interesting rule is \texttt{while}.  Soundness of
-\begin{center}
-\(\dfrac{\{P \wedge b\}\, c\, \{P\}}{\{P\}\, \mathtt{while}\, b\, \mathtt{do}\, c\, \{P \wedge \neg b\}}\)
-\end{center}
-is, in step-indexed terms, the statement that a sound loop body
-gives a sound loop --- but the loop's wp at $n+1$ unfolds into a
-proof obligation about the loop's wp at $n$, which is exactly the
-recursive structure we have been preparing for.  The straightforward
-proof is by induction on $n$:
-
+\paragraph{The \texttt{while} rule, meta-level induction.}
+Soundness of
+$\{P \wedge b\}\, c\, \{P\} \;\vdash\; \{P\}\, \mathtt{while}\, b\, c\, \{P \wedge \neg b\}$
+says that a sound loop body gives a sound loop, and the proof goes by
+induction on the step index.  The base case is trivial; the inductive
+step unfolds the wp at $n+1$, case-analyses on the step, and uses the
+induction hypothesis to discharge the recursive \texttt{while}
+obligation:
 \begin{lstlisting}
 Lemma hoare_while P b c :
   hoare_valid (fun s => P s /\ beval s b = true) c P ->
   hoare_valid P (CWhile b c)
               (fun s => P s /\ beval s b = false).
 Proof.
-  intros HC.
-  rewrite hoare_valid_alt in HC.
+  intros HC. rewrite hoare_valid_alt in HC.
   apply hoare_valid_alt.
   intros n. induction n as [|n IH]; intros s HP.
   - simpl. trivial.
   - rewrite wp_at_S. split.
     + discriminate.
     + intros c' s' Hstep. inversion Hstep; subst.
-      * (* StepWhileTrue *)
-        apply wp_seq.
+      * apply wp_seq.
         eapply wp_at_post_mono.
         2: { apply HC; split; [exact HP | assumption]. }
         intros s'' HP'. apply IH. exact HP'.
-      * (* StepWhileFalse *)
-        ... (* CSkip with the postcondition *)
+      * ... (* StepWhileFalse: CSkip with postcondition *)
 Qed.
 \end{lstlisting}
 
-The structure is what one would write in any step-indexed Hoare
-logic.  The case analysis on $n$ contributes a trivial base case
-(the wp at $0$ is \texttt{True}) and an inductive step.  In the
-\texttt{StepWhileTrue} case, the loop reduces to
-$c ; \mathtt{while}\, b\, c$ at step $n$, and the proof obligation
-for the remaining $\mathtt{while}\, b\, c$ piece is discharged by
-the induction hypothesis $\mathtt{IH}$.
-
 \paragraph{The same rule, via the internal Löb.}
-There is also a proof of \texttt{hoare\_while} that does not use any
-explicit induction on $n$ --- it appeals to the internal Löb rule of
-Section~\ref{sec:prop} directly.  To use \texttt{iLob}, we need to
-express the goal as an entailment $(\triangleright \varphi \to
-\varphi) \vdash \varphi$.  This is done by an application of
-\texttt{ientails\_trans}: we factor the desired entailment
-$\top \vdash \mathtt{hoare}\, P\, (\mathtt{CWhile}\, b\, c)\, Q$
-through the intermediate iProp $\triangleright \varphi \to \varphi$
-for $\varphi := \mathtt{hoare}\, P\, (\mathtt{CWhile}\, b\, c)\, Q$,
-prove the intermediate $\top \vdash \triangleright \varphi \to
-\varphi$ directly, and finish with \texttt{apply iLob}:
-
+The same theorem also follows from the internal Löb rule of
+Section~\ref{sec:prop} without any explicit induction on $n$.  We
+factor the goal $\top \vdash \mathtt{hoare}\, P\, (\mathtt{CWhile}\,
+b\, c)\, Q$ through the iProp $\triangleright \varphi \to \varphi$ for
+$\varphi := \mathtt{hoare}\, P\, (\mathtt{CWhile}\, b\, c)\, Q$, prove
+the intermediate entailment directly --- a finite, non-recursive
+argument that case-analyses on the depth supplied to the
+\texttt{iImpl} --- and close with \texttt{apply iLob}:
 \begin{lstlisting}
 Lemma hoare_while_iLob P b c :
   hoare_valid (fun s => P s /\ beval s b = true) c P ->
-  hoare_valid P (CWhile b c)
-              (fun s => P s /\ beval s b = false).
+  hoare_valid P (CWhile b c) (fun s => P s /\ beval s b = false).
 Proof.
-  intros HC. rewrite hoare_valid_alt in HC.
-  unfold hoare_valid.
+  intros HC. rewrite hoare_valid_alt in HC. unfold hoare_valid.
   apply ientails_trans with
     (iLater (hoare P (CWhile b c) (...)) →
      hoare P (CWhile b c) (...)).
-  - (* ⊤ ⊢ ▷ φ → φ *)
-    intros n _ m Hmn Hlater s HP.
+  - intros n _ m Hmn Hlater s HP.
     destruct m as [|m'].
     + simpl. trivial.
     + simpl in Hlater. rewrite wp_at_S. split.
       * discriminate.
       * intros c' s' Hstep. inversion Hstep; subst.
-        -- (* StepWhileTrue *)
-           apply wp_seq.
-           eapply wp_at_post_mono.
+        -- apply wp_seq. eapply wp_at_post_mono.
            2: { apply HC; split; [exact HP | assumption]. }
            intros s'' HP''. apply Hlater. exact HP''.
-        -- (* StepWhileFalse *)
-           ...
+        -- ... (* StepWhileFalse *)
   - apply iLob.
 Qed.
 \end{lstlisting}
-
-The body of the first bullet --- the proof that $\top$ entails
-$\triangleright \varphi \to \varphi$ at every condition --- contains
-no induction on $n$.  We case-split on the depth $m$ obtained from
-the iImpl, find $\triangleright \varphi$ supplied to us at depth
-$m$, and in the $\mathtt{S}\, m'$ case use it (it is $\varphi$ at
-depth $m'$) to discharge the recursive obligation.  All of the
-recursive content is hidden inside \texttt{iLob}'s own proof, which
-of course does eventually go by induction on $n$ --- but
-\emph{once}, in Section~\ref{sec:prop}, and not at every Hoare-style
-soundness proof.
-
-\paragraph{The packaged soundness theorem.}
-With both proofs available, we package the six structural rules into
-a single theorem statement:
-
-\begin{lstlisting}
-Theorem imp_hoare_rules :
-  (forall P, hoare_valid P CSkip P) /\
-  (forall Q x a, hoare_valid (asgn_pre Q x a) (CAssign x a) Q) /\
-  (forall P c1 R c2 Q, ... -> ... -> ...) /\  (* seq *)
-  (forall P b c1 c2 Q, ... -> ... -> ...) /\  (* if *)
-  (forall P b c, ... -> ...) /\              (* while *)
-  (forall P P' c Q Q', ... -> ... -> ... -> ...).  (* consequence *)
-\end{lstlisting}
-
-This is the partial-correctness soundness statement for Hoare logic
-over IMP, in the forcing-style semantics.  It is structurally
-identical to the soundness statement one would prove for IMP using
-the standard direct semantics, and that identity is part of the
+\noindent
+The first bullet contains no induction on $n$.  All recursive content
+is hidden inside \texttt{iLob}'s proof, written once in
+Section~\ref{sec:prop} and not reproduced at every Hoare-style
+soundness proof.  The six rules (skip, assign, seq, if, while,
+consequence) are packaged as a single theorem
+\texttt{imp\_hoare\_rules}.  Soundness of Hoare logic over IMP, in
+the forcing-style semantics, is structurally identical to the soundness
+statement using the standard direct semantics --- which is part of the
 point: at the first-order level the forcing reading is a different
-\emph{presentation} of the same theorems.  In
-Section~\ref{sec:lam} we will move to a setting where the
-re-presentation produces a noticeably different proof obligation.
-
+\emph{presentation} of the same theorems.  Section~\ref{sec:lam}
+moves to a setting where the re-presentation produces a noticeably
+different proof obligation.

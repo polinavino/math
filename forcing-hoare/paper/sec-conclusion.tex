@@ -2,145 +2,71 @@
 \label{sec:conclusion}
 
 We have given a forcing-style semantics for step-indexed Hoare logic,
-mechanized in Rocq across the propositional layer, an IMP Hoare
-logic, and an untyped $\lambda$-calculus with general recursion. The
-forcing reading places the step-indexed technique in direct
-correspondence with Cohen's ramified forcing construction: the
-natural numbers are the forcing conditions, the later modality
-$\triangleright$ is the level-descent operator, and Löb's rule is
-well-founded induction on the forcing order, internalized into the
-logic.
+mechanized in Rocq, and used it to articulate two technical
+observations.
 
-\paragraph{What we found.}
-Two observations stand out. First, in the first-order setting of
-IMP, the \texttt{while} rule admits two structurally identical
-soundness proofs: an outer induction on the step index, and an
-appeal to the internal Löb rule. The two proofs have the same
-content because at the meta level, Löb's rule \emph{is} induction on
-the step index. Mechanizing both side by side, as we do, makes the
-equivalence concrete rather than analogical.
+The first is the recursion-locus diagnostic of
+Section~\ref{sec:imp-vs-lam}.  In the first-order setting of IMP, the
+\texttt{while} rule's soundness predicate is recursive only in the
+step index, and the two natural soundness proofs --- outer induction
+on $n$ and an appeal to the internal Löb rule --- are structurally
+identical.  Mechanizing both side by side makes the equivalence
+concrete rather than analogical.  In the higher-order setting of
+the $\lambda$-calculus with \texttt{fix}, the soundness predicate is
+recursive in the program itself; meta-level induction on $n$ remains
+available but no longer plays to the predicate's structure, while
+the internal Löb rule does.  The structural difference is a
+difference in the \emph{recursion locus}.
 
-Second, in the higher-order setting of the untyped $\lambda$-calculus
-with \texttt{fix}, the analogous soundness proof has a different
-shape. The soundness predicate for a recursive function is itself
-defined in terms of the function being verified, and unrolling this
-self-reference at the meta level produces a non-trivial induction
-that does not arise from the program's step count alone. The natural
-proof, which we mechanize, invokes the internal Löb rule directly:
-``show that under the assumption $\triangleright \varphi$ we have
-$\varphi$, then conclude $\varphi$ by Löb.'' No meta-level induction
-on a step count is needed. The structural difference between the IMP
-and $\lambda$-fix proofs is a difference in the
-\emph{recursion locus} of the soundness predicate
-(Section~\ref{sec:imp-vs-lam}): for IMP, the predicate is recursive
-only in the step index, and outer induction on $n$ matches its
-structure; for $\lambda$-fix, the predicate is recursive in the
-program itself, and internal Löb is the natural tool that plays to
-that structure.
+The second is the negative result of
+Section~\ref{sec:lob-essential}.  We exhibit a would-be forcing
+structure over $\mathbb{Z}$ in which every iProp construction goes
+through but Löb's rule fails on $\bot$.  This is the step-indexed
+Hoare logic counterpart of a classical fact about Gödel--Löb modal
+logic; the statement does not, to our knowledge, appear in the
+verification literature.  The methodological upshot is that the
+choice of step-index domain is the choice that decides whether
+Löb's rule is available; ordinary, transfinite, and product step
+indices all pass the check, but the well-foundedness has to be
+verified rather than assumed.
 
-\paragraph{Three further observations.}
 The abstract framework of Section~\ref{sec:abstract} makes precise
 that the choice of $\omega$ as the step-index domain is a
-\emph{computational} convenience rather than a foundational one. Any
+computational convenience rather than a foundational one: any
 well-founded forcing notion supports the same internal logic, with
-$\triangleright$ defined uniformly as ``forces at every strict
-predecessor'' and Löb derived by well-founded induction. We exhibit
-the pointwise product $\omega \times \omega$ as a second instance, but
-the framework is generic.
-
-Section~\ref{sec:lob-essential} shows that the well-foundedness
-cannot be dropped: we construct a non-well-founded forcing notion
-over $\mathbb{Z}$ in which Löb's rule fails. This is a special case
-of the model theory of \textsf{GL}, but the statement for step-indexed
-Hoare logic does not, as far as we are aware, appear in the
-verification literature. The claim has methodological weight:
-step-indexed Hoare logic is not just ``Hoare logic with a step
-counter''; it requires a well-founded forcing notion to be sound at
-all.
-
+$\triangleright$ defined as ``forces at every strict predecessor''
+and Löb derived by \texttt{well\_founded\_ind}.
 Section~\ref{sec:bridge} formalizes the embedding of meta-level
-$\mathsf{Prop}$ into the propositional fragment of the
-Jaber--Tabareau--Sozeau forcing translation of CIC, via a constant
-embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ that we prove
-to be a Heyting algebra homomorphism. The $\triangleright$ modality
-is the genuinely new content of iProp over the embedded image, and
-arises uniformly from the well-founded strict refinement on
-conditions.
+$\mathsf{Prop}$ into the propositional fragment of the JTS forcing
+translation as a Heyting algebra homomorphism, with $\triangleright$
+as the step-indexed-specific content lying outside the embedded
+image.
 
-\paragraph{Limitations.}
-We work at the level of plain Hoare triples and a partial-correctness
-wp predicate.  We do not develop a separation logic, do not model a
-heap, and do not address concurrency.  The forcing reading we
-present therefore applies to the soundness machinery of step-indexed
-Hoare logic at the level abstracted by the abstract framework of
-Section~\ref{sec:abstract}; whether it scales gracefully to
-Iris-style separation logic, resource state, invariants, and
-concurrent step counters is an open question that this paper does
-not answer.  Our contribution is the diagnostic and the negative
-result above, not the Iris-scale framework.
-
-The fix soundness rule has been mechanized in both single-predicate
-form (\texttt{wp\_fix}, used in the worked examples) and the
-generalised distinct-precondition/postcondition form
-(\texttt{wp\_fix\_pp}, Section~\ref{sec:lam}).  A rule for fix at
-higher types, more complex specifications, and integration with
-separation logic on a heap are natural directions but lie outside
-the present development.
-
-The embedding into the JTS forcing translation in
-Section~\ref{sec:bridge} formalizes only the propositional fragment.
-A full mechanization of the type-level translation, against an
-explicit forcing structure and with the propositional rules verified
-to match our \texttt{iProp}, is the natural next step.
-
-The abstract framework of Section~\ref{sec:abstract} parametrizes the
-propositional layer over arbitrary well-founded forcing structures,
-but the IMP and $\lambda$-calculus developments of
-Sections~\ref{sec:imp}--\ref{sec:lam} are presented at the specific
-$(\omega, \le)$ instance for clarity. Lifting them to be parametric
-in the forcing structure is straightforward and not done here.
-
-\paragraph{Future directions.}
-Several extensions suggest themselves.
-
-\begin{itemize}
-
-\item \emph{Mechanizing the full JTS translation} (or a useful
-fragment) and verifying that its propositional fragment coincides
-definitionally with our \texttt{iProp} at the corresponding forcing
-structure. This would convert the heuristic correspondence of
-Section~\ref{sec:bridge} into a theorem.
-
-\item \emph{Step-indexing over richer forcing structures} ---
-transfinite ordinals (cf.\ Transfinite Iris
-\cite{spies2021transfinite}), branching conditions for genuinely
-concurrent step counters, or mixed structures combining several
-step-index dimensions. The abstract framework already supports these
-in principle; the work is to exhibit non-trivial verifications at
-the new instances.
-
-\item \emph{Lifting the Hoare-logic developments to the abstract
-framework}, so that IMP and the $\lambda$-calculus admit
-verifications parametric in the forcing structure. This is
-straightforward but bookkeeping-heavy; it would make the parametric
-story of Section~\ref{sec:abstract} the primary presentation rather
-than an afterthought.
-
-\item \emph{An integration with separation logic} along the lines
-of Iris, lifting the forcing reading from the propositional logic
-to the resource-aware extension. This is a substantial undertaking
-but would let the forcing perspective speak directly to
-state-of-the-art verification.
-
-\end{itemize}
+\paragraph{Limitations and future directions.}
+We work at the level of plain Hoare triples with a partial-correctness
+wp predicate, without separation logic, heap state, or concurrency.
+Whether the forcing reading scales gracefully to Iris-style separation
+logic, resource state, invariants, and concurrent step counters is an
+open question this paper does not answer; our contribution is the
+diagnostic and the negative result, not an Iris-scale framework.  Four
+natural extensions suggest themselves: mechanizing the type-level half
+of the JTS correspondence (Section~\ref{sec:bridge}) as a theorem
+rather than a heuristic; exhibiting non-trivial verifications at
+richer forcing structures including transfinite step indices
+\cite{spies2021transfinite}; lifting the IMP and $\lambda$-calculus
+developments of Sections~\ref{sec:imp}--\ref{sec:lam} to be parametric
+in the forcing structure; and integrating with separation logic on a
+heap.  Whether the recursion-locus diagnostic can be sharpened to a
+syntactic check on iProp definitions, applicable automatically to
+Iris-style soundness proofs, is the question we are most interested
+in pursuing.
 
 The broader point we hope the paper makes is that step-indexed
-reasoning, viewed as a forcing construction, sits at the
-intersection of three research traditions that do not usually talk
-to each other: set-theoretic forcing, modal logic of provability,
-and step-indexed semantics for verification. Each tradition contains
-piece-of-the-picture insights that the other two could profit from.
-The mechanization that accompanies this paper is intended both as
-evidence for the technical claims and as a starting point for
-others wishing to explore the intersection further.
-
+reasoning, viewed as a forcing construction, sits at the intersection
+of three research traditions that do not usually talk to each other:
+set-theoretic forcing, modal logic of provability, and step-indexed
+semantics for verification.  Each contains piece-of-the-picture
+insights that the others could profit from; the mechanization
+accompanying this paper is intended as evidence for the technical
+claims and as a starting point for others wishing to explore the
+intersection further.

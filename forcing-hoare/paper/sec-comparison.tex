@@ -87,6 +87,32 @@ $\lambda$-calculus \texttt{recursive\_spec} for \texttt{EFix body}
 with predicate $S$ falls on the hard side, and Löb earns its keep
 there.
 
+\paragraph{Locating the locus syntactically.}
+The diagnostic above is informal; we have not formalized it as a
+metatheorem about \texttt{iProp} definitions, and we leave that as
+future work.  But a useful working characterization, which fits the
+two cases we mechanize, is the following.  Given a step-indexed
+soundness predicate $\Phi : \mathsf{nat} \to T \to \mathsf{Prop}$
+(where $T$ is the type of the program-shaped parameter --- a command
+in the IMP setting, an expression in the $\lambda$-calculus setting),
+its \emph{recursion locus is in the depth} when the recursive call
+in $\Phi$'s definition mentions only $\Phi$ at strictly smaller
+indices and at parameters that are derived from the original by
+small-step reduction; in this case meta-level induction on the
+depth has the recursive obligation already in hand, with no
+additional structure required.  The locus is \emph{in the program}
+when $\Phi$'s definition refers to $\Phi$ applied to the
+\emph{same} parameter at a lower index (as
+$\mathtt{recursive\_spec}\,(\mathtt{EFix}\, body)\, S$ does, because
+the body's recursive call invokes the same fix-point), so that the
+recursive obligation cannot be discharged purely by descent on the
+depth --- the iProp itself has to be available at the lower index
+as data, which is exactly what the antecedent
+$\triangleright \Phi$ of Löb's rule supplies.  The two cases of this
+paper fall cleanly on the two sides of this distinction; whether
+the characterization can be sharpened to a syntactic check on
+arbitrary iProp definitions is open.
+
 \paragraph{What this says about step-indexed Hoare logic.}
 In the verification literature, Löb's rule is sometimes presented as
 a convenience: a tactic available in the Iris proof mode, used when

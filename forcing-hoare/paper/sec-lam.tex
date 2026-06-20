@@ -1,176 +1,117 @@
 \section{Hoare Logic for an Untyped $\lambda$-Calculus with Recursion}
 \label{sec:lam}
 
-For IMP, step-indexing was overkill: the wp predicate could have been
-defined without indexing at all, and the index was a presentation
-convenience.  We now move to a language where step-indexing is no
-longer optional --- an untyped $\lambda$-calculus with a fix-point
-operator.  Two things change.  First, the wp predicate must
-explicitly encode \emph{safety}: applying an integer as a function,
-or branching on a lambda, leaves the computation stuck, and we want
-the wp to rule such configurations out rather than treat them as
-vacuously good.  Second, the recursion introduced by the fix-point
-operator turns the soundness predicate for a recursive function into
-something defined in terms of itself, and the natural soundness
-proof for the corresponding Hoare rule no longer goes through
-meta-level induction on the step index.  It goes through an
-appeal to the internal Löb rule of Section~\ref{sec:prop}, used
-directly, with no outer induction on $n$.
+For IMP, step-indexing was overkill: the index was a presentation
+convenience.  We now move to a language where it is no longer
+optional --- an untyped $\lambda$-calculus with a fix-point operator.
+Two things change.  The wp predicate must explicitly encode
+\emph{safety}, since the language has stuck terms (e.g.\
+$\mathtt{EApp}\, (\mathtt{EInt}\, 5)\, (\mathtt{EInt}\, 3)$); and the
+recursion introduced by \texttt{fix} turns the soundness predicate
+for a recursive function into something defined in terms of itself,
+so that the natural soundness proof no longer goes through meta-level
+induction on the step index --- it goes through the internal Löb
+rule, used directly, with no outer induction on $n$.
 
 \paragraph{The language.}
-We use a de-Bruijn representation, with integer constants for the
-sake of having a non-trivial base type, an \texttt{if0} conditional
-that branches on whether its argument equals zero, $\lambda$-abstraction
-and application, and an explicit fix-point binder:
-
+A de-Bruijn representation with integer constants, an \texttt{if0}
+conditional, $\lambda$-abstraction and application, and an explicit
+fix-point binder:
 \begin{lstlisting}
 Inductive expr : Type :=
-  | EVar  : nat -> expr
-  | EInt  : Z -> expr
+  | EVar  : nat -> expr  | EInt  : Z -> expr
   | EPlus : expr -> expr -> expr
   | EIf0  : expr -> expr -> expr -> expr
-  | ELam  : expr -> expr
-  | EApp  : expr -> expr -> expr
+  | ELam  : expr -> expr | EApp  : expr -> expr -> expr
   | EFix  : expr -> expr.
-
-Inductive value : expr -> Prop :=
-  | VInt : forall n, value (EInt n)
-  | VLam : forall body, value (ELam body)
-  | VFix : forall body, value (EFix body).
 \end{lstlisting}
-
-The fix-point form $\mathtt{EFix}\, body$ binds the self-reference
-at de-Bruijn index $0$ inside $body$; we treat it as a value so that
-it can be passed as an argument, and we let the self-unfolding fire
-only when the fix is \emph{applied}.  Substitution is the standard
-single substitution; we omit its definition here.  The small-step
-relation includes the usual rules for arithmetic and conditionals
-together with $\beta$-reduction
-\(\mathtt{EApp}\, (\mathtt{ELam}\, body)\, v \to body[v / 0]\)
-and the fix-unfolding rule
-
+\noindent
+$\mathtt{EFix}\, body$ binds the self-reference at de-Bruijn index
+$0$; we treat it as a value so it can be passed around, with
+self-unfolding firing only on application.  The small-step relation
+includes the usual arithmetic and conditional rules, $\beta$-reduction
+$\mathtt{EApp}\, (\mathtt{ELam}\, body)\, v \to body[v / 0]$, and the
+fix-unfolding rule
 \begin{lstlisting}
 | StepFix : forall body v, value v ->
-    EApp (EFix body) v ~>
-    EApp (subst (EFix body) body) v.
+    EApp (EFix body) v ~> EApp (subst (EFix body) body) v.
 \end{lstlisting}
-
 \noindent
-which substitutes the self-reference $\mathtt{EFix}\, body$ for index
-$0$ inside the body before letting an ordinary $\beta$-reduction
-proceed.  All reductions are call-by-value.
+which substitutes the self-reference before letting an ordinary
+$\beta$-reduction proceed.  Reductions are call-by-value.
 
-\paragraph{Step-indexed wp, with safety.}
-The wp predicate is similar in shape to the IMP version but has an
-additional conjunct that pins down safety.  At index $n+1$ we ask
-that the expression either is a value satisfying the postcondition,
-or is reducible and every reduct still satisfies the wp at index
-$n$:
-
+\paragraph{Step-indexed wp with safety.}
+The wp predicate adds an explicit safety conjunct:
 \begin{lstlisting}
-Fixpoint wp_at (n : nat) (e : expr)
-               (Q : expr -> Prop) : Prop :=
+Fixpoint wp_at (n : nat) (e : expr) (Q : expr -> Prop) : Prop :=
   match n with
   | O => True
-  | S k =>
-      (value e -> Q e) /\
-      (value e \/ exists e', step e e') /\
-      (forall e', step e e' -> wp_at k e' Q)
+  | S k => (value e -> Q e) /\
+           (value e \/ exists e', step e e') /\
+           (forall e', step e e' -> wp_at k e' Q)
   end.
 \end{lstlisting}
-
-The middle conjunct (\texttt{value e \textbackslash{}/ exists e', step e e'}) is the new ingredient.  Without it, a stuck non-value expression such as \texttt{EApp (EInt 5) (EInt 3)} would satisfy the wp vacuously: the first conjunct is discharged (the expression is not a value), and the third quantifies over a step relation that has no inhabitants for the stuck expression.  With it, the stuck expression fails the wp.  This is the price of working with a language whose syntax admits ill-typed combinations; the IMP development of Section~\ref{sec:imp} did not need it because every non-\texttt{CSkip} command can step.
-
-\paragraph{Basic rules.}
-Two general structural rules carry every soundness proof.  The first
-says that a value satisfies the wp targeting any postcondition it
-semantically satisfies:
-
-\begin{lstlisting}
-Lemma wp_value v Q :
-  value v -> Q v -> wp_valid v Q.
-\end{lstlisting}
-
 \noindent
-The second is the \emph{pure step} rule: if every reduct of $e$ is
-$e'$ and $e'$ satisfies the wp, then so does $e$.
-
-\begin{lstlisting}
-Lemma wp_pure_step_at n e e' Q :
-  ~ value e ->
-  (exists e'', step e e'') ->
-  (forall e'', step e e'' -> e'' = e') ->
-  wp_at n e' Q ->
-  wp_at (S n) e Q.
-\end{lstlisting}
-
-\noindent
-The pure-step rule is what propagates the wp through any
-$\beta$-reduction or fix-unfolding step.  In particular, it is the
-device by which we will discharge the fix-unfolding step in the
-\texttt{wp\_fix} soundness proof below.
-
-We do not develop dedicated wp rules for \texttt{EPlus}, \texttt{EIf0}, or \texttt{EApp} at this stage --- they either need an evaluation-context framework or unfold case-by-case via \texttt{wp\_pure\_step}.  Neither addition is necessary for the conceptual point of this section; we will see them play out concretely in the worked example below.
+The middle conjunct rules out stuck non-value expressions, which
+would otherwise satisfy the wp vacuously (the first conjunct is
+discharged by non-valuehood, and the third quantifies over an empty
+step relation).  Two general rules carry every soundness proof:
+\texttt{wp\_value}, saying a value satisfies the wp targeting any $Q$
+it semantically satisfies, and the pure-step rule \texttt{wp\_pure\_step\_at},
+saying that if every reduct of $e$ is the same $e'$ and $e'$
+satisfies the wp at index $n$, then $e$ satisfies it at $n+1$.  The
+pure-step rule propagates the wp through any $\beta$-reduction or
+fix-unfolding.  We do not develop dedicated rules for \texttt{EPlus},
+\texttt{EIf0}, or \texttt{EApp}; they either need an evaluation-context
+framework or unfold case-by-case via \texttt{wp\_pure\_step}, and
+neither is necessary for the section's conceptual point.
 
 \paragraph{The specification predicate for recursive functions.}
-To state a meaningful soundness rule for \texttt{fix}, we need a
-shape of specification appropriate to a recursive function.  The
-simplest non-trivial shape is the \emph{closed} spec, where the same
-predicate $S$ on values plays both the role of a precondition on the
-argument and the role of a postcondition on the result.  We package
-this as an iProp:
-
+The simplest non-trivial spec shape is the \emph{closed} one, where a
+single predicate $S$ plays both pre- and postcondition:
 \begin{lstlisting}
 Definition recursive_spec (e : expr) (S : expr -> Prop) : iProp :=
-  MkProp
-    (fun n => forall v, value v -> S v ->
-                          wp_at n (EApp e v) S)
-    (recursive_spec_mono e S).
+  MkProp (fun n => forall v, value v -> S v -> wp_at n (EApp e v) S)
+         (recursive_spec_mono e S).
 \end{lstlisting}
-
 \noindent
-The proposition $\mathtt{recursive\_spec}\, e\, S$ at depth $n$ says:
-``for every value $v$ satisfying $S$, applying $e$ to $v$ is safe
-through $n$ steps, and any value it produces satisfies $S$''.
-Crucially, $S$ appears \emph{twice} --- once as the precondition,
-once as the postcondition.  This is the source of the
-self-reference: to prove the spec for $\mathtt{EFix}\, body$ at
-depth $n+1$, we need to know the spec for $\mathtt{EFix}\, body$ at
-depth $n$ in order to handle the recursive call inside the body.
+$\mathtt{recursive\_spec}\, e\, S$ at depth $n$ says: ``for every
+value $v$ satisfying $S$, applying $e$ to $v$ is safe through $n$
+steps and produces a value satisfying $S$.''  Crucially, $S$ appears
+twice; this is the source of the self-reference.  To prove the spec
+for $\mathtt{EFix}\, body$ at depth $n+1$ we need to know it at depth
+$n$, in order to handle the recursive call inside the body.
 
 \paragraph{The \texttt{wp\_fix} soundness rule.}
-The soundness rule we prove is:
-\begin{theorem}[\texttt{wp\_fix}, the soundness rule for fix-points]
-Let \texttt{body} be an expression and $S$ a predicate.  Suppose
-that for every value $e_{\mathrm{self}}$ for which
-$\mathtt{recursive\_spec}\, e_{\mathrm{self}}\, S$ holds, we also
-have $\mathtt{recursive\_spec}\, (\mathtt{subst}\, e_{\mathrm{self}}\, body)\, S$ (a Lipschitz-like assumption on the body).
+\begin{theorem}[\texttt{wp\_fix}]
+For any \texttt{body} and predicate $S$, suppose that for every value
+$e_{\mathrm{self}}$ satisfying $\mathtt{recursive\_spec}\, e_{\mathrm{self}}\, S$,
+we have $\mathtt{recursive\_spec}\, (\mathtt{subst}\, e_{\mathrm{self}}\, body)\, S$.
 Then $\top \vdash \mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$.
 \end{theorem}
-
-In words: if the body is a well-behaved transformer of recursive
-specs --- if it produces a function satisfying the spec from a
-self-reference satisfying the spec --- then the fix-point itself
-satisfies the spec.
-
-The natural proof uses the internal Löb rule directly.  We factor
-the goal $\top \vdash \mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ through the iProp $(\triangleright \varphi \to \varphi)$ for $\varphi := \mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$, prove the intermediate
-$\top \vdash \triangleright \varphi \to \varphi$ directly --- this
-is a finite piece of step-indexed reasoning, with no induction on $n$ ---
-and close with \texttt{apply iLob}:
-
+\noindent
+That is, if the body is a well-behaved transformer of recursive specs
+--- producing a function satisfying the spec from a self-reference
+satisfying the spec --- the fix-point itself satisfies the spec.  The
+natural proof factors the goal through Löb's form via
+\texttt{ientails\_trans} and closes with \texttt{apply iLob}; the
+finite intermediate $\top \vdash \triangleright \varphi \to \varphi$
+case-analyses on the depth supplied to the \texttt{iImpl}, uses
+\texttt{wp\_pure\_step\_at} for the fix-unfolding step, and discharges
+the recursive obligation from the $\mathtt{Hlater}$ supplied at the
+predecessor index:
 \begin{lstlisting}
 Theorem wp_fix body S :
   (forall e_self, value e_self ->
-     recursive_spec e_self S ⊢ recursive_spec (subst e_self body) S) ->
+     recursive_spec e_self S
+       ⊢ recursive_spec (subst e_self body) S) ->
   ⊤ ⊢ recursive_spec (EFix body) S.
 Proof.
   intros Hbody.
   apply ientails_trans with
-    (iLater (recursive_spec (EFix body) S) →
-     recursive_spec (EFix body) S).
-  - (* ⊤ ⊢ ▷ φ → φ *)
-    intros n _ m Hmn Hlater.
+    (iLater (recursive_spec (EFix body) S)
+       → recursive_spec (EFix body) S).
+  - intros n _ m Hmn Hlater.
     destruct m as [|m'].
     + intros v Hvalue HS. simpl. trivial.
     + simpl in Hlater. intros v Hvalue HS.
@@ -180,44 +121,24 @@ Proof.
       * apply not_value_app_fix.
       * apply step_fix_progress; exact Hvalue.
       * intros e' Hs. apply step_fix_det; auto.
-      * apply (Hbody (EFix body) (VFix body) m'
-                     Hlater v Hvalue HS).
+      * apply (Hbody (EFix body) (VFix body) m' Hlater v Hvalue HS).
   - apply iLob.
 Qed.
 \end{lstlisting}
-
-It is worth spelling out what the proof actually does.  The
-\texttt{apply ientails\_trans} step factors the goal through Löb's
-form.  In the body of the first bullet, the case analysis on $m$
-contributes only a trivial base case ($m = 0$, where the wp is
-\texttt{True}) and an inductive step.  In the inductive case,
-the hypothesis $\mathtt{Hlater}$ supplies us with
-$\mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ at the
-\emph{predecessor} index $m'$ --- which is exactly the data we
-need to satisfy the precondition of $\mathtt{Hbody}$ when
-discharging the recursive call.  The fix-unfolding step from
-$\mathtt{EApp}\, (\mathtt{EFix}\, body)\, v$ is then a single
-application of \texttt{wp\_pure\_step\_at}, which leaves us at
-index $m'$ inside the substituted body --- and the substituted body
-satisfies the spec at $m'$ by Hbody and Hlater.
-
-There is no induction on $n$ in this proof.  The induction is
-hidden inside \texttt{iLob}'s own proof, which we wrote once in
-Section~\ref{sec:prop}.  This is the structural feature that we
-want to spotlight in Section~\ref{sec:imp-vs-lam}: the soundness
-predicate $\mathtt{recursive\_spec}$ is recursive in the function
-being verified, and so the natural soundness proof must invoke
-\emph{some} recursive reasoning principle.  In a meta-level
-induction we would have to manufacture that recursion from outside;
-the internal Löb rule has it built in.
+\noindent
+No induction on $n$ appears in this proof; all recursive content is
+hidden inside \texttt{iLob}, written once in Section~\ref{sec:prop}.
+The soundness predicate $\mathtt{recursive\_spec}$ is recursive in
+the function being verified, so the natural proof must invoke some
+recursive reasoning principle.  A meta-level induction would have to
+manufacture that recursion from outside; the internal Löb rule has
+it built in.  Section~\ref{sec:imp-vs-lam} makes this structural
+observation precise.
 
 \paragraph{Distinct pre- and postconditions.}
-The single-predicate \texttt{recursive\_spec} is the cleanest shape
-for stating the diagnostic of Section~\ref{sec:imp-vs-lam}, but it is
-not the most general one.  In a standard Hoare-triple setting one
-wants a precondition $P$ on the argument and a postcondition $Q$ on
-the result, with the two distinct.  The mechanization includes the
-generalised form:
+The single-predicate \texttt{recursive\_spec} keeps the diagnostic of
+Section~\ref{sec:imp-vs-lam} clean.  The mechanization also includes
+the generalised form for actual program verification:
 \begin{lstlisting}
 Definition recursive_spec_pp (e : expr) (P Q : expr -> Prop) : iProp :=
   MkProp (fun n => forall v, value v -> P v -> wp_at n (EApp e v) Q)
@@ -225,62 +146,45 @@ Definition recursive_spec_pp (e : expr) (P Q : expr -> Prop) : iProp :=
 
 Theorem wp_fix_pp body P Q :
   (forall e_self, value e_self ->
-     recursive_spec_pp e_self P Q ⊢
-       recursive_spec_pp (subst e_self body) P Q) ->
+     recursive_spec_pp e_self P Q
+       ⊢ recursive_spec_pp (subst e_self body) P Q) ->
   ⊤ ⊢ recursive_spec_pp (EFix body) P Q.
 \end{lstlisting}
-The proof of \texttt{wp\_fix\_pp} is structurally identical to the
-proof of \texttt{wp\_fix}: the same factoring through
-$\triangleright \varphi \to \varphi$ for the corresponding $\varphi$,
-the same \texttt{wp\_pure\_step\_at} for the fix-unfolding step, the
-same closing \texttt{apply iLob}.  The locus argument of
-Section~\ref{sec:imp-vs-lam} carries over without change.  The
-single-predicate form is what we use in the worked examples below,
-because it makes the verifications shortest; the generalised form is
-the one to reach for in actual program verification.
+\noindent
+The proof of \texttt{wp\_fix\_pp} is structurally identical to
+\texttt{wp\_fix}: the same factoring through $\triangleright \varphi
+\to \varphi$, the same pure-step for fix-unfolding, the same
+\texttt{apply iLob}.  The locus argument of
+Section~\ref{sec:imp-vs-lam} carries over without change.
 
 \paragraph{Worked examples.}
-We close the section with two short verifications that exercise
-the framework end-to-end.  The first is a fix-based identity ---
-$\mathtt{recursive\_id} := \mathtt{EFix}\, (\mathtt{ELam}\, (\mathtt{EVar}\, 0))$, which observably equals the plain identity $\lambda x.x$ but forces a fix-unfolding step at every application:
-
+Two short verifications exercise the framework.  The first is a
+fix-based identity, observably equal to $\lambda x.x$ but forcing a
+fix-unfolding at every application:
 \begin{lstlisting}
 Definition recursive_id : expr := EFix (ELam (EVar 0)).
 
 Theorem recursive_id_spec (S : expr -> Prop) :
   ⊤ ⊢ recursive_spec recursive_id S.
 \end{lstlisting}
-
 \noindent
 The body $\mathtt{ELam}\, (\mathtt{EVar}\, 0)$ does not mention the
-self-reference at index $1$, so substitution into it is the identity
-on expressions, and the Lipschitz premise of \texttt{wp\_fix} becomes
-a non-recursive statement that we discharge directly with
-\texttt{wp\_pure\_step\_at}.  This example is the simplest possible
-exercise of the rule: it confirms that the framework can verify a
-recursive function whose recursive structure is trivial.
-
-The second example is the canonical divergent fix-point:
-
+self-reference, so substitution is the identity and the Lipschitz
+premise becomes a non-recursive statement discharged by
+\texttt{wp\_pure\_step\_at}.  The second example is the canonical
+divergent fix-point:
 \begin{lstlisting}
 Definition bottom : expr := EFix (EVar 0).
 
 Theorem bottom_spec (S : expr -> Prop) :
   ⊤ ⊢ recursive_spec bottom S.
-Proof.
-  apply wp_fix. intros e_self Hself.
-  apply ientails_refl.
-Qed.
+Proof. apply wp_fix. intros e_self Hself. apply ientails_refl. Qed.
 \end{lstlisting}
-
 \noindent
-For $\mathtt{bottom}$, the body \emph{is} the bare self-reference at
-index $0$, so substituting $e_{\mathrm{self}}$ into it gives
-$e_{\mathrm{self}}$ unchanged, and the Lipschitz premise of
-$\mathtt{wp\_fix}$ collapses to reflexivity.  The conclusion ---
-that $\mathtt{bottom}$ satisfies every recursive spec --- is the
-familiar observation that a divergent program satisfies any
-partial-correctness specification vacuously; here it appears as a
-one-liner because the forcing framework absorbs the divergence into
-the wp's index hierarchy.
-
+For $\mathtt{bottom}$ the body is the bare self-reference, so
+substitution gives $e_{\mathrm{self}}$ unchanged and the Lipschitz
+premise collapses to reflexivity.  The conclusion --- that
+$\mathtt{bottom}$ satisfies every recursive spec --- is the familiar
+observation that a divergent program satisfies any partial-correctness
+specification vacuously; here it appears as a one-liner because the
+forcing framework absorbs the divergence into the wp's index hierarchy.

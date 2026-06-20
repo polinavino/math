@@ -26,6 +26,39 @@ correspondence; it makes precise what the forcing translation does to
 a meta-level proposition that is to be lifted into the forced logic
 unchanged.
 
+\paragraph{Relation to the available JTS Coq plugin.}
+The JTS translation has been implemented as a Coq plugin
+\cite{forcing-coq-plugin}.  It is worth being explicit about how it
+differs from the work of this paper, because the existence of a
+``forcing in Coq'' plugin invites the question of overlap.  The
+plugin is a \emph{translation tool}: it takes a Coq term $M : T$
+together with a forcing structure, and produces a translated term
+$M^P : T^P$ in the forced universe.  Its main demonstrative example
+is a step-indexed model of pure $\lambda$-calculus, in which the
+translation lets one define a $\mathtt{fixp}$ operator and prove
+equations such as $Y$-combinator reduction; the relevant
+infrastructure lives in the test-suite files \texttt{fix.v} and
+\texttt{pure\_lambda\_calculus.v}.  The instantiation at the natural
+numbers with $\le$ (\texttt{NatForcing} in the plugin's \texttt{Init.v})
+produces a structure of monotone-indexed sheaves which is, up to
+definitional details, exactly the type of our $\mathtt{iProp}$.
+
+The plugin does not contain a Hoare logic, a weakest-precondition
+predicate, an operational semantics for any source language, or any
+soundness proof against an operational semantics.  In particular it
+does not state any rule of the shape $(\triangleright \varphi \to
+\varphi) \vdash \varphi$ as the soundness justification for a
+recursive program-logic rule.  The work of this paper is therefore
+disjoint from the plugin's contribution: we use the same forcing
+structure (and the same propositional fragment of the translation)
+that the plugin makes available, but we apply it to a different
+purpose --- a step-indexed Hoare logic, the diagnostic of
+Section~\ref{sec:imp-vs-lam}, and the well-foundedness counterexample
+of Section~\ref{sec:lob-essential}.  The plugin would be a natural
+substrate to build on if one wished to formalize the
+\emph{type-level} half of the correspondence we sketch here as
+future work.
+
 \paragraph{The constant embedding.}
 The embedding $\mathsf{Prop} \hookrightarrow \mathtt{iProp}$ sends a
 meta-level proposition $P$ to the iProp that is forced everywhere if
