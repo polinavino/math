@@ -192,55 +192,19 @@ amount of recursion at the meta level: it has to be a property of
 the conditions themselves.  The well-foundedness is constitutive of
 the modal logic and not eliminable.
 
-\paragraph{What this means for someone designing a step-indexed
-logic.}
-The choice of step-index domain is the choice that decides whether
-Löb's rule will be available.  Any attempt to build a step-indexed
-semantics on a non-well-founded index structure --- as one might be
-tempted to do for, say, integer-offset reasoning, signed step
-counters that can decrement past zero, bidirectional approximation
-indices, or any setting where the index is allowed to descend
-without bound --- will produce all of the iProp connectives without
-issue, including a perfectly well-typed $\triangleright$ modality
-and a derivable monotonicity rule for it.  The first thing that will
-break is Löb's rule, in exactly the way Section~\ref{sec:lob-essential}
-shows: the premise $(\triangleright \bot) \to \bot$ becomes valid
-vacuously, while $\bot$ stays unforced.  Every soundness proof in
-the framework that secretly depends on Löb's rule --- which, by the
-diagnostic of Section~\ref{sec:imp-vs-lam}, is every soundness proof
-whose predicate is recursive in the program --- silently relies on a
-rule that does not in fact hold.  A practitioner who wants
-unsigned-integer offsets, ordinal step indices, or any other
-non-standard index structure has to first verify that the structure
-is well-founded; otherwise the framework will look like it works
-but its soundness proofs for higher-order recursion will be
-incorrect.
-
-The good news is that the standard candidates do pass the check.
-The natural numbers under $\le$, the pointwise product
-$\omega \times \omega$ of Section~\ref{sec:abstract}, and any
-ordinal up to a bound are well-founded; so are arbitrary finite
-posets and any countable Noetherian poset.  Transfinite step-indexed
-systems such as Transfinite Iris \cite{spies2021transfinite}, which
-indexes step counts by ordinals up to some bound, are sound with
-respect to Löb's rule by exactly the same well-founded induction
-argument that powers Phase 4's abstract \texttt{iLob}.  The
-counterexample of this section therefore is not a threat to the
-existing literature; it is a soundness desideratum that
-\emph{every} system in the literature happens to satisfy, sometimes
-by accident of design and sometimes by deliberate construction.
-What the negative result rules out is the temptation to leave the
-well-foundedness implicit when designing a new step-index structure.
-
-The classical literature contains the corresponding result for
-\textsf{GL}: the soundness of Löb's axiom for converse-well-founded
-Kripke frames is folklore in modal logic, and Solovay's arithmetical
-completeness theorem \cite{solovay1976} ties it to the
-well-foundedness of the proof-theoretic ``provability in PA''
-modality.  Our contribution is to translate the result into
-step-indexed Hoare logic --- where it amounts to a soundness
-desideratum for any forcing-like step-indexed semantics --- and to
-mechanize the counterexample.  As far as we are aware, the statement
-in this form has not previously appeared in the PL verification
-literature.
+\paragraph{Practical upshot.}
+The choice of step-index domain decides whether L\"ob's rule is
+available.  Building a step-indexed semantics on a non-well-founded
+index structure --- signed counters, bidirectional approximation
+indices, anything descending without bound --- yields every iProp
+connective and a derivable $\triangleright$-monotonicity rule, but
+L\"ob's rule fails: $(\triangleright \bot) \to \bot$ becomes
+vacuously valid while $\bot$ stays unforced, and every soundness
+proof whose predicate is recursive in the program
+(Section~\ref{sec:imp-vs-lam}) silently relies on a rule that does
+not hold.  The standard candidates --- $\omega$, products like
+$\omega \times \omega$, ordinals up to a bound, Transfinite
+Iris~\cite{spies2021transfinite} --- all pass the check.  Our
+characterization rules out only the temptation to leave the
+well-foundedness implicit.
 

@@ -144,12 +144,20 @@ knowledge, the first explicit and mechanized articulation of when
 the internal-Löb idiom of Iris and related systems is essential
 versus when it is a presentational choice.
 
-Second, we show that the well-foundedness of the forcing notion is
-\emph{essential}: we exhibit a would-be forcing structure over
-$\mathbb{Z}$ in which every iProp construction goes through, but
-Löb's rule fails on $\bot$.  This is a step-indexed-Hoare-logic
-counterpart of a classical fact about Gödel--Löb modal logic; the
-statement does not, as far as we can determine, appear in the
+Second, we characterize exactly when L\"ob's rule is available: in
+any forcing-style pre-structure satisfying the order-theoretic axioms
+of our abstract framework, L\"ob's rule holds for every iProp if and
+only if the strict refinement relation is well-founded.  The forward
+direction is the standard well-founded-induction proof; the backward
+direction uses the forcing-accessibility predicate
+$\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$ as a
+single internal iProp witness, so that a universal L\"ob assumption
+forces well-foundedness of the strict relation.  A concrete
+ill-founded instance over $\mathbb{Z}$ realises one direction
+constructively.  This characterization is a step-indexed-Hoare-logic
+counterpart of a classical fact about G\"odel--L\"ob modal logic; the
+iff form, stated and mechanized in the step-indexed Hoare logic
+setting, does not, as far as we can determine, appear in the
 verification literature.
 
 The two observations rest on a forcing-style re-presentation of

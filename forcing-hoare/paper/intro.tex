@@ -59,15 +59,22 @@ either the synthetic guarded domain theory literature or in the Iris
 literature, where internal Löb is heavily used but the question of
 when it is essential is not explicitly diagnosed.
 
-\item \textbf{A non-well-foundedness counterexample to Löb's rule}
-(Section~\ref{sec:lob-essential}).  We exhibit a would-be forcing
-structure over $\mathbb{Z}$ in which every iProp construction goes
-through but Löb's rule fails: the premise $(\triangleright \bot)
-\to \bot$ is forced everywhere because $\mathbb{Z}$ has no minimum,
-while $\bot$ is forced nowhere.  This is a step-indexed-Hoare-logic
-instance of a classical fact about Gödel--Löb modal
-logic~\cite{smorynski1985,boolos1993} that, brought into the
-verification setting and mechanized, does not appear in the
+\item \textbf{A characterization of L\"ob's rule by well-foundedness}
+(Section~\ref{sec:lob-essential}).  In any forcing-style pre-structure
+satisfying the order-theoretic axioms of our abstract framework,
+L\"ob's rule holds for every iProp iff the strict refinement relation
+is well-founded.  The forward direction is the standard
+well-founded-induction proof, replayed in the pre-structure; the
+backward direction uses the \emph{forcing-accessibility} predicate
+$\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$ as an
+internal iProp witness whose L\"ob premise is forced everywhere, so a
+universal L\"ob assumption forces every condition to be accessible.
+A concrete would-be forcing structure over $\mathbb{Z}$ where every
+iProp construction goes through but L\"ob's rule fails on $\bot$
+realises one direction constructively.  This is a step-indexed Hoare
+logic counterpart of a classical fact about G\"odel--L\"ob modal
+logic~\cite{smorynski1985,boolos1993} that, in the iff form stated and
+mechanized in the verification setting, does not appear in the
 literature we surveyed.  Methodologically, the well-foundedness of
 the forcing notion is constitutive of the modal logic, not a
 presentation choice that can be lifted away by a clever recursion on
@@ -129,8 +136,8 @@ Section~\ref{sec:lam} develops Hoare logic for an untyped
 $\lambda$-calculus with \texttt{fix} and proves the soundness rule
 via the internal Löb rule.  Section~\ref{sec:imp-vs-lam} articulates
 the diagnostic.  Section~\ref{sec:abstract} gives the abstract
-framework.  Section~\ref{sec:lob-essential} proves Löb's rule fails
-without well-foundedness.  Section~\ref{sec:bridge} formalizes the
+framework.  Section~\ref{sec:lob-essential} characterizes L\"ob's rule
+in terms of well-foundedness of the forcing notion.  Section~\ref{sec:bridge} formalizes the
 JTS embedding.  Section~\ref{sec:related} positions the contribution
 against the literature.  The complete Rocq development is
 approximately 800 lines across 11 files, with no external
