@@ -10,4 +10,6 @@ coq/Phase3c_Fix.v
 coq/Phase3d_Example.v
 coq/Phase4_Abstract.v
 coq/Phase5_Metatheory.v
+coq/Phase5b_GL.v
+coq/Phase5c_Equiv.v
 coq/Phase6_Bridge.v

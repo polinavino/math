@@ -121,6 +121,21 @@ Transfinite Iris in the same sense it subsumes the
 $(\omega, \le)$ structure of ordinary Iris --- as a particular
 instantiation of a generic well-founded-forcing framework.
 
+\paragraph{Soundness of propositional GL.}
+The combination $(\mathtt{iProp}, \triangleright)$ should be a model
+of the propositional G\"odel--L\"ob modal logic \textsf{GL} with
+$\Box$ interpreted as $\triangleright$.  Mechanizing this is routine
+once the framework is in place: we define syntactic \textsf{GL}
+formulas \texttt{gl\_form}, interpret them into $\mathtt{iProp}$ with
+$\Box \mapsto \triangleright$, and verify the modal axioms K, 4,
+L\"ob, and the necessitation rule (file
+\texttt{Phase5b\_GL.v}).  Each axiom unfolds to a small step-index
+calculation; L\"ob's case is the direct invocation of $\mathtt{iLob}$.
+The topos-of-trees literature establishes such soundness abstractly;
+we mention this here as the concrete confirmation that our particular
+$\mathtt{iProp}$-with-$\triangleright$ structure is a sound model of
+the modal core of \textsf{GL}.
+
 We have shown that the data of a step-indexed logic is captured by a
 \texttt{ForcingStructure} record; that the propositional fragment is
 parametric in this data; that the internal Löb rule is, in any such

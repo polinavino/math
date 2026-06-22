@@ -48,17 +48,30 @@ wp predicate, without separation logic, heap state, or concurrency.
 Whether the forcing reading scales gracefully to Iris-style separation
 logic, resource state, invariants, and concurrent step counters is an
 open question this paper does not answer; our contribution is the
-diagnostic and the negative result, not an Iris-scale framework.  Four
-natural extensions suggest themselves: mechanizing the type-level half
-of the JTS correspondence (Section~\ref{sec:bridge}) as a theorem
-rather than a heuristic; exhibiting non-trivial verifications at
-richer forcing structures including transfinite step indices
-\cite{spies2021transfinite}; lifting the IMP and $\lambda$-calculus
+diagnostic and the negative result, not an Iris-scale framework.
+Several natural extensions suggest themselves.  Mechanizing the
+type-level half of the JTS correspondence
+(Section~\ref{sec:bridge}) as a theorem rather than a heuristic, and
+exhibiting non-trivial verifications at richer forcing structures
+including transfinite step indices~\cite{spies2021transfinite}, both
+remain to be done.  The $\lambda$-calculus development of
+Section~\ref{sec:lam} is untyped; lifting it to a simply-typed or
+polymorphic source language would test whether the recursion-locus
+diagnostic continues to track the higher-order/first-order split when
+types constrain the recursion, or whether it instead splits along the
+type structure.  The pointwise-product forcing structure
+$\mathtt{prod\_FS}$ of Section~\ref{sec:abstract} is defined and
+satisfies the axioms, but we do not develop a Hoare logic over it; a
+two-counter Hoare logic --- the natural setting for a concurrent
+calculus where each component has its own step index --- is the most
+direct payoff of having the framework parametric in the forcing
+structure, and is the test of whether the parametricity buys
+genuinely new verifications.  Lifting the IMP and $\lambda$-calculus
 developments of Sections~\ref{sec:imp}--\ref{sec:lam} to be parametric
-in the forcing structure; and integrating with separation logic on a
-heap.  Whether the recursion-locus diagnostic can be sharpened to a
-syntactic check on iProp definitions, applicable automatically to
-Iris-style soundness proofs, is the question we are most interested
+in the forcing structure is a prerequisite for this and is mostly
+bookkeeping.  Whether the recursion-locus diagnostic can be sharpened
+to a syntactic check on iProp definitions, applicable automatically
+to Iris-style soundness proofs, is the question we are most interested
 in pursuing.
 
 The broader point we hope the paper makes is that step-indexed

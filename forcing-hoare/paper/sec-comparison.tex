@@ -18,7 +18,17 @@ depth $n$ to discharge the obligation for \texttt{CWhile b c} itself.
 The proof can also be done by an appeal to the internal Löb rule, as
 the \texttt{hoare\_while\_iLob} alternative shows; but the two
 proofs are structurally identical, and the choice between them is
-cosmetic.
+cosmetic.  A precise statement of why is the three-way equivalence
+proved in \texttt{Phase5c\_Equiv.v}: for any downward-closed
+$\Phi : \mathbb{N} \to \mathtt{Prop}$ and its iProp embedding
+$\widehat{\Phi}$, the three propositions
+$\forall n.\, \Phi\, n$, \,
+$\top \vdash \widehat{\Phi}$, and \,
+$\top \vdash \triangleright \widehat{\Phi} \to \widehat{\Phi}$
+are equivalent.  The IMP \texttt{wp\_at}-predicate
+$\lambda n.\, \forall s, P\, s \to \mathtt{wp\_at}\, n\, c\, Q\, s$ is
+exactly of this shape, so meta-level induction-on-$n$ and the
+internal-L\"ob route literally close the same goal.
 
 The $\lambda$-calculus proof of \texttt{wp\_fix} also goes by some
 form of recursion --- it has to, because the goal is the soundness

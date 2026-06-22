@@ -122,6 +122,48 @@ over $\mathbb{Z}$ in which every other piece of the abstract
 framework of Section~\ref{sec:abstract} goes through, but Löb's rule
 is not derivable.
 
+\paragraph{From example to characterization.}
+The counterexample shows that well-foundedness is necessary on at
+least one structure.  We now upgrade ``at least one'' to ``every'',
+mechanizing a precise iff.  Fix a ``pre-structure'' --- a preorder
+$(\mathtt{cond}, \le)$ with a strict relation $\mathtt{lt}$ satisfying
+all the order-theoretic axioms of \texttt{ForcingStructure} except
+well-foundedness --- and build $\mathtt{iPropPre}$,
+$\mathtt{iImplPre}$, $\mathtt{iLaterPre}$ exactly as in
+Section~\ref{sec:abstract}.  Say that \emph{L\"ob holds} for the
+pre-structure if, for every $\mathtt{iPropPre}$ $\varphi$, the
+entailment
+$(\triangleright \varphi \to \varphi) \vDash \varphi$ is derivable.
+Then:
+
+\begin{lstlisting}
+Theorem lob_iff_wf : lob_holds <-> well_founded lt.
+\end{lstlisting}
+
+\noindent
+The forward direction $(\Leftarrow)$ is the abstract \texttt{iLob}
+proof of Section~\ref{sec:abstract}, replayed in the pre-structure.
+The backward direction $(\Rightarrow)$ is genuinely new.  Define the
+\emph{forcing-accessibility} predicate
+$\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$; this is
+a valid $\mathtt{iPropPre}$, because $\mathtt{Acc}$ is downward-closed
+along $\le$.  Its L\"ob premise
+$(\triangleright \varphi_{\mathrm{acc}} \to \varphi_{\mathrm{acc}})$ is
+forced at \emph{every} condition: $\mathtt{Acc}$'s introduction rule
+says exactly ``every strict predecessor accessible $\Rightarrow$ this
+condition accessible''.  The assumed universal L\"ob then concludes
+$\varphi_{\mathrm{acc}}$ holds everywhere, i.e., every condition is
+accessible, i.e., $\mathtt{lt}$ is well-founded.
+
+The statement is the step-indexed Hoare logic form of a classical
+soundness--completeness pairing for the G\"odel--L\"ob axiom over
+transitive Kripke frames (recalled below).  What is novel is the
+combination: stated as a property of an abstract step-indexed forcing
+framework, the witness is a single iProp internal to that framework
+(forcing-accessibility), and the result is mechanized in Coq.  To our
+knowledge no equivalent characterisation has been recorded for any
+extant step-indexed Hoare logic.
+
 \paragraph{Connection to G\"odel--L\"ob.}
 The result is the step-indexed analog of a classical observation in
 modal logic.  The G\"odel--L\"ob provability logic \textsf{GL} is
