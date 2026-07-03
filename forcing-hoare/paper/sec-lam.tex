@@ -3,14 +3,14 @@
 
 For IMP, step-indexing was overkill: the index was a presentation
 convenience.  We now move to a language where it is no longer
-optional --- an untyped $\lambda$-calculus with a fix-point operator.
-Two things change.  The wp predicate must explicitly encode
+optional: an untyped $\lambda$-calculus with a fix-point operator.
+Two things change.  First, the wp predicate must explicitly encode
 \emph{safety}, since the language has stuck terms (e.g.\
-$\mathtt{EApp}\, (\mathtt{EInt}\, 5)\, (\mathtt{EInt}\, 3)$); and the
-recursion introduced by \texttt{fix} turns the soundness predicate
+$\mathtt{EApp}\, (\mathtt{EInt}\, 5)\, (\mathtt{EInt}\, 3)$).  Second,
+the recursion introduced by \texttt{fix} turns the soundness predicate
 for a recursive function into something defined in terms of itself,
 so that the natural soundness proof no longer goes through meta-level
-induction on the step index --- it goes through the internal Löb
+induction on the step index: it goes through the internal Löb
 rule, used directly, with no outer induction on $n$.
 
 \paragraph{The language.}
@@ -27,7 +27,7 @@ Inductive expr : Type :=
 \end{lstlisting}
 \noindent
 $\mathtt{EFix}\, body$ binds the self-reference at de-Bruijn index
-$0$; we treat it as a value so it can be passed around, with
+$0$. We treat it as a value so it can be passed around, with
 self-unfolding firing only on application.  The small-step relation
 includes the usual arithmetic and conditional rules, $\beta$-reduction
 $\mathtt{EApp}\, (\mathtt{ELam}\, body)\, v \to body[v / 0]$, and the
@@ -62,7 +62,7 @@ saying that if every reduct of $e$ is the same $e'$ and $e'$
 satisfies the wp at index $n$, then $e$ satisfies it at $n+1$.  The
 pure-step rule propagates the wp through any $\beta$-reduction or
 fix-unfolding.  We do not develop dedicated rules for \texttt{EPlus},
-\texttt{EIf0}, or \texttt{EApp}; they either need an evaluation-context
+\texttt{EIf0}, or \texttt{EApp}. They either need an evaluation-context
 framework or unfold case-by-case via \texttt{wp\_pure\_step}, and
 neither is necessary for the section's conceptual point.
 
@@ -78,7 +78,7 @@ Definition recursive_spec (e : expr) (S : expr -> Prop) : iProp :=
 $\mathtt{recursive\_spec}\, e\, S$ at depth $n$ says: ``for every
 value $v$ satisfying $S$, applying $e$ to $v$ is safe through $n$
 steps and produces a value satisfying $S$.''  Crucially, $S$ appears
-twice; this is the source of the self-reference.  To prove the spec
+twice. This is the source of the self-reference.  To prove the spec
 for $\mathtt{EFix}\, body$ at depth $n+1$ we need to know it at depth
 $n$, in order to handle the recursive call inside the body.
 
@@ -90,11 +90,11 @@ we have $\mathtt{recursive\_spec}\, (\mathtt{subst}\, e_{\mathrm{self}}\, body)\
 Then $\top \vdash \mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$.
 \end{theorem}
 \noindent
-That is, if the body is a well-behaved transformer of recursive specs
---- producing a function satisfying the spec from a self-reference
-satisfying the spec --- the fix-point itself satisfies the spec.  The
+That is, if the body is a well-behaved transformer of recursive specs,
+producing a function satisfying the spec from a self-reference
+satisfying the spec, then the fix-point itself satisfies the spec.  The
 natural proof factors the goal through Löb's form via
-\texttt{ientails\_trans} and closes with \texttt{apply iLob}; the
+\texttt{ientails\_trans} and closes with \texttt{apply iLob}. The
 finite intermediate $\top \vdash \triangleright \varphi \to \varphi$
 case-analyses on the depth supplied to the \texttt{iImpl}, uses
 \texttt{wp\_pure\_step\_at} for the fix-unfolding step, and discharges
@@ -111,28 +111,25 @@ Proof.
   apply ientails_trans with
     (iLater (recursive_spec (EFix body) S)
        → recursive_spec (EFix body) S).
-  - intros n _ m Hmn Hlater.
-    destruct m as [|m'].
+  - intros n _ m Hmn Hlater. destruct m as [|m'].
     + intros v Hvalue HS. simpl. trivial.
     + simpl in Hlater. intros v Hvalue HS.
-      apply (wp_pure_step_at m'
-        (EApp (EFix body) v)
-        (EApp (subst (EFix body) body) v) S).
-      * apply not_value_app_fix.
-      * apply step_fix_progress; exact Hvalue.
-      * intros e' Hs. apply step_fix_det; auto.
-      * apply (Hbody (EFix body) (VFix body) m' Hlater v Hvalue HS).
+      (* fix-unfolding via wp_pure_step_at; the recursive *)
+      (* obligation is discharged from Hlater at m'.      *)
+      apply (wp_pure_step_at m' (EApp (EFix body) v)
+               (EApp (subst (EFix body) body) v) S); [.. |
+        apply (Hbody (EFix body) (VFix body) m' Hlater v Hvalue HS)].
   - apply iLob.
 Qed.
 \end{lstlisting}
 \noindent
-No induction on $n$ appears in this proof; all recursive content is
+No induction on $n$ appears in this proof. All recursive content is
 hidden inside \texttt{iLob}, written once in Section~\ref{sec:prop}.
 The soundness predicate $\mathtt{recursive\_spec}$ is recursive in
 the function being verified, so the natural proof must invoke some
 recursive reasoning principle.  A meta-level induction would have to
-manufacture that recursion from outside; the internal Löb rule has
-it built in.  Section~\ref{sec:imp-vs-lam} makes this structural
+manufacture that recursion from outside, while the internal Löb rule
+has it built in.  Section~\ref{sec:imp-vs-lam} makes this structural
 observation precise.
 
 \paragraph{Distinct pre- and postconditions.}
@@ -183,8 +180,8 @@ Proof. apply wp_fix. intros e_self Hself. apply ientails_refl. Qed.
 \noindent
 For $\mathtt{bottom}$ the body is the bare self-reference, so
 substitution gives $e_{\mathrm{self}}$ unchanged and the Lipschitz
-premise collapses to reflexivity.  The conclusion --- that
-$\mathtt{bottom}$ satisfies every recursive spec --- is the familiar
+premise collapses to reflexivity.  The conclusion, that
+$\mathtt{bottom}$ satisfies every recursive spec, is the familiar
 observation that a divergent program satisfies any partial-correctness
-specification vacuously; here it appears as a one-liner because the
+specification vacuously. Here it appears as a one-liner because the
 forcing framework absorbs the divergence into the wp's index hierarchy.

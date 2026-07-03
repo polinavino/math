@@ -218,6 +218,29 @@ externally.
   `▷ ⊥` is never forced); `lob_conclusion_fails` — `⊥` is forced
   at no condition; **`lob_fails_over_Z`** — the entailment
   `(▷ ⊥ → ⊥) ⊢ ⊥` does not hold.
+- **Section `LobIff`:** upgrades the `Z` counterexample to a full
+  characterisation. Over any pre-structure (the order axioms of
+  `ForcingStructure` minus well-foundedness), proves
+  **`lob_iff_wf` : `lob_holds ↔ well_founded lt`** — the forward
+  direction (`wf_implies_lob`) replays the abstract `iLob` proof; the
+  backward direction (`lob_implies_wf`) is new, using the
+  forcing-accessibility predicate `φ_acc p := Acc lt p` as a single
+  internal iProp witness.
+
+[coq/Phase5b_GL.v](coq/Phase5b_GL.v)
+- **Defines:** syntactic Gödel–Löb formulas `gl_form` and their
+  interpretation `interp` into `iProp` with `□ ↦ ▷`.
+- **Proves:** soundness of the modal core — `sound_K`, `sound_4`,
+  `sound_Lob`, `sound_Nec` — packaged so that our
+  `iProp`-with-`▷` is a sound model of the modal core of **GL**.
+
+[coq/Phase5c_Equiv.v](coq/Phase5c_Equiv.v)
+- **Proves:** `induction_iLob_equiv` — for a downward-closed
+  `Phi : nat → Prop`, the three statements `∀ n, Phi n`, `⊤ ⊢ embed Phi`,
+  and `⊤ ⊢ ▷ (embed Phi) → embed Phi` are equivalent. This is the
+  precise sense in which meta-level induction on `n` and the internal
+  Löb rule close the same goal in the IMP-style (depth-recursive) case,
+  and why the equivalence does *not* extend to the `λ`-fix case.
 
 The upshot: the `fs_lt_wf` axiom in `ForcingStructure` cannot be
 dropped. This is the step-indexed analog of the well-known
@@ -250,8 +273,10 @@ is future work.
 #### The paper
 
 [paper/main.tex](paper/main.tex) — draft of the writeup, in CPP
-(`acmart` `sigplan`) format, currently 18 pages. The paper's central
-thesis is supported by the mechanization on four fronts:
+(`acmart` `sigplan`) format: a 12-page body (within the CPP limit),
+plus a one-page appendix (the JTS bridge) and references, 15 pages
+total. The paper's central thesis is supported by the mechanization on
+four fronts:
 
 1. *In higher-order settings, Löb's rule is the load-bearing
    reasoning principle for recursion* (Phase 3c): the meta-level
@@ -287,16 +312,20 @@ and `\input` of each section, plus the bibliography:
 | [paper/sec-comparison.tex](paper/sec-comparison.tex) | The Phase 2c vs 3c diagnostic |
 | [paper/sec-abstract.tex](paper/sec-abstract.tex) | Abstract forcing framework (Phase 4) |
 | [paper/sec-lob-essential.tex](paper/sec-lob-essential.tex) | Löb's rule is essential (Phase 5) |
-| [paper/sec-bridge.tex](paper/sec-bridge.tex) | Bridge to JTS forcing translations (Phase 6) |
 | [paper/sec-related-work.tex](paper/sec-related-work.tex) | Related work |
 | [paper/sec-conclusion.tex](paper/sec-conclusion.tex) | Conclusion |
-| [paper/refs.bib](paper/refs.bib) | Bibliography (~38 entries) |
+| [paper/sec-bridge.tex](paper/sec-bridge.tex) | Bridge to JTS forcing translations (Phase 6) — deferred to an appendix |
+| [paper/refs.bib](paper/refs.bib) | Bibliography (36 entries) |
 | [paper/Makefile](paper/Makefile) | `make` to build, `make clean` to clean intermediates |
 
-Venue plan: primary target is CPP (deadline October, conference
-January); fallback ITP (deadline February–March, conference July).
-No overlap, so we can submit to CPP first and to ITP if not
-accepted.
+Venue plan: primary target is CPP 2027 (abstracts due Sep 3 2026,
+full papers due Sep 10 2026, conference January 2027, co-located with
+POPL). CPP requires a body of at most 12 pages excluding bibliography
+and clearly-marked appendices, `acmart` `sigplan` `10pt` `anonymous`
+`review`, lightweight double-blind — all currently satisfied. Fallback
+is ITP (typically deadlines in spring, conference in summer; the 2027
+CFP is not yet posted). No overlap, so we can submit to CPP first and
+to ITP if not accepted.
 
 ### Known gaps
 
@@ -326,7 +355,10 @@ make
 
 Requires Coq 8.18 or compatible. Tested against Coq 8.18.0. No
 external libraries beyond `Arith`, `Lia`, `ZArith`, `Wellfounded`,
-`Wf_nat`.
+`Wf_nat`. The development is about 2,090 lines of Rocq (≈1,590
+excluding blank and comment-only lines) across 13 files — the six
+phases, plus `Phase5b_GL.v` (GL soundness) and `Phase5c_Equiv.v`
+(the induction/`iLob` equivalence).
 
 ### Paper
 

@@ -11,7 +11,7 @@ $M : T$ to a forced term $M^P : T^P$, where the type translation
 $T \mapsto T^P$ corresponds to ``the $P$-forced version of $T$''.  At
 the level of propositions, the forced version of $\mathsf{Prop}$ is
 essentially a downward-closed presheaf on the forcing conditions
-\cite{jaber-et-al-2016} --- which is the type of our $\mathtt{iProp}$.
+\cite{jaber-et-al-2016}, which is the type of our $\mathtt{iProp}$.
 
 The framework of Section~\ref{sec:abstract} is therefore, up to
 definitional choices, the propositional fragment of the JTS forcing
@@ -22,7 +22,7 @@ translation in Rocq.  What we have mechanized is the
 \emph{embedding} of the unforced theory ($\mathsf{Prop}$ in the
 ambient meta-theory) into the forced one ($\mathtt{iProp}$ in our
 framework): the constant embedding.  This is the easy half of the
-correspondence; it makes precise what the forcing translation does to
+correspondence. It makes precise what the forcing translation does to
 a meta-level proposition that is to be lifted into the forced logic
 unchanged.
 
@@ -36,7 +36,7 @@ together with a forcing structure, and produces a translated term
 $M^P : T^P$ in the forced universe.  Its main demonstrative example
 is a step-indexed model of pure $\lambda$-calculus, in which the
 translation lets one define a $\mathtt{fixp}$ operator and prove
-equations such as $Y$-combinator reduction; the relevant
+equations such as $Y$-combinator reduction. The relevant
 infrastructure lives in the test-suite files \texttt{fix.v} and
 \texttt{pure\_lambda\_calculus.v}.  The instantiation at the natural
 numbers with $\le$ (\texttt{NatForcing} in the plugin's \texttt{Init.v})
@@ -52,7 +52,7 @@ recursive program-logic rule.  The work of this paper is therefore
 disjoint from the plugin's contribution: we use the same forcing
 structure (and the same propositional fragment of the translation)
 that the plugin makes available, but we apply it to a different
-purpose --- a step-indexed Hoare logic, the diagnostic of
+purpose: a step-indexed Hoare logic, the diagnostic of
 Section~\ref{sec:imp-vs-lam}, and the well-foundedness counterexample
 of Section~\ref{sec:lob-essential}.  The plugin would be a natural
 substrate to build on if one wished to formalize the
@@ -77,7 +77,7 @@ Notation "⌜ P ⌝" := (embed P).
 This is the trivial part of the forcing translation: classical
 propositional reasoning lifts to the forcing framework without
 change.  We will see in a moment that the genuinely new content of
-the forcing translation --- the $\triangleright$ modality --- is
+the forcing translation, the $\triangleright$ modality, is
 \emph{not} in the image of $\lceil \cdot \rceil$.
 
 \paragraph{Commutation with the Heyting connectives.}
@@ -113,7 +113,7 @@ Each commutation lemma corresponds to a clause of the propositional
 fragment of the JTS forcing translation.  Specifically, the
 translation $\llbracket P \rrbracket^P$ at the level of propositions
 commutes with the standard connectives in exactly the way our
-$\lceil \cdot \rceil$ does --- a translated conjunction is the
+$\lceil \cdot \rceil$ does: a translated conjunction is the
 conjunction of translations, and so on \cite{jaber-tabareau-sozeau-2012}.
 Our framework therefore captures the propositional fragment of the
 translation.  What we do not formalize is the dependent fragment, in
@@ -146,31 +146,31 @@ witness that $\triangleright$ produces a proposition outside the
 embedded image.
 
 This makes precise what the step-indexed-specific content of our
-framework is.  The Heyting algebra structure of $\mathtt{iProp}$ ---
-all the way through $\top, \bot, \wedge, \vee, \to$ --- is
+framework is.  The Heyting algebra structure of $\mathtt{iProp}$,
+all the way through $\top, \bot, \wedge, \vee, \to$, is
 captured by the embedded image of $\mathsf{Prop}$.  What the
 step-indexed framework adds is the $\triangleright$ modality, and
 the rules that come with it (monotonicity, $\varphi \vdash
 \triangleright \varphi$, distribution over $\wedge$, and Löb's
 rule).  In the JTS picture, this is the structure that comes from
 the forcing notion specifically, rather than from the structural
-machinery of the type theory; in our picture, it is the structure
+machinery of the type theory. In our picture, it is the structure
 that comes from the well-founded strict refinement of the forcing
 conditions, rather than from the constant embedding.
 
 \paragraph{A summary correspondence.}
 The picture that emerges is this.  Step-indexed Hoare logic, as
-practiced in Iris and elsewhere, has two layers of structure: a
-Heyting-algebra fragment, which lifts from the meta-theory by a
-constant embedding and which therefore has no forcing-specific
-content; and a modal fragment ($\triangleright$, $\mathtt{iLob}$,
+practiced in Iris and elsewhere, has two layers of structure.  The
+first is a Heyting-algebra fragment, which lifts from the meta-theory
+by a constant embedding and therefore has no forcing-specific content.
+The second is a modal fragment ($\triangleright$, $\mathtt{iLob}$, and
 the rules around them), which is specifically the structure that the
 well-founded forcing notion contributes.  The JTS forcing
 translation is the type-theoretic analog of this picture: for any
 forcing notion $P$, it gives a translation of CIC that adds
 $P$-specific structure to the embedded image of the unforced
 theory.  At the level of propositions, the correspondence we
-formalize is the constant embedding; a full correspondence at all
+formalize is the constant embedding.  A full correspondence at all
 levels of the universe would require mechanizing the JTS
 translation itself, which we leave as future work.
 

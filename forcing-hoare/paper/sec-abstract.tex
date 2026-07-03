@@ -5,10 +5,10 @@ The proofs of Sections~\ref{sec:prop}--\ref{sec:lam} used
 $(\omega, \le)$ throughout, but none required $\omega$ specifically.
 We abstract the framework over an arbitrary well-founded forcing
 notion and prove Löb's rule once at this level of generality.  Two
-claims become precise: the choice of $\omega$ is a presentation
-convenience, not a foundational commitment; and the relationship
-between Löb's rule and well-founded induction becomes a literal
-identity --- the abstract \texttt{iLob} is proved by
+claims become precise.  First, the choice of $\omega$ is a
+presentation convenience, not a foundational commitment.  Second, the
+relationship between Löb's rule and well-founded induction becomes a
+literal identity: the abstract \texttt{iLob} is proved by
 \texttt{apply (well\_founded\_ind fs\_lt\_wf)}.
 
 \paragraph{The forcing structure.}
@@ -35,7 +35,7 @@ modality well-defined.
 
 \paragraph{iProp and the later modality, abstractly.}
 Over an arbitrary $\mathtt{FS}$, \texttt{iProp} is a downward-closed
-predicate on $\mathtt{fs\_cond}\, \mathtt{FS}$; the Heyting
+predicate on $\mathtt{fs\_cond}\, \mathtt{FS}$. The Heyting
 connectives are defined exactly as in Section~\ref{sec:prop} with
 $\le$ replaced by $\mathtt{fs\_le}\, \mathtt{FS}$.  The interesting
 case is the later modality.  At $(\omega, \le)$ we defined
@@ -72,7 +72,7 @@ Qed.
 Well-founded induction on $p$: at each $p$, the induction hypothesis
 gives $\varphi$ at every strict predecessor $p'$.  Apply $\mathtt{Hp}$
 at $p$ itself (using $\mathtt{fs\_le\_refl}$ to witness $p \le p$),
-leaving $\triangleright \varphi$ at $p$ to prove --- which by the
+leaving $\triangleright \varphi$ at $p$ to prove, which by the
 definition of $\triangleright$ is the quantified statement that
 $\varphi$ holds at every strict predecessor, available from the IH.
 This is the literal statement of the equivalence: \emph{Löb's rule is
@@ -105,41 +105,37 @@ the measure $\mathtt{fst}\, p + \mathtt{snd}\, p$ into $\mathbb{N}$
 via the standard library lemma $\mathtt{well\_founded\_lt\_compat}$,
 giving $\mathtt{prod\_FS} : \mathtt{ForcingStructure}$.  At this
 instance the framework provides a step-indexed logic with two
-independent step counters --- a natural model for two parallel
+independent step counters: a natural model for two parallel
 components, where Löb's rule lets one reason about recursion that
 descends in either or both components.
 
 A further family we do not develop but which deserves mention is the
-\emph{transfinite} one: countable ordinals up to a bound form
+\emph{transfinite} one.  Countable ordinals up to a bound form
 well-founded preorders, and so does the index structure used in
 Transfinite Iris~\cite{spies2021transfinite}.  At any such instance,
 the framework's \texttt{iLob} is proved by exactly the same
-\texttt{well\_founded\_ind} on $\mathtt{fs\_lt}$; the transfinite
+\texttt{well\_founded\_ind} on $\mathtt{fs\_lt}$.  The transfinite
 choice produces a stronger step-indexed logic without changing the
 soundness machinery.  The framework subsumes the index structure of
 Transfinite Iris in the same sense it subsumes the
-$(\omega, \le)$ structure of ordinary Iris --- as a particular
+$(\omega, \le)$ structure of ordinary Iris, as a particular
 instantiation of a generic well-founded-forcing framework.
 
 \paragraph{Soundness of propositional GL.}
-The combination $(\mathtt{iProp}, \triangleright)$ should be a model
-of the propositional G\"odel--L\"ob modal logic \textsf{GL} with
-$\Box$ interpreted as $\triangleright$.  Mechanizing this is routine
-once the framework is in place: we define syntactic \textsf{GL}
-formulas \texttt{gl\_form}, interpret them into $\mathtt{iProp}$ with
-$\Box \mapsto \triangleright$, and verify the modal axioms K, 4,
-L\"ob, and the necessitation rule (file
-\texttt{Phase5b\_GL.v}).  Each axiom unfolds to a small step-index
-calculation; L\"ob's case is the direct invocation of $\mathtt{iLob}$.
-The topos-of-trees literature establishes such soundness abstractly;
-we mention this here as the concrete confirmation that our particular
+As a concrete check, we define syntactic \textsf{GL} formulas
+\texttt{gl\_form}, interpret them into $\mathtt{iProp}$ with
+$\Box \mapsto \triangleright$, and verify the modal core: axioms K,
+4, L\"ob, and the necessitation rule (file \texttt{Phase5b\_GL.v}).
+Each axiom unfolds to a small step-index calculation, with L\"ob's
+case a direct invocation of $\mathtt{iLob}$.  This confirms concretely
+what the topos-of-trees literature establishes abstractly: our
 $\mathtt{iProp}$-with-$\triangleright$ structure is a sound model of
 the modal core of \textsf{GL}.
 
 We have shown that the data of a step-indexed logic is captured by a
-\texttt{ForcingStructure} record; that the propositional fragment is
-parametric in this data; that the internal Löb rule is, in any such
-structure, a direct instance of well-founded induction; and that the
+\texttt{ForcingStructure} record, that the propositional fragment is
+parametric in this data, that the internal Löb rule is, in any such
+structure, a direct instance of well-founded induction, and that the
 standard $(\omega, \le)$ choice is one instance, with at least one
 non-trivially-different alternative.  The IMP and $\lambda$-calculus
 developments of Sections~\ref{sec:imp}--\ref{sec:lam} can be lifted

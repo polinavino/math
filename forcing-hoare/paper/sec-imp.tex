@@ -8,8 +8,8 @@ propositional layer lifts to a sound Hoare logic, and proving the
 and by an explicit appeal to the internal Löb rule.  Exhibiting both
 proofs side by side makes precise the claim that ``Löb's rule
 \emph{is} induction on the step index.''  IMP has no higher-order
-features, no allocation, no concurrency; the step indices are not
-yet doing technical work.
+features, no allocation, and no concurrency, so the step indices are
+not yet doing technical work.
 
 IMP commands and their small-step semantics are standard:
 \begin{lstlisting}
@@ -28,7 +28,7 @@ The wp predicate is the step-indexed analogue of the Dijkstra wp:
 $\mathtt{wp\_at}\, n\, c\, Q\, s$ says that running $c$ from $s$ for at
 most $n$ steps is safe and any final state satisfies $Q$.  In IMP,
 every non-\texttt{CSkip} command can step, so the safety condition is
-automatic and we do not record it explicitly; the invisibility of
+automatic and we do not record it explicitly. The invisibility of
 safety in IMP is what makes this section a calibration, and
 Section~\ref{sec:lam} is where it becomes visible.
 \begin{lstlisting}
@@ -46,18 +46,18 @@ in $Q$, and lifts to an \texttt{iProp} via \texttt{MkProp}.  A Hoare
 triple is the \texttt{iProp} saying ``for every $s$ with $P\, s$, the
 wp of $c$ targeting $Q$ holds.''  Validity, written
 $\mathtt{hoare\_valid}\, P\, c\, Q$, is the entailment
-$\top \vdash \mathtt{hoare}\, P\, c\, Q$; equivalently, by
-\texttt{hoare\_valid\_alt}, the meta-level statement ``for every $n$
-and $s$ with $P\, s$, the $n$-step-bounded wp holds.''
+$\top \vdash \mathtt{hoare}\, P\, c\, Q$. Equivalently, by
+\texttt{hoare\_valid\_alt}, it is the meta-level statement ``for every
+$n$ and $s$ with $P\, s$, the $n$-step-bounded wp holds.''
 
-The five structural rules of partial-correctness Hoare logic --- skip,
-assignment, sequencing, conditional, consequence --- become small
-lemmas about \texttt{wp\_at}, each provable by routine unfolding at
+Partial-correctness Hoare logic has five structural rules: skip,
+assignment, sequencing, conditional, and consequence.  Each becomes a
+small lemma about \texttt{wp\_at}, provable by routine unfolding at
 $n+1$ and inversion on the available step.  Sequencing requires a
 small auxiliary lemma \texttt{wp\_seq} decomposing the wp of
 \texttt{CSeq c1 c2} into the wp of \texttt{c1} targeting the wp of
 \texttt{c2}, with one use of \texttt{wp\_at\_mono} to align indices.
-None of these five rules uses the propositional layer; we could state
+None of these five rules uses the propositional layer. We could state
 them entirely at the meta level.  The propositional layer pays off
 for \texttt{while}.
 
@@ -65,7 +65,7 @@ for \texttt{while}.
 Soundness of
 $\{P \wedge b\}\, c\, \{P\} \;\vdash\; \{P\}\, \mathtt{while}\, b\, c\, \{P \wedge \neg b\}$
 says that a sound loop body gives a sound loop, and the proof goes by
-induction on the step index.  The base case is trivial; the inductive
+induction on the step index.  The base case is trivial. The inductive
 step unfolds the wp at $n+1$, case-analyses on the step, and uses the
 induction hypothesis to discharge the recursive \texttt{while}
 obligation:
@@ -75,18 +75,15 @@ Lemma hoare_while P b c :
   hoare_valid P (CWhile b c)
               (fun s => P s /\ beval s b = false).
 Proof.
-  intros HC. rewrite hoare_valid_alt in HC.
-  apply hoare_valid_alt.
+  intros HC. rewrite hoare_valid_alt in HC. apply hoare_valid_alt.
   intros n. induction n as [|n IH]; intros s HP.
   - simpl. trivial.
-  - rewrite wp_at_S. split.
-    + discriminate.
-    + intros c' s' Hstep. inversion Hstep; subst.
-      * apply wp_seq.
-        eapply wp_at_post_mono.
-        2: { apply HC; split; [exact HP | assumption]. }
-        intros s'' HP'. apply IH. exact HP'.
-      * ... (* StepWhileFalse: CSkip with postcondition *)
+  - rewrite wp_at_S. split; [discriminate|].
+    intros c' s' Hstep. inversion Hstep; subst.
+    + apply wp_seq. eapply wp_at_post_mono.
+      2: { apply HC; split; [exact HP | assumption]. }
+      intros s'' HP'. apply IH. exact HP'.  (* recurse via IH *)
+    + .. (* StepWhileFalse: CSkip with postcondition *)
 Qed.
 \end{lstlisting}
 
@@ -95,10 +92,10 @@ The same theorem also follows from the internal Löb rule of
 Section~\ref{sec:prop} without any explicit induction on $n$.  We
 factor the goal $\top \vdash \mathtt{hoare}\, P\, (\mathtt{CWhile}\,
 b\, c)\, Q$ through the iProp $\triangleright \varphi \to \varphi$ for
-$\varphi := \mathtt{hoare}\, P\, (\mathtt{CWhile}\, b\, c)\, Q$, prove
-the intermediate entailment directly --- a finite, non-recursive
+$\varphi := \mathtt{hoare}\, P\, (\mathtt{CWhile}\, b\, c)\, Q$. We
+prove the intermediate entailment directly, by a finite, non-recursive
 argument that case-analyses on the depth supplied to the
-\texttt{iImpl} --- and close with \texttt{apply iLob}:
+\texttt{iImpl}, and close with \texttt{apply iLob}:
 \begin{lstlisting}
 Lemma hoare_while_iLob P b c :
   hoare_valid (fun s => P s /\ beval s b = true) c P ->
@@ -108,16 +105,14 @@ Proof.
   apply ientails_trans with
     (iLater (hoare P (CWhile b c) (...)) →
      hoare P (CWhile b c) (...)).
-  - intros n _ m Hmn Hlater s HP.
-    destruct m as [|m'].
+  - intros n _ m Hmn Hlater s HP. destruct m as [|m'].
     + simpl. trivial.
-    + simpl in Hlater. rewrite wp_at_S. split.
-      * discriminate.
-      * intros c' s' Hstep. inversion Hstep; subst.
-        -- apply wp_seq. eapply wp_at_post_mono.
-           2: { apply HC; split; [exact HP | assumption]. }
-           intros s'' HP''. apply Hlater. exact HP''.
-        -- ... (* StepWhileFalse *)
+    + simpl in Hlater. rewrite wp_at_S. split; [discriminate|].
+      intros c' s' Hstep. inversion Hstep; subst.
+      * apply wp_seq. eapply wp_at_post_mono.
+        2: { apply HC; split; [exact HP | assumption]. }
+        intros s'' HP''. apply Hlater. exact HP''.  (* recurse via Hlater *)
+      * .. (* StepWhileFalse *)
   - apply iLob.
 Qed.
 \end{lstlisting}
@@ -127,9 +122,9 @@ is hidden inside \texttt{iLob}'s proof, written once in
 Section~\ref{sec:prop} and not reproduced at every Hoare-style
 soundness proof.  The six rules (skip, assign, seq, if, while,
 consequence) are packaged as a single theorem
-\texttt{imp\_hoare\_rules}.  Soundness of Hoare logic over IMP, in
-the forcing-style semantics, is structurally identical to the soundness
-statement using the standard direct semantics --- which is part of the
+\texttt{imp\_hoare\_rules}.  In the forcing-style semantics, soundness
+of Hoare logic over IMP is structurally identical to the soundness
+statement using the standard direct semantics.  This is part of the
 point: at the first-order level the forcing reading is a different
 \emph{presentation} of the same theorems.  Section~\ref{sec:lam}
 moves to a setting where the re-presentation produces a noticeably

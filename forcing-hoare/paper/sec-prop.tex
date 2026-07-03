@@ -35,7 +35,7 @@ Notation "n ⊩ φ" := (ihold φ n).
 The notation $n \Vdash \varphi$ matches the classical forcing notation,
 and it is more than analogical: an \texttt{iProp}, taken with its
 \texttt{imono} field, is exactly a presheaf on $(\omega, \le)$, hence
-an object of the topos of trees \cite{birkedal-et-al-2012} --- which
+an object of the topos of trees \cite{birkedal-et-al-2012}, which
 is exactly the Kripke model of intuitionistic logic with worlds in
 $\omega$, and hence (Section~\ref{sec:topos}) the forcing-style
 semantics with conditions in $\omega$.
@@ -50,8 +50,8 @@ Notation "φ ⊢ ψ" := (ientails φ ψ).
 
 \paragraph{Connectives.}
 The Heyting-algebra connectives have the standard Kripke
-interpretation.  Truth and falsity are the constant predicates;
-conjunction and disjunction are pointwise; implication is the
+interpretation.  Truth and falsity are the constant predicates.
+Conjunction and disjunction are pointwise.  Implication is the
 Kripke implication, quantified over all stronger conditions:
 
 \begin{lstlisting}
@@ -64,10 +64,10 @@ Definition iImpl (φ ψ : iProp) : iProp :=
 \end{lstlisting}
 
 The quantification ``$\forall m \le n$'' in \texttt{iImpl} is the
-characteristic move of intuitionistic Kripke semantics; without it,
+characteristic move of intuitionistic Kripke semantics. Without it,
 the framework would collapse to classical logic with a step index.
 The monotonicity proofs \texttt{iAnd\_mono} and \texttt{iImpl\_mono}
-are routine; in each case the proof simply transports the membership
+are routine. In each case the proof simply transports the membership
 witness through the order.
 
 \paragraph{The later modality.}
@@ -113,7 +113,7 @@ Lemma iImpl_elim φ ψ : (φ → ψ) ∧ φ ⊢ ψ.
 
 \noindent
 Each proof simply moves the assumed monotonicity through the
-relevant connective; the work is small but worth doing
+relevant connective. The work is small but worth doing
 mechanically because it confirms that the framework is genuinely a
 Heyting algebra without any informal appeal to topos-theoretic
 abstractions.
@@ -151,7 +151,7 @@ Qed.
 
 It is worth noticing what this proof actually uses.  The base case
 relies on the fact that $\triangleright \varphi$ at $n=0$ is
-\emph{vacuously} \texttt{True}; the inductive step uses the
+\emph{vacuously} \texttt{True}, while the inductive step uses the
 hypothesis at $n+1$ together with the induction hypothesis at $n$.
 In other words, Löb's rule is, at the meta level, well-founded
 induction on the forcing order $\omega$.  This observation will

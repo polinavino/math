@@ -14,6 +14,9 @@ framework.  Ahmed \cite{ahmed2004} extended the technique to
 higher-order store, the canonical setting where step-indexing is
 essential rather than convenient.  Birkedal and collaborators
 \cite{birkedal-et-al-2011-stepindexed} scaled it to capability calculi.
+The \emph{later} modality $\triangleright$ itself was introduced by
+Appel, Melli\`es, Richards, and Vouillon \cite{appel-melham-mcallester2007}
+to guard the step-indexed recursion syntactically.
 
 The categorical reformulation is due to Birkedal, Møgelberg,
 Schwinghammer, and Støvring \cite{birkedal-et-al-2012}: step-indexed
@@ -24,11 +27,11 @@ well-foundedness of the index domain.  Subsequent work refines the
 categorical setting and uses it to model richer languages
 \cite{bizjak-grathwohl-clouston-mogelberg-birkedal-2016}.  A presheaf
 topos on $(P, \le)$ is the topos of sheaves for the trivial
-Grothendieck topology on $P$ --- the same data as a Kripke model of
+Grothendieck topology on $P$, the same data as a Kripke model of
 intuitionistic logic with worlds in $P$, and hence implicitly a
 forcing semantics in the model-theoretic sense.  The word
 ``forcing'' is not, to our knowledge, prominent in the topos-of-trees
-literature; making the terminological connection explicit is one of
+literature. Making the terminological connection explicit is one of
 the goals of this paper.
 
 The current state of the art on the PL side is the \emph{Iris} family
@@ -43,7 +46,7 @@ McBride \cite{atkey-mcbride2013} use $\triangleright$ to characterize
 productive coprogramming, and Clouston, Bizjak, Grathwohl, and
 Birkedal \cite{clouston-et-al-2015,clouston-et-al-2017} develop
 guarded $\lambda$-calculi with $\triangleright$ as a primitive type
-former; Møgelberg and others \cite{mogelberg2014,bizjak-mogelberg-2018}
+former. Møgelberg and others \cite{mogelberg2014,bizjak-mogelberg-2018}
 extend these to dependent types.
 
 \paragraph{Why not build this on Iris?}
@@ -77,8 +80,8 @@ levels mimicking Gödel's constructible hierarchy, with a
 ``ramified language'' having a type symbol for each ordinal below
 some bound and a forcing relation $p \Vdash_\alpha \varphi$ defined
 level by level.  The two features that make this presentation
-``ramified'' --- predicative stratification of quantification and
-explicit level descent --- are inherited from Russell and Whitehead's
+``ramified'', predicative stratification of quantification and
+explicit level descent, are inherited from Russell and Whitehead's
 ramified type theory \cite{russell-whitehead-PM} and the predicative
 analysis tradition \cite{weyl1918,feferman1998}.  Shoenfield's 1971
 reformulation \cite{shoenfield1971} eliminated the syntactic
@@ -86,8 +89,8 @@ ramification: forcing conditions, $P$-names, and the forcing
 relation are defined by recursion on rank and formula complexity
 directly.  Shoenfield's presentation is equivalent and is the
 modern textbook standard
-\cite{kunen2011,jech2003,scott-solovay1967}.  What was eliminated
---- the explicit ramified syntactic hierarchy --- is exactly what we
+\cite{kunen2011,jech2003,scott-solovay1967}.  What was eliminated,
+the explicit ramified syntactic hierarchy, is exactly what we
 argue is \emph{not} eliminable in the step-indexed setting.
 
 A parallel literature in the constructive type theory community
@@ -95,26 +98,19 @@ develops syntactic \emph{forcing translations} of type theories.
 Jaber, Tabareau, and Sozeau \cite{jaber-tabareau-sozeau-2012} give a
 forcing translation of CIC: for a forcing notion $P$, a syntactic
 translation takes a CIC term $M : T$ to a forced term $M^P : T^P$.
-For propositions, $T^P$ is a downward-closed predicate on $P$ ---
+For propositions, $T^P$ is a downward-closed predicate on $P$:
 exactly our \texttt{iProp}.  The line was extended in
 \cite{jaber-et-al-2016} and is related to work by Coquand and
 collaborators on constructive forcing in type theory
 \cite{coquand-jaber2010}.
 
 The JTS translation is also available as a Coq plugin
-\cite{forcing-coq-plugin}, which implements the type-level translation
-generically and includes, as its main demonstrative example, a
-step-indexed model of pure $\lambda$-calculus with a $\mathtt{fixp}$
-operator and equational lemmas about the $Y$-combinator.  The plugin
-is a translation tool: it does not develop a Hoare logic, a
-weakest-precondition predicate, an operational semantics, or any
-program-logic soundness proof.  Its \texttt{NatForcing} instantiation
-produces a structure of condition-indexed sheaves that, up to
-definitional details, has the shape of our \texttt{iProp};
-Section~\ref{sec:bridge} discusses the relationship in detail.  What
-the JTS line provides and we do not is a full translation of CIC
-including dependent types; formalizing the propositional fragment of
-that translation against our \texttt{iProp} is the natural future
+\cite{forcing-coq-plugin}, a translation tool that develops no Hoare
+logic, wp predicate, or operational-semantics soundness proof.
+Appendix~\ref{sec:bridge} compares it in detail.  What the JTS line
+provides and we do not is a full translation of CIC including
+dependent types. Formalizing the propositional fragment of that
+translation against our \texttt{iProp} is the natural future
 direction.
 
 \subsection{The modal logic of provability}
@@ -126,7 +122,7 @@ characterized by the axiom $\Box(\Box \varphi \to \varphi) \to
 for arithmetical interpretations of $\Box$ as ``provable in PA.''  On
 the model-theoretic side, \textsf{GL} is sound and complete for the
 class of transitive Kripke frames whose accessibility relation is
-\emph{converse well-founded}; see Smoryński \cite{smorynski1985} and
+\emph{converse well-founded}. See Smoryński \cite{smorynski1985} and
 Boolos \cite{boolos1993}.
 
 The relevance to our work is direct.  The $\triangleright$ modality of
@@ -135,8 +131,8 @@ strict refinement order $\prec$ on conditions is identified with the
 converse of the \textsf{GL} accessibility relation.  Löb's rule of
 step-indexed logic is the Löb axiom of \textsf{GL}.  The requirement
 that the forcing notion be well-founded is the dual of \textsf{GL}'s
-requirement that the accessibility relation be converse well-founded;
-our Section~\ref{sec:lob-essential} result is a special case of the
+requirement that the accessibility relation be converse well-founded.
+Our Section~\ref{sec:lob-essential} result is a special case of the
 classical observation that \textsf{GL} is not sound on frames where
 that condition fails.  In modal logic this is folklore.  Brought into
 the step-indexed Hoare logic setting and mechanized, as far as we can
@@ -144,20 +140,15 @@ determine, it has not previously appeared.
 
 \subsection{What this paper contributes}
 
-Almost every ingredient is, individually, well-known to specialists
-in some adjacent community: the topos-of-trees perspective is
-familiar in synthetic guarded domain theory; the \textsf{GL} model
-theory is familiar to modal logicians; Cohen's ramified forcing is
-familiar to set theorists; the JTS translation is familiar to type
-theorists; the predicative reading of ramification is familiar to
-foundations researchers.  What does not appear in the literature, as
-a single mechanized account, is a step-indexed Hoare logic that
+Each ingredient is individually known to specialists in some adjacent
+community: topos-of-trees to guarded domain theory, \textsf{GL}
+model theory to modal logicians, ramified forcing to set theorists,
+the JTS translation to type theorists.  What does not appear as a
+single mechanized account is a step-indexed Hoare logic that
 articulates the recursion-locus diagnostic of
 Section~\ref{sec:imp-vs-lam} and exhibits the well-foundedness
 counterexample of Section~\ref{sec:lob-essential}, together with the
-forcing-style re-presentation that makes both stateable.  The
-contribution is the diagnostic, the counterexample, and the framework
-that supports them; the integration with the surrounding literatures
-is what makes the paper cohere.  We omit a survey of classical Hoare
-logic and separation logic, referring the reader to standard sources
+forcing-style re-presentation that makes both stateable.  We omit a
+survey of classical Hoare and separation logic, referring the reader
+to standard sources
 \cite{hoare1969,ohearn-reynolds-yang-2001,brookes2007,cook1978}.

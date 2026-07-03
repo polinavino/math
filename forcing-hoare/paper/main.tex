@@ -11,7 +11,7 @@
 %% Body sections marked [TBD] are still to be written.
 %% =====================================================================
 
-\documentclass[sigplan,review,anonymous,screen]{acmart}
+\documentclass[sigplan,10pt,review,anonymous]{acmart}
 
 \settopmatter{printacmref=false}
 \setcopyright{none}
@@ -128,17 +128,17 @@
 \begin{abstract}
 We give two technical observations about step-indexed Hoare logic,
 made mechanically precise by re-presenting the technique as
-\emph{ramified forcing} --- Cohen's original forcing construction
+\emph{ramified forcing}: Cohen's original forcing construction
 stratified by a well-founded hierarchy of levels.
 
 First, we exhibit a structural diagnostic that distinguishes when the
 internal Löb rule is the natural soundness tool for a recursive
 Hoare-style rule.  For the \texttt{while} rule of IMP, internal Löb
 and meta-level induction on the step index produce structurally
-identical proofs; we mechanize both side by side.  For the
+identical proofs. We mechanize both side by side.  For the
 \texttt{fix} rule of an untyped $\lambda$-calculus, the soundness
-predicate is itself recursive in the program being verified --- a
-difference in what we call the \emph{recursion locus} --- and only
+predicate is itself recursive in the program being verified. This is
+a difference in what we call the \emph{recursion locus}, and only
 the internal Löb rule plays to that structure.  This is, to our
 knowledge, the first explicit and mechanized articulation of when
 the internal-Löb idiom of Iris and related systems is essential
@@ -148,14 +148,14 @@ Second, we characterize exactly when L\"ob's rule is available: in
 any forcing-style pre-structure satisfying the order-theoretic axioms
 of our abstract framework, L\"ob's rule holds for every iProp if and
 only if the strict refinement relation is well-founded.  The forward
-direction is the standard well-founded-induction proof; the backward
+direction is the standard well-founded-induction proof. The backward
 direction uses the forcing-accessibility predicate
 $\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$ as a
 single internal iProp witness, so that a universal L\"ob assumption
 forces well-foundedness of the strict relation.  A concrete
 ill-founded instance over $\mathbb{Z}$ realises one direction
 constructively.  This characterization is a step-indexed-Hoare-logic
-counterpart of a classical fact about G\"odel--L\"ob modal logic; the
+counterpart of a classical fact about G\"odel--L\"ob modal logic.  The
 iff form, stated and mechanized in the step-indexed Hoare logic
 setting, does not, as far as we can determine, appear in the
 verification literature.
@@ -166,8 +166,8 @@ propositional layer, Hoare logic over IMP and over a $\lambda$-calculus
 with \texttt{fix}, an abstract framework parametric in the forcing
 notion, and a propositional-fragment embedding of meta-level
 $\mathsf{Prop}$ into the Jaber--Tabareau--Sozeau forcing translation
-of CIC.  The complete development is approximately 800 lines of Rocq
-across 11 files, with no external dependencies.
+of CIC.  The complete development is mechanized in Rocq with no
+external dependencies.
 \end{abstract}
 
 \begin{CCSXML}
@@ -227,13 +227,14 @@ across 11 files, with no external dependencies.
 \input{sec-lob-essential}
 
 %% =====================================================================
-\input{sec-bridge}
-
-%% =====================================================================
 \input{sec-related-work}
 
 %% =====================================================================
 \input{sec-conclusion}
+
+%% =====================================================================
+\appendix
+\input{sec-bridge}
 
 %% =====================================================================
 \bibliographystyle{ACM-Reference-Format}

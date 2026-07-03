@@ -3,89 +3,43 @@
 
 We have given a forcing-style semantics for step-indexed Hoare logic,
 mechanized in Rocq, and used it to articulate two technical
-observations.
-
-The first is the recursion-locus diagnostic of
-Section~\ref{sec:imp-vs-lam}.  In the first-order setting of IMP, the
-\texttt{while} rule's soundness predicate is recursive only in the
-step index, and the two natural soundness proofs --- outer induction
-on $n$ and an appeal to the internal Löb rule --- are structurally
-identical.  Mechanizing both side by side makes the equivalence
-concrete rather than analogical.  In the higher-order setting of
-the $\lambda$-calculus with \texttt{fix}, the soundness predicate is
-recursive in the program itself; meta-level induction on $n$ remains
-available but no longer plays to the predicate's structure, while
-the internal Löb rule does.  The structural difference is a
-difference in the \emph{recursion locus}.
-
-The second is the characterization of
-Section~\ref{sec:lob-essential}.  In any forcing-style pre-structure
-satisfying the order-theoretic axioms of the abstract framework,
-L\"ob's rule holds for every iProp if and only if the strict
-refinement relation is well-founded.  The backward direction
-uses the forcing-accessibility predicate
-$\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$ as an
-internal iProp witness; one direction is realised concretely by a
-would-be forcing structure over $\mathbb{Z}$ where every iProp
-construction goes through but L\"ob's rule fails on $\bot$.  The iff
-is a step-indexed Hoare logic counterpart of a classical fact about
-G\"odel--L\"ob modal logic; the form mechanized here does not, to our
-knowledge, appear in the verification literature.  The methodological
-upshot is that the choice of step-index domain is the choice that
-decides whether L\"ob's rule is available; ordinary, transfinite, and
-product step indices all pass the check, but the well-foundedness
-has to be verified rather than assumed.
-
-The abstract framework of Section~\ref{sec:abstract} makes precise
-that the choice of $\omega$ as the step-index domain is a
-computational convenience rather than a foundational one: any
-well-founded forcing notion supports the same internal logic, with
-$\triangleright$ defined as ``forces at every strict predecessor''
-and Löb derived by \texttt{well\_founded\_ind}.
-Section~\ref{sec:bridge} formalizes the embedding of meta-level
-$\mathsf{Prop}$ into the propositional fragment of the JTS forcing
-translation as a Heyting algebra homomorphism, with $\triangleright$
-as the step-indexed-specific content lying outside the embedded
-image.
+observations.  The first is the recursion-locus diagnostic of
+Section~\ref{sec:imp-vs-lam}: when the soundness predicate is
+recursive only in the step index (IMP's \texttt{while}), meta-level
+induction on $n$ and the internal Löb rule give structurally
+identical proofs, which we mechanize side by side. When it is
+recursive in the program itself (the $\lambda$-calculus \texttt{fix}),
+only the internal Löb rule plays to the predicate's structure.  The
+second is the characterization of Section~\ref{sec:lob-essential}: in
+any pre-structure satisfying the order-theoretic axioms of the
+abstract framework, L\"ob's rule holds for every iProp if and only if
+the strict refinement relation is well-founded, the backward direction
+witnessed by the internal forcing-accessibility predicate
+$\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$.  This
+iff is a step-indexed Hoare logic counterpart of a classical fact
+about G\"odel--L\"ob modal logic that does not, to our knowledge,
+appear in the verification literature.  Practically, the choice of
+step-index domain decides whether L\"ob's rule is available:
+ordinary, transfinite, and product indices all pass the check, but
+well-foundedness must be verified rather than assumed.
 
 \paragraph{Limitations and future directions.}
 We work at the level of plain Hoare triples with a partial-correctness
 wp predicate, without separation logic, heap state, or concurrency.
-Whether the forcing reading scales gracefully to Iris-style separation
-logic, resource state, invariants, and concurrent step counters is an
-open question this paper does not answer; our contribution is the
-diagnostic and the negative result, not an Iris-scale framework.
-Several natural extensions suggest themselves.  Mechanizing the
-type-level half of the JTS correspondence
-(Section~\ref{sec:bridge}) as a theorem rather than a heuristic, and
-exhibiting non-trivial verifications at richer forcing structures
-including transfinite step indices~\cite{spies2021transfinite}, both
-remain to be done.  The $\lambda$-calculus development of
-Section~\ref{sec:lam} is untyped; lifting it to a simply-typed or
-polymorphic source language would test whether the recursion-locus
-diagnostic continues to track the higher-order/first-order split when
-types constrain the recursion, or whether it instead splits along the
-type structure.  The pointwise-product forcing structure
-$\mathtt{prod\_FS}$ of Section~\ref{sec:abstract} is defined and
-satisfies the axioms, but we do not develop a Hoare logic over it; a
-two-counter Hoare logic --- the natural setting for a concurrent
-calculus where each component has its own step index --- is the most
-direct payoff of having the framework parametric in the forcing
-structure, and is the test of whether the parametricity buys
-genuinely new verifications.  Lifting the IMP and $\lambda$-calculus
-developments of Sections~\ref{sec:imp}--\ref{sec:lam} to be parametric
-in the forcing structure is a prerequisite for this and is mostly
-bookkeeping.  Whether the recursion-locus diagnostic can be sharpened
-to a syntactic check on iProp definitions, applicable automatically
-to Iris-style soundness proofs, is the question we are most interested
-in pursuing.
+Whether the forcing reading scales to an Iris-scale framework is an
+open question this paper does not answer.  Several extensions suggest
+themselves.  One is to mechanize the type-level half of the JTS
+correspondence (Appendix~\ref{sec:bridge}) as a theorem.  Another is
+to lift the untyped $\lambda$-calculus of Section~\ref{sec:lam} to a
+typed source language, testing whether the recursion-locus diagnostic
+tracks the higher-order/first-order split or the type structure.  A
+third is to develop a two-counter Hoare logic over the
+pointwise-product structure $\mathtt{prod\_FS}$, the natural setting
+for a concurrent calculus.
+The question we are most interested in is whether the recursion-locus
+diagnostic can be sharpened to a syntactic check on iProp definitions,
+applicable automatically to Iris-style soundness proofs.
 
-The broader point we hope the paper makes is that step-indexed
-reasoning, viewed as a forcing construction, sits at the intersection
-of three research traditions that do not usually talk to each other:
-set-theoretic forcing, modal logic of provability, and step-indexed
-semantics for verification.  Each contains piece-of-the-picture
-insights that the others could profit from; the mechanization
-accompanying this paper is intended as evidence for the technical
-claims and as a starting point for others wishing to explore the
-intersection further.
+The broader point is that step-indexed reasoning, viewed as a forcing
+construction, links three traditions that rarely meet: set-theoretic
+forcing, the modal logic of provability, and step-indexed verification.

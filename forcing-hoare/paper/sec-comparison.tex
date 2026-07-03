@@ -16,8 +16,8 @@ wp at depth $n+1$, case-analyses on the step taken by \texttt{CWhile b
 c}, and in the recursive branch uses the induction hypothesis at
 depth $n$ to discharge the obligation for \texttt{CWhile b c} itself.
 The proof can also be done by an appeal to the internal Löb rule, as
-the \texttt{hoare\_while\_iLob} alternative shows; but the two
-proofs are structurally identical, and the choice between them is
+the \texttt{hoare\_while\_iLob} alternative shows, but the two
+proofs are structurally identical and the choice between them is
 cosmetic.  A precise statement of why is the three-way equivalence
 proved in \texttt{Phase5c\_Equiv.v}: for any downward-closed
 $\Phi : \mathbb{N} \to \mathtt{Prop}$ and its iProp embedding
@@ -31,9 +31,8 @@ exactly of this shape, so meta-level induction-on-$n$ and the
 internal-L\"ob route literally close the same goal.
 
 The $\lambda$-calculus proof of \texttt{wp\_fix} also goes by some
-form of recursion --- it has to, because the goal is the soundness
-of a recursive function --- but it does not contain any induction on
-$n$ at all.  It factors the goal through Löb's form
+form of recursion, since the goal is the soundness of a recursive
+function, yet it contains no induction on $n$ at all.  It factors the goal through Löb's form
 $\triangleright \varphi \to \varphi$ and lets the recursion happen
 inside \texttt{iLob}.  The interior of the factored proof is finite,
 non-recursive step-indexed reasoning: a single case analysis on the
@@ -59,15 +58,15 @@ because the recursive obligation is parameterised solely by $n$.
 For \texttt{fix}, the picture is different.  The proposition
 $\mathtt{recursive\_spec}\, (\mathtt{EFix}\, body)\, S$ at depth
 $n+1$ unfolds, after one fix-unfolding step, into an obligation
-about the same $\mathtt{EFix}\, body$ at depth $n$ ---
-\emph{but only because the body's behaviour at the recursive call site is
-guaranteed by the same proposition at depth $n$.}  In other words,
-the recursive proposition appears both inside and outside the
-recursion: as the spec we are trying to prove for $\mathtt{EFix}\, body$, and as the hypothesis we need at the recursive call.  At the
-meta level, an outer induction on $n$ can in principle reach the
-recursive call --- one can always recurse on $n$ --- but the proof
-obligation at the recursive call is no longer a statement purely
-about smaller step indices; it is a statement about
+about the same $\mathtt{EFix}\, body$ at depth $n$.  It does so only
+because the body's behaviour at the recursive call site is guaranteed
+by the same proposition at depth $n$.  So the recursive proposition
+appears both inside and outside the recursion: as the spec we are
+trying to prove for $\mathtt{EFix}\, body$, and as the hypothesis we
+need at the recursive call.  An outer induction on $n$ can in
+principle reach the recursive call, since one can always recurse on
+$n$.  But the proof obligation there is no longer a statement purely
+about smaller step indices. It is a statement about
 $\mathtt{EFix}\, body$ itself at a smaller step index.  This is
 exactly the shape that Löb's rule was designed to handle:
 ``assume the spec holds later, prove it holds now'', where ``later''
@@ -79,12 +78,12 @@ outer induction on $n$.
 We can state this as a working slogan:
 \begin{quote}
 \textbf{If the soundness predicate is itself recursive in the
-program} --- if its definition at one depth refers to its definition
-for the same program at a lower depth --- then internal Löb is the
-\emph{natural} soundness tool: it has the recursive obligation built
+program}, that is, if its definition at one depth refers to its
+definition for the same program at a lower depth, then internal Löb is
+the \emph{natural} soundness tool: it has the recursive obligation built
 into its conclusion, and discharging it requires no machinery beyond
 the rule itself.  Meta-level induction on the step index remains
-\emph{available} --- it does not become impossible --- but it has to
+\emph{available}, meaning it does not become impossible, but it has to
 manufacture the recursive reasoning from outside the predicate it is
 proving, instead of finding it already inside.  If the soundness
 predicate is only recursive in the depth, an outer induction is
@@ -98,17 +97,17 @@ with predicate $S$ falls on the hard side, and Löb earns its keep
 there.
 
 \paragraph{Locating the locus syntactically.}
-The diagnostic above is informal; we have not formalized it as a
+The diagnostic above is informal. We have not formalized it as a
 metatheorem about \texttt{iProp} definitions, and we leave that as
 future work.  But a useful working characterization, which fits the
 two cases we mechanize, is the following.  Given a step-indexed
 soundness predicate $\Phi : \mathsf{nat} \to T \to \mathsf{Prop}$
-(where $T$ is the type of the program-shaped parameter --- a command
+(where $T$ is the type of the program-shaped parameter: a command
 in the IMP setting, an expression in the $\lambda$-calculus setting),
 its \emph{recursion locus is in the depth} when the recursive call
 in $\Phi$'s definition mentions only $\Phi$ at strictly smaller
 indices and at parameters that are derived from the original by
-small-step reduction; in this case meta-level induction on the
+small-step reduction. In this case meta-level induction on the
 depth has the recursive obligation already in hand, with no
 additional structure required.  The locus is \emph{in the program}
 when $\Phi$'s definition refers to $\Phi$ applied to the
@@ -116,10 +115,10 @@ when $\Phi$'s definition refers to $\Phi$ applied to the
 $\mathtt{recursive\_spec}\,(\mathtt{EFix}\, body)\, S$ does, because
 the body's recursive call invokes the same fix-point), so that the
 recursive obligation cannot be discharged purely by descent on the
-depth --- the iProp itself has to be available at the lower index
+depth: the iProp itself has to be available at the lower index
 as data, which is exactly what the antecedent
 $\triangleright \Phi$ of Löb's rule supplies.  The two cases of this
-paper fall cleanly on the two sides of this distinction; whether
+paper fall cleanly on the two sides of this distinction. Whether
 the characterization can be sharpened to a syntactic check on
 arbitrary iProp definitions is open.
 
@@ -133,7 +132,7 @@ happening in higher-order recursion (the $\lambda$-fix case).  When
 the soundness predicate is genuinely self-referential in the
 program, an outer induction on $n$ is still possible but is no
 longer playing to the structure of the predicate.  The internal Löb
-rule is what plays to that structure --- and it is, at bottom,
+rule is what plays to that structure. It is, at bottom,
 well-founded induction on the forcing order, internalized into the
 logic so that it can act on the recursive proposition directly.
 Section~\ref{sec:abstract} will make precise what
