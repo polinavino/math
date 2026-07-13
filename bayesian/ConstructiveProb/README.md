@@ -21,16 +21,29 @@ This project follows a different tradition, associated with **Cox** and **Jaynes
 
 > **Probability is logic extended to handle uncertainty.**
 
-The slogan is: ordinary (true/false) logic is what you use when you have *complete*
-information; probability is what you use when you have *partial* information. And crucially,
-if your uncertainty shrinks to zero, probability should turn back into ordinary logic — a
-probability of `1` means "true," `0` means "false," and the rules of probability should
-collapse into the rules of logic.
+Start from something no theory of probability disputes: uncertainty is represented by a
+function that takes a proposition and, instead of returning just *true* or *false*, returns a
+number in `[0,1]`. Frequentists, Bayesians, everyone agrees that far. That much says nothing
+specific.
 
-Cox's theorem (1946) made this precise: if you want a calculus of "degrees of certainty"
-that (a) agrees with logic in the certain limit and (b) is internally consistent, you are
-essentially forced into the usual rules of probability. (The word "forced" needs
-qualification — see the note at the top of `Basic.lean` — but that's the spirit.)
+The specific claim comes next, and it is about the **certain limit**. We require that the way
+these numbers combine be governed by the underlying logic once the uncertainty is gone: on
+propositions that have collapsed to `0` or `1`, the operations `and`/`or`/`not` must reproduce
+that logic's own truth tables. A `1` means "true," a `0` means "false," and in that limit the
+rules of probability must become the rules of logic — equivalently, the two-valued valuations
+are exactly the logic's models. The *hope* is that this requirement, together with internal
+consistency, pins down a **unique** such calculus (up to a choice of scale). That is the sense
+in which probability is logic extended to handle uncertainty.
+
+This is essentially **Cox's theorem** (1946): a consistent calculus of "degrees of certainty"
+that agrees with logic in the certain limit is essentially forced into the usual rules of
+probability. (The word "forced" needs qualification — Cox's original argument has a well-known
+gap; see the note at the top of `Basic.lean` — but that's the spirit.)
+
+The logic run through this recipe is almost always **classical** logic. The wager of this
+project is that the same recipe can be run over *other* logics, and that the choice of logic is
+precisely what fixes the shape of the resulting probability. (Which logic, and what changes, is
+§2.)
 
 ---
 
