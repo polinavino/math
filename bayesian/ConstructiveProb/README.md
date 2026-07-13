@@ -139,6 +139,48 @@ belief functions. What this project adds is not the object but (i) a machine-che
 development of it, and (ii) an attempt at a *uniqueness* theorem for it (see §6, §7, and
 [`RELATED_WORK.md`](RELATED_WORK.md)).
 
+### Splitting the slack into two obstructions
+
+The slack looks like one number, but it is really two different failures added together, and
+you can see this by feeding the pair `(not not A, not A)` through the modular law. Constructively
+`not A` and `not not A` are always **disjoint** (`(not A) and (not not A) = ⊥`) but their union
+is usually *not* everything — so, exactly as above, `v(not not A) + v(not A) = v(not not A or
+not A) ≤ 1`. Because `A ≤ not not A`, subtracting this from the original slack telescopes cleanly
+(the `v(not not A)` cancels) and leaves
+
+```
+slack(A)  =  ( v(not not A) − v(A) )   +   ( 1 − v(not not A) − v(not A) ).
+                   ‖                              ‖
+          double-negation gap             De Morgan / weak-LEM gap
+```
+
+Both pieces are `≥ 0`, and each is its own kind of non-classicality:
+
+- The **double-negation gap** `v(not not A) − v(A)` measures how far `A` is from being
+  **regular** (`not not A = A`). It is `0` exactly when `A` equals its own double negation.
+- The **De Morgan gap** `1 − v(not not A) − v(not A)` measures the failure of *weak* excluded
+  middle `not not A or not A = ⊤` (a strictly weaker law than `A or not A = ⊤`). The element
+  `not not A or not A` is always **dense** — its negation is `⊥` — so this gap is the weight
+  sitting between a dense element and the top.
+
+The whole slack vanishes iff *both* do, which is exactly `A` being **complemented** — so this
+refines the earlier "slack `= 0` ⟺ classical" into its two independent causes. It also
+**explains a puzzle** the formalization turned up: a valuation can carry slack on a
+*regular-but-uncomplemented* element. With the split that is a one-liner — regularity zeroes the
+first gap, so for a regular `A` all the slack is the De Morgan gap `1 − v(A or not A)`.
+(Formalized in `Basic.lean`: `slack_eq_dnGap_add_deMorganGap`, `slack_eq_zero_iff`,
+`slack_eq_deMorganGap_of_regular`.)
+
+**A frontier this opens.** The map `A ↦ not not A` is the *double-negation nucleus*: the regular
+elements form a genuine **Boolean** algebra (the Booleanization, à la Glivenko), and there
+`(not not A, not A)` really *is* a complementary pair. Restricting `v` to the regular elements
+gives — one checks the modularity defect is one-signed — a **submodular capacity**, i.e. a
+bona-fide Dempster–Shafer belief function *on a Boolean algebra*, with the belief/plausibility
+gap being precisely these double-negation gaps. That is a concrete bridge from the intuitionistic
+slack to classical DS theory, and the Booleanization is also exactly where a classical (R3/Cox)
+argument would live — so it is the principled way to extract "the classical probability inside
+`v`." Turning that capacity statement into a theorem is future work.
+
 ### A note on the word "belief"
 
 Dempster–Shafer calls its objects *belief functions* and calls the slack *ignorance*; the
@@ -262,6 +304,9 @@ measure model — is a direct calculation or a corollary of these.
 - `add_compl_eq_sup` — the identity `v(A) + v(not A) = v(A or not A)` from §4.
 - `add_compl_le_one` — the Dempster–Shafer inequality `v(A) + v(not A) ≤ 1`, *derived* from
   constructive logic rather than assumed.
+- `slack_eq_dnGap_add_deMorganGap` (with `slack_eq_zero_iff`, `slack_eq_deMorganGap_of_regular`)
+  — the **slack decomposition** from §4: `slack A = (double-negation gap) + (De Morgan gap)`,
+  splitting the single DS "ignorance" number into its two independent obstructions.
 - `classical_additivity` — in the classical (Boolean) case, `v(A) + v(not A) = 1` exactly.
   This is the "certain limit recovers ordinary probability" claim, machine-checked.
 - `exists_positive_slack` — a concrete example where the slack is genuinely **positive**
@@ -337,6 +382,20 @@ measure model — is a direct calculation or a corollary of these.
   constructive-logic limit — obtained by *dropping R3*. Genuinely open even on paper: existing
   Cox proofs use double-negation elimination, so this needs a new argument, not a port. This
   is now the **only** remaining `sorry` in the file.
+
+  *Reframing (`Cox.lean`).* Trying to carry the Cox derivation out constructively splits it into
+  two independent halves. The **product-rule half is Aczél's associativity theorem**
+  (`AczelStatement`): an associative, continuous, strictly-monotone conjunction functional
+  regraduates to multiplication. Its statement never mentions the logic `Ω`, so it is
+  **logic-independent** — identical constructively and classically — and it is a real
+  analysis theorem (one-parameter subgroups), begun in `Aczel.lean`. The **sum-rule half is
+  where the logic lives**, and the constructive replacement for R3 turns out to be **modularity**
+  itself. Once separated, the algebraic core is trivial and *proved*: a `ModularCoxModel`
+  (product rule + modular sum rule, no negation axiom) **is** a `Valuation`
+  (`constructive_cox_of_modular`), and on a Boolean algebra it is automatically complement-additive
+  (`ModularCoxModel.classical_of_boolean`, recovering Van Horn). So the genuine residue is
+  (i) `AczelStatement` (pure analysis) and (ii) justifying modularity as *the* sum-rule axiom —
+  not the entangled monolith the bare statement suggests.
 
 ---
 

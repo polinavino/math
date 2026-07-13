@@ -123,6 +123,70 @@ noncomputable def slack (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - (v a + v
 theorem slack_eq_one_sub_sup (v : Valuation Ω) (a : Ω) : v.slack a = 1 - v (a ⊔ aᶜ) := by
   rw [slack, add_compl_eq_sup]
 
+/-! ### Decomposing the slack via the `(¬¬a, ¬a)` pair
+
+The pair `(aᶜᶜ, aᶜ)` = `(¬¬a, ¬a)` is **disjoint** (`aᶜᶜ ⊓ aᶜ = ⊥` always) but generally **not a
+partition** (`aᶜᶜ ⊔ aᶜ = ⊤` is weak excluded middle, not a theorem). Running the disjoint pair
+through modularity splits the Dempster–Shafer slack into two logically independent gaps:
+`slack a = (v aᶜᶜ − v a) + (1 − v aᶜᶜ − v aᶜ)`. -/
+
+/-- The **double-negation gap** at `a`: `v aᶜᶜ − v a ≥ 0`, by which `a` falls short of its
+regularization `¬¬a = aᶜᶜ`. Zero when `a` is regular (`aᶜᶜ = a`). -/
+noncomputable def dnGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := v aᶜᶜ - v a
+
+/-- The **De Morgan gap** (weak-excluded-middle gap) at `a`: `1 − (v aᶜᶜ + v aᶜ) ≥ 0`, by which
+the *dense* element `aᶜᶜ ⊔ aᶜ` falls short of `⊤`. Zero when `aᶜᶜ ⊔ aᶜ = ⊤`. -/
+noncomputable def deMorganGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - (v aᶜᶜ + v aᶜ)
+
+/-- `¬¬a` and `¬a` are disjoint (`aᶜᶜ ⊓ aᶜ = ⊥`), so modularity makes their valuations add to
+the join — the mirror of `add_compl_eq_sup`, one level up in double negation. -/
+theorem add_compl_compl_eq_sup (v : Valuation Ω) (a : Ω) : v aᶜᶜ + v aᶜ = v (aᶜᶜ ⊔ aᶜ) := by
+  have hdisj : aᶜᶜ ⊓ aᶜ = ⊥ := by rw [inf_comm]; exact inf_compl_eq_bot
+  have h := v.modular aᶜᶜ aᶜ
+  rwa [hdisj, v.map_bot, add_zero] at h
+
+/-- **The slack decomposition.** The Dempster–Shafer slack at `a` splits canonically into the
+**double-negation gap** (how far `a` is from regular) and the **De Morgan gap** (how far weak
+excluded middle fails): `slack a = dnGap a + deMorganGap a`. Both summands are `≥ 0`, and the
+`v aᶜᶜ` term telescopes away. This resolves the single "ignorance" number into two logically
+independent obstructions. -/
+theorem slack_eq_dnGap_add_deMorganGap (v : Valuation Ω) (a : Ω) :
+    v.slack a = v.dnGap a + v.deMorganGap a := by
+  have hle1 : v a ≤ v aᶜᶜ := v.mono le_compl_compl
+  have hle2 : v aᶜᶜ + v aᶜ ≤ 1 := by rw [add_compl_compl_eq_sup]; exact v.le_one _
+  have hb : v a + v aᶜ ≠ ∞ := ne_top_of_le_ne_top ENNReal.one_ne_top (add_compl_le_one v a)
+  rw [slack, dnGap, deMorganGap]
+  refine (ENNReal.sub_eq_of_eq_add hb ?_)
+  -- reduce to the additive identity `1 = (dnGap + deMorganGap) + (v a + v aᶜ)`
+  rw [show v aᶜᶜ - v a + (1 - (v aᶜᶜ + v aᶜ)) + (v a + v aᶜ)
+        = (v aᶜᶜ - v a + v a) + ((1 - (v aᶜᶜ + v aᶜ)) + v aᶜ) from by ring,
+      tsub_add_cancel_of_le hle1,
+      show v aᶜᶜ + ((1 - (v aᶜᶜ + v aᶜ)) + v aᶜ)
+        = (1 - (v aᶜᶜ + v aᶜ)) + (v aᶜᶜ + v aᶜ) from by ring,
+      tsub_add_cancel_of_le hle2]
+
+/-- The double-negation gap vanishes on regular elements (`aᶜᶜ = a`). -/
+theorem dnGap_eq_zero_of_regular (v : Valuation Ω) {a : Ω} (ha : aᶜᶜ = a) : v.dnGap a = 0 := by
+  rw [dnGap, ha, tsub_self]
+
+/-- The De Morgan gap vanishes when weak excluded middle holds at `a` (`aᶜᶜ ⊔ aᶜ = ⊤`). -/
+theorem deMorganGap_eq_zero_of_sup_eq_top (v : Valuation Ω) {a : Ω} (h : aᶜᶜ ⊔ aᶜ = ⊤) :
+    v.deMorganGap a = 0 := by
+  rw [deMorganGap, add_compl_compl_eq_sup, h, v.map_top, tsub_self]
+
+/-- **For a regular element, all the slack is the De Morgan gap.** The double-negation gap is
+then `0`, so `slack a = deMorganGap a = 1 − v (a ⊔ aᶜ)`. This is exactly why a valuation can still
+carry slack on a *regular but uncomplemented* element: regularity kills one obstruction, not the
+other. -/
+theorem slack_eq_deMorganGap_of_regular (v : Valuation Ω) {a : Ω} (ha : aᶜᶜ = a) :
+    v.slack a = v.deMorganGap a := by
+  rw [slack_eq_dnGap_add_deMorganGap, dnGap_eq_zero_of_regular v ha, zero_add]
+
+/-- The slack is zero exactly when *both* obstructions vanish. -/
+theorem slack_eq_zero_iff (v : Valuation Ω) (a : Ω) :
+    v.slack a = 0 ↔ v.dnGap a = 0 ∧ v.deMorganGap a = 0 := by
+  rw [slack_eq_dnGap_add_deMorganGap, add_eq_zero]
+
 end Valuation
 
 /-! ## Classical limit: recovering Kolmogorov (proved)
@@ -558,7 +622,20 @@ derivation is exactly what fails constructively. So a general `CoxModel` almost 
 as written, and a faithful version must additionally posit a sum/modularity structure (a
 disjunction functional compatible with `F`, regraduating to inclusion–exclusion). Pinning down
 that missing axiom — the constructive replacement for the sum-rule half of R3 — is itself part
-of the open problem. The statement is kept here as a first-pass target, not a settled claim. -/
+of the open problem. The statement is kept here as a first-pass target, not a settled claim.
+
+**Reframing (see `Cox.lean`).** The problem splits cleanly into two independent parts. (1) The
+*product-rule half* is **Aczél's associativity theorem** (`AczelStatement`): an associative,
+continuous, strictly monotone conjunction functional regraduates to multiplication. Its type
+does not mention `Ω`, so it is **logic-independent** — the constructive/classical distinction
+enters nowhere in it — and it is a substantial real-analysis result (one-parameter subgroups),
+not the constructive content. (2) The *sum-rule half* is where the logic lives, and the proposed
+constructive replacement for R3 is exactly **modularity**. `Cox.lean` shows that once these are
+separated, the algebraic core is trivial: a `ModularCoxModel` (product rule + modular sum rule,
+no negation axiom) *is* a `Valuation` (`constructive_cox_of_modular`), with the Boolean case
+recovering Van Horn (`ModularCoxModel.classical_of_boolean`). What remains genuinely open is thus
+(i) proving `AczelStatement` (pure analysis) and (ii) justifying modularity as *the* sum-rule
+axiom — not the entangled statement below. -/
 theorem constructive_cox (M : CoxModel Ω) :
     ∃ (v : Valuation Ω) (g : ℝ → ℝ≥0∞),
       StrictMono g ∧ g 0 = 0 ∧ g 1 = 1 ∧ ∀ a, v a = g (M.pl a ⊤) := by
