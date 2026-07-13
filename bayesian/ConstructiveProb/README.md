@@ -123,18 +123,18 @@ This is not a new observation, and the README should not pretend otherwise: **We
 (2003)** already defined this "intuitionistic probability," and a theorem of **Paris (1994),
 building on Shafer (1976)**, identifies such non-classical probabilities *with* Dempster–Shafer
 belief functions. What this project adds is not the object but (i) a machine-checked
-development of it, and (ii) an attempt at a *uniqueness* theorem for it (see §5, §6, and
+development of it, and (ii) an attempt at a *uniqueness* theorem for it (see §6, §7, and
 [`RELATED_WORK.md`](RELATED_WORK.md)).
 
 ### A note on the word "belief"
 
 Dempster–Shafer calls its objects *belief functions* and calls the slack *ignorance*; the
-modal reading in §7 even writes `Bel(A) = P(□A)`, "the probability of *believing* `A`". We
+modal reading in §8 even writes `Bel(A) = P(□A)`, "the probability of *believing* `A`". We
 borrow the mathematics but **deliberately drop that vocabulary.** This project follows the
 companion notes' principle of an *epistemic situation, not an epistemic agent* — there is no
 believing subject anywhere in it. The slack is **not** what someone fails to believe; it is a
 **structural** quantity: the valuation of the region excluded middle leaves undecided. In the
-concrete model of §7 it is literally `μ(∂U)`, the measure of a topological **boundary** — a
+concrete model of §8 it is literally `μ(∂U)`, the measure of a topological **boundary** — a
 fact about the space, true whether or not anyone is reasoning. So wherever the literature (or
 an older comment) says "belief function" or "ignorance mass," read *non-additive valuation*
 and *the measure of the undecided region.* We keep the DS name only to point at the same
@@ -142,12 +142,107 @@ mathematical object, never at a state of mind.
 
 ---
 
-## 5. What the Lean file actually proves
+## 5. Why this is hard: the obstacles to intuitionistic probability
+
+It is tempting to think this is just "probability, but over a Heyting algebra." The reason that
+doesn't work — and the reason this is a research project rather than an exercise — is that
+almost every convenience of ordinary probability is quietly powered by the law of excluded
+middle. Remove it and the following break, in rough order of severity:
+
+1. **There is no `1 − P(A)`.** The single most-used move in probability — "the probability of
+   *not* `A` is one minus the probability of `A`" — is *defined* by complementation, and a
+   Heyting algebra has no genuine complement. `v(not A)` becomes an **independent quantity** you
+   cannot compute from `v(A)`. Odds, normalization, "probability of the complement" — every
+   reflex built on `1 − p` has to be dropped or rebuilt.
+
+2. **"Additive" splits into two different things.** Classically, *disjoint-additivity*
+   (`A ⊓ B = ⊥ ⟹ v(A ⊔ B) = v(A) + v(B)`) and the *complement rule* (`v(A) + v(¬A) = 1`) are
+   two faces of one coin. Constructively they come apart: disjoint-additivity **survives** (it
+   follows from the modular law and the surviving fact `A ⊓ ¬A = ⊥`), but the complement rule
+   **fails**. So you must always say *which* additivity you mean — a distinction that is
+   invisible classically.
+
+3. **The failure cannot be localized and patched.** The gap `slack(A) = 1 − (v(A)+v(¬A))` is
+   exactly `v` of the region excluded middle leaves undecided, and it is *generic*, not
+   exceptional: on a **connected** space the only elements obeying the classical complement rule
+   are `⊥` and `⊤` themselves (`add_compl_eq_one_of_complemented` + the connectedness remark in
+   §6). Classicality isn't a small correction to sand off; it is a special property that most
+   elements simply lack.
+
+4. **Even "certainty" is a theorem, not a definition.** In Cox's classical picture the
+   fully-certain (0/1-valued) valuations are the *points* of the space, with a clean bijection.
+   Constructively the certain valuations correspond to **prime** ideals/filters, and there are
+   two inequivalent notions — *finitely* prime and *completely* prime (spatial) — agreeing only
+   under a continuity hypothesis. So "what does a state of complete information even look like?"
+   already needs the prime separation theorem to answer (`sharp_iff_point`, §6).
+
+5. **Partitions and total probability collapse.** The law of total probability marginalizes over
+   a partition, and the workhorse partition is `{A, ¬A}`. But constructively `A ⊔ ¬A ≠ ⊤`, so
+   `{A, ¬A}` **is not a partition** — it does not tile the space. Marginalizing over a
+   proposition and its negation therefore fails; Bayesian updating survives, but only over
+   families that *genuinely* join to `⊤` (`total_prob_of_partition` vs. the `{A,¬A}` failure,
+   §6).
+
+6. **Probability mass can have nowhere to live.** The most concrete picture of probability is "a
+   distribution over outcomes" — mass sitting on points. Constructively the relevant spaces
+   (locales) may have **too few points, or none at all**, to carry the mass: some of it can
+   escape to a "point at infinity" (our `topIndicator` example) or be irreducibly **diffuse** on
+   a pointless locale. So "probability = distribution on outcomes" is recoverable only under
+   finiteness or a continuity condition; in general there is an unavoidable diffuse remainder.
+   Charting exactly when the mass *does* live on points is the representation problem (§6, §8).
+
+7. **Cox's own proof does not survive the switch.** The classical Cox/Jaynes derivations lean on
+   double-negation elimination and a functional equation for negation (Van Horn's axiom "R3").
+   Those steps *are* excluded middle in disguise — indeed R3 holds for all valuations **iff**
+   excluded middle does (`hasClassicalNegation_of_em` and its converse, §6). A constructive
+   uniqueness theorem therefore cannot re-run the classical argument; it needs a genuinely new
+   one. That is why `constructive_cox` is still open.
+
+The through-line: **classical probability bundles together several things that are only
+separately true.** Intuitionistic probability is what you get when you unbundle them, and the
+work is figuring out which pieces survive alone (modularity, disjoint-additivity, conditioning,
+finite representation) and which were secretly excluded middle all along (the complement rule,
+total probability over `{A,¬A}`, the clean point picture, Cox uniqueness).
+
+---
+
+## 6. What the Lean file actually proves
 
 Everything in [`Basic.lean`](ConstructiveProb/Basic.lean) and
 [`Representation.lean`](ConstructiveProb/Representation.lean) is checked by the Lean proof
 assistant, so the ✅ items are theorems with zero gaps (a computer verified every step). The
 ⬜ items are stated but not yet proved (`sorry`) — they're the open research targets.
+
+### In plain terms: which results are hard, and why
+
+Most of the ✅ list below is careful bookkeeping. Three items carry the real weight:
+
+- **The hinge (`hasClassicalNegation_of_em` and its converse)** is the conceptual heart. It
+  proves the complement rule `v(¬A) = 1 − v(A)` holds for *every* valuation **exactly when**
+  excluded middle holds — surgically locating *all* of probability's classicality in one axiom
+  (Van Horn's R3). The easy direction is a calculation; the hard direction must *manufacture* a
+  counterexample wherever excluded middle fails — a valuation with genuine slack — which it does
+  with a prime-ideal indicator built from the prime separation theorem. This is what upgrades
+  "the complement rule looks optional" to "the complement rule *is* excluded middle."
+
+- **The finite representation theorem (`eq_sum_mass`)** is the headline, because it says
+  intuitionistic probability is not an exotic new animal: on a finite frame it *is* ordinary
+  classical probability on the points, seen through the interior operator `□`. The difficulty is
+  that you cannot read the "points" straight off the algebra — you recover them by peeling one
+  maximal element at a time and using the modular law to show the leftover is exactly a point
+  mass. The induction (and getting the `[0,∞]` truncated-subtraction arithmetic right) is the
+  work.
+
+- **The general decomposition (`tsum_mass_le`)** is what remains once you know full
+  representation is *false* (the counterexample below). The honest general statement is an
+  inequality: the point-masses are always a sub-probability, `∑ₚ v.mass p ≤ v ⊤`, and the
+  shortfall is a diffuse remainder — a constructive analogue of the **Lebesgue decomposition**
+  (atomic + diffuse), holding for *every* frame with no finiteness and no classical logic. The
+  proof reuses the maximal-element peel, now over arbitrary finite subsets bounded by the whole,
+  then passes to the supremum.
+
+Everything else — conditioning, disjoint-additivity, the classical fragment, the concrete
+measure model — is a direct calculation or a corollary of these.
 
 **✅ Proved:**
 
@@ -186,7 +281,7 @@ assistant, so the ✅ items are theorems with zero gaps (a computer verified eve
   you may marginalise a prediction over families that actually join to `⊤`, just not over a
   proposition and its negation.
 - `Measure.toValuationOpens` / `toValuationOpens_eq_interiorMeasure` — **the concrete model +
-  the GMT identification (§7):** every classical probability measure `μ`, read on the open sets,
+  the GMT identification (§8):** every classical probability measure `μ`, read on the open sets,
   *is* an intuitionistic-probability valuation `v U = μ U`, and this valuation *is* `P(□·)`
   restricted to the opens.
 - `nonempty_coxModel` — **the Cox axioms are not vacuous:** an explicit model on the chain
@@ -197,7 +292,7 @@ assistant, so the ✅ items are theorems with zero gaps (a computer verified eve
   `LowerSet P`, every valuation is the point-measure of a mass function:
   `v U = ∑_{p ∈ U} v.mass p` and `∑ p, v.mass p = 1`. So every intuitionistic-probability
   valuation on a finite frame **is** a classical probability on its points — the converse of
-  the GMT bridge, finite case (§7). *Scope, stated honestly:* we prove this for `LowerSet P`;
+  the GMT bridge, finite case (§8). *Scope, stated honestly:* we prove this for `LowerSet P`;
   by Birkhoff duality every finite frame is `LowerSet P` for `P` its join-irreducibles, so up
   to isomorphism this is *all* finite frames — but that isomorphism (and transport of the
   valuation across it) we cite rather than mechanize.
@@ -211,6 +306,16 @@ assistant, so the ✅ items are theorems with zero gaps (a computer verified eve
   escapes to a non-principal "point at infinity"), so finiteness is genuinely necessary.
   Conversely, adding **Scott-continuity** recovers it (`v ⊤ = ∑' n, v.mass n`). Together: *on
   `ℕ`, a valuation is point-representable iff it is Scott-continuous.*
+- `tsum_mass_le` / `tsum_mass_le_one` (in
+  [`RepresentationGeneral.lean`](ConstructiveProb/RepresentationGeneral.lean)) — **the general
+  structural theorem.** For an *arbitrary* frame `LowerSet P` (no finiteness, no Scott-continuity)
+  the point-masses always sum to *at most* the total: `∑' p, v.mass p ≤ v ⊤ ≤ 1`. So every
+  localic valuation splits into an **atomic part** (the point-masses, always a sub-probability)
+  and a **diffuse part** `v ⊤ − ∑' p, v.mass p ≥ 0` — a constructive Lebesgue-style
+  decomposition. The equality cases (finite; `ℕ` + Scott) are "purely atomic" (`IsPurelyAtomic`,
+  zero diffuse part); the `topIndicator` counterexample is the extreme purely-diffuse opposite.
+  The proof peels a maximal point from each finite subset and uses modularity — it needs neither
+  excluded middle nor `Classical`.
 
 **⬜ Open (the research program):**
 
@@ -222,7 +327,7 @@ assistant, so the ✅ items are theorems with zero gaps (a computer verified eve
 
 ---
 
-## 6. Why bother?
+## 7. Why bother?
 
 Three payoffs, from concrete to speculative:
 
@@ -246,7 +351,7 @@ Three payoffs, from concrete to speculative:
 
 ---
 
-## 7. The concrete picture: probability measures on open sets
+## 8. The concrete picture: probability measures on open sets
 
 Everything above is abstract — valuations on an arbitrary frame. Here is a concrete source of
 them that also explains, in one stroke, why the slack has nothing to do with belief.
@@ -298,23 +403,98 @@ direction** of the identification: on the open (= intuitionistic) propositions, 
 — machine-checked.
 
 The **representation direction** — does *every* localic valuation arise this way, from some
-classical measure via `□`? — is **proved in the finite case** (`eq_sum_mass`/`sum_mass`, §5),
-and its **boundary is now pinned down** (`RepresentationInfinite.lean`): on the infinite chain
-`LowerSet ℕ` it *fails* for a non-Scott-continuous valuation (the indicator of `⊤`, whose mass
-escapes to a non-principal point at infinity) and *holds* once Scott-continuity is assumed. So
-the predicted shape — "representable ⟺ Scott-continuous" — is confirmed for the chain.
+classical measure via `□`? — is **proved in the finite case** (`eq_sum_mass`/`sum_mass`, §6); its
+**boundary is pinned down** (`RepresentationInfinite.lean`): on the infinite chain `LowerSet ℕ`
+it *fails* for a non-Scott-continuous valuation (the indicator of `⊤`, whose mass escapes to a
+non-principal point at infinity) and *holds* once Scott-continuity is assumed, confirming
+"representable ⟺ Scott-continuous" for the chain. And the **general upper bound is now proved**
+for *any* frame (`tsum_mass_le`, `RepresentationGeneral.lean`): the atomic part is always a
+sub-probability, `∑' p, v.mass p ≤ v ⊤`, so a valuation splits into atomic + diffuse parts with
+the diffuse part `≥ 0` everywhere — the "≤" half of representation, holding unconditionally.
 
-What **remains open** is the fully general (arbitrary / non-spatial) case. It is genuinely
-subtle: for a non-spatial locale (one with too few points — e.g. a measure algebra) there is no
-point-mass to sum, so any representation must live on a *measure space* into which the locale
-embeds, not on its points. Resolving it would mean importing localic/constructive measure
-theory (the localic Riesz representation of Coquand–Spitters and Vickers) with Scott-continuity
-plus a regularity/`τ`-smoothness condition — a genuinely new (and paper-defining) theorem. See
-[`RELATED_WORK.md`](RELATED_WORK.md).
+What **remains open** is the matching *equality* in full generality — i.e. representing the
+diffuse part. It is genuinely subtle: for a non-spatial locale (one with too few points — e.g. a
+measure algebra) there is no point-mass to carry it, so any representation must live on a
+*measure space* into which the locale embeds, not on its points. Resolving it would mean
+importing localic/constructive measure theory (the localic Riesz representation of
+Coquand–Spitters and Vickers) with Scott-continuity plus a regularity/`τ`-smoothness condition —
+a genuinely new (and paper-defining) theorem. See [`RELATED_WORK.md`](RELATED_WORK.md).
 
 ---
 
-## 8. Building and reading it
+## 9. Glossary
+
+Terms as they are used in this project (not always in their fullest generality). Sections in
+parentheses point to where the term earns its keep.
+
+- **Atom / atomic part.** A *point mass*: `v.mass p = v(↓p) − v(↓p without p)`, the weight
+  concentrated exactly at a point `p`. The **atomic part** of a valuation is the sum of all its
+  point masses, `∑ₚ v.mass p`. (§6.) See **diffuse part**.
+- **Birkhoff duality.** Every finite distributive lattice (in particular a finite frame) is the
+  lattice of **lower sets** of its **join-irreducible** elements. This is what lets "valuation on
+  a finite frame" be studied as "valuation on `LowerSet P`." (§6.)
+- **Boolean algebra.** The algebra of classical logic: `and`, `or`, and a genuine complement
+  `not`, with `A ∨ ¬A = ⊤` (excluded middle). The certain-limit target of *ordinary* Cox
+  probability. (§3.)
+- **Complemented element.** An `A` with a genuine complement inside the frame (`A ∨ ¬A = ⊤` and
+  `A ∧ ¬A = ⊥`). Exactly the elements on which the classical rule `v(A) + v(¬A) = 1` holds —
+  strictly fewer than the **regular** elements. (§6.)
+- **Constructive / intuitionistic logic.** Logic in which asserting a statement requires
+  constructing evidence; `A ∨ ¬A` is not assumed. Its algebra is a **Heyting algebra**. (§2.)
+- **Cox's theorem.** The classical result that a consistent calculus of degrees of certainty
+  agreeing with *classical* logic in the certain limit must be (a rescaling of) probability. The
+  target we are trying to re-derive over constructive logic (`constructive_cox`, open). (§1, §6.)
+- **Dempster–Shafer belief function.** A known non-additive generalization of probability with
+  `Bel(A) + Bel(¬A) ≤ 1`. Paris's theorem identifies the valuations here with these; we borrow
+  the object but drop the epistemic "belief" reading. (§4.)
+- **Diffuse part.** The remainder `v ⊤ − ∑ₚ v.mass p ≥ 0` left after the atomic part —
+  probability mass carried by no point. Zero exactly when the valuation is **purely atomic**.
+  (§6.)
+- **Excluded middle (LEM).** The classical law `A ∨ ¬A = ⊤`. Its presence or absence is the
+  single dial this whole project turns. (§2, §5.)
+- **Frame / locale.** A complete Heyting algebra: `and`, arbitrary `or`, and the resulting
+  `not` — concretely the algebra of **open sets** of a space. "Locale" is the same object viewed
+  as "a space possibly without enough points." Lean: `Order.Frame`. (§3.)
+- **GMT (Gödel–McKinsey–Tarski) translation.** The classical embedding of intuitionistic logic
+  into the modal logic S4, sending intuitionistic truth to `□` ("necessarily"). Semantically `□`
+  is the **interior** operator, which is why open sets model constructive logic. (§8.)
+- **Heyting algebra.** The algebra of constructive logic: like a Boolean algebra but with a
+  weaker negation and no excluded middle. (§3.)
+- **Interior operator `□`.** Sends a set to its largest open subset; models "verifiably true."
+  The intuitionistic negation of an open `U` is `int(Uᶜ)`. (§8.)
+- **Join-irreducible.** An element that is not a join of strictly smaller ones — a "point" of a
+  finite frame. The `P` in `LowerSet P`. (§6.)
+- **Lower set (`LowerSet P`).** A downward-closed subset of a poset `P`, ordered by inclusion;
+  with `⊔ = ∪`, `⊓ = ∩`, `⊤ = P` it is a frame. Our concrete arena for representation theorems.
+  (§6.)
+- **Modular law.** `v(A) + v(B) = v(A ∨ B) + v(A ∧ B)` — inclusion–exclusion. The one form of
+  additivity needing no complement, and the defining axiom of a **valuation** here. (§4.)
+- **Point of a locale; spatial vs. non-spatial.** A point is a completely-prime filter — "a way
+  of being an outcome." A locale is **spatial** if it has enough points to be a genuine
+  topological space, **non-spatial** if not (e.g. a measure algebra). Diffuse mass on a
+  non-spatial locale has no point to sit on. (§8.)
+- **PMF.** mathlib's `PMF` — a genuine classical discrete probability distribution. `toPMF`
+  turns a finite valuation into one. (§6.)
+- **Prime ideal / prime filter.** The order-theoretic stand-ins for "points" that make sense
+  even without excluded middle; the 0/1-valued valuations are their indicators. (§6.)
+- **Regular element (¬¬-stable).** An `A` with `¬¬A = A`. Every complemented element is regular
+  but not conversely — a distinction the formalization forced open (an atomic valuation can have
+  slack on a regular-but-uncomplemented element). (§6.)
+- **Representation theorem.** A theorem writing a valuation as `∑ₚ (point mass at p)` —
+  recovering the classical distribution behind it. Proved for finite frames; conditional on
+  Scott-continuity for `ℕ`; only an inequality in general. (§6.)
+- **Scott-continuity.** Compatibility with directed suprema: `v(⨆ᵢ Aᵢ) = ⨆ᵢ v(Aᵢ)` for directed
+  families. The extra hypothesis that pins down where the mass lives; our bare `Valuation` omits
+  it deliberately. (§6.)
+- **Slack.** `slack(A) = 1 − (v(A) + v(¬A)) ≥ 0`, the valuation of the undecided region. Zero
+  iff `A` is complemented; in the measure model it is `μ(∂A)`, the mass of the boundary. (§4, §8.)
+- **Valuation.** The central object: `v : Frame → [0,∞]` that is monotone, `v ⊥ = 0`, `v ⊤ = 1`,
+  and **modular** — *not* assumed to satisfy the complement rule. (mathlib's `Valuation` is
+  unrelated: it means valued-field valuations.) (§4.)
+
+---
+
+## 10. Building and reading it
 
 **Prerequisites:** [`elan`](https://leanprover-community.github.io/get_started.html) (the Lean
 version manager). The project pins Lean `v4.31.0` and mathlib `v4.31.0` automatically.
@@ -326,7 +506,7 @@ lake build              # check every proof
 ```
 
 A successful build prints exactly one warning of the form `declaration uses 'sorry'` — the
-single open target `constructive_cox` in §5, and it is expected.
+single open target `constructive_cox` in §6, and it is expected.
 
 **To read it interactively:** open this folder in **VS Code** with the `leanprover.lean4`
 extension. Put your cursor inside any proof and open the Infoview (the ∀ icon) to watch the
@@ -337,11 +517,15 @@ goal state evolve step by step — the best way to *see* what a proof is doing.
 2. the `Valuation` structure (§4 here),
 3. `add_compl_le_one` and `classical_additivity` (the proved core),
 4. `exists_positive_slack` (the "it's not vacuous" example),
-5. the open-problem section (where the research is).
+5. the open-problem section (where the research is),
+6. then, for the representation story, [`Representation.lean`](ConstructiveProb/Representation.lean)
+   (finite) → [`RepresentationInfinite.lean`](ConstructiveProb/RepresentationInfinite.lean)
+   (its boundary) → [`RepresentationGeneral.lean`](ConstructiveProb/RepresentationGeneral.lean)
+   (the general atomic/diffuse decomposition).
 
 ---
 
-## 9. A few references
+## 11. A few references
 
 - Cox, R. T. (1946). *Probability, frequency and reasonable expectation.*
 - Halpern, J. (1999). *A counterexample to theorems of Cox and Fine* — why "unique" needs care.
