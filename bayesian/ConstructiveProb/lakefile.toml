@@ -9,6 +9,8 @@ relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
 weak.linter.style.header = false # not a mathlib PR — skip copyright-header nagging
 weak.linter.style.openClassical = false # `open scoped Classical` is fine in a research repo
+weak.linter.unusedDecidableInType = false # we keep explicit `DecidableEq` rather than use classical
+weak.linter.unusedSimpArgs = false # house-style linter, noise for iterative research code
 maxSynthPendingDepth = 3
 
 [[require]]

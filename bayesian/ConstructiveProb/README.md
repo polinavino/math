@@ -144,7 +144,8 @@ mathematical object, never at a state of mind.
 
 ## 5. What the Lean file actually proves
 
-Everything in [`Basic.lean`](ConstructiveProb/Basic.lean) is checked by the Lean proof
+Everything in [`Basic.lean`](ConstructiveProb/Basic.lean) and
+[`Representation.lean`](ConstructiveProb/Representation.lean) is checked by the Lean proof
 assistant, so the ✅ items are theorems with zero gaps (a computer verified every step). The
 ⬜ items are stated but not yet proved (`sorry`) — they're the open research targets.
 
@@ -191,6 +192,25 @@ assistant, so the ✅ items are theorems with zero gaps (a computer verified eve
 - `nonempty_coxModel` — **the Cox axioms are not vacuous:** an explicit model on the chain
   `ℝ≥0∞` (constructively, no excluded middle). This guards `constructive_cox` against the
   vacuity that an over-strong axiom would silently create.
+- `eq_sum_mass` / `sum_mass` (in [`Representation.lean`](ConstructiveProb/Representation.lean))
+  — **the finite representation theorem, the headline new result.** For a finite frame
+  `LowerSet P`, every valuation is the point-measure of a mass function:
+  `v U = ∑_{p ∈ U} v.mass p` and `∑ p, v.mass p = 1`. So every intuitionistic-probability
+  valuation on a finite frame **is** a classical probability on its points — the converse of
+  the GMT bridge, finite case (§7). *Scope, stated honestly:* we prove this for `LowerSet P`;
+  by Birkhoff duality every finite frame is `LowerSet P` for `P` its join-irreducibles, so up
+  to isomorphism this is *all* finite frames — but that isomorphism (and transport of the
+  valuation across it) we cite rather than mechanize.
+- `toPMF` — makes it literal: `v.mass` is a mathlib `PMF` (probability mass function), so a
+  valuation on a finite frame **is** a classical discrete probability distribution on the
+  points, with `v` its point-measure.
+- `exists_valuation_not_point_representable` / `eq_tsum_mass_of_scott` (in
+  [`RepresentationInfinite.lean`](ConstructiveProb/RepresentationInfinite.lean)) — **the
+  boundary of the finite theorem.** On the infinite frame `LowerSet ℕ` the finite theorem
+  *fails*: the indicator of `⊤` has every point-mass `0` yet `v ⊤ = 1` (the unit of mass
+  escapes to a non-principal "point at infinity"), so finiteness is genuinely necessary.
+  Conversely, adding **Scott-continuity** recovers it (`v ⊤ = ∑' n, v.mass n`). Together: *on
+  `ℕ`, a valuation is point-representable iff it is Scott-continuous.*
 
 **⬜ Open (the research program):**
 
@@ -275,9 +295,22 @@ function" and reads epistemically — Ruspini, Smets, Pearl; we keep only the st
 and the name as a pointer). Then `toValuationOpens_eq_interiorMeasure` proves the **concrete
 direction** of the identification: on the open (= intuitionistic) propositions, our valuation
 *is* `P(□·)`. So the Heyting valuation from a measure is exactly `P(□·)` restricted to the opens
-— machine-checked. What remains open is the **representation direction**: does *every* localic
-valuation arise this way, from some classical measure via `□`? No source pins that down; that
-half would be genuinely new. See [`RELATED_WORK.md`](RELATED_WORK.md).
+— machine-checked.
+
+The **representation direction** — does *every* localic valuation arise this way, from some
+classical measure via `□`? — is **proved in the finite case** (`eq_sum_mass`/`sum_mass`, §5),
+and its **boundary is now pinned down** (`RepresentationInfinite.lean`): on the infinite chain
+`LowerSet ℕ` it *fails* for a non-Scott-continuous valuation (the indicator of `⊤`, whose mass
+escapes to a non-principal point at infinity) and *holds* once Scott-continuity is assumed. So
+the predicted shape — "representable ⟺ Scott-continuous" — is confirmed for the chain.
+
+What **remains open** is the fully general (arbitrary / non-spatial) case. It is genuinely
+subtle: for a non-spatial locale (one with too few points — e.g. a measure algebra) there is no
+point-mass to sum, so any representation must live on a *measure space* into which the locale
+embeds, not on its points. Resolving it would mean importing localic/constructive measure
+theory (the localic Riesz representation of Coquand–Spitters and Vickers) with Scott-continuity
+plus a regularity/`τ`-smoothness condition — a genuinely new (and paper-defining) theorem. See
+[`RELATED_WORK.md`](RELATED_WORK.md).
 
 ---
 
