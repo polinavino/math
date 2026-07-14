@@ -136,8 +136,11 @@ This is not a new observation, and the README should not pretend otherwise: **We
 (2003)** already defined this "intuitionistic probability," and a theorem of **Paris (1994),
 building on Shafer (1976)**, identifies such non-classical probabilities *with* Dempster–Shafer
 belief functions. What this project adds is not the object but (i) a machine-checked
-development of it, and (ii) an attempt at a *uniqueness* theorem for it (see §6, §7, and
-[`RELATED_WORK.md`](RELATED_WORK.md)).
+development of it, and (ii) toward *uniqueness*: a corrected constructive Cox regraduation theorem
+(`constructive_cox`, §6.4) together with a characterization pinning modularity down as the
+mixing-closure of point additivity (`eq_mix_deltaPoint`, §6) — the honest stand-in for a full
+uniqueness result, whose remaining form (deriving modularity from a more primitive desideratum)
+is still open (see §6, §7, and [`RELATED_WORK.md`](RELATED_WORK.md)).
 
 ### Splitting the slack into two obstructions
 
@@ -251,7 +254,11 @@ middle. Remove it and the following break, in rough order of severity:
    Those steps *are* excluded middle in disguise — indeed R3 holds for all valuations **iff**
    excluded middle does (`hasClassicalNegation_of_em` and its converse, §6). A constructive
    uniqueness theorem therefore cannot re-run the classical argument; it needs a genuinely new
-   one. That is why `constructive_cox` is still open.
+   one. That is why `constructive_cox`, in its corrected form, must **posit** modularity rather
+   than derive it (§6.4): the classical route to the sum rule is gone, and `modularity_irreducible`
+   confirms modularity cannot be recovered from the disjunction data. The honest replacement is to
+   *characterize* modularity as the mixing-closure of point additivity (`eq_mix_deltaPoint`, §6),
+   not to re-run Cox's uniqueness proof.
 
 The through-line: **classical probability bundles together several things that are only
 separately true.** Intuitionistic probability is what you get when you unbundle them, and the
@@ -625,8 +632,9 @@ sub-probability, `∑' p, v.mass p ≤ v ⊤`, so a valuation splits into atomic
 the diffuse part `≥ 0` everywhere — the "≤" half of representation, holding unconditionally.
 
 What **remains open** is the matching *equality* in the genuinely diffuse (non-Scott / non-spatial)
-regime — i.e. representing the diffuse part. It is genuinely subtle: for a non-spatial locale (one with too few points — e.g. a
-measure algebra) there is no point-mass to carry it, so any representation must live on a
+regime — i.e. representing the diffuse part. It is genuinely subtle: for a non-spatial locale (one
+with too few points — e.g. a measure algebra) there is no point-mass to carry it, so any
+representation must live on a
 *measure space* into which the locale embeds, not on its points. Resolving it would mean
 importing localic/constructive measure theory (the localic Riesz representation of
 Coquand–Spitters and Vickers) with Scott-continuity plus a regularity/`τ`-smoothness condition —
@@ -655,7 +663,8 @@ parentheses point to where the term earns its keep.
   constructing evidence; `A ∨ ¬A` is not assumed. Its algebra is a **Heyting algebra**. (§2.)
 - **Cox's theorem.** The classical result that a consistent calculus of degrees of certainty
   agreeing with *classical* logic in the certain limit must be (a rescaling of) probability. The
-  target we are trying to re-derive over constructive logic (`constructive_cox`, open). (§1, §6.)
+  target re-derived over constructive logic by `constructive_cox` — **proved** in a corrected form
+  that *posits* modularity (the sum rule) rather than deriving it (§6.4). (§1, §6.)
 - **Dempster–Shafer belief function.** A known non-additive generalization of probability with
   `Bel(A) + Bel(¬A) ≤ 1`. Paris's theorem identifies the valuations here with these; we borrow
   the object but drop the epistemic "belief" reading. (§4.)
@@ -679,12 +688,21 @@ parentheses point to where the term earns its keep.
 - **Lower set (`LowerSet P`).** A downward-closed subset of a poset `P`, ordered by inclusion;
   with `⊔ = ∪`, `⊓ = ∩`, `⊤ = P` it is a frame. Our concrete arena for representation theorems.
   (§6.)
+- **Mixture / convex combination.** A weighted average `∑ᵢ wᵢ · vᵢ` of valuations, weights
+  `wᵢ ≥ 0` summing to `1` (`Valuation.mix`). Because every valuation axiom is *linear* in `v`, a
+  mixture of valuations is a valuation. On a finite frame every valuation is a mixture of
+  **point-valuations** (`eq_mix_deltaPoint`) — the characterization "modularity = the
+  mixing-closure of point additivity." (§6.)
 - **Modular law.** `v(A) + v(B) = v(A ∨ B) + v(A ∧ B)` — inclusion–exclusion. The one form of
   additivity needing no complement, and the defining axiom of a **valuation** here. (§4.)
 - **Point of a locale; spatial vs. non-spatial.** A point is a completely-prime filter — "a way
   of being an outcome." A locale is **spatial** if it has enough points to be a genuine
   topological space, **non-spatial** if not (e.g. a measure algebra). Diffuse mass on a
   non-spatial locale has no point to sit on. (§8.)
+- **Point-valuation (`δ_p`).** The sharp `{0,1}`-valued valuation `δ_p U = [p ∈ U]` concentrated
+  at a join-irreducible point `p` (`deltaPoint`): certain of exactly the propositions containing
+  `p`. The "pure states" of which every finite-frame valuation is a **mixture**
+  (`eq_mix_deltaPoint`). The point-mass counterpart of a **point of a locale**. (§6.)
 - **PMF.** mathlib's `PMF` — a genuine classical discrete probability distribution. `toPMF`
   turns a finite valuation into one. (§6.)
 - **Prime ideal / prime filter.** The order-theoretic stand-ins for "points" that make sense
@@ -693,8 +711,9 @@ parentheses point to where the term earns its keep.
   but not conversely — a distinction the formalization forced open (an atomic valuation can have
   slack on a regular-but-uncomplemented element). (§6.)
 - **Representation theorem.** A theorem writing a valuation as `∑ₚ (point mass at p)` —
-  recovering the classical distribution behind it. Proved for finite frames; conditional on
-  Scott-continuity for `ℕ`; only an inequality in general. (§6.)
+  recovering the classical distribution behind it. Proved for finite frames; holds under
+  Scott-continuity on any locally-finite-below poset (`isPurelyAtomic_of_scott`); only an
+  inequality (`tsum_mass_le`) in full generality. (§6.)
 - **Scott-continuity.** Compatibility with directed suprema: `v(⨆ᵢ Aᵢ) = ⨆ᵢ v(Aᵢ)` for directed
   families. The extra hypothesis that pins down where the mass lives; our bare `Valuation` omits
   it deliberately. (§6.)
