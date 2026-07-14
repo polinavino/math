@@ -64,6 +64,48 @@ theorem Valuation.mass_step (v : Valuation (LowerSet P)) {U : LowerSet P} {p : P
   rw [← hmass, add_comm (v (LowerSet.Iio p)) (v.mass p), ← add_assoc] at hmod
   exact ((ENNReal.add_left_inj (v.ne_top _)).mp hmod).symm
 
+/-! ### Point-valuations (the atoms as valuations)
+
+The mass function `v.mass` weighs the points; here we package each point as a valuation in its own
+right. The **point-valuation** `δ_p` is certain of exactly those propositions that contain `p` and
+of nothing else — the sharp valuation of `sharp_iff_point`, concentrated at `p`. These are the
+"pure states"; the mixture theorem below writes every valuation as a blend of them. -/
+
+section PointValuation
+open Classical
+
+/-- The **point-valuation** at `p` on `LowerSet P`: the sharp `{0,1}`-valued valuation
+`δ_p U = [p ∈ U]`, certain of a proposition iff it contains the point `p`. It is modular because
+indicators satisfy inclusion–exclusion pointwise (`[p∈U⊔V] + [p∈U⊓V] = [p∈U] + [p∈V]`). -/
+noncomputable def deltaPoint (p : P) : Valuation (LowerSet P) where
+  toFun U := if p ∈ U then 1 else 0
+  map_bot' := if_neg (by rw [← SetLike.mem_coe, LowerSet.coe_bot]; exact Set.notMem_empty p)
+  map_top' := if_pos (by rw [← SetLike.mem_coe, LowerSet.coe_top]; exact Set.mem_univ p)
+  mono' U V h := by
+    change (if p ∈ U then (1 : ℝ≥0∞) else 0) ≤ if p ∈ V then 1 else 0
+    split_ifs with hU hV hV
+    · exact le_rfl
+    · exact absurd (LowerSet.coe_subset_coe.2 h hU) hV
+    · exact zero_le_one
+    · exact le_rfl
+  modular' U V := by
+    change (if p ∈ U then (1 : ℝ≥0∞) else 0) + (if p ∈ V then 1 else 0)
+        = (if p ∈ U ⊔ V then 1 else 0) + (if p ∈ U ⊓ V then 1 else 0)
+    by_cases hU : p ∈ U <;> by_cases hV : p ∈ V
+    · rw [if_pos hU, if_pos hV, if_pos (LowerSet.mem_sup_iff.mpr (Or.inl hU)),
+        if_pos (LowerSet.mem_inf_iff.mpr ⟨hU, hV⟩)]
+    · rw [if_pos hU, if_neg hV, if_pos (LowerSet.mem_sup_iff.mpr (Or.inl hU)),
+        if_neg (fun h => hV (LowerSet.mem_inf_iff.mp h).2)]
+    · rw [if_neg hU, if_pos hV, if_pos (LowerSet.mem_sup_iff.mpr (Or.inr hV)),
+        if_neg (fun h => hU (LowerSet.mem_inf_iff.mp h).1), zero_add, add_zero]
+    · rw [if_neg hU, if_neg hV, if_neg (fun h => (LowerSet.mem_sup_iff.mp h).elim hU hV),
+        if_neg (fun h => hU (LowerSet.mem_inf_iff.mp h).1)]
+
+@[simp] theorem deltaPoint_apply (p : P) (U : LowerSet P) :
+    deltaPoint p U = if p ∈ U then 1 else 0 := rfl
+
+end PointValuation
+
 variable [Fintype P]
 
 /-- The finite set of points of a lower set (no decidability needed; `P` is finite). -/
@@ -145,5 +187,34 @@ theorem Valuation.eq_sum_toPMF (v : Valuation (LowerSet P)) (U : LowerSet P) :
 -- Sanity: the theorem instantiates at a concrete finite poset (`Fin 2` with its order).
 example (v : Valuation (LowerSet (Fin 2))) (U : LowerSet (Fin 2)) :
     v U = ∑ p ∈ U.toFinset, v.mass p := v.eq_sum_mass U
+
+/-! ### The mixture characterization: valuations = mixtures of points
+
+`eq_sum_mass`/`toPMF` read a valuation *as a distribution on the points*. Here is the dual reading:
+a valuation *as a mixture of the point-valuations* `δ_p`. Both are `v.mass`, viewed differently —
+as weights on outcomes, or as blending coefficients on pure states.
+
+Put together with `Valuation.mix` (any mixture of valuations is a valuation), this is a clean
+**characterization**: on a finite frame, the valuations are *exactly* the finite mixtures of
+point-valuations. That is the constructive successor to the "Cox uniqueness" question. Van Horn's
+classical derivation pins the sum rule down with the negation axiom R3, which `SumIrreducible.lean`
+shows is unavailable here (modularity is not a functional of the disjunction data). This theorem
+supplies what replaces it: modularity is precisely the property closed under **mixing the points** —
+neither more nor less than "an average of certainties". -/
+
+/-- **Every finite-frame valuation is a mixture of its points.** `v = ∑_p (v.mass p) · δ_p`, i.e.
+`v = Valuation.mix v.mass v.sum_mass deltaPoint`. The weights are the point-masses and the
+components are the point-valuations. With `Valuation.mix` this gives the characterization
+**{valuations on a finite frame} = {finite mixtures of point-valuations}**: modularity is exactly
+the mixing-closure of the sharp/point additivity. -/
+theorem Valuation.eq_mix_deltaPoint (v : Valuation (LowerSet P)) :
+    v = Valuation.mix v.mass v.sum_mass (fun p => deltaPoint p) := by
+  classical
+  ext U
+  have hfil : (Finset.univ.filter (· ∈ U)) = U.toFinset := by
+    ext p; simp [LowerSet.mem_toFinset]
+  rw [Valuation.mix_apply, v.eq_sum_mass U, ← hfil, Finset.sum_filter]
+  exact Finset.sum_congr rfl (fun p _ => by
+    by_cases hp : p ∈ U <;> simp [deltaPoint_apply, hp])
 
 end ConstructiveProb

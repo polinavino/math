@@ -189,6 +189,52 @@ theorem slack_eq_zero_iff (v : Valuation Ω) (a : Ω) :
 
 end Valuation
 
+/-! ## Convex combinations of valuations
+
+The defining properties of a valuation — `v ⊥ = 0`, `v ⊤ = 1`, monotonicity, and above all the
+modular law `v a + v b = v(a ⊔ b) + v(a ⊓ b)` — are all **linear** in `v`. So the valuations form
+a **convex set**: an average of valuations (weights summing to one) is again a valuation, with no
+new hypothesis required.
+
+Intuitively, if you have several candidate "ways the uncertainty could be structured", any weighted
+blend of them is itself such a way. Technically, this is the engine behind the mixture
+characterization (`Valuation.eq_mix_deltaPoint`, in `Representation.lean`): because modularity
+survives averaging, the point-additive *sharp* valuations can be blended freely and the blend stays
+modular. That is the honest sense in which modularity is the "mixing-closure" of point additivity —
+the constructive replacement for Van Horn's negation axiom R3 that `SumIrreducible.lean` shows
+cannot be recovered from the disjunction data. -/
+
+section ConvexStructure
+open scoped BigOperators
+variable [Order.Frame Ω] {ι : Type*} [Fintype ι]
+
+/-- **A finite mixture of valuations is a valuation.** For weights `w : ι → ℝ≥0∞` summing to `1`
+and a family of valuations `v i`, the affine combination `a ↦ ∑ i, w i · v i a` is again a
+valuation. Every axiom is inherited term-by-term because each is linear in the valuation — in
+particular modularity, which is why mixing requires no extra hypothesis. -/
+noncomputable def Valuation.mix (w : ι → ℝ≥0∞) (hw : ∑ i, w i = 1) (v : ι → Valuation Ω) :
+    Valuation Ω where
+  toFun a := ∑ i, w i * v i a
+  map_bot' := by simp only [Valuation.map_bot, mul_zero, Finset.sum_const_zero]
+  map_top' := by simp only [Valuation.map_top, mul_one]; exact hw
+  mono' a b hab := by
+    refine Finset.sum_le_sum fun i _ => ?_
+    gcongr
+    exact (v i).mono hab
+  modular' a b := by
+    have h : ∀ i, w i * v i a + w i * v i b
+        = w i * v i (a ⊔ b) + w i * v i (a ⊓ b) := fun i => by
+      rw [← mul_add, ← mul_add, (v i).modular a b]
+    calc (∑ i, w i * v i a) + ∑ i, w i * v i b
+        = ∑ i, (w i * v i a + w i * v i b) := (Finset.sum_add_distrib).symm
+      _ = ∑ i, (w i * v i (a ⊔ b) + w i * v i (a ⊓ b)) := Finset.sum_congr rfl fun i _ => h i
+      _ = (∑ i, w i * v i (a ⊔ b)) + ∑ i, w i * v i (a ⊓ b) := Finset.sum_add_distrib
+
+@[simp] theorem Valuation.mix_apply (w : ι → ℝ≥0∞) (hw : ∑ i, w i = 1) (v : ι → Valuation Ω)
+    (a : Ω) : Valuation.mix w hw v a = ∑ i, w i * v i a := rfl
+
+end ConvexStructure
+
 /-! ## Classical limit: recovering Kolmogorov (proved)
 
 When the logic is classical — `Ω` a complete Boolean algebra — every element is

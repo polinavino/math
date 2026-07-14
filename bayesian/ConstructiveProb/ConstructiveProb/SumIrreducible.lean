@@ -114,7 +114,7 @@ theorem qV_disjoint_additive (S T : LowerSet V) (h : S ⊓ T = ⊥) :
     qV (S ⊔ T) = qV S + qV T := by
   have key : S = ⊥ ∨ T = ⊥ := by
     by_contra hcon
-    push_neg at hcon
+    rw [not_or] at hcon
     have : V.o ∈ S ⊓ T := mem_inf_V.mpr ⟨o_mem_of_ne_bot hcon.1, o_mem_of_ne_bot hcon.2⟩
     rw [h] at this
     exact not_mem_bot_V V.o this

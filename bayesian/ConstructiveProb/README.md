@@ -362,6 +362,18 @@ measure model — is a direct calculation or a corollary of these.
 - `toPMF` — makes it literal: `v.mass` is a mathlib `PMF` (probability mass function), so a
   valuation on a finite frame **is** a classical discrete probability distribution on the
   points, with `v` its point-measure.
+- `Valuation.mix` (in [`Basic.lean`](ConstructiveProb/Basic.lean)) / `deltaPoint` /
+  `eq_mix_deltaPoint` (in [`Representation.lean`](ConstructiveProb/Representation.lean)) — **the
+  mixture characterization.** Because every valuation axiom (above all modularity) is *linear* in
+  the valuation, the valuations form a **convex set**: any weighted average of valuations (weights
+  summing to `1`) is a valuation (`mix`). The sharp *point-valuations* `δ_p U = [p ∈ U]` are the
+  pure states, and on a finite frame every valuation is their mixture,
+  `v = ∑_p (v.mass p)·δ_p` (`eq_mix_deltaPoint`). So **{valuations on a finite frame} = {finite
+  mixtures of points}**. *Why this matters:* it is the constructive successor to the "Cox
+  uniqueness" question. Van Horn pins the sum rule down with the negation axiom R3, which
+  `SumIrreducible.lean` shows is unavailable here; this identifies what replaces it — modularity is
+  *exactly* the property closed under **mixing the points**, "an average of certainties", neither
+  more nor less.
 - `exists_valuation_not_point_representable` / `eq_tsum_mass_of_scott` (in
   [`RepresentationInfinite.lean`](ConstructiveProb/RepresentationInfinite.lean)) — **the
   boundary of the finite theorem.** On the infinite frame `LowerSet ℕ` the finite theorem
@@ -379,6 +391,16 @@ measure model — is a direct calculation or a corollary of these.
   zero diffuse part); the `topIndicator` counterexample is the extreme purely-diffuse opposite.
   The proof peels a maximal point from each finite subset and uses modularity — it needs neither
   excluded middle nor `Classical`.
+- `Valuation.eq_sum_mass_of_finite` / `Valuation.isPurelyAtomic_of_scott` (in
+  [`RepresentationGeneral.lean`](ConstructiveProb/RepresentationGeneral.lean)) — **Scott-continuity
+  ⟹ purely atomic, in general.** `eq_sum_mass_of_finite` upgrades the finite representation to hold
+  on any *single* finite lower set (dropping `[Fintype P]`), so it applies to the finite pieces of
+  an infinite frame. Building on it, `isPurelyAtomic_of_scott` shows that on **any locally-finite-
+  below poset** `P` (every `↓p` finite), a **Scott-continuous** valuation has zero diffuse part:
+  `∑' p, v.mass p = v ⊤`. This generalizes the "`ℕ` + Scott" equality case above from the chain
+  `ℕ` to arbitrary posets — the diffuse mass can only escape "to infinity" when the whole is *not*
+  approached by its finite pieces, which Scott-continuity forbids. (The *full* M3c — representing
+  the diffuse part for non-spatial / non-Scott frames — stays open; see §6.5.)
 
 **✅ Proved — the Cox derivation (this is §6.4, the former open goal):**
 
@@ -423,9 +445,24 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   cone, `StrictMonoOn` and multiplicative. It is *minus continuity* — the constructed `g` is
   discontinuous at the unit — and *minus reorientation* to `[0,1]`; those are the analytic
   frontier (§6.5).
+- `Scale.exists_bounded_mul_generator` — **the reorientation half of M4, closed.** The cone
+  generator above runs *upward* (`G = exp∘g` increasing), matching the growing `t`-conorm picture;
+  Cox's conjunction lives in the bounded `[0,1]` picture where combining makes things *less*
+  plausible. The single order-reversing regraduation `Ḡ = exp(−g)` bridges them: it is a strictly
+  **decreasing** multiplicative generator into `(0,1]`, `Ḡ(F x y) = Ḡ x · Ḡ y`, `Ḡ u = e⁻¹` — the
+  bounded/Cox orientation of `AczelStatement`. No further analysis; it is pure regraduation. (The
+  *other* half of the M4 gap — continuity of `g` and its extension below the unit — is genuine
+  analysis and remains open, §6.5.)
 - `nonempty_scale` / `logSumExpScale` — the whole `Scale` edifice is quantified over `∀ S`, so
   it needs a witness: `F x y = log(eˣ + eʸ)` (unit `0`, additive generator `exp`) satisfies every
   axiom. This guards the Aczél capstones against vacuity, as `nonempty_coxModel` does the Cox side.
+- `hasOrderedGenerator_logSumExp` — **the open analytic core is witnessed, globally and
+  continuously.** The one part left open in the forward direction is the *existence* of an
+  order-embedding additive generator (Hölder), and the constructed `g` is discontinuous at the
+  unit. For the archetype these both vanish: the generator `exp` works on **all** of `ℝ`, is
+  continuous and strictly monotone, with `exp(F x y) = exp x + exp y`. So the open core is inhabited
+  by a continuous global generator — guarding the *conclusion* the way `nonempty_scale` guards the
+  hypotheses; only the general existence (for an arbitrary `Scale`) remains open.
 
 **✅ Proved — the sum rule is irreducible (M5, [`SumIrreducible.lean`](ConstructiveProb/SumIrreducible.lean)):**
 
@@ -455,14 +492,21 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
 **⬜ Open (the analytic frontier — stated maths, not `sorry`s):**
 
 - **Continuity + off-cone extension of the generator.** `aczelStatement_cone` proves the
-  product rule on the cone `[u,∞)`; matching the *verbatim* `AczelStatement` on `[0,1]`
-  additionally needs `ContinuousOn g`. The constructed `g` is discontinuous at the unit
-  (it is `0` below `u`), so a continuous generator requires extending it below the unit by
-  group completion, plus an order-reversing (`−log`) reorientation from the growing/`t`-conorm
-  picture to the bounded `[0,1]` conjunction picture. Genuine analysis, multi-session.
+  product rule on the cone `[u,∞)`; matching the *verbatim* `AczelStatement` on `[0,1]` needs two
+  more things. *(i) Reorientation — **done.*** `Scale.exists_bounded_mul_generator` supplies the
+  bounded `[0,1]` orientation via `Ḡ = exp(−g)` (decreasing, multiplicative, into `(0,1]`); this
+  was pure regraduation, not analysis. *(ii) Continuity + off-cone extension — **still open.*** The
+  constructed `g` is discontinuous at the unit (it is `0` below `u`), so a continuous generator
+  requires extending it below the unit by group completion, then proving continuity. This is
+  genuine analysis, multi-session. It *is* clean for the archetype
+  (`hasOrderedGenerator_logSumExp`: `exp` is a continuous global generator for `logSumExpScale`),
+  which witnesses the target; the general case remains.
 - **Full representation in general (`M3c`).** `tsum_mass_le` gives the atomic part as a
-  sub-probability for every frame; representing the *diffuse* remainder (equality) for
-  arbitrary / non-spatial frames is the paper-defining open problem — and, strikingly, the
+  sub-probability for every frame; representing the *diffuse* remainder (equality) is the
+  paper-defining open problem. *Progress:* `isPurelyAtomic_of_scott` now closes the
+  **Scott-continuous case in general** (any locally-finite-below poset, not just the chain `ℕ`) —
+  under Scott-continuity the diffuse part is `0`. What remains is precisely the genuinely diffuse
+  regime: representing the remainder for **non-spatial / non-Scott** frames — and, strikingly, the
   non-spatiality obstruction is the *same phenomenon* as undecidability (a halting locale has too
   few points), tying this frontier to the computability guard above.
 
@@ -572,13 +616,16 @@ classical measure via `□`? — is **proved in the finite case** (`eq_sum_mass`
 **boundary is pinned down** (`RepresentationInfinite.lean`): on the infinite chain `LowerSet ℕ`
 it *fails* for a non-Scott-continuous valuation (the indicator of `⊤`, whose mass escapes to a
 non-principal point at infinity) and *holds* once Scott-continuity is assumed, confirming
-"representable ⟺ Scott-continuous" for the chain. And the **general upper bound is now proved**
-for *any* frame (`tsum_mass_le`, `RepresentationGeneral.lean`): the atomic part is always a
+"representable ⟺ Scott-continuous" for the chain. This **Scott-continuous case is now proved in
+general** (`isPurelyAtomic_of_scott`, `RepresentationGeneral.lean`): on *any* locally-finite-below
+poset, a Scott-continuous valuation is purely atomic — so the point picture is exact wherever the
+whole is genuinely approached by its finite pieces. And the **general upper bound is proved**
+for *any* frame (`tsum_mass_le`): the atomic part is always a
 sub-probability, `∑' p, v.mass p ≤ v ⊤`, so a valuation splits into atomic + diffuse parts with
 the diffuse part `≥ 0` everywhere — the "≤" half of representation, holding unconditionally.
 
-What **remains open** is the matching *equality* in full generality — i.e. representing the
-diffuse part. It is genuinely subtle: for a non-spatial locale (one with too few points — e.g. a
+What **remains open** is the matching *equality* in the genuinely diffuse (non-Scott / non-spatial)
+regime — i.e. representing the diffuse part. It is genuinely subtle: for a non-spatial locale (one with too few points — e.g. a
 measure algebra) there is no point-mass to carry it, so any representation must live on a
 *measure space* into which the locale embeds, not on its points. Resolving it would mean
 importing localic/constructive measure theory (the localic Riesz representation of

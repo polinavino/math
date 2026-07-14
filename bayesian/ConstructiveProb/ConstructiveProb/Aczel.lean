@@ -990,6 +990,46 @@ theorem aczelStatement_cone :
   obtain ⟨G, hmul, hmono⟩ := S.exists_mul_generator
   exact ⟨G, hmul, fun _ hx _ _ hxy => hmono _ _ hx hxy⟩
 
+/-! ### The reorientation to the bounded (Cox) picture
+
+`aczelStatement_cone`/`exists_mul_generator` deliver the generator in the *growing* orientation:
+`G = exp ∘ g` is strictly **increasing** and multiplicative, matching the `t`-conorm picture where
+`F` grows (`x < F x c`). But `AczelStatement`, and Cox's conjunction, live in the *bounded* `[0,1]`
+picture, where combining two propositions makes them **less** plausible (`F x y ≤ min x y`) and the
+generator should run *down* into `[0,1]`.
+
+The passage between the two is a single order-reversing regraduation, `x ↦ e^{-x}` — no further
+analysis. `exists_bounded_mul_generator` performs it: `Ḡ = exp (−g)` is a strictly **decreasing**
+multiplicative generator into `(0,1]`. This closes the *reorientation* half of the gap between
+`aczelStatement_cone` and the verbatim `AczelStatement`; the remaining half — continuity of `g` and
+its extension below the unit — is genuine analysis and stays open (but see
+`hasOrderedGenerator_logSumExp` for the archetype, where it is clean). -/
+
+/-- **The bounded (reoriented) multiplicative generator.** For a `Scale`, `Ḡ = exp (−g)` maps the
+positive cone into `(0,1]`, is strictly **antitone** there, sends the unit to `e⁻¹`, and turns the
+combination into a **product**: `Ḡ (F x y) = Ḡ x · Ḡ y`. This is exactly the `t`-norm / Cox
+conjunction orientation (`F x y` larger ⟹ `Ḡ` smaller) — the bounded picture of `AczelStatement`,
+obtained from the growing cone generator by the order-reversing transport `exp (−·)`. -/
+theorem exists_bounded_mul_generator :
+    ∃ G : ℝ → ℝ,
+      (∀ x, S.u ≤ x → G x ∈ Set.Ioc (0 : ℝ) 1) ∧
+      (∀ x y, S.u ≤ x → S.u ≤ y → G (S.F x y) = G x * G y) ∧
+      StrictAntiOn G (Set.Ici S.u) ∧
+      G S.u = Real.exp (-1) := by
+  refine ⟨fun b => Real.exp (-(S.g b)), ?_, ?_, ?_, ?_⟩
+  · intro x hx
+    refine ⟨Real.exp_pos _, ?_⟩
+    have h1 : (1 : ℝ) ≤ S.g x := S.one_le_g hx
+    rw [Real.exp_le_one_iff]
+    linarith
+  · intro x y hx hy
+    change Real.exp (-(S.g (S.F x y))) = Real.exp (-(S.g x)) * Real.exp (-(S.g y))
+    rw [S.g_additive hx hy, neg_add, Real.exp_add]
+  · intro x hx y hy hxy
+    exact Real.exp_lt_exp.mpr (neg_lt_neg (S.g_strictMono_cone hx hxy))
+  · change Real.exp (-(S.g S.u)) = Real.exp (-1)
+    rw [S.g_unit]
+
 end Scale
 
 /-! ### A concrete `Scale`: the log-sum-exp archetype
@@ -1030,5 +1070,18 @@ noncomputable def logSumExpScale : Scale where
 
 /-- The `Scale` hypotheses are consistent: the Aczél/Hölder capstones are non-vacuous. -/
 theorem nonempty_scale : Nonempty Scale := ⟨logSumExpScale⟩
+
+/-- **The open core `HasOrderedGenerator` is inhabited — globally and continuously.** The one part
+of the forward direction flagged open in this file is the *existence* of an order-embedding additive
+generator (Hölder's theorem); moreover the generator built by the `Scale` construction is
+discontinuous at the unit. For the archetype `logSumExpScale` both issues vanish: the generator
+`exp` works on **all** of `ℝ` (not just the cone), is continuous, and is strictly monotone, with
+`exp (F x y) = exp x + exp y`. So the open analytic core is *witnessed* by a continuous global
+generator — as `nonempty_scale` guards the hypotheses against vacuity, this guards the conclusion;
+the general existence (for an arbitrary `Scale`) is what remains open. -/
+theorem hasOrderedGenerator_logSumExp : HasOrderedGenerator logSumExpScale.F := by
+  refine ⟨Real.exp, Real.exp_strictMono, fun x y => ?_⟩
+  change Real.exp (Real.log (Real.exp x + Real.exp y)) = Real.exp x + Real.exp y
+  rw [Real.exp_log (by positivity)]
 
 end ConstructiveProb.Aczel
