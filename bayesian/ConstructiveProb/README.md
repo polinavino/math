@@ -470,7 +470,8 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
 
 ## 7. Why bother?
 
-Three payoffs, from concrete to speculative:
+Five payoffs, roughly concrete to speculative — two of them (the computability ones, 3–4) are
+outright theorems in this repository, not just motivations:
 
 1. **It sharpens the link between two theories.** Ordinary (Kolmogorov) probability and
    Dempster–Shafer belief functions are usually built as separate constructions. That they are
@@ -485,7 +486,30 @@ Three payoffs, from concrete to speculative:
    a precedent that "the logic fixes the shape of probability" can be made into a real
    theorem — that's essentially what **Gleason's theorem** does for quantum logic.
 
-3. **It fits a philosophical picture.** If you think the world is fundamentally *structure*
+3. **It turns decidability into something probability can measure.** The framework makes "the
+   proposition `a` is decided" and "the probability of `a` behaves classically" the *same*
+   condition: `v a + v aᶜ = 1` holds for every valuation exactly when `a ⊔ aᶜ = ⊤`, i.e. exactly
+   when excluded middle holds at `a` (the R3-hinge equivalence, proved:
+   `hasClassicalNegation_of_em` / `em_of_forall_hasClassicalNegation`). So the slack
+   `1 − v a − v aᶜ` is a *quantitative measure of how undecided `a` is* — zero for decidable
+   propositions, positive otherwise — and studying it is a way to study decidability itself
+   through a probabilistic lens. The same phenomenon reappears one level up: whether a valuation
+   is representable as a point-measure coincides with whether its locale is spatial (has "enough
+   decided points"), the spatiality ⟺ decidability duality of §6.5.
+
+4. **It proves classical probability is *not* appropriate for some real propositions.** This is
+   a theorem, not a preference. Take a semi-decidable proposition — canonically "machine `n`
+   halts" — which is an *open* in the observational (Sierpiński) topology and can be confirmed by
+   a finite computation but never refuted by one. The natural valuation on it
+   (`haltingValuation`) assigns it a genuine probability `p ∈ (0,1)` — morally Chaitin's `Ω`, an
+   uncomputable, algorithmically random real — and `haltingValuation_not_classical` **proves**
+   that this valuation *violates* the Kolmogorov complement rule `v a + v aᶜ = 1`. So for
+   propositions grounded in computation, the classical assumption that a statement and its
+   negation partition certainty is provably false; the constructive slack is *forced, not
+   optional*. Any calculus insisting on the classical rule is refuted by this model — which is
+   precisely why the halting valuation doubles as the theory's non-collapse guard (§6.5).
+
+5. **It fits a philosophical picture.** If you think the world is fundamentally *structure*
    (and that "points"/"objects" are derived, not primitive), then the natural mathematics is
    locale theory — whose logic is constructive. So this isn't an arbitrary change; it's the
    probability theory that matches that worldview. (See `../probability_philosophy_handoff.md`.)
