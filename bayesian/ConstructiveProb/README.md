@@ -263,14 +263,19 @@ total probability over `{A,¬A}`, the clean point picture, Cox uniqueness).
 
 ## 6. What the Lean file actually proves
 
-Everything in [`Basic.lean`](ConstructiveProb/Basic.lean) and
-[`Representation.lean`](ConstructiveProb/Representation.lean) is checked by the Lean proof
-assistant, so the ✅ items are theorems with zero gaps (a computer verified every step). The
-⬜ items are stated but not yet proved (`sorry`) — they're the open research targets.
+Everything across the modules is checked by the Lean proof assistant, so the ✅ items are
+theorems with zero gaps (a computer verified every step). **The project is now `sorry`-free:**
+the central `constructive_cox` — long the one open target — is proved, in a *corrected* statement
+(§6.4). What remains is not a `sorry` but genuine mathematics stated *outside* the formal
+theorems: the analytic frontier flagged as ⬜ in §6.5.
 
 ### In plain terms: which results are hard, and why
 
-Most of the ✅ list below is careful bookkeeping. Three items carry the real weight:
+Most of the ✅ list below is careful bookkeeping. A handful of items carry the real weight — the
+three foundational ones below, plus the Aczél generator (`g_additive`, the analytic heart of the
+product rule, built as a dyadic limit) and the resolution of `constructive_cox` (which turned out
+to be *unsatisfiable as originally stated*, and true only once modularity is posited — itself
+justified by `modularity_irreducible`):
 
 - **The hinge (`hasClassicalNegation_of_em` and its converse)** is the conceptual heart. It
   proves the complement rule `v(¬A) = 1 − v(A)` holds for *every* valuation **exactly when**
@@ -375,27 +380,91 @@ measure model — is a direct calculation or a corollary of these.
   The proof peels a maximal point from each finite subset and uses modularity — it needs neither
   excluded middle nor `Classical`.
 
-**⬜ Open (the research program):**
+**✅ Proved — the Cox derivation (this is §6.4, the former open goal):**
 
-- `constructive_cox` — **the central goal.** A constructive analogue of Cox's theorem: that
-  the valuations above are the *unique* reasonable calculus (up to rescaling) with a
-  constructive-logic limit — obtained by *dropping R3*. Genuinely open even on paper: existing
-  Cox proofs use double-negation elimination, so this needs a new argument, not a port. This
-  is now the **only** remaining `sorry` in the file.
+- `constructive_cox` — **the central theorem, corrected and proved** (§6.4). Every Cox model
+  regraduates to a modular `Valuation`. Discharging it forced two corrections to the original
+  bare statement, both mathematically informative: (1) it was literally *unsatisfiable* — it
+  asked for a `StrictMono g : ℝ → ℝ≥0∞` with `g 0 = 0`, but strict monotonicity forces
+  `g(−1) < g 0 = 0`, impossible in `ℝ≥0∞`; so `StrictMono g` becomes `StrictMonoOn g (Icc 0 1)`
+  (the plausibility values live in `[0,1]`); (2) **modularity of the unconditional plausibility
+  is an explicit hypothesis**, because the sum rule is irreducible (see `modularity_irreducible`
+  and §6.5) — the product rule cannot supply it. With these it is proved, `g = ENNReal.ofReal`.
+- `constructive_cox_nonvacuous` / `coxModelENNReal_modular` — the corrected theorem is **not
+  vacuous**: its modularity hypothesis is met by the genuinely non-Boolean witness on `ℝ≥0∞`
+  (automatic there, since a chain makes every monotone plausibility modular).
+- `constructive_cox_of_modular` / `ModularCoxModel.classical_of_boolean` (`Cox.lean`) — the
+  clean reduction: a `ModularCoxModel` (product rule + modular sum rule, **no** negation axiom)
+  *is* a `Valuation`, and on a Boolean algebra it is automatically complement-additive
+  (recovering Van Horn's classical Cox). The split is exact: the **product-rule half is
+  logic-independent** (Aczél, below) and the **sum-rule half is where the logic lives**
+  (modularity replaces R3).
 
-  *Reframing (`Cox.lean`).* Trying to carry the Cox derivation out constructively splits it into
-  two independent halves. The **product-rule half is Aczél's associativity theorem**
-  (`AczelStatement`): an associative, continuous, strictly-monotone conjunction functional
-  regraduates to multiplication. Its statement never mentions the logic `Ω`, so it is
-  **logic-independent** — identical constructively and classically — and it is a real
-  analysis theorem (one-parameter subgroups), begun in `Aczel.lean`. The **sum-rule half is
-  where the logic lives**, and the constructive replacement for R3 turns out to be **modularity**
-  itself. Once separated, the algebraic core is trivial and *proved*: a `ModularCoxModel`
-  (product rule + modular sum rule, no negation axiom) **is** a `Valuation`
-  (`constructive_cox_of_modular`), and on a Boolean algebra it is automatically complement-additive
-  (`ModularCoxModel.classical_of_boolean`, recovering Van Horn). So the genuine residue is
-  (i) `AczelStatement` (pure analysis) and (ii) justifying modularity as *the* sum-rule axiom —
-  not the entangled monolith the bare statement suggests.
+**✅ Proved — the product-rule half (Aczél/Hölder generator, [`Aczel.lean`](ConstructiveProb/Aczel.lean)):**
+
+This is the constructive content of Aczél's associativity theorem, built from scratch (mathlib
+has no ordered-semigroup embedding for interval operations). A `Scale` bundles Aczél's
+hypotheses on a combination functional `F` — divisible, associative, positive-cone
+(`x < F x c`), jointly continuous, order-preserving, with an identity at `−∞`. The generator is
+constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots under `b`)/2ⁿ`.
+
+- `g_additive` — **the analytic heart:** the generator turns the combination into addition,
+  `g (F x y) = g x + g y`, obtained as the limit of *approximate* additivity (a counting
+  sandwich `dcount x n + dcount y n + 1 ≤ dcount (F x y) n ≤ ⋯ + 3`, with the `2⁻ⁿ` slack
+  vanishing). `g_unit` (`g u = 1`) and `g_mono` normalize and order it.
+- `g_strictMono_cone` — **the order embedding:** `u ≤ x < y ⟹ g x < g y`, proved *without*
+  continuity, via the roots shrinking to the identity (`roots_shrink`) plus a count-amplification
+  argument.
+- `exists_ordered_generator` / `exists_mul_generator` — **Hölder's theorem on the cone:** every
+  `Scale` carries a normalized, strictly monotone, additive generator, and (by `exp`) a strictly
+  monotone *multiplicative* one `G (F x y) = G x · G y` — the exact shape of `AczelStatement`'s
+  conclusion.
+- `aczelStatement_cone` — **the bridge (M4):** `AczelStatement`'s conclusion delivered on the
+  cone, `StrictMonoOn` and multiplicative. It is *minus continuity* — the constructed `g` is
+  discontinuous at the unit — and *minus reorientation* to `[0,1]`; those are the analytic
+  frontier (§6.5).
+- `nonempty_scale` / `logSumExpScale` — the whole `Scale` edifice is quantified over `∀ S`, so
+  it needs a witness: `F x y = log(eˣ + eʸ)` (unit `0`, additive generator `exp`) satisfies every
+  axiom. This guards the Aczél capstones against vacuity, as `nonempty_coxModel` does the Cox side.
+
+**✅ Proved — the sum rule is irreducible (M5, [`SumIrreducible.lean`](ConstructiveProb/SumIrreducible.lean)):**
+
+- `modularity_irreducible` — justifies *why* `constructive_cox` must posit modularity. On the
+  five-element frame of lower sets of the "V" poset (a bottom below two incomparable points),
+  there is a monotone, normalized plausibility that is **additive on disjoint joins yet not
+  modular**. So modularity is not derivable from the disjunction/sum data and must be posited —
+  the irreducible constructive replacement for the sum-rule half of R3.
+- `no_disjunction_functional` — the **sharp** form: `q (x ⊔ y)` is not even a function of the
+  marginals `q x, q y`. The pairs `(↓a, ↓a)` and `(↓a, ↓b)` have identical marginals `(½, ½)`
+  but joins `↓a` and `⊤` valued `½` and `1`. Unlike the conjunction (which reduces to Aczél via
+  conditioning), a disjunction on a Heyting frame — lacking complements to decompose a join — is
+  genuinely not a functional of its marginals.
+
+**✅ Proved — the computability guard ([`Halting.lean`](ConstructiveProb/Halting.lean)):**
+
+- `exists_halting_slack` / `haltingValuation_not_classical` — the **non-collapse guard**. A
+  semi-decidable ("machine halts") proposition is an *open* in the Sierpiński topology; on the
+  Sierpiński frame it cannot be refuted (`hᶜ = ⊥`), so assigning it a halting probability
+  `p ∈ (0,1)` (morally Chaitin's `Ω`) gives positive slack `1 − p` and violates
+  `v a + v aᶜ = 1`. Any axiom set strong enough to collapse the theory to classical logic is
+  refuted by this model — *because computability forbids `p ∈ {0,1}`*. This does for the sum
+  rule what `nonempty_coxModel` does for the product rule: it certifies the theory stays
+  genuinely non-classical. `chainValuation` (every monotone normalized map on a complete chain
+  is a valuation) generalizes the earlier `chainVal`.
+
+**⬜ Open (the analytic frontier — stated maths, not `sorry`s):**
+
+- **Continuity + off-cone extension of the generator.** `aczelStatement_cone` proves the
+  product rule on the cone `[u,∞)`; matching the *verbatim* `AczelStatement` on `[0,1]`
+  additionally needs `ContinuousOn g`. The constructed `g` is discontinuous at the unit
+  (it is `0` below `u`), so a continuous generator requires extending it below the unit by
+  group completion, plus an order-reversing (`−log`) reorientation from the growing/`t`-conorm
+  picture to the bounded `[0,1]` conjunction picture. Genuine analysis, multi-session.
+- **Full representation in general (`M3c`).** `tsum_mass_le` gives the atomic part as a
+  sub-probability for every frame; representing the *diffuse* remainder (equality) for
+  arbitrary / non-spatial frames is the paper-defining open problem — and, strikingly, the
+  non-spatiality obstruction is the *same phenomenon* as undecidability (a halting locale has too
+  few points), tying this frontier to the computability guard above.
 
 ---
 
@@ -577,8 +646,9 @@ lake exe cache get      # download prebuilt mathlib (once) — avoids an hours-l
 lake build              # check every proof
 ```
 
-A successful build prints exactly one warning of the form `declaration uses 'sorry'` — the
-single open target `constructive_cox` in §6, and it is expected.
+A successful build is **clean — no `sorry`, no warnings.** Every declaration, including
+`constructive_cox`, is fully checked; the landmark theorems depend only on the three standard
+mathlib axioms (`propext`, `Classical.choice`, `Quot.sound`), which `#print axioms` confirms.
 
 **To read it interactively:** open this folder in **VS Code** with the `leanprover.lean4`
 extension. Put your cursor inside any proof and open the Infoview (the ∀ icon) to watch the

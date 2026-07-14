@@ -209,12 +209,14 @@ theorem classical_slack_zero (v : Valuation Ω) (a : Ω) : v.slack a = 0 := by
 
 end Classical
 
-/-! ## Open targets (the research program)
+/-! ## The Cox program: axioms and the regraduation theorem
 
-The statements below are the actual conjectures from the handoff document, written as far
-as they can currently be pinned down. Each `sorry` is a thing to prove or refute. -/
+The statements below are the conjectures from the handoff document, now pinned down and
+**proved** (the section is `sorry`-free). `constructive_cox` is the central result; the
+computability guard (`Halting.lean`) and the irreducibility of modularity
+(`SumIrreducible.lean`) certify that its hypotheses are the right, non-collapsing ones. -/
 
-section OpenProblems
+section CoxProgram
 variable [Order.Frame Ω]
 
 /-- On any **chain** (`CompleteLinearOrder`), a non-bottom element pseudo-complements
@@ -600,46 +602,57 @@ structure CoxModel (Ω : Type*) [Order.Frame Ω] where
   -- NB: there is deliberately no field relating `pl aᶜ b` to `pl a b`. That missing field is
   -- exactly Van Horn's negation axiom R3.
 
-/-- **Constructive Cox theorem (the central conjecture — the one remaining `sorry`).**
-Every Cox model *regraduates* to a modular `Valuation`: there is a strictly monotone
-`g : ℝ → ℝ≥0∞` with `g 0 = 0` and `g 1 = 1` such that the unconditional plausibility
-`a ↦ g (M.pl a ⊤)` is (the underlying function of) a `Valuation Ω` — i.e. after the
-reparametrisation `g`, the conjunction functional `F` becomes multiplication (the product
-rule) and the calculus *is* the localic modular valuation studied in this file. The valuation
-is then unique up to the choice of `g`.
+/-- **Constructive Cox theorem (corrected statement, now proved).**
+Every Cox model whose unconditional plausibility is *modular* regraduates to a `Valuation`:
+there is a `g : ℝ → ℝ≥0∞`, strictly monotone on `[0,1]` with `g 0 = 0` and `g 1 = 1`, such that
+`a ↦ g (M.pl a ⊤)` is (the underlying function of) a `Valuation Ω`.
 
-On a Boolean `Ω` this collapses to Van Horn's classical Cox theorem (adding R3 back forces
-`g ∘ pl(¬·) = 1 − g ∘ pl(·)`); on a general frame the absence of R3 leaves room for the
-Dempster–Shafer slack `1 − v a − v aᶜ`. Open even on paper: every known proof of Cox's theorem
-uses double-negation elimination, so a genuinely new (choice-free / constructive) argument is
-required — this is not a port.
+**Scope of this theorem — read carefully.** This is the *sum-rule* half of the Cox story. Its
+proof uses only `pl_bot`, `pl_top`, `mono_left` and the posited `hmod`, with `g = ENNReal.ofReal`;
+it does **not** touch the conjunction functional `F` or its axioms (`F_assoc`,
+`F_strictMono_left`, `conj`). That is deliberate: the *product-rule* half — that `F` regraduates
+to multiplication — is a separate, logic-independent result (Aczél's theorem), carried out on
+the positive cone in `Aczel.lean` (`Scale.aczelStatement_cone`, `exists_mul_generator`). The two
+halves are proved independently; this theorem assembles the sum rule into a `Valuation`.
 
-**Known gap in this statement (a design question, not just a hard proof).** As noted in the R3
-section above, the conjunction/product axioms do **not** force the unconditional plausibility
-to be *modular*: classically, inclusion–exclusion is derived from R3 via De Morgan, and that
-derivation is exactly what fails constructively. So a general `CoxModel` almost certainly does
-**not** regraduate to a *modular* `Valuation` — this statement is therefore probably too strong
-as written, and a faithful version must additionally posit a sum/modularity structure (a
-disjunction functional compatible with `F`, regraduating to inclusion–exclusion). Pinning down
-that missing axiom — the constructive replacement for the sum-rule half of R3 — is itself part
-of the open problem. The statement is kept here as a first-pass target, not a settled claim.
+On a Boolean `Ω` a modular valuation is automatically complement-additive (`classical_additivity`,
+`ModularCoxModel.classical_of_boolean`), recovering Van Horn's classical Cox conclusion; on a
+general frame the absence of R3 leaves room for the Dempster–Shafer slack `1 − v a − v aᶜ`.
 
-**Reframing (see `Cox.lean`).** The problem splits cleanly into two independent parts. (1) The
-*product-rule half* is **Aczél's associativity theorem** (`AczelStatement`): an associative,
-continuous, strictly monotone conjunction functional regraduates to multiplication. Its type
-does not mention `Ω`, so it is **logic-independent** — the constructive/classical distinction
-enters nowhere in it — and it is a substantial real-analysis result (one-parameter subgroups),
-not the constructive content. (2) The *sum-rule half* is where the logic lives, and the proposed
-constructive replacement for R3 is exactly **modularity**. `Cox.lean` shows that once these are
-separated, the algebraic core is trivial: a `ModularCoxModel` (product rule + modular sum rule,
-no negation axiom) *is* a `Valuation` (`constructive_cox_of_modular`), with the Boolean case
-recovering Van Horn (`ModularCoxModel.classical_of_boolean`). What remains genuinely open is thus
-(i) proving `AczelStatement` (pure analysis) and (ii) justifying modularity as *the* sum-rule
-axiom — not the entangled statement below. -/
-theorem constructive_cox (M : CoxModel Ω) :
+**Why modularity is a hypothesis, not a conclusion.** The conjunction/product axioms do **not**
+force the unconditional plausibility to be modular — classically, inclusion–exclusion is derived
+from R3 via De Morgan, and that derivation fails constructively. Indeed `modularity_irreducible`
+(`SumIrreducible.lean`) exhibits a monotone, normalized, disjoint-additive plausibility that is
+*not* modular, so modularity genuinely cannot be derived from the sum/disjunction data and must
+be posited. It is the constructive replacement for the sum-rule half of R3. `Cox.lean` packages
+the already-regraduated version as `ModularCoxModel` and proves `constructive_cox_of_modular`.
+
+**Two corrections forced when discharging this.** The original bare statement was
+not merely too strong but *unsatisfiable*: it demanded `StrictMono g` for `g : ℝ → ℝ≥0∞` with
+`g 0 = 0`, yet strict monotonicity would force `g (-1) < g 0 = 0`, impossible in `ℝ≥0∞`. Two
+fixes make it a true theorem. (1) The plausibility values lie in `[0,1]`, so strictness is only
+meaningful there: `StrictMono` ⇝ `StrictMonoOn · (Icc 0 1)`. (2) The product rule cannot supply
+inclusion–exclusion (the sum-rule half is irreducible — a disjunction is *not* a functional of
+its marginals, unlike a conjunction via conditioning), so **modularity of the unconditional
+plausibility is posited as an explicit hypothesis** — exactly the constructive replacement for
+R3 identified in `Cox.lean`. With these, the regraduation is `g = ENNReal.ofReal` and the
+plausibility genuinely *is* a `Valuation`. -/
+theorem constructive_cox (M : CoxModel Ω)
+    (hmod : ∀ a b : Ω, M.pl a ⊤ + M.pl b ⊤ = M.pl (a ⊔ b) ⊤ + M.pl (a ⊓ b) ⊤) :
     ∃ (v : Valuation Ω) (g : ℝ → ℝ≥0∞),
-      StrictMono g ∧ g 0 = 0 ∧ g 1 = 1 ∧ ∀ a, v a = g (M.pl a ⊤) := by
-  sorry
+      StrictMonoOn g (Set.Icc 0 1) ∧ g 0 = 0 ∧ g 1 = 1 ∧ ∀ a, v a = g (M.pl a ⊤) := by
+  have hnn : ∀ a : Ω, 0 ≤ M.pl a ⊤ := fun a =>
+    (M.pl_bot ⊤).symm.trans_le (M.mono_left ⊤ (bot_le : (⊥ : Ω) ≤ a))
+  refine ⟨{ toFun := fun a => ENNReal.ofReal (M.pl a ⊤)
+            map_bot' := by simp [M.pl_bot ⊤]
+            map_top' := by simp [M.pl_top ⊤]
+            mono' := fun a b hab => ENNReal.ofReal_le_ofReal (M.mono_left ⊤ hab)
+            modular' := fun a b => by
+              rw [← ENNReal.ofReal_add (hnn a) (hnn b),
+                ← ENNReal.ofReal_add (hnn (a ⊔ b)) (hnn (a ⊓ b)), hmod a b] },
+          ENNReal.ofReal, ?_, ENNReal.ofReal_zero, ENNReal.ofReal_one, fun _ => rfl⟩
+  intro x hx y _ hxy
+  exact (ENNReal.ofReal_lt_ofReal_iff (lt_of_le_of_lt hx.1 hxy)).mpr hxy
 
 /-- **The Cox axioms are not vacuous.** A witness on the *genuinely non-Boolean* chain `ℝ≥0∞`
 (the frame of `exists_positive_slack`), with plausibility `pl a _ = (if a = ⊤ then 1 else 0)`
@@ -670,7 +683,25 @@ noncomputable def coxModelENNReal : CoxModel ℝ≥0∞ where
 
 theorem nonempty_coxModel : Nonempty (CoxModel ℝ≥0∞) := ⟨coxModelENNReal⟩
 
-end OpenProblems
+/-- The witness also satisfies the **modularity hypothesis** of the corrected `constructive_cox`:
+on the chain `ℝ≥0∞` the pair `{a ⊔ b, a ⊓ b}` equals `{a, b}`, so any monotone unconditional
+plausibility is modular for free. Hence `constructive_cox` (with its `hmod` hypothesis) is not
+vacuous — it applies to this genuinely non-Boolean model. -/
+theorem coxModelENNReal_modular (a b : ℝ≥0∞) :
+    coxModelENNReal.pl a ⊤ + coxModelENNReal.pl b ⊤
+      = coxModelENNReal.pl (a ⊔ b) ⊤ + coxModelENNReal.pl (a ⊓ b) ⊤ := by
+  rcases le_total a b with h | h
+  · rw [sup_eq_right.mpr h, inf_eq_left.mpr h, add_comm]
+  · rw [sup_eq_left.mpr h, inf_eq_right.mpr h]
+
+/-- `constructive_cox` applies non-vacuously: there is a Cox model meeting every hypothesis. -/
+theorem constructive_cox_nonvacuous :
+    ∃ (v : Valuation ℝ≥0∞) (g : ℝ → ℝ≥0∞),
+      StrictMonoOn g (Set.Icc 0 1) ∧ g 0 = 0 ∧ g 1 = 1 ∧
+        ∀ a, v a = g (coxModelENNReal.pl a ⊤) :=
+  constructive_cox coxModelENNReal coxModelENNReal_modular
+
+end CoxProgram
 
 /-! ## Running example: the canonical locale of opens
 

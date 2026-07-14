@@ -1,6 +1,8 @@
 import ConstructiveProb.Basic
 import ConstructiveProb.Cox
 import ConstructiveProb.Aczel
+import ConstructiveProb.Halting
+import ConstructiveProb.SumIrreducible
 import ConstructiveProb.Representation
 import ConstructiveProb.RepresentationInfinite
 import ConstructiveProb.RepresentationGeneral

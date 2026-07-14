@@ -826,8 +826,8 @@ theorem exists_additive_generator :
 
 Additivity + normalization already give strict monotonicity *at unit scale*: crossing a whole
 unit raises `g` by at least one. This makes `g` unbounded and injective on any unit-spaced
-subsequence. Full `StrictMono` in the small is separate — it needs the roots to shrink to the
-additive identity (`F x (droot n) → x`), the last analytic lemma; recorded but not proved. -/
+subsequence. (Full `StrictMono` in the small — needing the roots to shrink to the additive
+identity, `F x (droot n) → x` — is then proved below as `g_strictMono_cone`.) -/
 
 /-- On the cone, `g ≥ 1` (monotonicity from the normalized unit). -/
 theorem one_le_g {x : ℝ} (hx : S.u ≤ x) : 1 ≤ S.g x :=
@@ -963,6 +963,72 @@ theorem exists_mul_generator :
   · change Real.exp (S.g x) < Real.exp (S.g y)
     exact Real.exp_lt_exp.mpr (S.g_strictMono_cone hx hxy)
 
+/-! ### M4 — the bridge to `AczelStatement` (the product-rule half of Cox)
+
+`AczelStatement` (`Cox.lean`) asks that a continuous, per-argument strictly monotone, associative
+`F` on `[0,1]` be conjugate to multiplication by a `StrictMonoOn` *and* `ContinuousOn` generator.
+The theorem below delivers exactly that conclusion **on the positive cone** `[u, ∞)` and **minus
+continuity**: a `Scale` (Aczél's hypotheses in the growing/positive-cone orientation) regraduates
+its conjunction functional to multiplication by a generator that is strictly monotone on the cone.
+
+Two gaps remain between this and the verbatim `AczelStatement`, and both are genuine analysis, not
+bookkeeping:
+* **Continuity.** The generator `g` built here is *discontinuous at the unit* — it is `0` below
+  `u` and `1` at `u`, because additivity only holds on the cone. A continuous generator (e.g.
+  `exp` for the archetype `F x y = log(eˣ+eʸ)`) requires extending `g` below the unit by group
+  completion; that extension is the missing `ContinuousOn` half.
+* **Reorientation.** `AczelStatement` lives on the bounded conjunction picture `[0,1]` (where
+  `F x y ≤ x`), whereas a `Scale` is the growing/`t`-conorm orientation (`x < F x c`). The two are
+  related by an order-reversing transport (`−log`), which must be supplied to land on `[0,1]`.
+
+So M4 is *reduced*, not closed: the algebraic and order content of the product rule is proved on
+the cone; the residual is the continuity/off-cone extension and the interval reorientation. -/
+theorem aczelStatement_cone :
+    ∃ G : ℝ → ℝ,
+      (∀ x y, S.u ≤ x → S.u ≤ y → G (S.F x y) = G x * G y) ∧
+      StrictMonoOn G (Set.Ici S.u) := by
+  obtain ⟨G, hmul, hmono⟩ := S.exists_mul_generator
+  exact ⟨G, hmul, fun _ hx _ _ hxy => hmono _ _ hx hxy⟩
+
 end Scale
+
+/-! ### A concrete `Scale`: the log-sum-exp archetype
+
+Everything in the `Scale` namespace is quantified over `∀ S : Scale`, so it is only meaningful if
+`Scale` is inhabited. It is: `F x y = log (eˣ + eʸ)` with unit `0` satisfies every field, and its
+additive generator is `exp` (`exp (F x y) = eˣ + eʸ`). This guards the capstones against vacuity,
+exactly as `nonempty_coxModel` guards the Cox side. -/
+
+/-- The **log-sum-exp scale** `F x y = log (eˣ + eʸ)`, unit `0`. A concrete inhabitant of
+`Scale`, so the Aczél/Hölder capstones are not vacuous. -/
+noncomputable def logSumExpScale : Scale where
+  F x y := Real.log (Real.exp x + Real.exp y)
+  hdiv c := ⟨c - Real.log 2, by
+    have h : Real.exp (c - Real.log 2) + Real.exp (c - Real.log 2) = Real.exp c := by
+      rw [Real.exp_sub, Real.exp_log (by norm_num : (0 : ℝ) < 2)]; ring
+    rw [h, Real.log_exp]⟩
+  hassoc x y z := by
+    rw [Real.exp_log (by positivity), Real.exp_log (by positivity), add_assoc]
+  hpos c x :=
+    calc x = Real.log (Real.exp x) := (Real.log_exp x).symm
+      _ < Real.log (Real.exp x + Real.exp c) :=
+          Real.log_lt_log (Real.exp_pos x) (by linarith [Real.exp_pos c])
+  hmono x₁ x₂ y₁ y₂ hx hy :=
+    Real.log_le_log (by positivity)
+      (add_le_add (Real.exp_le_exp.mpr hx) (Real.exp_le_exp.mpr hy))
+  hcont := by
+    apply Continuous.log
+    · exact (Real.continuous_exp.comp continuous_fst).add (Real.continuous_exp.comp continuous_snd)
+    · intro p; positivity
+  hbot x := by
+    have h1 : Filter.Tendsto (fun z => Real.exp x + Real.exp z) Filter.atBot
+        (nhds (Real.exp x)) := by
+      simpa using tendsto_const_nhds.add Real.tendsto_exp_atBot
+    have h2 := (Real.continuousAt_log (by positivity : Real.exp x ≠ 0)).tendsto.comp h1
+    rwa [Real.log_exp] at h2
+  u := 0
+
+/-- The `Scale` hypotheses are consistent: the Aczél/Hölder capstones are non-vacuous. -/
+theorem nonempty_scale : Nonempty Scale := ⟨logSumExpScale⟩
 
 end ConstructiveProb.Aczel
