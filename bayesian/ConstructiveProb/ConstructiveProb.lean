@@ -6,3 +6,4 @@ import ConstructiveProb.SumIrreducible
 import ConstructiveProb.Representation
 import ConstructiveProb.RepresentationInfinite
 import ConstructiveProb.RepresentationGeneral
+import ConstructiveProb.Belief

@@ -174,15 +174,20 @@ first gap, so for a regular `A` all the slack is the De Morgan gap `1 − v(A or
 (Formalized in `Basic.lean`: `slack_eq_dnGap_add_deMorganGap`, `slack_eq_zero_iff`,
 `slack_eq_deMorganGap_of_regular`.)
 
-**A frontier this opens.** The map `A ↦ not not A` is the *double-negation nucleus*: the regular
-elements form a genuine **Boolean** algebra (the Booleanization, à la Glivenko), and there
-`(not not A, not A)` really *is* a complementary pair. Restricting `v` to the regular elements
-gives — one checks the modularity defect is one-signed — a **submodular capacity**, i.e. a
-bona-fide Dempster–Shafer belief function *on a Boolean algebra*, with the belief/plausibility
-gap being precisely these double-negation gaps. That is a concrete bridge from the intuitionistic
-slack to classical DS theory, and the Booleanization is also exactly where a classical (R3/Cox)
-argument would live — so it is the principled way to extract "the classical probability inside
-`v`." Turning that capacity statement into a theorem is future work.
+**A frontier this opens (now partly proved).** The map `A ↦ not not A` is the *double-negation
+nucleus*: the regular elements form a genuine **Boolean** algebra (the Booleanization, à la
+Glivenko), and there `(not not A, not A)` really *is* a complementary pair. Restricting `v` to the
+regular elements gives — one checks the modularity defect is one-signed — a **supermodular
+(2-monotone) capacity**: `v(A ∨_B B) + v(A ∧ B) ≥ v A + v B`, where `A ∨_B B = (A ⊔ B)ᶜᶜ` is the
+Boolean join. That is exactly the defining convex-capacity inequality of a **Dempster–Shafer
+belief function** *on a Boolean algebra*, with the belief/plausibility interval width being the
+slack. This is now a **theorem** — `Valuation.two_monotone` and `plausibility_sub_self` in
+[`Belief.lean`](ConstructiveProb/Belief.lean) — proved in one line from modularity plus
+`A ⊔ B ≤ (A ⊔ B)ᶜᶜ`. (A *bona-fide* belief function is `∞`-monotone, a whole tower of inequalities;
+the `2`-monotone hallmark is proved, the full tower remains future work.) The Booleanization is also
+exactly where a classical (R3/Cox) argument would live — so it is the principled way to extract
+"the classical probability inside `v`." *(Note: an earlier draft mislabelled this "submodular";
+belief functions are supermodular / 2-monotone — the `≥` direction proved here.)*
 
 ### A note on the word "belief"
 
@@ -319,6 +324,14 @@ measure model — is a direct calculation or a corollary of these.
 - `slack_eq_dnGap_add_deMorganGap` (with `slack_eq_zero_iff`, `slack_eq_deMorganGap_of_regular`)
   — the **slack decomposition** from §4: `slack A = (double-negation gap) + (De Morgan gap)`,
   splitting the single DS "ignorance" number into its two independent obstructions.
+- `Valuation.two_monotone` / `self_le_plausibility` / `plausibility_sub_self` (in
+  [`Belief.lean`](ConstructiveProb/Belief.lean)) — **the Dempster–Shafer bridge (§4 frontier,
+  now a theorem).** `v A + v B ≤ v (A ⊔ B)ᶜᶜ + v (A ⊓ B)`: read on the Booleanization (regular
+  elements), where `(A ⊔ B)ᶜᶜ` is the Boolean join, this is `Bel(A∨B) + Bel(A∧B) ≥ Bel A + Bel B`
+  — **2-monotonicity**, the defining convex-capacity inequality of a belief function. With the dual
+  plausibility `Pl A = 1 − v Aᶜ`, the belief/plausibility interval has width exactly the slack
+  (`Pl A − v A = slack A`). So `v` restricted to the regulars *is* a (2-monotone) DS belief
+  function; full `∞`-monotonicity remains future work.
 - `classical_additivity` — in the classical (Boolean) case, `v(A) + v(not A) = 1` exactly.
   This is the "certain limit recovers ordinary probability" claim, machine-checked.
 - `exists_positive_slack` — a concrete example where the slack is genuinely **positive**
@@ -517,6 +530,36 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   non-spatiality obstruction is the *same phenomenon* as undecidability (a halting locale has too
   few points), tying this frontier to the computability guard above.
 
+### Relation to prior formalizations — exactly what overlaps
+
+To be scrupulous about novelty (a reviewer will be): the **base object is prior art, including in
+formalized form**, but the development built on it is not. Precisely:
+
+- **What coincides.** The modular valuation on a frame/locale is a known object — on paper
+  (Coquand–Spitters, *Integrals and Valuations*, 2009; Vickers, *Topology via Logic*) and
+  **formalized in Coq/HoTT** by Bidlingmaier–Faissole–Spitters (*Synthetic topology in HoTT for
+  probabilistic programming*, MSCS 2021; the `FFaissole/Valuations` library, `Valuations.v`). Our
+  `Valuation` is essentially that object, so the *definition* is not new.
+- **How ours differs even at the object level.** (i) Their valuations are **Scott-continuous**
+  (ω-cpo-valued, for domain-theoretic fixpoint semantics); we **deliberately omit** Scott-continuity
+  — precisely what makes the non-representable valuations (`topIndicator`) and the atomic/diffuse gap
+  visible. (ii) They treat a valuation as the constructive analogue of a **measure** (their goal is
+  Riesz/Fubini, the Lebesgue valuation, and a Giry-style monad for probabilistic programming); we
+  read the *same* object as **credence obtained by weakening the underlying logic**.
+- **What is *not* formalized anywhere (the actual contribution).** The reading of the slack as the
+  failure of excluded middle and its two-gap decomposition; the R3 hinge (additivity ⟺ EM); the
+  constructive Cox theorem and the from-scratch Aczél/Hölder generator; the representation, mixture,
+  and Scott-⟹-atomic theorems in the forms here; the halting/decidability guard; and the
+  Dempster–Shafer belief-function bridge. None of this is in the Coq/HoTT valuations line of work.
+- **Adjacent but a different object.** The **ALEA** Coq library (a Giry-style distribution monad for
+  randomized programs) and **Sargsyan**'s cubical-Agda development (Markov categories, conditioning,
+  d-separation) are constructive probability in a proof assistant, but formalize *additive*
+  distributions, not localic non-additive valuations — no overlap with the specific object here.
+
+So the accurate one-liner is: *the valuation object is prior-formalized (Coq/HoTT), for constructive
+measure theory; the logic-driven non-additive theory on top of it is formalized here for the first
+time.* **Not** "most of this is already done in Coq/Agda/HoTT." (Detailed map: [`RELATED_WORK.md`](RELATED_WORK.md).)
+
 ---
 
 ## 7. Why bother?
@@ -642,7 +685,57 @@ a genuinely new (and paper-defining) theorem. See [`RELATED_WORK.md`](RELATED_WO
 
 ---
 
-## 9. Glossary
+## 9. Open problems and future directions
+
+Consolidated here for reference; each is discussed in context where it arises. Two tiers: the
+**formal frontier** (what a next Lean push would target) and the **conceptual program** (what the
+companion philosophy paper opens).
+
+### The formal frontier (Lean / mathlib)
+
+1. **Continuity + off-cone extension of the Aczél generator** → the verbatim `AczelStatement` on
+   `[0,1]`. `aczelStatement_cone` and `exists_bounded_mul_generator` give the multiplicative
+   generator, in the bounded Cox orientation, *on the positive cone*. What remains is a **continuous**
+   generator on all of `[0,1]`, which requires the group completion below the unit — and that in turn
+   requires commutativity of `F` for *off-cone* elements, which is **not** among the `Scale` axioms
+   and is essentially equivalent to the theorem. Genuine analysis; clean for the archetype
+   (`hasOrderedGenerator_logSumExp`), open in general. (§6.5.)
+2. **Full representation in general — M3c.** `tsum_mass_le` gives the atomic part as a sub-probability
+   for every frame, and `isPurelyAtomic_of_scott` closes the Scott-continuous case on any
+   locally-finite-below poset. What remains is representing the **diffuse** remainder for
+   **non-spatial / non-Scott** frames — the paper-defining problem. It needs localic/constructive
+   measure theory (Coquand–Spitters, Vickers) ported to Lean, plus Scott-continuity and a
+   regularity/`τ`-smoothness condition. Strikingly, the non-spatiality obstruction is the *same
+   phenomenon* as undecidability (too few decided points), tying this to the halting guard. (§6.5, §8.)
+3. **∞-monotonicity of the Dempster–Shafer bridge.** `two_monotone` proves `v` is a **2-monotone**
+   capacity on the Booleanization (the convex-capacity hallmark). A *bona fide* belief function is
+   **∞-monotone** (non-negative Möbius transform) — a whole tower of inequalities. Upgrading the
+   2-monotone case to the full tower is future work. (§4; Thread G of [`RELATED_WORK.md`](RELATED_WORK.md).)
+4. **A genuine uniqueness theorem.** `constructive_cox` is a *regraduation* theorem that **posits**
+   modularity, and `modularity_irreducible` shows modularity cannot be derived from the disjunction
+   data; the honest stand-in is the mixture characterization (`eq_mix_deltaPoint`). Open: derive
+   modularity — and so pin down the calculus — from a more primitive desideratum, given
+   `no_disjunction_functional` tells you where *not* to look. (§4, §6.4.)
+
+### The conceptual / philosophical program
+
+Beyond the formal development, the companion philosophy paper plan
+([`../PAPER-PHIL-foundations.md`](../PAPER-PHIL-foundations.md)) opens a wider program, held there as
+*horizon* rather than result: the **iterated-limit hierarchy** (classical logic ← classical
+probability ← quantum probability), the **Principal Principle** interface between chance levels,
+**prior uniqueness** (when the structure of an epistemic situation fixes the prior — the Bertrand /
+Jeffreys worry), **emergent probability** (macro from micro), a structural reply to **Feyerabend**,
+an **information-theoretic** (bits / Shannon) grounding of the limit behaviour, and the
+**law-likeness fork** (brute regularity vs. a simplicity-weighted Solomonoff ensemble). These are
+program-level, not next-commit-level.
+
+**The unifying thread** across both tiers: *non-spatiality = undecidability = the failure of
+point-representability* — one phenomenon seen three ways, as geometry (§8), as computability
+(`Halting.lean`), and as representation theory (§6). Progress on any one sharpens the others.
+
+---
+
+## 10. Glossary
 
 Terms as they are used in this project (not always in their fullest generality). Sections in
 parentheses point to where the term earns its keep.
@@ -725,7 +818,7 @@ parentheses point to where the term earns its keep.
 
 ---
 
-## 10. Building and reading it
+## 11. Building and reading it
 
 **Prerequisites:** [`elan`](https://leanprover-community.github.io/get_started.html) (the Lean
 version manager). The project pins Lean `v4.31.0` and mathlib `v4.31.0` automatically.
@@ -757,7 +850,7 @@ goal state evolve step by step — the best way to *see* what a proof is doing.
 
 ---
 
-## 11. A few references
+## 12. A few references
 
 - Cox, R. T. (1946). *Probability, frequency and reasonable expectation.*
 - Halpern, J. (1999). *A counterexample to theorems of Cox and Fine* — why "unique" needs care.
