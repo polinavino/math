@@ -109,17 +109,26 @@ independent step counters: a natural model for two parallel
 components, where Löb's rule lets one reason about recursion that
 descends in either or both components.
 
-A further family we do not develop but which deserves mention is the
-\emph{transfinite} one.  Countable ordinals up to a bound form
-well-founded preorders, and so does the index structure used in
-Transfinite Iris~\cite{spies2021transfinite}.  At any such instance,
-the framework's \texttt{iLob} is proved by exactly the same
-\texttt{well\_founded\_ind} on $\mathtt{fs\_lt}$.  The transfinite
-choice produces a stronger step-indexed logic without changing the
-soundness machinery.  The framework subsumes the index structure of
-Transfinite Iris in the same sense it subsumes the
-$(\omega, \le)$ structure of ordinary Iris, as a particular
-instantiation of a generic well-founded-forcing framework.
+The \emph{transfinite} family is developed as well
+(\texttt{Phase4b\_Transfinite.v}): the lexicographic order on
+$\mathbb{N} \times \mathbb{N}$ has order type $\omega^2$ --- the
+index structure of transfinite
+step-indexing~\cite{svendsen2016transfinite}, generalized to
+ordinals by Transfinite Iris~\cite{spies2021transfinite} --- with
+well-foundedness by a nested strong induction and \texttt{iLob} by
+the same \texttt{well\_founded\_ind} as everywhere.  The abstraction
+is not idle: a mechanized propositional sentence \emph{separates}
+the instances.  Over $\omega$, iterated later \emph{exhausts}:
+$\triangleright^{n+1} \bot$ is forced at index $n$, so every
+condition forces some finite $\triangleright^k \bot$
+(\texttt{nat\_FS\_exhausts}).  Over $\omega^2$ the limit point
+$(1,0)$, above the fan $(0,0) \prec (0,1) \prec \cdots$, forces no
+finite $\triangleright^k \bot$ (\texttt{lex\_FS\_not\_exhausts}).
+This index-exhaustion sentence is the propositional core of the
+``existential dilemma'' motivating transfinite
+indexing~\cite{spies2021transfinite}: over $\omega$, iterated
+$\triangleright$ eventually says nothing; transfinitely it retains
+content at every depth.
 
 \paragraph{Soundness of propositional GL.}
 As a concrete check, we define syntactic \textsf{GL} formulas
@@ -136,8 +145,9 @@ We have shown that the data of a step-indexed logic is captured by a
 \texttt{ForcingStructure} record, that the propositional fragment is
 parametric in this data, that the internal Löb rule is, in any such
 structure, a direct instance of well-founded induction, and that the
-standard $(\omega, \le)$ choice is one instance, with at least one
-non-trivially-different alternative.  The IMP and $\lambda$-calculus
+standard $(\omega, \le)$ choice is one instance among others ---
+including an $\omega^2$ instance separated from it by a mechanized
+propositional sentence.  The IMP and $\lambda$-calculus
 developments of Sections~\ref{sec:imp}--\ref{sec:lam} can be lifted
 to be parametric in the forcing structure with mostly bookkeeping
 changes, not done here for readability.

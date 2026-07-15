@@ -184,7 +184,10 @@ belief function** *on a Boolean algebra*, with the belief/plausibility interval 
 slack. This is now a **theorem** — `Valuation.two_monotone` and `plausibility_sub_self` in
 [`Belief.lean`](ConstructiveProb/Belief.lean) — proved in one line from modularity plus
 `A ⊔ B ≤ (A ⊔ B)ᶜᶜ`. (A *bona-fide* belief function is `∞`-monotone, a whole tower of inequalities;
-the `2`-monotone hallmark is proved, the full tower remains future work.) The Booleanization is also
+the full tower is proved in
+[`InclusionExclusion.lean`](ConstructiveProb/InclusionExclusion.lean) — `Valuation.infty_monotone` —
+as the Booleanization shadow of the frame-level inclusion–exclusion *equality*
+`Valuation.inclusion_exclusion`.) The Booleanization is also
 exactly where a classical (R3/Cox) argument would live — so it is the principled way to extract
 "the classical probability inside `v`." *(Note: an earlier draft mislabelled this "submodular";
 belief functions are supermodular / 2-monotone — the `≥` direction proved here.)*
@@ -331,7 +334,19 @@ measure model — is a direct calculation or a corollary of these.
   — **2-monotonicity**, the defining convex-capacity inequality of a belief function. With the dual
   plausibility `Pl A = 1 − v Aᶜ`, the belief/plausibility interval has width exactly the slack
   (`Pl A − v A = slack A`). So `v` restricted to the regulars *is* a (2-monotone) DS belief
-  function; full `∞`-monotonicity remains future work.
+  function — and the next entry upgrades this to the full tower.
+- `Valuation.inclusion_exclusion` / `infty_monotone` (in
+  [`InclusionExclusion.lean`](ConstructiveProb/InclusionExclusion.lean)) — **the DS bridge
+  completed: inclusion–exclusion and total monotonicity.** Modularity + frame distributivity give
+  the **inclusion–exclusion identity with equality for the frame join, on any frame** — for
+  finite families, but with no finiteness or spatiality hypothesis on the *frame*; stated
+  additively as odd-half = `v(⋁) +` even-half so no `[0,∞]` subtraction occurs. **∞-monotonicity** is then its one-line shadow through the Booleanization
+  join `(⋁·)ᶜᶜ` — the same mechanism as `two_monotone`, now the whole tower — so `v` restricted
+  to the regulars is a *bona fide* (totally monotone) belief function. Punchline:
+  inclusion–exclusion is *constructively innocent*; it holds on the nose for the intuitionistic
+  disjunction, and DS-ness is purely the effect of reading it through the `¬¬`-nucleus.
+  (`inclusion_exclusion_boolean` recovers the classical Kolmogorov formula as the `xᶜᶜ = x`
+  special case.)
 - `classical_additivity` — in the classical (Boolean) case, `v(A) + v(not A) = 1` exactly.
   This is the "certain limit recovers ordinary probability" claim, machine-checked.
 - `exists_positive_slack` — a concrete example where the slack is genuinely **positive**
@@ -358,6 +373,18 @@ measure model — is a direct calculation or a corollary of these.
   `{A, ¬A}`** (they don't tile `⊤`), so the conditional masses fall short of `v b` by the
   conditional slack `v b − v((A ∨ ¬A) ⊓ b)`. Bayesian updating survives; the assumption that
   `A` and `¬A` exhaust the world does not.
+- `dempsterCond` / `sup_compl_decomp` / `dempsterCond_eq_condVal_iff_slack` (in
+  [`Conditioning.lean`](ConstructiveProb/Conditioning.lean)) — **the conditioning hinge: where
+  Dempster and Bayes split.** Under the DS dictionary `condVal` is *geometric* conditioning
+  (renormalize belief); Dempster's *rule of conditioning* (renormalize by plausibility,
+  `(v(A ∨ ¬B) − v(¬B)) / (1 − v(¬B))`) is also a valuation (`dempsterCond`). The two classically
+  coincident updates are separated constructively by exactly one number: for evidence with
+  `v B ≠ 0`, **Dempster = Bayes at every `A` ⟺ `slack B = 0`** — one instance of excluded
+  middle, at the evidence. The gap is
+  structural: Dempster's numerator exceeds the Bayes numerator by precisely `emGap A B`, the mass
+  of `A` stranded outside `B ∨ ¬B` (`sup_compl_decomp`). This is the *dynamic* companion of the
+  R3 hinge: R3 locates classicality in the statics (complement rule ⟺ EM), this theorem locates
+  it in the dynamics (update rules agree ⟺ zero slack at the evidence).
 - `total_prob_of_partition` / `total_prob_predictive` — **prediction works over a genuine
   partition.** If `a, a'` really tile `⊤` (disjoint *and* exhaustive), then `v b = v(a⊓b) +
   v(a'⊓b) = v(b|a)·v a + v(b|a')·v a'`. The positive counterpart to the `{A,¬A}` failure:
@@ -508,6 +535,19 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   rule what `nonempty_coxModel` does for the product rule: it certifies the theory stays
   genuinely non-classical. `chainValuation` (every monotone normalized map on a complete chain
   is a valuation) generalizes the earlier `chainVal`.
+- `haltsOpen_compl` / `slack_eq_boundary` / `sharpReadout_not_computable` (in
+  [`Sierpinski.lean`](ConstructiveProb/Sierpinski.lean)) — **the guard grounded: no more
+  "morally".** The same story rebuilt on the honest frame `Opens Prop` (mathlib's actual
+  Sierpiński space of semidecidability), with the valuation coming from a genuine measure
+  (`p·δ_True + (1−p)·δ_False`) through the GMT bridge of §8. The Σ₁ asymmetry is now a *theorem*
+  (`haltsOpenᶜ = ⊥`: every nonempty open contains `True`, so nothing can partially refute a
+  semidecidable event), and the §8 slogan is computed end-to-end: **the slack at the halting
+  event equals the measure of its topological boundary** `{False}`, the point where the
+  computation stays silent forever (`slack_eq_boundary`). Finally the "morally, machine `n`
+  halts" becomes `Nat.Partrec.Code`: deciding whether the sharp, slack-free classical readout
+  assigns belief `1` to the halting event **is the halting problem**
+  (`sharpReadout_not_computable`, via mathlib's `ComputablePred.halting_problem`). Slack is not a
+  defect to apologize for; it is the price of a computable epistemic state.
 
 **⬜ Open (the analytic frontier — stated maths, not `sorry`s):**
 
@@ -707,10 +747,15 @@ companion philosophy paper opens).
    measure theory (Coquand–Spitters, Vickers) ported to Lean, plus Scott-continuity and a
    regularity/`τ`-smoothness condition. Strikingly, the non-spatiality obstruction is the *same
    phenomenon* as undecidability (too few decided points), tying this to the halting guard. (§6.5, §8.)
-3. **∞-monotonicity of the Dempster–Shafer bridge.** `two_monotone` proves `v` is a **2-monotone**
-   capacity on the Booleanization (the convex-capacity hallmark). A *bona fide* belief function is
-   **∞-monotone** (non-negative Möbius transform) — a whole tower of inequalities. Upgrading the
-   2-monotone case to the full tower is future work. (§4; Thread G of [`RELATED_WORK.md`](RELATED_WORK.md).)
+3. **∞-monotonicity of the Dempster–Shafer bridge — ✅ now closed.** `two_monotone` proves `v` is a
+   **2-monotone** capacity on the Booleanization; the full **∞-monotone tower** is now the theorem
+   `Valuation.infty_monotone` in
+   [`InclusionExclusion.lean`](ConstructiveProb/InclusionExclusion.lean). The route is sharper than
+   Möbius inversion: modularity plus frame distributivity give the **inclusion–exclusion identity
+   with equality for the frame join, on any frame** (`Valuation.inclusion_exclusion`, no finiteness
+   or spatiality needed); total monotonicity is its one-line shadow through the Booleanization join
+   `(⋁·)ᶜᶜ`, exactly as in the 2-monotone case. So the restriction of a valuation to its regular
+   elements is a *bona fide* belief function. (§4; Thread G of [`RELATED_WORK.md`](RELATED_WORK.md).)
 4. **A genuine uniqueness theorem.** `constructive_cox` is a *regraduation* theorem that **posits**
    modularity, and `modularity_irreducible` shows modularity cannot be derived from the disjunction
    data; the honest stand-in is the mixture characterization (`eq_mix_deltaPoint`). Open: derive
@@ -846,7 +891,12 @@ goal state evolve step by step — the best way to *see* what a proof is doing.
 6. then, for the representation story, [`Representation.lean`](ConstructiveProb/Representation.lean)
    (finite) → [`RepresentationInfinite.lean`](ConstructiveProb/RepresentationInfinite.lean)
    (its boundary) → [`RepresentationGeneral.lean`](ConstructiveProb/RepresentationGeneral.lean)
-   (the general atomic/diffuse decomposition).
+   (the general atomic/diffuse decomposition),
+7. and for the Dempster–Shafer arc, [`Belief.lean`](ConstructiveProb/Belief.lean) (2-monotone) →
+   [`InclusionExclusion.lean`](ConstructiveProb/InclusionExclusion.lean) (the full tower) →
+   [`Conditioning.lean`](ConstructiveProb/Conditioning.lean) (the two update rules), with
+   [`Halting.lean`](ConstructiveProb/Halting.lean) →
+   [`Sierpinski.lean`](ConstructiveProb/Sierpinski.lean) for the computability guard.
 
 ---
 

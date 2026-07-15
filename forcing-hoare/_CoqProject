@@ -13,3 +13,5 @@ coq/Phase5_Metatheory.v
 coq/Phase5b_GL.v
 coq/Phase5c_Equiv.v
 coq/Phase6_Bridge.v
+coq/Phase6b_JTS.v
+coq/Phase4b_Transfinite.v

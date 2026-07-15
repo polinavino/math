@@ -16,15 +16,47 @@ essentially a downward-closed presheaf on the forcing conditions
 The framework of Section~\ref{sec:abstract} is therefore, up to
 definitional choices, the propositional fragment of the JTS forcing
 translation of CIC, instantiated at an arbitrary forcing structure.
-This identification is conceptually clean but not formally
-mechanized, because we have not formalized the type-level JTS
-translation in Rocq.  What we have mechanized is the
-\emph{embedding} of the unforced theory ($\mathsf{Prop}$ in the
-ambient meta-theory) into the forced one ($\mathtt{iProp}$ in our
-framework): the constant embedding.  This is the easy half of the
-correspondence. It makes precise what the forcing translation does to
-a meta-level proposition that is to be lifted into the forced logic
-unchanged.
+At the propositional level, this identification is now a
+machine-checked theorem rather than an observation
+(\texttt{Phase6b\_JTS.v}).  We deep-embed a propositional object
+language \texttt{form} (atoms, $\top$, $\bot$, $\wedge$, $\vee$,
+$\to$, $\triangleright$) and define the forcing translation
+\texttt{jts} exactly as the JTS clauses prescribe --- a standalone
+\texttt{Fixpoint} into \texttt{cond -> Prop} that never mentions
+\texttt{iProp}: implication quantifies over all future conditions,
+$\triangleright$ over all strict predecessors, the other connectives
+are read pointwise.  Three theorems, all over an \emph{arbitrary}
+forcing structure, cash out the claim:
+
+\begin{lstlisting}
+Lemma   jts_mono      : (* translated formulas are presheaves:  *)
+  forall f p q, q ≼ p -> jts f p -> jts f q.
+Theorem jts_is_interp : (* translation = iProp semantics,       *)
+  forall f p,           (* pointwise, at every formula          *)
+    jts f p <-> ihold FS (interp f) p.
+Theorem jts_Lob       : (* Löb holds OF the translated formulas *)
+  forall f p, jts (FImpl (FLater f) f) p -> jts f p.
+\end{lstlisting}
+
+\noindent
+Here \texttt{interp} reads the same syntax through the semantic
+connectives of Section~\ref{sec:abstract}.  \texttt{jts\_mono} is the
+presheaf condition (the translation lands in \texttt{iProp});
+\texttt{jts\_is\_interp} is the factorization ``syntactic forcing
+translation $=$ step-indexed semantics''; and \texttt{jts\_Lob} is
+the step-indexed dividend, transported to the syntax --- available
+precisely because the forcing structure is well-founded
+(Section~\ref{sec:lob-essential} shows it is otherwise unavailable).
+What remains unmechanized is the \emph{term-level} translation of
+full CIC (universes, dependent products, the definitional side of
+\cite{jaber-et-al-2016}); the propositional claim made above is
+mechanized in full.
+
+Alongside this, we mechanize the \emph{embedding} of the unforced
+theory ($\mathsf{Prop}$ in the ambient meta-theory) into the forced
+one: the constant embedding.  It makes precise what the forcing
+translation does to a meta-level proposition that is to be lifted
+into the forced logic unchanged.
 
 \paragraph{Relation to the available JTS Coq plugin.}
 The JTS translation has been implemented as a Coq plugin

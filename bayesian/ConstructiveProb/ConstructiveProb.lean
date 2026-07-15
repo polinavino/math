@@ -7,3 +7,6 @@ import ConstructiveProb.Representation
 import ConstructiveProb.RepresentationInfinite
 import ConstructiveProb.RepresentationGeneral
 import ConstructiveProb.Belief
+import ConstructiveProb.InclusionExclusion
+import ConstructiveProb.Conditioning
+import ConstructiveProb.Sierpinski

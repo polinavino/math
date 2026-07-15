@@ -23,6 +23,11 @@ the sum rule that `nonempty_coxModel` plays for the product rule — a vacuity/c
 
 We realize the Sierpiński frame concretely as the sub-chain `{⊥, h, ⊤} ⊆ ℝ≥0∞` (taking
 `h = 1`); on a complete chain modularity is automatic, so the construction is light.
+
+`Sierpinski.lean` upgrades every "morally" above to a theorem: the frame becomes the honest
+`Opens Prop`, the valuation comes from a real measure through the GMT bridge
+(`slack = μ(∂A)` computed end-to-end), and the guard is grounded in `Nat.Partrec.Code` —
+deciding the sharp classical readout *is* the halting problem (`sharpReadout_not_computable`).
 -/
 import ConstructiveProb.Basic
 

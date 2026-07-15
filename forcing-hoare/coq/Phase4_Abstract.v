@@ -84,6 +84,15 @@ Section AbstractForcing.
   Definition iAnd (φ ψ : iProp) : iProp :=
     MkProp (fun p => p ⊩ φ /\ p ⊩ ψ) (iAnd_mono φ ψ).
 
+  Lemma iOr_mono (φ ψ : iProp) :
+    forall p q, q ≼ p -> (p ⊩ φ \/ p ⊩ ψ) -> (q ⊩ φ \/ q ⊩ ψ).
+  Proof.
+    intros p q Hpq [H|H]; [left|right]; eapply imono; eauto.
+  Qed.
+
+  Definition iOr (φ ψ : iProp) : iProp :=
+    MkProp (fun p => p ⊩ φ \/ p ⊩ ψ) (iOr_mono φ ψ).
+
   Lemma iImpl_mono (φ ψ : iProp) :
     forall p q, q ≼ p ->
       (forall r, r ≼ p -> r ⊩ φ -> r ⊩ ψ) ->

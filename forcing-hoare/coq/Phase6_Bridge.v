@@ -16,13 +16,15 @@
     (introduced via the well-founded strict refinement) and Löb's
     rule.
 
-    A full mechanization of the JTS translation — for instance, a
-    type-theoretic forcing translation of CIC pure-type-system terms
-    against [nat_FS], with the propositional rules verified to match
-    Phase 1 — is future work and beyond this development.  Here we
-    formalise the easy half: the constant embedding [Prop → iProp]
-    and the verification that it commutes with the Heyting-algebra
-    connectives. *)
+    The *propositional* half of that correspondence is mechanized in
+    [Phase6b_JTS.v]: the translation itself, as a syntactic
+    [Fixpoint], with the factorization theorem [jts_is_interp]
+    (translation = iProp semantics, over any forcing structure) and
+    [jts_Lob] (Löb transported to the translated syntax).  The
+    *term-level* translation of full CIC remains future work.  Here we
+    formalise the other, easy ingredient: the constant embedding
+    [Prop → iProp] and the verification that it commutes with the
+    Heyting-algebra connectives. *)
 
 From Coq Require Import Arith Lia.
 From ForcingHoare Require Import Phase1_Forcing.

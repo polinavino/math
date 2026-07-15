@@ -28,9 +28,12 @@ belief–plausibility interval `[Bel a, Pl a]` has width exactly the **slack**: 
 slack a` — the Dempster–Shafer "ignorance", here a structural quantity (`= μ(∂A)` in the measure
 model), not anyone's hesitation.
 
-**What remains open.** A *bona fide* DS belief function is `∞`-monotone (totally monotone), a
-family of inequalities indexed by finite subsets. We prove the `2`-monotone case (the standard
-convex-capacity hallmark); the full `∞`-monotone tower is future work.
+**The full tower.** A *bona fide* DS belief function is `∞`-monotone (totally monotone), a family
+of inequalities indexed by finite subsets. This file proves the `2`-monotone case (the standard
+convex-capacity hallmark); `InclusionExclusion.lean` closes the rest of the tower
+(`Valuation.infty_monotone`), by the same one-line mechanism applied to the full
+inclusion–exclusion identity — which holds *with equality* on the frame join
+(`Valuation.inclusion_exclusion`).
 -/
 import ConstructiveProb.Basic
 

@@ -84,21 +84,26 @@ step-indexed Hoare logic} (Sections~\ref{sec:prop}--\ref{sec:lam}),
 together with an \textbf{abstract forcing framework parametric in
 the forcing notion} (Section~\ref{sec:abstract}).  The abstract
 framework instantiates at $(\omega, \le)$ to recover the standard
-step-indexed semantics and at $(\omega \times \omega, \le_{\mathrm{pw}})$
-to demonstrate genericity. Ordinals up to a bound, including the
-index structure of Transfinite Iris \cite{spies2021transfinite}, are
-further instances.  Löb's rule, in the abstract setting, is proved
-by \texttt{well\_founded\_ind} on the strict refinement relation,
-making precise the equivalence between the internal Löb rule and
+step-indexed semantics, at the pointwise product to demonstrate
+genericity, and at the lexicographic $\omega^2$ of transfinite
+step-indexing~\cite{svendsen2016transfinite,spies2021transfinite},
+which a mechanized propositional sentence \emph{separates} from
+$\omega$ (iterated later exhausts at $\omega$, not at $\omega^2$).
+Löb's rule, in the abstract setting, is proved by
+\texttt{well\_founded\_ind} on the strict refinement relation, making
+precise the equivalence between the internal Löb rule and
 well-founded induction on the forcing order.
 
-\item \textbf{An embedding of meta-level $\mathsf{Prop}$ into the
-propositional fragment of the Jaber--Tabareau--Sozeau forcing
-translation of CIC}~\cite{jaber-tabareau-sozeau-2012}
-(Appendix~\ref{sec:bridge}).  The embedding is a Heyting algebra
-homomorphism. The later modality is the step-indexed-specific
-content lying outside its image.  A full mechanization of the
-type-level translation is future work.
+\item \textbf{The propositional fragment of the
+Jaber--Tabareau--Sozeau forcing translation of
+CIC~\cite{jaber-tabareau-sozeau-2012}, mechanized}
+(Appendix~\ref{sec:bridge}).  We write the JTS translation as a
+standalone syntactic \texttt{Fixpoint} on a deep-embedded language
+with $\triangleright$ and prove a factorization theorem: over an
+\emph{arbitrary} forcing structure it coincides pointwise with the
+framework's semantics (\texttt{jts\_is\_interp}), and L\"ob's rule
+holds of the translated formulas (\texttt{jts\_Lob}).  The
+\emph{term-level} translation of full CIC remains future work.
 
 \end{enumerate}
 

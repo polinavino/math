@@ -5,9 +5,15 @@
 - *Localic Probability in Lean: Valuations, a Corrected Cox Theorem, and the Aczél Generator*
 - *When You Drop Excluded Middle: Formalizing Intuitionistic Probability in Lean/mathlib*
 
-**Target venue.** ITP (primary) — longer papers, formalization-first, room for the analytic
-content. CPP (alternative — but note the companion `forcing-hoare` project is CPP-2027-bound, so
-ITP avoids competing with your own submission in the same cycle). Journal escalation: JAR.
+**Target venue (decided 2026-07-15).** **CPP 2027 (primary)** — abstracts Sep 3 2026, papers
+Sep 10 2026, 12-page body excl. bib/appendices, `acmart` `sigplan` `10pt` `anonymous` `review`.
+The CFP explicitly covers "certified mathematical libraries and mathematical theorems", and this
+paper's novelty claims are more robust with the POPL-adjacent audience than `forcing-hoare`'s
+(whose thesis is folklore-adjacent there). Both projects may be submitted to CPP — the
+concurrent-submission rule only bans the *same* paper at two venues. Compression note: the
+section outline below was drawn for ITP length; for CPP, §§5–6 compress to statements + design
+commentary with proofs in marked appendices + the artifact. Fallback: ITP 2027 (spring deadline).
+Journal escalation: JAR.
 **Artifact evaluation:** the `ConstructiveProb/` repo *is* the artifact — sorry-free, axiom-clean,
 builds against pinned Lean/mathlib `v4.31.0`. This is a strength; budget for the AE submission.
 
@@ -78,14 +84,34 @@ new infrastructure and sharp results about the **constructive** case.*
    **Scott-continuity ⟹ purely atomic** on any locally-finite-below poset (`isPurelyAtomic_of_scott`,
    generalizing the previously `ℕ`-only result).
 
-5. **The bridges.** GMT/measure (`toValuationOpens` — a classical measure read on the opens *is* a
-   valuation; `slack = μ(∂U)`); the computability guard (`Halting.lean` — a semi-decidable
-   proposition forces positive slack, so no axiom set can collapse the theory to classical logic);
-   and the Dempster–Shafer bridge (`two_monotone` — `v↾Booleanization` is a 2-monotone capacity, the
-   defining belief-function inequality; `∞`-monotonicity remains open).
+5. **The DS bridge, completed: inclusion–exclusion and the ∞-monotone tower**
+   (`InclusionExclusion.lean`). The route is sharper than Möbius inversion: modularity + frame
+   distributivity give **inclusion–exclusion with equality for the frame join, on any frame**
+   (`inclusion_exclusion` — no finiteness/spatiality; ENNReal-safe odd/even split), and **total
+   monotonicity** (`infty_monotone`) is its one-line shadow through the Booleanization join
+   `(⋁·)ᶜᶜ` — same mechanism as `two_monotone`, now the whole tower. Punchline: *inclusion–exclusion
+   is constructively innocent*; `v↾Booleanization` is a **bona fide belief function**, and additive
+   probability "becomes" DS only by being read through the double-negation nucleus.
 
-6. **Hygiene.** Sorry-free; every landmark depends only on `propext, Classical.choice, Quot.sound`
-   (verified by `#print axioms`); **~3,000 lines (3,021)** across nine modules; clean build, no
+6. **The conditioning hinge — the R3 hinge's dynamic companion** (`Conditioning.lean`). Dempster's
+   rule of conditioning, transported through the DS dictionary, is again a valuation
+   (`dempsterCond`); the localic posterior `condVal` is geometric conditioning. Theorem
+   (`dempsterCond_eq_condVal_iff_slack`): for `v b ≠ 0`, **Dempster = Bayes/geometric at every `a`
+   ⟺ `slack v b = 0`** — the two DS updates are separated by a single instance of excluded middle,
+   the one at the evidence. The gap is exact and structural: `v (a ⊔ bᶜ) = v bᶜ + v (a ⊓ b) +
+   emGap v a b` (`sup_compl_decomp`), with `emGap` the mass of `a` stranded outside `b ⊔ bᶜ`.
+
+7. **The bridges.** GMT/measure (`toValuationOpens` — a classical measure read on the opens *is* a
+   valuation; `slack = μ(∂U)`); the computability guard, now **grounded, not "moral"**
+   (`Halting.lean` + `Sierpinski.lean`): the Sierpiński model is built on the honest frame
+   `Opens Prop` via the GMT bridge, the Σ₁ asymmetry `haltsOpenᶜ = ⊥` is a *theorem*, the slogan
+   `slack = μ(∂A)` is computed end-to-end (`slack_eq_boundary`), and `sharpReadout_not_computable`
+   ties collapse to `Nat.Partrec.Code`: deciding whether the slack-free classical readout assigns
+   belief 1 to the halting event *is* the halting problem — slack is the price of a computable
+   epistemic state.
+
+8. **Hygiene.** Sorry-free; every landmark depends only on `propext, Classical.choice, Quot.sound`
+   (verified by `#print axioms`); **~3,600 lines (3,640)** across twelve modules; clean build, no
    warnings.
 
 ---
@@ -106,7 +132,10 @@ new infrastructure and sharp results about the **constructive** case.*
    off-cone extension) stated honestly.
 6. **Representation theorems.** Finite → obstruction → general inequality → mixture characterization
    → Scott ⟹ atomic. The `PMF` identification.
-7. **Bridges.** GMT/measure model; computability guard; Dempster–Shafer 2-monotonicity.
+7. **Bridges.** GMT/measure model; computability guard grounded in `Nat.Partrec.Code` (the
+   Sierpiński model, `slack = μ(∂A)` end-to-end, `sharpReadout_not_computable`); the completed
+   Dempster–Shafer bridge (inclusion–exclusion equality → ∞-monotone tower); the conditioning
+   hinge (Dempster vs. Bayes ⟺ slack at the evidence).
 8. **Engineering & reuse.** Design of the `Valuation` API; mathlib-upstreaming candidates (Aczél
    generator; localic valuations); axiom audit; build/artifact notes.
 9. **Related formalizations & open items.** Coq ALEA, cubical Agda (Sargsyan — Markov-category, does
@@ -132,12 +161,29 @@ new infrastructure and sharp results about the **constructive** case.*
   (additive distributions), no overlap. **Do not claim "first formalization of valuations"; claim
   "first formalization of the constructive/non-additive Cox–DS development on them."**
 
+## Stretch items (optional, pre-submission; do only if 1–3 above land early)
+
+- **Dutch book, machine-checked.** Weatherson 2003 sketches Dutch-book coherence for
+  intuitionistic probability. *First verify the literature claim*: to our knowledge **no** Dutch
+  book theorem is mechanized in any proof assistant, even classically — if that survives a check,
+  "the first machine-checked Dutch book argument, and it derives the constructive axioms" is an
+  abstract-grade line. Finite frames suffice; the real work is designing the betting/coherence
+  framework cleanly (itself a CPP-legible contribution). Risk: framework-design rabbit hole under
+  deadline — timebox it.
+- **mathlib PR before submission.** Open the PR for the Aczél generator (`Aczel.lean`) or the
+  frame-valuation API and cite the PR number in the paper — "under review for mathlib" is
+  evidence for the reuse claim. Cheap, high credibility-per-hour.
+- **Pushforward functoriality.** `Valuation` pushforward along frame maps + functor laws (a few
+  days) — gives the API a categorical face without recreating Faissole–Spitters Giry-monad
+  territory. Only if the Engineering section needs more meat.
+
 ## Honest scoping (state as future work, do not hide)
 
 - Continuity + off-cone extension of the Aczél generator (the group completion needs commutativity
   of `F` off the cone, ≈ the theorem itself) — the verbatim `AczelStatement` on `[0,1]` remains open.
 - Full representation M3c: the diffuse part for non-spatial / non-Scott frames.
-- `∞`-monotonicity of the DS bridge (only 2-monotonicity proved).
+- ~~`∞`-monotonicity of the DS bridge~~ — **closed** (`InclusionExclusion.lean`,
+  `infty_monotone`); do not list as future work.
 
 ## Soundbites / hooks for the abstract
 
@@ -146,6 +192,12 @@ new infrastructure and sharp results about the **constructive** case.*
 - "A valuation on a finite frame is literally a mathlib `PMF`."
 - "For a semi-decidable proposition, classical probability is provably wrong — the slack is forced."
 - "First machine-checked account of what probability becomes when you drop excluded middle."
+- "Inclusion–exclusion is constructively innocent: it holds with equality for the intuitionistic
+  disjunction; total monotonicity is its shadow on the Boolean core."
+- "Dempster's rule and Bayes conditioning agree exactly when excluded middle holds at the
+  evidence — the R3 hinge, dynamically."
+- "Deciding whether the classical (slack-free) reading of 'machine halts' assigns belief 1 *is*
+  the halting problem: slack is the price of a computable epistemic state."
 
 ## Sequencing note
 

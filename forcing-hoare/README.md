@@ -206,6 +206,33 @@ between Löb's rule and well-founded induction: `iLob` is literally
 `well_founded_ind` on the strict order, viewed internally rather than
 externally.
 
+#### Phase 4b — a transfinite instance, separated from ω inside the logic
+
+[coq/Phase4b_Transfinite.v](coq/Phase4b_Transfinite.v)
+- **Defines:** `lex_FS` — the framework instantiated at the
+  *lexicographic* order on `nat × nat`, order type **ω·ω = ω²**;
+  well-foundedness proved by a nested strong induction (no single
+  `nat`-valued measure can witness ω², unlike `prod_FS`'s
+  `fst + snd`). ω² is exactly the index structure of
+  Svendsen–Sieczkowski–Birkedal's *transfinite step-indexing*
+  (ESOP 2016); Transfinite Iris (Spies et al. 2021) generalizes the
+  same move to arbitrary ordinals. Also `iLaterN` (iterated `▷`) and
+  the exhaustion property `laterN_exhausts FS := ∀ p ∃ k,
+  p ⊩ ▷^k ⊥`.
+- **Proves:** the **ω/ω² separation**, as a concrete propositional
+  sentence true at one instance and refuted at the other, with the
+  entire framework (connectives, `▷`, `iLob`) shared:
+  `nat_FS_exhausts` — over ω, `▷^(n+1) ⊥` is forced at `n`, so
+  *every* condition trivializes some finite `▷`-iterate (beyond the
+  index, `▷^k φ` is forced for *any* `φ`: iterated `▷` runs out of
+  content — the "index exhaustion" behind ω-step-indexing's inability
+  to express unbounded/liveness-style properties); and
+  `lex_FS_not_exhausts` — at the limit point `(1,0)`, which sits
+  above the infinite fan `(0,0) ≺ (0,1) ≺ ⋯`, **no** finite
+  `▷^k ⊥` is ever forced (`lex_laterN_bot_never`): transfinitely,
+  `▷`-iteration retains content at every depth. All
+  `Print Assumptions` = closed under the global context.
+
 #### Phase 5 — metatheoretic result: Löb's rule is essential
 
 [coq/Phase5_Metatheory.v](coq/Phase5_Metatheory.v)
@@ -267,8 +294,32 @@ propositional fragment of the Jaber–Tabareau–Sozeau forcing
 translation of CIC, instantiated at the forcing structure `FS`. The
 `▷` modality is the step-indexed-specific addition — produced by the
 well-founded strict refinement, and giving rise to Löb's rule via the
-construction in Phase 4. A full mechanization of the JTS translation
-is future work.
+construction in Phase 4. Phase 6b turns this claim into a theorem.
+
+[coq/Phase6b_JTS.v](coq/Phase6b_JTS.v)
+- **Defines:** a deep-embedded propositional object language `form`
+  (atoms, `⊤ ⊥ ∧ ∨ → ▷`) over an arbitrary `ForcingStructure` and an
+  arbitrary monotone atomic valuation; the forcing translation `jts`
+  written exactly as the JTS clauses prescribe — a standalone
+  `Fixpoint` into `cond -> Prop` that never mentions `iProp`
+  (implication quantifies over future conditions, `▷` over strict
+  predecessors); the semantic reading `interp` of the same syntax
+  through Phase 4's `iProp` connectives (Phase 4 gained `iOr` for
+  this); the packaging `jtsProp`.
+- **Proves:** `jts_mono` — every translated formula is downward
+  closed, i.e. the translation lands in presheaves (`iProp FS`);
+  **`jts_is_interp`** — the factorization theorem: the syntactic
+  forcing translation and the step-indexed semantics coincide
+  pointwise, at every formula and condition, over an *arbitrary*
+  forcing structure (this is the machine-checked form of the
+  "literally the propositional fragment" claim); **`jts_Lob`** —
+  Löb's rule holds *of the translated formulas*, the
+  step-indexed-specific dividend of well-foundedness, transported to
+  the syntax; `nat_FS` corollaries specialize both to ω. All three
+  are `Closed under the global context` (`Print Assumptions` —
+  no axioms). What remains unmechanized is the *term-level*
+  translation of full CIC (the definitional side of JTS 2016); the
+  propositional claim is now mechanized in full.
 
 #### The paper
 
@@ -285,19 +336,27 @@ four fronts:
    recursive in the program.
 
 2. *The framework is genuinely abstract over the forcing notion*
-   (Phase 4): step-indexing is not tied to ω; it is well-founded
-   induction over an arbitrary forcing structure, and Löb's rule
-   is *equivalent to* this well-founded induction at the meta
-   level.
+   (Phases 4 and 4b): step-indexing is not tied to ω; it is
+   well-founded induction over an arbitrary forcing structure, and
+   Löb's rule is *equivalent to* this well-founded induction at the
+   meta level. The abstraction is not idle: the ω² instance
+   (lexicographic `nat × nat`, the index structure of transfinite
+   step-indexing) is *separated from ω by a propositional sentence*
+   — over ω every condition forces some finite `▷^k ⊥` (iterated
+   `▷` exhausts), over ω² the limit point forces none (Phase 4b).
 
 3. *Well-foundedness is essential* (Phase 5): without it, Löb's
    rule fails. The "ramification" in ramified forcing is
    constitutive of the modal logic, not a presentation choice.
 
 4. *The framework is the propositional fragment of the
-   Jaber–Tabareau–Sozeau forcing translation* (Phase 6),
-   with `▷` as the step-indexed-specific addition that
-   well-founded forcing makes available.
+   Jaber–Tabareau–Sozeau forcing translation* — now a
+   machine-checked factorization theorem, not an observation
+   (Phases 6 and 6b): the JTS translation, written as a standalone
+   syntactic `Fixpoint`, coincides pointwise with the `iProp`
+   semantics over any forcing structure (`jts_is_interp`), and `▷`
+   with Löb's rule is the step-indexed-specific addition that
+   well-founded forcing makes available (`jts_Lob`).
 
 The paper is split into per-section fragment files, with
 [main.tex](paper/main.tex) doing only the preamble, frontmatter,
@@ -329,12 +388,15 @@ to ITP if not accepted.
 
 ### Known gaps
 
-- **Generality of `wp_fix`** (Phase 3c): the soundness rule for `fix`
-  is currently stated for a specific shape of spec (where the
-  precondition and postcondition coincide as a single predicate `S`).
-  A more general rule with distinct pre/postconditions, and a rule
-  for `fix` applied at higher types, would strengthen the case for
-  the framework's usability.
+- **Generality of `wp_fix`** (Phase 3c): the distinct pre/postcondition
+  form is done — `recursive_spec_pp` / `wp_fix_pp` in
+  [coq/Phase3c_Fix.v](coq/Phase3c_Fix.v), same Löb-based proof. What
+  remains is the genuinely *higher-order* form: pre/postconditions that
+  are themselves step-indexed (`P Q : expr → iProp` rather than
+  `expr → Prop`), needed to specify a recursive function whose
+  *argument* carries its own recursive spec. That requires re-basing
+  `wp_at` on index-dependent postconditions — a design change to
+  Phase 3b, not a corollary.
 
 - **Abstract framework as a foundation** (Phase 4): we showed the
   abstract framework recovers Phase 1, but did not re-derive Phases
@@ -355,10 +417,12 @@ make
 
 Requires Coq 8.18 or compatible. Tested against Coq 8.18.0. No
 external libraries beyond `Arith`, `Lia`, `ZArith`, `Wellfounded`,
-`Wf_nat`. The development is about 2,090 lines of Rocq (≈1,590
-excluding blank and comment-only lines) across 13 files — the six
-phases, plus `Phase5b_GL.v` (GL soundness) and `Phase5c_Equiv.v`
-(the induction/`iLob` equivalence).
+`Wf_nat`, `Setoid`. The development is about 2,510 lines of Rocq
+(≈1,890 excluding blank and comment-only lines) across 15 files — the
+six phases, plus `Phase4b_Transfinite.v` (the ω² instance and the
+ω/ω² separation), `Phase5b_GL.v` (GL soundness), `Phase5c_Equiv.v`
+(the induction/`iLob` equivalence), and `Phase6b_JTS.v` (the
+mechanized propositional JTS translation).
 
 ### Paper
 
