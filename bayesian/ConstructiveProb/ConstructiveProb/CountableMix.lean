@@ -91,6 +91,32 @@ theorem Valuation.mixCountable_mixCountable {ι : Type*} {κ : ι → Type*}
   funext j
   rw [mul_assoc]
 
+/-- **Fubini holds on the countable fragment:** iterated countable mixing is
+order-independent, by the unconditional commutativity of `ℝ≥0∞` double sums.  Contrast
+`fubini_fails_for_valuations` in `ProductFreedom.lean`: beyond countable presentations the
+two iteration orders can genuinely disagree.  Commutative exactly where countable. -/
+theorem Valuation.mixCountable_comm {ι κ : Type*}
+    (w : ι → ℝ≥0∞) (hw : ∑' i, w i = 1) (u : κ → ℝ≥0∞) (hu : ∑' j, u j = 1)
+    (v : ι → κ → Valuation Ω) :
+    Valuation.mixCountable w hw (fun i => Valuation.mixCountable u hu (v i))
+      = Valuation.mixCountable u hu
+          (fun j => Valuation.mixCountable w hw (fun i => v i j)) := by
+  ext a
+  simp only [Valuation.mixCountable_apply]
+  calc ∑' i, w i * ∑' j, u j * v i j a
+      = ∑' i, ∑' j, w i * (u j * v i j a) := by
+        congr 1
+        funext i
+        exact ENNReal.tsum_mul_left.symm
+    _ = ∑' j, ∑' i, w i * (u j * v i j a) := ENNReal.tsum_comm
+    _ = ∑' j, u j * ∑' i, w i * v i j a := by
+        congr 1
+        funext j
+        rw [← ENNReal.tsum_mul_left]
+        congr 1
+        funext i
+        ring
+
 /-- **The unit law at the data level:** a mixture over a single index is that component. -/
 theorem Valuation.mixCountable_unique (v : Valuation Ω) :
     Valuation.mixCountable (fun _ : PUnit => 1) (by simp) (fun _ => v) = v := by

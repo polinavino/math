@@ -32,7 +32,7 @@ fourth is foundational hygiene at scale: a machine-checked
 Dutch-book theorem in the style of~\cite{weatherson2003}, which to
 our knowledge no proof assistant has for \emph{any} logic.
 
-\paragraph{The functor is literal, the monad is open.}
+\paragraph{The functor is literal, the monad is delimited.}
 Within a fixed doctrine the connection to the categorical picture is
 concrete.  Pushforward along frame homomorphisms preserves all four
 valuation axioms, making $\mathrm{Val}(-)$ a functor on locales, the
@@ -49,26 +49,54 @@ Fubini, and by Kock's identification of commutative monads with
 Fubini theorems~\cite{kock2012}, whether
 statistics-as-kernel-composition transports to a weaker logic is
 precisely the question whether that logic's valuation functor is a
-commutative monad.  One machine-checked result of this paper bears
-on it directly, and it surprised us: on the chain product, the
-question of \emph{which} product valuation to take does not arise.
-The frame $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ is
-\emph{rigid}.  Every lower set is a \emph{finite} union of
-rectangles, because column heights are antitone and an antitone map
-out of $\mathbb{N}$ is a finite step function
-(\texttt{exists\_rect\_decomposition}).  By the inclusion--exclusion
-equality (Theorem~\ref{thm:incl-excl}), any two valuations agreeing
-on rectangles therefore agree outright
-(\texttt{Valuation.product\_unique}): the product valuation,
-whenever it exists, is unique, with no continuity assumed.  We had
-expected the opposite, diffuse mass free to choose among the
-infinities of the product, and our candidate counterexamples all
-died on the same rock: lower sets of chain products detect only
-finitely much of the boundary.  Whether non-uniqueness, that is,
-genuine freedom in the multiplication, occurs on frames that are not
-finitely rectangle-generated is open.  Fubini for non-additive
-integration is where the trouble is classically
-located~\cite{denneberg1994,ghirardato1997}.
+commutative monad.  Two machine-checked results now delimit the
+multiplication from both sides.
+
+On the chain product the question of \emph{which} product valuation
+to take does not arise.  The frame
+$\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ is \emph{rigid}.
+Every lower set is a \emph{finite} union of rectangles: beyond a
+stabilization height every occupied column is full, so the full
+columns and finitely many rows account for everything
+(\texttt{exists\_rect\_decomposition}).
+The rigidity mechanism is general: by the inclusion--exclusion
+equality, two valuations agreeing on any $\sqcap$-closed family
+agree on all finite joins of its members
+(\texttt{eq\_on\_finsetSup\_of\_eq\_on}), and the chain product is
+the instance where that family is the rectangles.  So the product
+valuation there, whenever it exists, is unique, with no continuity
+assumed (\texttt{Valuation.product\_unique}).  We had expected the
+opposite, diffuse mass free to choose among the infinities of the
+product, and our candidate counterexamples all died on the same
+rock: lower sets of chain products detect only finitely much of the
+boundary.
+
+They were right in spirit and wrong in venue.  On the powerset frame
+$\mathrm{Set}(\mathbb{N} \times \mathbb{N})$, whose elements are
+far from finite unions of rectangles, non-uniqueness is a theorem.
+The indicator of an ultrafilter is a valuation
+(\texttt{ultrafilterValuation}), and any ultrafilter on a product
+splits rectangles through its marginal pushforwards
+(\texttt{rect\_mem\_iff}).  Taking a free ultrafilter
+$\mathcal{U}$ on $\mathbb{N}$, the two iteration orders of its
+tensor with itself and its diagonal pushforward all carry identical
+values on \emph{every} rectangle, yet they differ on the upper
+triangle $\{(m, m') \mid m < m'\}$
+(\texttt{product\_valuation\_not\_unique}).  In particular the two
+orders of iterated integration of the same marginal data disagree:
+\emph{Fubini fails}, concretely
+(\texttt{fubini\_fails\_for\_valuations}).  Compare the Fubini
+pathologies of non-additive
+integration~\cite{denneberg1994,ghirardato1997}.  By Kock's
+correspondence, no canonical commutative multiplication exists for
+unrestricted valuations.  On the powerset frame these valuations are
+finitely additive probability charges in the sense
+of~\cite{bhaskara-rao1983}, so this half of the dichotomy is not
+about intuitionism at all: the freedom lives already in the
+classical finitely additive world, and dropping continuity is what
+lets it in.  Anyone who wants a monad must therefore restrict, and
+the dichotomy says along which axis: the frames, or the
+valuations.
 
 \paragraph{The hard problem.}
 The question \emph{upstream} of the multiplication deserves to have
@@ -118,16 +146,34 @@ all.  A countable mixture of valuations is a valuation
 with product weights, which is discrete Chapman--Kolmogorov
 (\texttt{mixCountable\_mixCountable}), and the one-point mixture is
 the identity (\texttt{mixCountable\_unique}), all by the
-unconditional Fubini of $\ENNReal$ sums over sigma types.  This is
-associative, unital kernel composition for countably-atomic data.
-It is not yet a monad: the presentations are not canonical, we do
-not quotient by ``presents the same valuation,'' and the diffuse
-part is exactly what escapes every countable presentation.  We
-conjecture the ledger will stay lopsided for some time.  The unit,
-the finite level, and countable kernel composition are proved.
-Product uniqueness on rigid frames is proved.  The general
-multiplication is open.  And the ambient category is a formulation
-problem before it is anything else.
+unconditional Fubini of $\ENNReal$ sums over sigma types.  And in
+exact contrast with the failure above, the fragment is
+\emph{commutative}: iterated countable mixing is order-independent
+(\texttt{mixCountable\_comm}).  Commutative exactly where countable.
+This is associative, unital, commutative kernel composition for
+countably-atomic data.  It is not yet a monad: the presentations are
+not canonical, we do not quotient by ``presents the same
+valuation,'' and the diffuse part is exactly what escapes every
+countable presentation.  The ledger, then.  The unit, the finite
+level, countable kernel composition, and its commutativity are
+proved.  Rigidity on chain products and non-uniqueness on the
+powerset frame are proved, so the general multiplication is settled:
+it is not canonically determined.  What remains is the ambient
+category, a formulation problem before it is anything else.
+
+\paragraph{Future work on the monad.}
+Two continuations are concrete.  First, quotient the countable
+presentations by ``presents the same valuation'' and package the
+result as a Kleisli category of countably-atomic kernels, checking
+that mixing descends to the quotient.  That would upgrade
+composition-on-data to an honest categorical object, and we expect
+it to be a development of its own.  Second, mechanize the
+classifying-locale formulation sketched above, which requires
+infrastructure \textsf{mathlib} currently lacks entirely:
+classifying locales of propositional geometric theories.  Both
+continuations inherit the boundary drawn here.  Whatever structure
+exists must live on a fragment, because the unrestricted
+multiplication is now provably not canonical.
 
 Across doctrines, by contrast, we make no functoriality claim.
 There is no ambient category in which ``logic $\mapsto$ its

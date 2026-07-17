@@ -129,7 +129,7 @@ non-Boolean event structures.  We mechanize, in Lean~4 over
 \textsf{mathlib}, what probability becomes when the event logic is
 \emph{intuitionistic}: valuations on frames (complete Heyting
 algebras), the logic of verifiable propositions.  The development is
-about 3{,}950 lines, \texttt{sorry}-free, and its landmark theorems
+about 4{,}300 lines, \texttt{sorry}-free, and its landmark theorems
 depend only on the three standard axioms.
 
 Three families of machine-checked results emerge.  \emph{Hinges:}
@@ -149,7 +149,11 @@ Sierpi\'nski-space model built from a genuine measure shows the
 theory's ``slack'' is boundary mass, and a reduction to the halting
 problem shows the slack-free classical readout of a semidecidable
 event is uncomputable: slack is the price of a computable epistemic
-state.  Along the way the proof assistant caught an unsatisfiable
+state.  A machine-checked dichotomy then delimits the
+probability-monad question: product valuations are unique on chain
+products, provably non-unique on the powerset frame, where Fubini
+fails, while the countably-presented fragment composes commutatively.
+Along the way the proof assistant caught an unsatisfiable
 statement of the central Cox-style theorem and forced the
 identification of which axiom is irreducible.  The analytic core
 (Acz\'el's associativity theorem, H\"older-style) is built from

@@ -181,6 +181,57 @@ theorem inclusion_exclusion_boolean {Ω : Type*} [CompleteBooleanAlgebra Ω]
   rw [compl_compl]
   exact v.inclusion_exclusion s a
 
+/-! ### Rigidity from a meet-closed generating family
+
+The inclusion–exclusion identity has a uniqueness consequence: a valuation is determined on
+every finite join of elements of a `⊓`-closed family by its values on that family.  This is
+the abstract form of the product-rigidity theorem of `ProductRigidity.lean`, which is the
+instance where the family is the rectangles of a chain product. -/
+
+/-- A nonempty finite meet of members of a `⊓`-closed family stays in the family. -/
+theorem inf_mem_of_inf_closed {ι : Type*} {T : Finset ι} (hT : T.Nonempty)
+    {G : Set Ω} (hG : ∀ g ∈ G, ∀ g' ∈ G, g ⊓ g' ∈ G) (a : ι → Ω)
+    (ha : ∀ i ∈ T, a i ∈ G) : T.inf a ∈ G := by
+  induction hT using Finset.Nonempty.cons_induction with
+  | singleton i => simpa using ha i (by simp)
+  | cons i T hi hT IH =>
+    rw [Finset.inf_cons]
+    exact hG _ (ha i (Finset.mem_cons_self i T)) _
+      (IH fun j hj => ha j (Finset.mem_cons_of_mem hj))
+
+/-- **Rigidity from a meet-closed family.**  Two valuations that agree on a `⊓`-closed family
+`G` agree on every finite join of members of `G`: by the inclusion–exclusion equality, such a
+join's value is determined by values at nonempty meets of members, which lie in `G`. -/
+theorem eq_on_finsetSup_of_eq_on {G : Set Ω}
+    (hG : ∀ g ∈ G, ∀ g' ∈ G, g ⊓ g' ∈ G) (u u' : Valuation Ω)
+    (h : ∀ g ∈ G, u g = u' g) {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (a : ι → Ω) (ha : ∀ i ∈ s, a i ∈ G) :
+    u (s.sup a) = u' (s.sup a) := by
+  have hodd : u.iesOdd s a = u'.iesOdd s a := by
+    refine Finset.sum_congr rfl fun T hT => ?_
+    by_cases hoddc : Odd T.card
+    · have hTne : T.Nonempty := Finset.card_pos.mp hoddc.pos
+      have hmem : T.inf a ∈ G := inf_mem_of_inf_closed hTne hG a
+        fun i hi => ha i (Finset.mem_powerset.mp hT hi)
+      rw [if_pos hoddc, if_pos hoddc, h _ hmem]
+    · rw [if_neg hoddc, if_neg hoddc]
+  have heven : u.iesEven s a = u'.iesEven s a := by
+    refine Finset.sum_congr rfl fun T hT => ?_
+    by_cases hne : T.Nonempty ∧ Even T.card
+    · have hmem : T.inf a ∈ G := inf_mem_of_inf_closed hne.1 hG a
+        fun i hi => ha i (Finset.mem_powerset.mp hT hi)
+      rw [if_pos hne, if_pos hne, h _ hmem]
+    · rw [if_neg hne, if_neg hne]
+  have h1 := u.inclusion_exclusion s a
+  have h2 := u'.inclusion_exclusion s a
+  rw [heven, hodd] at h1
+  have hfin : u'.iesEven s a ≠ ∞ := by
+    refine (ENNReal.sum_lt_top.mpr fun T _ => ?_).ne
+    split
+    · exact lt_of_le_of_lt (u'.le_one _) ENNReal.one_lt_top
+    · exact lt_of_le_of_lt zero_le_one ENNReal.one_lt_top
+  exact (ENNReal.add_left_inj hfin).mp (h1.trans h2.symm)
+
 end Valuation
 
 /-- Sanity check: at `s = {0, 1}` the tower's `n = 2` instance is literally the 2-monotone

@@ -134,7 +134,7 @@ the halting problem} (Section~\ref{sec:bridges}).
 
 \paragraph{Contributions.}
 All results are formalized in Lean~4 over \textsf{mathlib}.  The
-development is about 3{,}950 lines across fourteen modules,
+development is about 4{,}300 lines across fifteen modules,
 \texttt{sorry}-free, with every landmark theorem depending only on
 \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}
 (Section~\ref{sec:engineering}).  To our knowledge it is the first
@@ -200,14 +200,19 @@ over intuitionistic logic.
   uncomputable by reduction to the halting problem, so any axiom
   forcing classical collapse demands uncomputable epistemic states.
 
-\item \textbf{Product rigidity} (Section~\ref{sec:conclusion}).  On
-  the chain product $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$,
-  every lower set is a finite union of rectangles, so two valuations
-  agreeing on rectangles agree outright and the product valuation,
-  whenever it exists, is unique with no continuity assumed.  This
-  bears directly on whether a probability \emph{monad} exists for
-  these valuations, a question whose hardness we delimit rather than
-  resolve.
+\item \textbf{The monad dichotomy} (Section~\ref{sec:conclusion}).
+  Whether these valuations form a probability \emph{monad} reduces
+  first to products, and we prove a dichotomy.  On the chain product
+  $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ every lower set is
+  a finite union of rectangles, so the product valuation is unique
+  whenever it exists, with no continuity assumed.  On the powerset
+  frame, ultrafilter couplings give provably distinct product
+  valuations with identical rectangle data, and the two orders of
+  iterated integration disagree: Fubini fails, so no canonical
+  multiplication exists.  The countably-presented fragment, by
+  contrast, composes associatively and \emph{commutatively} with no
+  space structure at all.  The remaining categorical question is
+  delimited and left as future work.
 \end{enumerate}
 
 \noindent

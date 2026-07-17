@@ -39,6 +39,9 @@ $\ENNReal$ subtraction occurs.  The proof is induction with
 modularity and frame distributivity.)
 \end{theorem}
 
+Reading the same signed sum against the Booleanization join turns
+the equality into the full belief-function tower:
+
 \begin{theorem}[total monotonicity, \texttt{infty\_monotone}]
 \label{thm:infty}
 For every valuation, finite family, and $n$:
@@ -99,6 +102,9 @@ $v(a \sqcup b^{\mathsf{c}}) = v(b^{\mathsf{c}}) + v(a \sqcap b) +
 \mathrm{emGap}(a,b)$.  Dempster's numerator exceeds Bayes's by
 exactly the gap.
 \end{lemma}
+
+The gap, and with it the disagreement of the two update rules, is
+controlled by one number, the slack at the evidence:
 
 \begin{theorem}[the conditioning hinge,
   \texttt{dempsterCond\_eq\_condVal\_iff\_slack}]

@@ -164,30 +164,13 @@ theorem Valuation.eq_of_forall_prod_eq
     (h : ∀ A B : LowerSet ℕ, u (A ×ˢ B) = u' (A ×ˢ B)) : u = u' := by
   ext W
   obtain ⟨N, A, B, rfl⟩ := exists_rect_decomposition W
-  set s : Finset ℕ := Finset.range N
-  set a : ℕ → LowerSet (ℕ × ℕ) := fun i => A i ×ˢ B i with ha
-  -- the two inclusion–exclusion sums agree, term by term
-  have hodd : u.iesOdd s a = u'.iesOdd s a := by
-    refine Finset.sum_congr rfl fun T _ => ?_
-    by_cases hodd : Odd T.card
-    · have hT : T.Nonempty := Finset.card_pos.mp hodd.pos
-      rw [if_pos hodd, if_pos hodd, ha, hT.inf_prod, h]
-    · rw [if_neg hodd, if_neg hodd]
-  have heven : u.iesEven s a = u'.iesEven s a := by
-    refine Finset.sum_congr rfl fun T _ => ?_
-    by_cases hne : T.Nonempty ∧ Even T.card
-    · rw [if_pos hne, if_pos hne, ha, hne.1.inf_prod, h]
-    · rw [if_neg hne, if_neg hne]
-  -- cancel the (finite) even sum in the inclusion–exclusion identities
-  have h1 := u.inclusion_exclusion s a
-  have h2 := u'.inclusion_exclusion s a
-  rw [heven, hodd] at h1
-  have hfin : u'.iesEven s a ≠ ∞ := by
-    refine (ENNReal.sum_lt_top.mpr fun T _ => ?_).ne
-    split
-    · exact lt_of_le_of_lt (u'.le_one _) ENNReal.one_lt_top
-    · exact lt_of_le_of_lt zero_le_one ENNReal.one_lt_top
-  exact (ENNReal.add_left_inj hfin).mp (h1.trans h2.symm)
+  refine Valuation.eq_on_finsetSup_of_eq_on
+    (G := {r | ∃ A' B' : LowerSet ℕ, r = A' ×ˢ B'}) ?_ u u' ?_ _ _ ?_
+  · rintro g ⟨gA, gB, rfl⟩ g' ⟨gA', gB', rfl⟩
+    exact ⟨gA ⊓ gA', gB ⊓ gB', LowerSet.prod_inf_prod gA gA' gB gB'⟩
+  · rintro g ⟨gA, gB, rfl⟩
+    exact h gA gB
+  · exact fun i _ => ⟨A i, B i, rfl⟩
 
 /-- **Uniqueness of the product valuation on the chain product `ω × ω`** (whenever one
 exists): any two valuations on `LowerSet (ℕ × ℕ)` restricting to `v(A)·w(B)` on rectangles

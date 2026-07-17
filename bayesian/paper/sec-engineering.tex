@@ -2,7 +2,7 @@
 \label{sec:engineering}
 
 \paragraph{Shape of the development.}
-Fourteen Lean~4 modules, about 3{,}950 lines, over a pinned
+Fifteen Lean~4 modules, about 4{,}300 lines, over a pinned
 \textsf{mathlib} (both at v4.31.0): the core valuation theory and
 GMT bridge, the DS layer (2-monotonicity, inclusion--exclusion and
 the $\infty$-monotone tower, the two conditionings), the
@@ -10,8 +10,9 @@ representation suite (finite, obstruction, Scott, general
 decomposition), the Cox layer (\texttt{CoxModel},
 sum-irreducibility, the corrected theorem), the Acz\'el development,
 the two guards (halting chain, Sierpi\'nski model), the product rigidity
-theorem on chain products, and the countable-mixture composition
-laws.  The build is clean, with no
+theorem on chain products, the countable-mixture composition laws,
+and the ultrafilter couplings that separate the iteration orders.
+The build is clean, with no
 \texttt{sorry} and no warnings, and every theorem named in this
 paper reports exactly
 \texttt{[propext, Classical.choice, Quot.sound]} under

@@ -544,10 +544,41 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   **product valuation, whenever it exists, is unique**, with no Scott continuity assumed.
   This bears directly on the monad/Fubini question (see the paper's conclusion): on `ω × ω`
   there is no room for a non-canonical product — the diffuse part cannot choose an infinity,
-  because lower sets of chain products detect only finitely much of the boundary. Whether
-  non-uniqueness occurs on frames that are not finitely rectangle-generated is open; the
-  categorical question upstream (a home category for a discontinuous valuation monad) is
+  because lower sets of chain products detect only finitely much of the boundary. The rigidity
+  mechanism is now general (`Valuation.eq_on_finsetSup_of_eq_on` in
+  [`InclusionExclusion.lean`](ConstructiveProb/InclusionExclusion.lean)): two valuations
+  agreeing on any ⊓-closed family agree on all finite joins of its members, and the chain
+  product is the instance where the family is the rectangles. Whether non-uniqueness occurs
+  beyond finitely rectangle-generated frames was open — and is now **answered affirmatively**
+  by [`ProductFreedom.lean`](ConstructiveProb/ProductFreedom.lean) (next entry). The
+  categorical question upstream (a home category for a discontinuous valuation monad) remains
   harder still — already in the Scott-continuous additive setting it is the Jung–Tix problem.
+- `Valuation.mixCountable` / `mixCountable_mixCountable` / `mixCountable_comm` /
+  `mixCountable_unique` (in [`CountableMix.lean`](ConstructiveProb/CountableMix.lean)) —
+  **the countable fragment composes, associatively and commutatively.** A countable mixture
+  of valuations is a valuation; mixtures of mixtures flatten to mixtures with product weights
+  (discrete Chapman–Kolmogorov, the monad-multiplication law at the level of presented data);
+  the one-point mixture is the identity; and iterated countable mixing is order-independent —
+  Fubini *holds* on this fragment, by the unconditional commutativity of `ℝ≥0∞` double sums.
+  No topology on the space of valuations is needed anywhere. Not yet a monad (presentations
+  are not canonical, and the diffuse part escapes every countable presentation), but honest
+  associative, unital, commutative kernel composition for countably-atomic data.
+- `ultrafilterValuation` / `product_valuation_not_unique` / `fubini_fails_for_valuations`
+  (in [`ProductFreedom.lean`](ConstructiveProb/ProductFreedom.lean)) — **product freedom
+  beyond rigid frames: Fubini fails.** The indicator of an ultrafilter is a valuation on the
+  powerset frame, and any ultrafilter on a product splits rectangles through its marginals.
+  Taking a free ultrafilter `𝒰` on `ℕ` (mathlib's hyperfilter), the two iteration orders of
+  its tensor with itself and its diagonal pushforward have *identical* values on every
+  rectangle `S ×ˢ T` — the product of the same marginals — yet they differ on the upper
+  triangle `{(m, m') | m < m'}`: left iteration gives 1, right iteration and diagonal give 0.
+  So the product valuation is **not** determined by rectangle data on this frame, and the two
+  orders of iterated integration of the same marginals disagree — Fubini fails, concretely,
+  which by Kock's correspondence rules out a canonical commutative multiplication for
+  unrestricted valuations. Together with the rigidity entry above this is a machine-checked
+  **dichotomy**, and it forces the fragment strategy: any monad must restrict the frames or
+  the valuations. (On the powerset frame these valuations are finitely additive charges, so
+  this half of the dichotomy is not about intuitionism at all — it is the price of dropping
+  continuity, already in the classical finitely additive world.)
 - `haltsOpen_compl` / `slack_eq_boundary` / `sharpReadout_not_computable` (in
   [`Sierpinski.lean`](ConstructiveProb/Sierpinski.lean)) — **the guard grounded: no more
   "morally".** The same story rebuilt on the honest frame `Opens Prop` (mathlib's actual
@@ -806,34 +837,40 @@ slack-free "classical" answer assigns belief 1 to the halting event *is* the hal
 problem. A slack-free epistemic state for semidecidable questions is uncomputable. Slack is
 the price of computability.
 
-**Can you multiply constructive probabilities? (the monad question).** In ordinary
-probability you can always form joint distributions, and that is what makes statistics
-*compose*: a pipeline of "sample, then condition, then marginalize" is again a statistical
-map. Category theorists package this composability as the probability *monad*. We asked
-whether our valuations have one. The first honest sub-question is about products: if you know
-the chances on the horizontal axis and on the vertical axis, is the joint chance on the plane
-pinned down? We expected freedom — our valuations can carry "diffuse" probability that sits
-at no point, and it seemed that in a product it could choose *which* infinity to sit at. We
-were wrong, and the failed guess became a theorem: on the grid ℕ×ℕ, every observable event
-is a finite union of rectangles, so the axis data pins the joint down completely
-(`ProductRigidity.lean` — no continuity assumptions anywhere). The deeper question — is
-there a full probability monad here? — turns out to be hard *before* it is hard: you first
-need the collection of all valuations to itself be a "space," and the known ways of doing
-that use exactly the continuity assumption we dropped. Even with continuity, the neighboring
-categorical question has been open since 1998 (the Jung–Tix problem). The paper's conclusion
-now states this hardness honestly and records one candidate route (via geometric logic)
-without claiming any part of it.
+**Can you multiply constructive probabilities? (the monad question, now a dichotomy).** In
+ordinary probability you can always form joint distributions, and that is what makes
+statistics *compose*: a pipeline of "sample, then condition, then marginalize" is again a
+statistical map. Category theorists package this composability as the probability *monad*.
+We asked whether our valuations have one. The first honest sub-question is about products: if
+you know the chances on the horizontal axis and on the vertical axis, is the joint chance on
+the plane pinned down? The answer turned out to be *it depends on the plane*, and both halves
+are now theorems.
 
-One further step is now formal (`CountableMix.lean`): probabilities presented by *countable
-data* — weights on a countable family of valuations — can be composed. A countable mixture of
-valuations is a valuation, mixtures of mixtures flatten to mixtures with product weights
-(the discrete Chapman–Kolmogorov law), and the one-point mixture changes nothing. So
-"statistics composes" is settled affirmatively for the countably-presented (atomic-style)
-fragment, with no topology on the space of valuations needed, and the open part of the monad
-question is squeezed onto exactly the diffuse remainder of the decomposition theorem. This
-mirrors the modern strategy in the continuous world, where the response to Jung–Tix-style
-trouble is to carve out well-behaved subclasses (minimal/central valuations on dcpos,
-quasi-Borel spaces in measure theory) rather than to conquer the whole.
+On the grid ℕ×ℕ the joint is pinned down completely: every observable event there is a finite
+union of rectangles, so the axis data determines everything (`ProductRigidity.lean`, no
+continuity assumptions anywhere — and the mechanism is general: agreeing on any
+intersection-closed family of events forces agreement on all their finite unions). But on a
+richer plane — the powerset of ℕ×ℕ, where events need not be built from finitely many
+rectangles — the joint is *not* pinned down (`ProductFreedom.lean`). Using a so-called free
+ultrafilter (a consistent way of saying "for almost all n" that no single n witnesses), we
+built three different joint distributions with the *same* axis data: an "x first, then y"
+coupling, a "y first, then x" coupling, and a diagonal coupling. All three look identical on
+every rectangle. On the triangle "x < y" they disagree. In textbook language: the order of
+integration matters — Fubini's theorem fails — so there is provably *no canonical way* to
+multiply these probabilities in general. Statistics does not automatically compose once you
+drop the continuity assumption, even over classical logic.
+
+The positive half survives on a fragment (`CountableMix.lean`): probabilities presented by
+*countable data* — weights on a countable family — can be composed, the composition is
+associative (the discrete Chapman–Kolmogorov law), unital, and, in exact contrast with the
+failure above, *commutative*: for countable data the order of integration does not matter.
+So the final picture is a clean dichotomy: statistics composes, commutatively, exactly on the
+countably-presented fragment, and provably has no canonical extension beyond it. What remains
+open is packaging the fragment as an honest categorical object (quotient the presentations,
+build the Kleisli category) and formulating the ambient category for anything larger — the
+latter being hard *before* it is hard: even with continuity, the neighboring categorical
+question has been open since 1998 (the Jung–Tix problem). Both are recorded as future work in
+the paper.
 
 ### The conceptual / philosophical program
 

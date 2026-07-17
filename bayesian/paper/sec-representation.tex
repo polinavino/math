@@ -16,6 +16,9 @@ def Valuation.mass (v : Valuation (LowerSet P)) (p : P) :
     ℝ≥0∞ := v (LowerSet.Iic p) - v (LowerSet.Iio p)
 \end{lstlisting}
 
+The mass function accounts for the valuation completely, and the
+masses form a probability:
+
 \begin{theorem}[finite representation,
   \texttt{eq\_sum\_mass}, \texttt{sum\_mass}]
 \label{thm:finite-rep}
@@ -67,6 +70,10 @@ with $\mathrm{mass}(p) = 0$ at every point yet $v(\top) = 1$.  The
 unit of mass escapes to the missing point at infinity.
 \end{theorem}
 
+Approximating the whole frame from below is exactly what the
+counterexample refuses to do, and requiring that approximation
+recovers the representation:
+
 \begin{theorem}[recovery, \texttt{eq\_tsum\_mass\_of\_scott},
   generalized by \texttt{isPurelyAtomic\_of\_scott}]
 On $\mathrm{Low}(\mathbb{N})$, Scott continuity restores
@@ -77,6 +84,9 @@ continuity (\texttt{topIndicator\_not\_scott}).  More generally, on
 any poset all of whose principal downsets are finite, Scott
 continuity implies zero diffuse part.
 \end{theorem}
+
+With no hypotheses at all, the point masses still account for at
+most the whole:
 
 \begin{theorem}[general decomposition, \texttt{tsum\_mass\_le}]
 \label{thm:decomposition}
