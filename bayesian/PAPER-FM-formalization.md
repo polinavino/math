@@ -199,6 +199,25 @@ new infrastructure and sharp results about the **constructive** case.*
 - "Deciding whether the classical (slack-free) reading of 'machine halts' assigns belief 1 *is*
   the halting problem: slack is the price of a computable epistemic state."
 
+## Draft status (2026-07-16)
+
+**Full CPP draft v0 exists**: `bayesian/paper/` (acmart sigplan 10pt review anonymous, per-section
+files, `make` builds). Title: *"The Complement Rule Is Excluded Middle: Machine-Checked
+Probability over Intuitionistic Logic"*. **10 pages total** (body ≈8, refs p.9, Aczél appendix
+p.10) — ≈4 pages of headroom under the 12-page body limit. Intro leads with logic-pluralism
+framing (Kolmogorov fixes a logic before an arithmetic; different logics for different situations
+— linear/resources, intuitionistic/computation; Gleason/quantum as the precedent that the Boolean
+substrate is a parameter; conclusion returns to the program with quantales/linear logic as the
+open column). Sections: intro / valuations / R3 hinge / representation / DS (incl.–excl. +
+∞-monotone + conditioning hinge) / Cox (irreducibility + corrected theorem) / bridges (GMT +
+halting guard) / engineering / related / conclusion / appendix (Aczél).
+
+**Before submission:** (1) verify every refs.bib entry against DBLP (hand-written; `sargsyan2023`
+and `faissole-spitters2017` flagged inside the file); (2) spend the headroom: more Lean listings
+(hinge proof sketch, dempsterCond, mass), possibly a figure (slack = boundary), proof sketches for
+the representation theorems; (3) abstract due Sep 3 — the paper abstract is drafted and can be
+trimmed to CFP length; (4) artifact packaging + anonymization.
+
 ## Sequencing note
 
 Ship this **first**. Beyond its own merit it is the citable rigor anchor for Paper 2

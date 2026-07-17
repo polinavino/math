@@ -535,6 +535,19 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   rule what `nonempty_coxModel` does for the product rule: it certifies the theory stays
   genuinely non-classical. `chainValuation` (every monotone normalized map on a complete chain
   is a valuation) generalizes the earlier `chainVal`.
+- `exists_rect_decomposition` / `Valuation.eq_of_forall_prod_eq` / `Valuation.product_unique`
+  (in [`ProductRigidity.lean`](ConstructiveProb/ProductRigidity.lean)) — **product rigidity on
+  chain products: Fubini-uniqueness without continuity.** The frame of lower sets of `ℕ × ℕ`
+  is *rigid*: every lower set is a **finite** union of rectangles (column heights are antitone,
+  and an antitone map out of `ℕ` is a finite step function). Hence, by the inclusion–exclusion
+  *equality*, two valuations agreeing on all rectangles `A ×ˢ B` agree outright — so the
+  **product valuation, whenever it exists, is unique**, with no Scott continuity assumed.
+  This bears directly on the monad/Fubini question (see the paper's conclusion): on `ω × ω`
+  there is no room for a non-canonical product — the diffuse part cannot choose an infinity,
+  because lower sets of chain products detect only finitely much of the boundary. Whether
+  non-uniqueness occurs on frames that are not finitely rectangle-generated is open; the
+  categorical question upstream (a home category for a discontinuous valuation monad) is
+  harder still — already in the Scott-continuous additive setting it is the Jung–Tix problem.
 - `haltsOpen_compl` / `slack_eq_boundary` / `sharpReadout_not_computable` (in
   [`Sierpinski.lean`](ConstructiveProb/Sierpinski.lean)) — **the guard grounded: no more
   "morally".** The same story rebuilt on the honest frame `Opens Prop` (mathlib's actual
@@ -761,6 +774,66 @@ companion philosophy paper opens).
    data; the honest stand-in is the mixture characterization (`eq_mix_deltaPoint`). Open: derive
    modularity — and so pin down the calculus — from a more primitive desideratum, given
    `no_disjunction_functional` tells you where *not* to look. (§4, §6.4.)
+
+### The recent wave, in plain terms
+
+Four results landed recently. Here is what each one says without the notation.
+
+**Inclusion–exclusion never broke.** The counting rule "size of A-or-B = size of A + size of B
+− size of A-and-B," and its many-event generalization, holds *exactly* for constructive
+disjunction — on every frame, no fine print. What people call the "belief function
+inequality" is not a failure of this rule. It is what the rule looks like when you squint at
+it through double negation: rounding "A or B" up to "not neither A nor B" can only add
+probability, so an equality becomes a one-way inequality. Consequence: our valuations,
+restricted to the double-negation-stable propositions, are full-fledged Dempster–Shafer
+belief functions, not just approximations of one.
+
+**There are two ways to update on evidence, and logic decides whether you can tell them
+apart.** Classical Bayesians condition one way. Dempster–Shafer theory has a second update
+rule that classically gives the same answer, so the choice is invisible. We proved the two
+rules agree exactly when the *evidence you are updating on* satisfies its own instance of
+excluded middle (zero slack). Where the evidence has a boundary — where it could stay
+undecided — the same data yields two different posteriors, and you must choose your update
+rule. Classicality of *updating* is one instance of excluded middle, located at the evidence.
+
+**"Machine halts" is now a real machine.** The story "assign probability p to an undecidable
+proposition and the leftover 1−p is the undecided region" used to live on a toy chain with a
+"morally, this is halting" comment. It now runs on the honest topological space of
+semidecidable propositions, the probability comes from a genuine measure, the slack is
+literally the measure of the boundary point where a computation stays silent forever, and
+the punchline is a theorem about actual Turing-machine codes: deciding whether the
+slack-free "classical" answer assigns belief 1 to the halting event *is* the halting
+problem. A slack-free epistemic state for semidecidable questions is uncomputable. Slack is
+the price of computability.
+
+**Can you multiply constructive probabilities? (the monad question).** In ordinary
+probability you can always form joint distributions, and that is what makes statistics
+*compose*: a pipeline of "sample, then condition, then marginalize" is again a statistical
+map. Category theorists package this composability as the probability *monad*. We asked
+whether our valuations have one. The first honest sub-question is about products: if you know
+the chances on the horizontal axis and on the vertical axis, is the joint chance on the plane
+pinned down? We expected freedom — our valuations can carry "diffuse" probability that sits
+at no point, and it seemed that in a product it could choose *which* infinity to sit at. We
+were wrong, and the failed guess became a theorem: on the grid ℕ×ℕ, every observable event
+is a finite union of rectangles, so the axis data pins the joint down completely
+(`ProductRigidity.lean` — no continuity assumptions anywhere). The deeper question — is
+there a full probability monad here? — turns out to be hard *before* it is hard: you first
+need the collection of all valuations to itself be a "space," and the known ways of doing
+that use exactly the continuity assumption we dropped. Even with continuity, the neighboring
+categorical question has been open since 1998 (the Jung–Tix problem). The paper's conclusion
+now states this hardness honestly and records one candidate route (via geometric logic)
+without claiming any part of it.
+
+One further step is now formal (`CountableMix.lean`): probabilities presented by *countable
+data* — weights on a countable family of valuations — can be composed. A countable mixture of
+valuations is a valuation, mixtures of mixtures flatten to mixtures with product weights
+(the discrete Chapman–Kolmogorov law), and the one-point mixture changes nothing. So
+"statistics composes" is settled affirmatively for the countably-presented (atomic-style)
+fragment, with no topology on the space of valuations needed, and the open part of the monad
+question is squeezed onto exactly the diffuse remainder of the decomposition theorem. This
+mirrors the modern strategy in the continuous world, where the response to Jung–Tix-style
+trouble is to carve out well-behaved subclasses (minimal/central valuations on dcpos,
+quasi-Borel spaces in measure theory) rather than to conquer the whole.
 
 ### The conceptual / philosophical program
 

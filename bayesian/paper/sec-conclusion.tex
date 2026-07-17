@@ -1,0 +1,156 @@
+\section{Conclusion: Probability with the Logic as a Parameter}
+\label{sec:conclusion}
+
+We set out from the observation that Kolmogorov's axioms fix a logic
+before they fix an arithmetic, and that nothing in the concept of
+graded belief privileges the Boolean choice.  The machine-checked
+results bear the framing out with a precision informal treatments
+have not reached.  The entire classical surplus is one axiom, whose
+statical face is the complement rule (Theorem~\ref{thm:hinge}) and
+whose dynamical face is the agreement of Dempster and Bayesian
+conditioning (Theorem~\ref{thm:cond-hinge}).  Everything else
+survives the intuitionistic substrate intact: conditioning, Bayes
+symmetry, disjoint additivity, total probability over genuine
+partitions, and inclusion--exclusion itself
+(Theorem~\ref{thm:incl-excl}).  What the weaker logic adds is
+structure, not damage: slack with its two-gap decomposition, the
+atomic/diffuse divide, the belief-function reading through
+$\neg\neg$, and a computability-theoretic reason the additions are
+not optional.
+
+\paragraph{Open problems.}
+Three are mathematical.  First, representing the diffuse part on
+non-spatial frames (the localic Riesz direction).  Second, closing
+the analytic residue of the Acz\'el development, namely continuity
+of the generator and the off-cone extension (the cone results and
+the log-sum-exp archetype are done).  Third, a genuine uniqueness
+theorem: deriving modularity from a more primitive desideratum,
+knowing (Theorem~\ref{thm:no-functional}) that it cannot come from
+disjunction data alone, with the mixture characterization
+(Theorem~\ref{thm:mixture}) as the current best justification.  A
+fourth is foundational hygiene at scale: a machine-checked
+Dutch-book theorem in the style of~\cite{weatherson2003}, which to
+our knowledge no proof assistant has for \emph{any} logic.
+
+\paragraph{The functor is literal, the monad is open.}
+Within a fixed doctrine the connection to the categorical picture is
+concrete.  Pushforward along frame homomorphisms preserves all four
+valuation axioms, making $\mathrm{Val}(-)$ a functor on locales, the
+localic face of the functor part of the Giry
+monad~\cite{giry1982}.  This is a routine verification that we state
+but have not mechanized.  The point valuations $\delta_p$ of
+Section~\ref{sec:representation} are the evident unit (these
+\emph{are} formalized), and Theorem~\ref{thm:finite-rep} shows that
+on finite frames $\mathrm{Val}$ agrees, on objects, with the
+classical finite-distribution monad on points.  The
+\emph{multiplication} is where the substance is.  Flattening a
+valuation of valuations is integration, hence product valuations and
+Fubini, and by Kock's identification of commutative monads with
+Fubini theorems~\cite{kock2012}, whether
+statistics-as-kernel-composition transports to a weaker logic is
+precisely the question whether that logic's valuation functor is a
+commutative monad.  One machine-checked result of this paper bears
+on it directly, and it surprised us: on the chain product, the
+question of \emph{which} product valuation to take does not arise.
+The frame $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ is
+\emph{rigid}.  Every lower set is a \emph{finite} union of
+rectangles, because column heights are antitone and an antitone map
+out of $\mathbb{N}$ is a finite step function
+(\texttt{exists\_rect\_decomposition}).  By the inclusion--exclusion
+equality (Theorem~\ref{thm:incl-excl}), any two valuations agreeing
+on rectangles therefore agree outright
+(\texttt{Valuation.product\_unique}): the product valuation,
+whenever it exists, is unique, with no continuity assumed.  We had
+expected the opposite, diffuse mass free to choose among the
+infinities of the product, and our candidate counterexamples all
+died on the same rock: lower sets of chain products detect only
+finitely much of the boundary.  Whether non-uniqueness, that is,
+genuine freedom in the multiplication, occurs on frames that are not
+finitely rectangle-generated is open.  Fubini for non-additive
+integration is where the trouble is classically
+located~\cite{denneberg1994,ghirardato1997}.
+
+\paragraph{The hard problem.}
+The question \emph{upstream} of the multiplication deserves to have
+its hardness named rather than implied, and what follows is our
+assessment rather than a theorem.  A monad needs a category for
+$\mathrm{Val}$ to be an endofunctor on.  The space of valuations
+must itself be an object, a ``space'' whose opens one can speak of.
+For Scott-continuous valuations that space is a locale and monad
+structure is available, constructively, through the probabilistic
+powerdomain
+line~\cite{jones-plotkin1989,vickers2008,coquand-spitters2009}.
+Yet \emph{even there}, exhibiting a cartesian closed category
+closed under the construction is the Jung--Tix problem, open since
+1998~\cite{jung-tix1998}.  Dropping continuity makes the difficulty
+prior rather than merely worse: the standard presentations of the
+valuation space use continuity essentially.  One route to a
+well-posed question does exist.  The localic treatments present the
+space of continuous valuations as the classifying locale of a
+propositional geometric theory~\cite{vickers1989,
+coquand-spitters2009}, with generators asserting $q < v(a)$ for
+rational $q$ and axioms for monotonicity, normalization, modularity
+(expressible with rational witnesses and countable disjunctions),
+and continuity.  Deleting the continuity axiom leaves a geometric
+theory, so a classifying locale still exists on general grounds, and
+classically its points are exactly the valuations of this paper.  We
+have verified none of the structure this candidate would need.  The
+unit looks unproblematic, but the multiplication requires
+integrating the evaluation maps against a merely modular,
+discontinuous valuation, and there the sum of two lower-real-valued
+maps is an infinite join, exactly where the diffuse part of
+Theorem~\ref{thm:obstruction} leaks.  We offer the formulation as a
+target, not a result.
+
+The strategy with the best modern track record is to carve a
+fragment rather than to conquer the whole.  On the measure-theoretic
+side, the failure of cartesian closure for measurable spaces was
+answered by quasi-Borel spaces~\cite{heunen2017qbs}.  On the
+domain-theoretic side, commutativity of the full valuations monad on
+\textsf{DCPO} is open, and the response is a hierarchy of commutative
+\emph{submonads} generated from simple
+valuations~\cite{jia2021commutative}.  Our decomposition theorem
+names the corresponding fragment here: the atomic part.  As a first
+machine-checked step in that direction we prove that the
+countably-presented fragment composes with no space structure at
+all.  A countable mixture of valuations is a valuation
+(\texttt{mixCountable}), a mixture of mixtures flattens to a mixture
+with product weights, which is discrete Chapman--Kolmogorov
+(\texttt{mixCountable\_mixCountable}), and the one-point mixture is
+the identity (\texttt{mixCountable\_unique}), all by the
+unconditional Fubini of $\ENNReal$ sums over sigma types.  This is
+associative, unital kernel composition for countably-atomic data.
+It is not yet a monad: the presentations are not canonical, we do
+not quotient by ``presents the same valuation,'' and the diffuse
+part is exactly what escapes every countable presentation.  We
+conjecture the ledger will stay lopsided for some time.  The unit,
+the finite level, and countable kernel composition are proved.
+Product uniqueness on rigid frames is proved.  The general
+multiplication is open.  And the ambient category is a formulation
+problem before it is anything else.
+
+Across doctrines, by contrast, we make no functoriality claim.
+There is no ambient category in which ``logic $\mapsto$ its
+probability theory'' is a functor, and each column requires
+re-deriving what a state \emph{is} from the desiderata.  What is
+uniform across columns is the \emph{method}, and this paper's
+execution of it is the Heyting column.
+
+\paragraph{The program.}
+If the logic is a parameter, this paper computed one new value of
+it.  The table wants filling in.  Linear logic is the most inviting
+column for this community.  Its event algebras are quantales, its
+conjunction is resource-sensitive, and a ``valuation'' there should
+grade the \emph{consumption} of evidence.  The analogue of Gleason's
+theorem or of our representation theorems (which states are
+compatible with the algebra?) is wide open, as is the right analogue
+of slack for the failure of contraction.  The probabilistic
+semantics of linear logic that already exist, probabilistic
+coherence spaces~\cite{danos-ehrhard2011}, start from the additive
+side.  A Cox-style derivation over a quantale would start from the
+logic.  The methodology of this paper, to state the classical
+desiderata, delete the axioms the logic no longer licenses, and let
+a proof assistant referee what survives, what splits, and what
+becomes unsatisfiable, is, we suggest, the right instrument for that
+program.  Each cell of the table is exactly the kind of delicate,
+counterexample-rich boundary work that mechanization is for.

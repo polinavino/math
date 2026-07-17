@@ -1,0 +1,78 @@
+\section{The Acz\'el Development}
+\label{app:aczel}
+
+This appendix sketches the from-scratch construction behind the
+product-rule half of Theorem~\ref{thm:cox}.  The body stands without
+it.  The target shape is Acz\'el's associativity
+theorem~\cite{aczel1966}: a suitably regular associative
+$F : \mathbb{R} \to \mathbb{R} \to \mathbb{R}$ regraduates to
+multiplication, $G(F\,x\,y) = G(x) \cdot G(y)$ for a strictly
+monotone $G$.  \textsf{mathlib} offers no route.  It has no
+associativity representation, no H\"older-style embedding of ordered
+semigroups on intervals, and the Cauchy functional equation only
+under continuity, not monotonicity.
+
+\paragraph{Hypotheses.}
+A \texttt{Scale} bundles: associativity of $F$, \emph{divisibility}
+$\forall c\, \exists x,\ F\,x\,x = c$, positivity on the cone
+$x < F\,x\,c$, joint order-preservation, joint continuity, a unit
+$u$, and identity at $-\infty$, meaning
+$F\,x\,z \to x$ as $z \to -\infty$.  Order-preservation was absent
+from our first bundle, and the additivity proof needs it, a
+definition-check finding (Section~\ref{sec:engineering}).
+Divisibility is taken as a hypothesis in the bundle, although its
+interval form is a consequence of the intermediate value theorem
+(\texttt{exists\_diag\_eq}).  Non-vacuity: \emph{log-sum-exp},
+$F\,x\,y = \log(e^x + e^y)$ with $u = 0$, satisfies every field
+(\texttt{logSumExpScale}), and for it the intended generator is
+globally $\exp$.
+
+\paragraph{Construction.}
+Write $a^{(n)}$ for $n$ right-associated copies of $a$ under $F$
+(\texttt{Fpow}).  Associativity alone makes
+$n \mapsto a^{(n)}$ a semigroup morphism from $(\mathbb{N}, +)$, with
+no commutativity needed.  Commutativity is a \emph{corollary} of the
+generator, not a prerequisite.  One fact usually assumed is here
+\emph{derived}: unboundedness of the iterates.  Were they bounded,
+monotone convergence would give a fixed point $F\,L\,a = L$,
+contradicting positivity, and unboundedness yields the Archimedean
+property.  Divisibility supplies a tower of $2^n$-th roots
+$u \succ u^{1/2} \succ u^{1/4} \succ \cdots$ (\texttt{droot}) with
+the coherence law that $2^\ell$ fine copies recompose one coarse
+mark.  Counting how many copies of the $n$-th root fit under $b$
+(\texttt{dcount}, well defined by the Archimedean property) gives
+dyadic approximants $g_n(b) = \mathrm{dcount}(b,n)/2^n$.  The
+refinement sandwich $2N + 1 \le N' \le 2N + 2$ makes them monotone
+and Cauchy, and the generator is their limit,
+$g(b) = \bigsqcup_n g_n(b)$.
+
+\paragraph{Results (all \texttt{sorry}-free, standard axioms).}
+On the cone $\{x \mid u \le x\}$ we prove three things.
+Normalization: $g(u) = 1$.  Additivity:
+$g(F\,x\,y) = g(x) + g(y)$, by squeezing super- and sub-additive
+counting bounds ($\mathrm{dcount}\,x + \mathrm{dcount}\,y + 1 \le
+\mathrm{dcount}(F\,x\,y) \le \mathrm{dcount}\,x +
+\mathrm{dcount}\,y + 3$) against a vanishing $2^{-n}$ slack.  And
+\emph{strict} monotonicity, proved without any continuity of $g$ by
+a count-amplification argument: a shrinking root inserted between
+$x < y$ contributes a full extra block of $2^{n-M}$ copies.
+Exponentiating gives the multiplicative form, a strictly monotone
+$G$ with $G(F\,x\,y) = G(x)\,G(y)$ on the cone
+(\texttt{exists\_mul\_generator}), which is the conclusion shape of
+Acz\'el's theorem restricted to the cone
+(\texttt{aczelStatement\_cone}).  A bounded reorientation
+$\bar G = \exp(-g)$ transports it to the $[0,1]$, conjunctive
+orientation of Section~\ref{sec:cox}.
+
+\paragraph{Honest residue.}
+The constructed $g$ is discontinuous at the unit (it is $0$ below
+$u$), so matching the classical statement verbatim still needs the
+off-cone extension (a group completion) and continuity of the
+extension.  That is genuine analysis, open here, but
+\emph{witnessed}: for the log-sum-exp archetype the global
+continuous generator exists
+(\texttt{hasOrderedGenerator\_logSumExp}).  Of H\"older's classical
+hypotheses, the Archimedean property is a theorem in this
+development rather than an assumption, and the interval form of
+divisibility follows from the intermediate value theorem.  Only the
+embedding's global regularity remains.

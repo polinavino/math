@@ -1,0 +1,65 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Informal precedents.}
+That probability might be paired with intuitionistic logic is an old
+if scattered thought.  Weatherson develops intuitionistic probability
+axiomatically and defends it with Dutch-book
+arguments~\cite{weatherson2003}.  Paris treats non-classical
+uncertain reasoning broadly~\cite{paris1994}.  The identification
+$\Bel = P(\Box\,\cdot)$ connecting belief functions to modal logic
+is classical~\cite{ruspini1986,dempster1967,shafer1976}.  On the
+localic side, valuations on frames are standard objects of
+constructive measure theory, with Vickers's work and the
+Coquand--Spitters development as canonical
+references~\cite{vickers2008,coquand-spitters2009}, normally with
+Scott continuity built in and with additive, Riesz-flavored goals.
+What we take from Section~\ref{sec:representation} is that Scott
+continuity is a substantive assumption (it decides
+point-representability on the frames we examine), so our base
+structure omits it.  The Cox line, through Cox, Jaynes, Halpern's
+counterexample, and the Van Horn and Arnborg--Sj\"odin
+repairs~\cite{cox1946,jaynes2003,halpern1999,vanhorn2003,
+arnborg-sjodin2000}, is classical throughout.  Van Horn himself
+observes that dropping R3 yields a two-number theory, which is
+exactly the belief/plausibility pair our slack separates.  To our
+knowledge, no prior work, informal or formal, states either hinge
+theorem: complement rule $\iff$ excluded middle
+(Theorem~\ref{thm:hinge}), or Dempster $=$ Bayes $\iff$ zero slack
+at the evidence (Theorem~\ref{thm:cond-hinge}).
+
+\paragraph{Prior formalizations.}
+Three bodies of mechanized work are adjacent, and none overlaps.
+ALEA~\cite{audebaud-paulin2009} formalizes a discrete distribution
+monad in Coq for randomized programs: additive probability, no
+event logic in our sense.  Recent work in cubical Agda formalizes
+synthetic probability via Markov categories~\cite{sargsyan2023},
+where again the objects are additive distributions.  Closest is the
+HoTT/Coq line of Faissole and Spitters on \emph{valuations} over
+lower reals~\cite{faissole-spitters2017}, done constructively with
+Scott continuity and aimed at integration (Riesz) and a Giry-style
+valuation \emph{monad}.  Their valuations are the additive,
+continuous cousins of ours, and their monad is the Scott-continuous
+instance of the question examined in
+Section~\ref{sec:conclusion}.  The delta of this paper is not the
+word ``valuation'' but the development on top of it: the
+non-additive complement regime, slack and its decomposition, both
+hinge theorems, the DS bridge with total monotonicity and the two
+conditionings, the representation/mixture/Scott-atomic suite, the
+corrected Cox theorem with its irreducibility counterexamples, the
+Acz\'el construction, product rigidity, and the computability guard.
+We claim first mechanization for that development, not for
+valuations on locales as such.
+
+\paragraph{Non-Boolean probability elsewhere.}
+Quantum probability on orthomodular lattices, with Gleason's
+theorem~\cite{birkhoff-vonneumann1936,gleason1957}, is the
+long-standing precedent for re-basing probability on a non-Boolean
+event logic.  Free probability, fuzzy measures, and imprecise
+probability~\cite{walley1991} vary other parameters (independence,
+additivity, single-valuedness).  Our variation is specifically the
+\emph{logic}, holding the Cox-style methodology fixed.  Within DS
+theory, the two conditionings and their inequivalence are
+classical~\cite{shafer1976,fagin-halpern1991}.  What is new in
+Theorem~\ref{thm:cond-hinge} is the exact logical characterization
+of their agreement, and its mechanization.

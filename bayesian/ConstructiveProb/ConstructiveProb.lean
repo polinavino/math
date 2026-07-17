@@ -10,3 +10,5 @@ import ConstructiveProb.Belief
 import ConstructiveProb.InclusionExclusion
 import ConstructiveProb.Conditioning
 import ConstructiveProb.Sierpinski
+import ConstructiveProb.ProductRigidity
+import ConstructiveProb.CountableMix

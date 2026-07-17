@@ -1,0 +1,102 @@
+\section{Representation: Points, Masses, Mixtures}
+\label{sec:representation}
+
+Is intuitionistic probability a new animal, or classical probability
+seen at an angle?  The answer is exact: on finite frames the latter,
+in general the former, with Scott continuity marking the boundary.
+
+\subsection{Finite frames: every valuation is a PMF on points}
+
+Every finite frame is the lattice of \emph{lower sets} of a finite
+poset $P$, by Birkhoff duality.  We work with \texttt{LowerSet P}
+directly and cite the duality rather than mechanize it.  Define the
+\emph{mass} of a point as the discrete derivative of $v$:
+\begin{lstlisting}
+def Valuation.mass (v : Valuation (LowerSet P)) (p : P) :
+    ℝ≥0∞ := v (LowerSet.Iic p) - v (LowerSet.Iio p)
+\end{lstlisting}
+
+\begin{theorem}[finite representation,
+  \texttt{eq\_sum\_mass}, \texttt{sum\_mass}]
+\label{thm:finite-rep}
+For finite $P$ and any valuation $v$ on $\mathrm{Low}(P)$:
+$v(U) = \sum_{p \in U} \mathrm{mass}(p)$ and
+$\sum_{p} \mathrm{mass}(p) = 1$.
+\end{theorem}
+
+The proof peels a maximal point $p$ of $U$ at a time.  Modularity
+applied to $(U \setminus {\uparrow}p,\; {\downarrow}p)$ shows the
+increment is exactly $\mathrm{mass}(p)$, and a strong induction on
+$|U|$ finishes.  The arithmetic is in $\ENNReal$ with truncated
+subtraction, where the bookkeeping is real work.  Two packagings make
+the classicality literal.  \texttt{Valuation.toPMF} exhibits
+$\mathrm{mass}$ as a \textsf{mathlib} \texttt{PMF} on $P$.  And since
+lower sets are the opens of the Alexandrov topology, where interior
+is the identity, the theorem reads: every valuation on a finite
+frame is a classical probability seen through the interior operator,
+$v = \mu \circ \Box$.  This is the converse, in the finite case, of
+the measure-theoretic bridge of Section~\ref{sec:bridges}.
+
+Dually, with $\delta_p$ the sharp \emph{point-valuation}
+$\delta_p(U) = [p \in U]$:
+
+\begin{theorem}[mixture characterization,
+  \texttt{eq\_mix\_deltaPoint}]
+\label{thm:mixture}
+On a finite frame, $v = \sum_p \mathrm{mass}(p)\cdot\delta_p$:
+valuations are exactly the finite convex mixtures of
+point-valuations.
+\end{theorem}
+
+\noindent
+Modularity is thereby \emph{characterized} as closure under mixing
+certainties.  This is the constructive answer to what the sum rule
+axiomatizes, given that it cannot be derived
+(Section~\ref{sec:cox}).
+
+\subsection{The infinite boundary: enter Scott continuity}
+
+Both halves of the finite theorem fail at the first infinite frame,
+and the failure is informative.
+
+\begin{theorem}[obstruction,
+  \texttt{exists\_valuation\_not\_point\_representable}]
+\label{thm:obstruction}
+On $\mathrm{Low}(\mathbb{N})$, the indicator of $\top$ is a valuation
+with $\mathrm{mass}(p) = 0$ at every point yet $v(\top) = 1$.  The
+unit of mass escapes to the missing point at infinity.
+\end{theorem}
+
+\begin{theorem}[recovery, \texttt{eq\_tsum\_mass\_of\_scott},
+  generalized by \texttt{isPurelyAtomic\_of\_scott}]
+On $\mathrm{Low}(\mathbb{N})$, Scott continuity restores
+point-representability: if $v(\top) = \bigsqcup_n v(\mathrm{Iic}\,n)$
+then $v(\top) = \sum'_n \mathrm{mass}(n)$.  The counterexample of
+Theorem~\ref{thm:obstruction} is itself a proved failure of Scott
+continuity (\texttt{topIndicator\_not\_scott}).  More generally, on
+any poset all of whose principal downsets are finite, Scott
+continuity implies zero diffuse part.
+\end{theorem}
+
+\begin{theorem}[general decomposition, \texttt{tsum\_mass\_le}]
+\label{thm:decomposition}
+On $\mathrm{Low}(P)$ for \emph{arbitrary} $P$, with no finiteness and
+no continuity assumption:
+$\sum'_p \mathrm{mass}(p) \le v(\top)$.
+\end{theorem}
+
+\noindent
+Every valuation thus splits unconditionally into an \emph{atomic}
+part carried by points, always a sub-probability, and a
+\emph{diffuse} remainder $v(\top) - \sum'_p \mathrm{mass}(p) \ge 0$.
+This is a constructive Lebesgue-style decomposition.  The finite and
+Scott cases are the purely atomic extreme, and the $\top$-indicator
+is the purely diffuse one.  The proof of
+Theorem~\ref{thm:decomposition} re-runs the maximal-point peel over
+arbitrary finite subsets, bounded by the whole, and passes to the
+supremum.  It uses neither excluded middle nor choice beyond
+\textsf{mathlib}'s baseline.  Representing the diffuse part on
+non-spatial frames, where, tellingly, the obstruction is \emph{too
+few points}, the same phenomenon as undecidability in
+Section~\ref{sec:bridges}, is the open frontier
+(Section~\ref{sec:conclusion}).

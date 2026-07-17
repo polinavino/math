@@ -1,0 +1,222 @@
+\section{Introduction}
+\label{sec:intro}
+
+Kolmogorov's axioms are usually read as fixing the arithmetic of
+chance: non-negativity, normalization, additivity.  But they fix
+something else first, so quietly that it is easy to miss: a
+\emph{logic}.  The events form a Boolean $\sigma$-algebra, closed
+under complement and satisfying excluded middle, and the arithmetic
+is built on top of that logical substrate.  The complement rule
+$P(\neg A) = 1 - P(A)$ is where the two layers touch.  It is an
+arithmetical equation about a logical operation.
+
+There is no intrinsic reason why probability should be compatible
+with exactly one logic.  Different situations are described by
+different logics.  Intuitionistic logic describes computation,
+verification, and finite-precision observation, where a proposition
+may be confirmable but not refutable.  Linear logic describes
+resources, where using an assumption consumes
+it~\cite{girard1987}.  Quantum logic describes measurement, where
+propositions fail to distribute.  If probability is, as the
+Cox--Jaynes tradition has it, \emph{extended
+logic}~\cite{cox1946,jaynes2003}, the calculus of degrees of
+certainty over a space of propositions, then the logic of those
+propositions is a \emph{parameter} of the theory, and Kolmogorov's
+calculus is the value of that parameter at Boolean logic.
+
+This is not a speculative proposal, because physics has already
+forced the move once.  Quantum probability lives on orthomodular
+lattices of projections rather than Boolean algebras, and Gleason's
+theorem~\cite{gleason1957,birkhoff-vonneumann1936} plays exactly the
+role there that this paper's representation theorems play here:
+identify the states compatible with the event logic.  Nobody
+concludes that quantum probability is ``not really probability.''
+The conclusion is that the Boolean substrate was a modeling choice.
+Our question is what happens at a different, computationally
+motivated value of the same parameter:
+
+\begin{quote}
+  What does probability become when the logic of events is
+  \emph{intuitionistic}, and can the resulting theory be developed,
+  end to end, under a proof assistant?
+\end{quote}
+
+Intuitionistic logic is the natural first non-Boolean instance for a
+verification audience.  Its propositions are the \emph{verifiable}
+ones: semidecidable properties of programs, finite-precision
+observations of a real quantity, opens of a topological space.  Its
+algebraic semantics is mature order theory, well supported by
+\textsf{mathlib}~\cite{mathlib2020}: frames, that is, complete
+Heyting algebras, the lattices of open sets.  And nothing is lost.
+Boolean algebras are exactly the frames where excluded middle holds,
+so the classical theory embeds as a special case rather than being
+replaced.
+
+\paragraph{What changes, in one paragraph.}
+A \emph{valuation} on a frame $\Omega$ is a monotone, normalized,
+modular map $v : \Omega \to \ENNReal$
+(Section~\ref{sec:valuation}).  Modularity is inclusion--exclusion,
+$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, and no axiom mentions
+complement.  In a Heyting algebra the pseudo-complement satisfies
+$a \sqcap \neg a = \bot$ but not, in general,
+$a \sqcup \neg a = \top$.  The complement rule therefore degrades
+to a derived \emph{inequality} $v(a) + v(\neg a) \le 1$, with a gap
+\[
+  \slack(a) \;=\; 1 - v(a) - v(\neg a)
+\]
+measuring exactly the valuation of the region where excluded middle
+fails for $a$.  In the concrete model where $\Omega$ is the opens of
+a space carrying a probability measure $\mu$, the slack of an open
+$U$ is precisely $\mu(\partial U)$, the measure of its topological
+boundary (Section~\ref{sec:bridges}): a structural quantity, not
+anyone's ignorance.  The theory that results is recognizably the
+\emph{shape} of Dempster--Shafer belief
+functions~\cite{dempster1967,shafer1976}, but derived from a
+logical substrate rather than postulated, with the
+belief/plausibility gap given a non-epistemic reading.
+
+\paragraph{What changes operationally.}
+The statistical \emph{operations} are logic-uniform.  The
+conditional is still $v(a \sqcap b)/v(b)$, and the product rule and
+Bayes symmetry hold verbatim.  What varies is the set of
+\emph{identities} those operations satisfy, and with it the licensed
+computations.  The classical case split over $\{A, \neg A\}$, and
+with it the usual denominator of Bayes' theorem
+$P(B) = P(B \mid A)\,P(A) + P(B \mid \neg A)\,P(\neg A)$, degrades to
+a lower bound whose deficit is a conditional slack.  Marginalization
+is exact only over \emph{genuine} partitions
+(Section~\ref{sec:valuation}).  The complement trick
+$P(A) = 1 - P(\neg A)$ degrades to the interval
+$[\,v(A),\, 1 - v(A^{\mathsf{c}})\,]$ of width $\slack(A)$, so point
+statistics becomes interval statistics exactly on the events the
+logic leaves undecided, and collapses back to points on complemented
+ones.  Updating itself forks.  Dempster's rule and Bayesian
+conditioning, classically indistinguishable, give different
+posteriors from the same evidence unless its slack vanishes
+(Theorem~\ref{thm:cond-hinge}).  That is a modeling choice classical
+statistics never faces, because excluded middle collapses the fork.
+
+\paragraph{\ldots and when it does not.}
+On finite frames every valuation \emph{is} a classical probability
+mass function on points (Theorem~\ref{thm:finite-rep}).  The logic
+changes not the underlying chance but which queries have point
+values: one computes $P(\Box A)$, the probability of the verifiable
+part.  In the measure model slack is boundary mass, so a nonatomic
+distribution queried on intervals behaves entirely classically.  The
+differences bite precisely at events with charged boundaries and at
+semidecidable hypotheses.  The logic sits upstream of statistics the
+way a type system sits upstream of programs: the same syntax of
+operations, a different set of valid transformations, and some
+derivations that typecheck classically (the case split, the
+complement trick, ``the'' posterior) either fail or split in two.
+
+\paragraph{Why a proof assistant.}
+This subject sits at a triple point of order theory, analysis, and
+logic, where informal arguments have a documented history of going
+wrong.  Cox's original theorem required repair after Halpern's
+counterexample~\cite{cox1946,halpern1999,vanhorn2003}, and the
+constructive setting multiplies the opportunities for smuggled
+classicality.  Mechanization was not a formality here.  It did real
+work.  The checker refuted our first statement of the central
+Cox-style theorem, which was not merely unprovable but
+\emph{unsatisfiable} (Section~\ref{sec:cox}), and the repair
+identified precisely which axiom of the classical development is
+irreducible: the sum rule must be posited, because a disjunction's
+value is provably not a function of the values of its disjuncts
+(Theorem~\ref{thm:no-functional}).  The checker likewise refuted the
+folklore guess that the ``classical fragment'' of the theory is the
+$\neg\neg$-stable propositions (it is the complemented ones,
+Section~\ref{sec:valuation}), and it forced non-vacuity guards:
+explicit models witnessing that every axiom set in the paper is
+inhabited by genuinely non-classical instances, including one where
+collapse to classical logic is impossible \emph{on pain of solving
+the halting problem} (Section~\ref{sec:bridges}).
+
+\paragraph{Contributions.}
+All results are formalized in Lean~4 over \textsf{mathlib}.  The
+development is about 3{,}950 lines across fourteen modules,
+\texttt{sorry}-free, with every landmark theorem depending only on
+\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}
+(Section~\ref{sec:engineering}).  To our knowledge it is the first
+mechanization, in any proof assistant, of non-additive probability
+over intuitionistic logic.
+
+\begin{enumerate}
+\item \textbf{The static hinge} (Section~\ref{sec:hinge}).  The
+  classical complement rule holds for \emph{every} valuation on
+  $\Omega$ iff excluded middle holds in $\Omega$.  The hard direction
+  manufactures, at any failure of excluded middle, a valuation with
+  positive slack from a prime ideal separation.  All of probability's
+  classicality is thus located in one axiom, Van Horn's negation
+  axiom R3 in the Cox tradition~\cite{vanhorn2003}.
+
+\item \textbf{Representation theorems}
+  (Section~\ref{sec:representation}).  On a finite frame, every
+  valuation \emph{is} a classical probability mass function on the
+  points, read through an interior operator.  It is literally a
+  \textsf{mathlib} \texttt{PMF}, and equivalently a finite mixture of
+  the frame's points.  On infinite frames this fails, by an explicit
+  counterexample.  Scott continuity restores it, the counterexample
+  is itself a proved failure of Scott continuity, and in general
+  every valuation splits unconditionally into an atomic part (always
+  a sub-probability) and a diffuse remainder, a constructive
+  Lebesgue-style decomposition.
+
+\item \textbf{The Dempster--Shafer bridge, completed}
+  (Section~\ref{sec:ds}).  Inclusion--exclusion is constructively
+  innocent: it holds \emph{with equality} for the intuitionistic
+  join, on any frame.  Read through the double-negation nucleus, it
+  yields the full $\infty$-monotone tower, so a valuation restricted
+  to its Booleanization is a bona fide belief function.  Additive
+  probability does not become a belief function by losing an axiom,
+  but by being observed through $\neg\neg$.
+
+\item \textbf{The dynamic hinge} (Section~\ref{sec:ds}).  The two
+  classically indistinguishable update rules of Dempster--Shafer
+  theory, Dempster's rule of conditioning and Bayesian (geometric)
+  conditioning, are separated constructively by a single number.
+  For evidence $b$ with $v(b) \neq 0$ they agree at every proposition
+  iff $\slack(b) = 0$.  Classicality of the \emph{dynamics} is one
+  instance of excluded middle, at the evidence.
+
+\item \textbf{The Cox program, dissected} (Section~\ref{sec:cox} and
+  Appendix~\ref{app:aczel}).  The product-rule half of Cox's theorem
+  is logic-free, pure analysis, and we build its analytic core, an
+  Acz\'el/H\"older-style associativity representation absent from
+  \textsf{mathlib}, from scratch: a normalized, strictly monotone,
+  additive generator constructed as a dyadic limit
+  ($\approx$1{,}100 lines).  The sum-rule half is logically
+  irreducible.  We exhibit a five-element frame on which a monotone
+  normalized assignment is additive on disjoint joins yet not
+  modular, and prove a disjunction's value is not any function of
+  its disjuncts' values.
+
+\item \textbf{Two grounding models} (Section~\ref{sec:bridges}).
+  G\"odel--McKinsey--Tarski, quantitatively: any classical
+  probability measure, read on the opens of a space, is a valuation,
+  and slack is boundary mass.  And a computability guard: on the
+  Sierpi\'nski frame of one semidecidable observation, the
+  slack-free classical readout of ``machine $c$ halts'' is
+  uncomputable by reduction to the halting problem, so any axiom
+  forcing classical collapse demands uncomputable epistemic states.
+
+\item \textbf{Product rigidity} (Section~\ref{sec:conclusion}).  On
+  the chain product $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$,
+  every lower set is a finite union of rectangles, so two valuations
+  agreeing on rectangles agree outright and the product valuation,
+  whenever it exists, is unique with no continuity assumed.  This
+  bears directly on whether a probability \emph{monad} exists for
+  these valuations, a question whose hardness we delimit rather than
+  resolve.
+\end{enumerate}
+
+\noindent
+Section~\ref{sec:engineering} reports the formalization design and
+the \textsf{mathlib}-upstreaming surface.
+Section~\ref{sec:related} maps the relation to prior formalizations
+(ALEA, HoTT valuations, Markov categories) and to the informal
+literature.  Section~\ref{sec:conclusion} returns to the opening
+theme, with the monad question stated precisely and the same
+questions posed over \emph{linear} logic, where the event algebra is
+a quantale and ``probability of a resource'' awaits its Gleason, as
+the natural continuation of the program.

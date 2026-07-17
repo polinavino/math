@@ -1,0 +1,70 @@
+\section{Formalization Design and Reuse}
+\label{sec:engineering}
+
+\paragraph{Shape of the development.}
+Fourteen Lean~4 modules, about 3{,}950 lines, over a pinned
+\textsf{mathlib} (both at v4.31.0): the core valuation theory and
+GMT bridge, the DS layer (2-monotonicity, inclusion--exclusion and
+the $\infty$-monotone tower, the two conditionings), the
+representation suite (finite, obstruction, Scott, general
+decomposition), the Cox layer (\texttt{CoxModel},
+sum-irreducibility, the corrected theorem), the Acz\'el development,
+the two guards (halting chain, Sierpi\'nski model), the product rigidity
+theorem on chain products, and the countable-mixture composition
+laws.  The build is clean, with no
+\texttt{sorry} and no warnings, and every theorem named in this
+paper reports exactly
+\texttt{[propext, Classical.choice, Quot.sound]} under
+\texttt{\#print axioms}.
+
+\paragraph{Meta-logic against object logic.}
+Lean's logic is classical, while our \emph{object} of study is the
+frame.  This division of labor is deliberate and, we found, the
+pragmatic sweet spot.  Constructivity claims attach to the algebra
+(no theorem assumes $a \sqcup a^{\mathsf{c}} = \top$), while the
+meta-theory may reason classically \emph{about} it.  The
+counterexample valuations of Sections~\ref{sec:representation}
+and~\ref{sec:cox} use classical case splits legitimately, since a
+counterexample is a classical fact about the theory.  Where the
+distinction has content we track it: the non-vacuity witness for
+\texttt{CoxModel} was re-based from \texttt{Prop} (which imports
+excluded middle through the back door) to the chain $\ENNReal$,
+where the needed case split is a constructor check.
+
+\paragraph{What the checker contributed.}
+Beyond the usual assurance, five findings in this paper originate in
+failed proofs.  The naive \texttt{constructive\_cox} statement was
+unsatisfiable (Section~\ref{sec:cox}).  Unrestricted strict
+monotonicity for the conjunction functional was vacuous
+(Section~\ref{sec:cox}).  The regular-elements guess for the
+classical fragment was false (Section~\ref{sec:valuation}).  Our
+first Acz\'el hypothesis bundle omitted order-preservation, which
+the additivity proof needs (Appendix~\ref{app:aczel}).  And our
+expected counterexample to product uniqueness was refuted by the
+rigidity that became Section~\ref{sec:conclusion}'s theorem.  We
+regard these as the paper's best evidence that this subject
+specifically repays mechanization.
+
+\paragraph{\textsf{mathlib} surface.}
+The development consumes order theory
+(\texttt{Order.Frame}, Heyting algebras, prime ideal separation),
+\texttt{ENNReal} arithmetic, measure theory for the bridge,
+\texttt{PMF}, and the computability library
+(\texttt{Nat.Partrec.Code}, \texttt{ComputablePred}).  Candidates
+for upstreaming, in decreasing generality: the Acz\'el/H\"older
+generator construction of Appendix~\ref{app:aczel}
+(\textsf{mathlib} has no associativity-representation theorem, no
+monotone Cauchy functional equation, and no t-norm theory),
+valuations on frames with the mass/representation API, and the
+inclusion--exclusion identity for modular functions on distributive
+lattices (Theorem~\ref{thm:incl-excl}), which is independent of
+probability.  $\ENNReal$'s truncated subtraction deserves a note.
+It forces additive normal forms, with every identity stated so that
+no subtraction occurs.  This reads as a constraint but functioned as
+a correctness discipline: several informal manipulations of the DS
+literature do not survive it unchanged.
+
+\paragraph{Artifact.}
+The artifact (anonymized supplement) builds with a two-command
+recipe on the pinned toolchain and re-checks every theorem,
+including the axiom audit.

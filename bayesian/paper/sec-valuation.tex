@@ -1,0 +1,136 @@
+\section{Valuations on Frames}
+\label{sec:valuation}
+
+\subsection{The event logic}
+
+A \emph{frame} (locale) is a complete lattice in which finite meets
+distribute over arbitrary joins.  Equivalently, it is a complete
+Heyting algebra.  Frames are the algebraic semantics of
+intuitionistic logic and the point-free abstraction of topological
+spaces.  The motivating example throughout is
+$\Omega = \mathcal{O}(X)$, the opens of a space, with
+$\sqcap, \sqcup$ as intersection and union and the pseudo-complement
+$a^{\mathsf{c}}$ of an open given by the \emph{interior} of its set
+complement.  In \textsf{mathlib} this is the typeclass
+\texttt{Order.Frame}, and the Heyting operations come with the key
+asymmetry already in place: $a \sqcap a^{\mathsf{c}} = \bot$ holds in
+any Heyting algebra (\texttt{inf\_compl\_eq\_bot}), while
+$a \sqcup a^{\mathsf{c}} = \top$ is available only in Boolean
+algebras.  An element with $a \sqcup a^{\mathsf{c}} = \top$ is
+\emph{complemented}: it satisfies its own instance of excluded
+middle.
+
+\subsection{The valuation structure}
+
+\begin{definition}[\texttt{Valuation}]
+\label{def:valuation}
+A \emph{valuation} on a frame $\Omega$ is a function
+$v : \Omega \to \ENNReal$ with
+$v(\bot) = 0$, $v(\top) = 1$, monotonicity, and \emph{modularity}:
+\[
+  v(a) + v(b) \;=\; v(a \sqcup b) + v(a \sqcap b).
+\]
+\end{definition}
+
+\begin{lstlisting}
+structure Valuation (Ω : Type*) [Order.Frame Ω] where
+  toFun : Ω → ℝ≥0∞
+  map_bot' : toFun ⊥ = 0
+  map_top' : toFun ⊤ = 1
+  mono'    : Monotone toFun
+  modular' : ∀ a b, toFun a + toFun b
+             = toFun (a ⊔ b) + toFun (a ⊓ b)
+\end{lstlisting}
+
+Values live in $\ENNReal$ (\texttt{ENNReal}, extended non-negative
+reals) following \textsf{mathlib}'s measure-theoretic convention,
+and normalization then confines them to $[0,1]$
+(\texttt{Valuation.le\_one}).  The definition is Kolmogorov's minus
+one thing: \emph{no axiom mentions complement}.  Classically that
+omission is invisible, because the complement rule is derivable from
+additivity and $a \vee \neg a = \top$.  Constructively it is the
+whole story.
+
+\subsection{Slack, and its two independent obstructions}
+
+Modularity applied to the disjoint pair $(a, a^{\mathsf{c}})$
+collapses to
+$v(a) + v(a^{\mathsf{c}}) = v(a \sqcup a^{\mathsf{c}})$
+(\texttt{add\_compl\_eq\_sup}): the sum measures $a$'s instance of
+excluded middle.  Since that join need not be $\top$:
+
+\begin{theorem}[\texttt{add\_compl\_le\_one}]
+For every valuation and every $a$:
+$v(a) + v(a^{\mathsf{c}}) \le 1$.
+\end{theorem}
+
+\noindent
+This is the Dempster--Shafer sub-additivity inequality, here
+\emph{derived} from the logic rather than postulated.  The deficit
+\[
+  \slack(a) \;=\; 1 - \bigl(v(a) + v(a^{\mathsf{c}})\bigr)
+  \;=\; 1 - v(a \sqcup a^{\mathsf{c}})
+\]
+is the valuation of the undecided region.  It decomposes canonically.
+The pair $(a^{\mathsf{cc}}, a^{\mathsf{c}})$, double negation
+against negation, is always disjoint but is a partition only under
+\emph{weak} excluded middle.  Running it through modularity splits
+the slack into two logically independent gaps:
+
+\begin{theorem}[\texttt{slack\_eq\_dnGap\_add\_deMorganGap}]
+$\slack(a) = \mathrm{dnGap}(a) + \mathrm{deMorganGap}(a)$, where
+$\mathrm{dnGap}(a) = v(a^{\mathsf{cc}}) - v(a)$ vanishes when $a$ is
+$\neg\neg$-stable (regular), and
+$\mathrm{deMorganGap}(a) = 1 - v(a^{\mathsf{cc}} \sqcup a^{\mathsf{c}})$
+vanishes when weak excluded middle holds at $a$.
+\end{theorem}
+
+\noindent
+The single Dempster--Shafer ``ignorance'' number is thus resolved
+into a regularity defect plus a De~Morgan defect, each tracking a
+named intermediate logic.
+
+\subsection{What survives without excluded middle}
+
+Three classical pillars survive intact, and one fails in a precisely
+delimited way.  \emph{Disjoint additivity} is unconditional:
+$a \sqcap b = \bot$ implies $v(a \sqcup b) = v(a) + v(b)$.
+\emph{Conditioning} is native: for $v(b) \neq 0$ the posterior
+$v(a \mid b) = v(a \sqcap b)/v(b)$ is again a valuation (the proof is
+frame distributivity), and the product rule
+$v(a \mid b) \cdot v(b) = v(a \sqcap b)$ and Bayes symmetry
+$v(a \mid b)\,v(b) = v(b \mid a)\,v(a)$ hold
+(\texttt{condVal\_mul}, \texttt{condVal\_symm}).  \emph{Total
+probability} holds over any genuine partition, meaning
+$a \sqcap a' = \bot$ and $a \sqcup a' = \top$:
+$v(b) = v(a \sqcap b) + v(a' \sqcap b)$.  What fails is total
+probability over $\{a, \neg a\}$.  That family does not tile
+$\top$, and the conditional masses fall short of $v(b)$ by a
+conditional slack (\texttt{cond\_add\_compl\_le}).  Bayesian updating
+survives.  The assumption that $A$ and $\neg A$ exhaust the world
+does not.
+
+\paragraph{The classical fragment, a correction forced by the
+checker.}
+Where does honestly additive probability live inside $\Omega$?  The
+natural guess is the $\neg\neg$-stable (\emph{regular}) elements,
+which form a Boolean algebra by Glivenko's theorem.  The guess is
+\emph{wrong}, and the failed proof said why: the valuation's
+modularity governs the frame join $\sqcup$, while the regular
+elements' Boolean join is the regularized
+$(\cdot \sqcup \cdot)^{\mathsf{cc}}$.  A regular but uncomplemented
+element (the open ray $(-\infty,0)$ in the opens of $\mathbb{R}$,
+under an atomic measure at $0$) still carries slack.  The correct
+classical fragment is the \emph{complemented} elements, where
+$v(a) + v(a^{\mathsf{c}}) = 1$ holds on the nose
+(\texttt{add\_compl\_eq\_one\_of\_complemented}).  On a connected
+locale that fragment can be as small as $\{\bot, \top\}$.  In the
+Boolean limit every element is complemented, the slack vanishes
+identically, and Kolmogorov is recovered
+(\texttt{classical\_additivity}, \texttt{classical\_slack\_zero}).
+
+\paragraph{Mixtures.}
+Valuations are closed under finite convex combination
+(\texttt{Valuation.mix}), with every axiom inherited termwise,
+because modularity is linear.  This innocuous fact becomes a
+characterization in Section~\ref{sec:representation}.

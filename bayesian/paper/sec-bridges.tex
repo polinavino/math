@@ -1,0 +1,84 @@
+\section{Two Grounding Models}
+\label{sec:bridges}
+
+Two concrete models anchor the abstract theory.  One shows every
+classical measure \emph{contains} an intuitionistic probability.
+The other shows the intuitionistic theory cannot collapse back
+without solving the halting problem.
+
+\subsection{Measures through the interior operator}
+
+G\"odel--McKinsey--Tarski interpret intuitionistic logic in modal
+$\mathsf{S4}$, semantically: propositions are \emph{open} sets, and
+$\Box$ is topological interior~\cite{godel1933,mckinsey-tarski1944}.
+Our valuations are the quantitative face of that translation:
+
+\begin{theorem}[\texttt{Measure.toValuationOpens}]
+Let $\mu$ be a probability measure on a space $X$.  Then
+$U \mapsto \mu(U)$ on the frame $\mathcal{O}(X)$ is a valuation.
+Equivalently, $v = \mu \circ \mathrm{int}$ as a function of arbitrary
+sets, that is, $v(A) = P(\Box A)$.
+\end{theorem}
+
+\noindent
+Modularity is $\mu(U \cup V) + \mu(U \cap V) = \mu(U) + \mu(V)$.
+The slack of an open $U$ is then $1 - \mu(U) -
+\mu(\mathrm{int}\,U^{\complement})$, which is the measure of the
+boundary $\partial U$.  \emph{Slack is boundary mass.}  (The general
+boundary identity is elementary measure theory.  The development
+proves the complement sub-additivity inequality in general,
+\texttt{interiorMeasure\_add\_compl\_le}, and mechanizes the boundary
+identity end to end in the Sierpi\'nski model below.)  The DS
+``ignorance'' of Section~\ref{sec:ds} is, in this model, the measure
+charged to the frontier where a finite-precision observer can never
+decide membership, a structural quantity with no epistemic subject.
+This also exhibits the modal identification
+$\Bel = P(\Box\,\cdot)$ of the DS literature~\cite{ruspini1986}
+arising from the logic itself.  Theorem~\ref{thm:finite-rep} is the
+converse in the finite case, and the general converse is the open
+frontier of Section~\ref{sec:representation}.
+
+\subsection{The computability guard}
+
+The design constraint on every axiom set in this paper is that it
+must not silently force $\slack \equiv 0$.  Otherwise the
+``constructive'' theory is Kolmogorov in disguise.  Our guard is a
+model in which collapse is not merely false but \emph{uncomputable}.
+
+A semidecidable proposition is an open in the Sierpi\'nski topology
+on \texttt{Prop}: verifiable by a finite computation, never refutable
+by one.  On the three-open frame $\mathcal{O}(\mathbb{S}) =
+\{\bot, \mathit{halts}, \top\}$ we prove the $\Sigma_1$ asymmetry as
+a theorem, $\mathit{halts}^{\mathsf{c}} = \bot$ (every nonempty open
+of $\mathbb{S}$ contains $\mathsf{True}$, so nothing partially
+refutes a semidecidable event), and build the valuation from a
+genuine measure $p \cdot \delta_{\mathsf{True}} + (1-p) \cdot
+\delta_{\mathsf{False}}$ through the bridge above.  The slack
+computes end to end (\texttt{slack\_eq\_boundary}):
+\[
+  \slack(\mathit{halts}) \;=\; 1 - p \;=\;
+  \mu\bigl(\partial\,\{q \mid q\}\bigr)
+  \;=\; \mu\{\mathsf{False}\},
+\]
+the mass of the point where the computation stays silent forever.
+
+The guard itself is grounded in \textsf{mathlib}'s computability
+theory.  For a code $c$ and input $n$, the \emph{sharp classical
+readout} assigns the slack-free valuation answering ``does $c$ halt
+on $n$?'' with certainty, weight $1$ or $0$ by the actual halting
+fact.  This family is classically well defined, and:
+
+\begin{theorem}[\texttt{sharpReadout\_not\_computable}]
+Deciding whether the sharp classical readout assigns belief $1$ to
+the halting event is exactly the halting problem, hence not
+computable (\texttt{ComputablePred.halting\_problem}).
+\end{theorem}
+
+\noindent
+Any axiom strong enough to force classical collapse therefore demands
+of its models an uncomputable epistemic state.  Slack is not a defect
+the constructive theory should apologize for.  It is the price of a
+computable one.  This guard plays for the sum rule the role the
+explicit \texttt{CoxModel} instance plays for the product rule
+(Section~\ref{sec:cox}): each axiom set in the paper ships with a
+machine-checked witness that it has non-degenerate models.

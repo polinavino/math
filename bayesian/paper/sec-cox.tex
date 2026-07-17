@@ -1,0 +1,116 @@
+\section{The Cox Program, Dissected}
+\label{sec:cox}
+
+Cox's theorem~\cite{cox1946,jaynes2003} derives the probability
+calculus from desiderata on plausibility.  After Halpern's
+counterexample~\cite{halpern1999}, its repaired
+forms~\cite{vanhorn2003,arnborg-sjodin2000} fix the calculus up to
+monotone regraduation.  Every known derivation is classical, and
+Section~\ref{sec:hinge} showed why: the negation axiom R3 \emph{is}
+excluded middle.  What survives of the program when R3 is dropped?
+Mechanization forced a sharper answer than we had conjectured, in
+three parts.  The product rule is logic-free.  The sum rule is
+irreducible.  And the naive constructive statement is unsatisfiable.
+
+\subsection{A Cox structure without negation}
+
+\begin{lstlisting}
+structure CoxModel (Ω : Type*) [Order.Frame Ω] where
+  pl : Ω → Ω → ℝ            -- pl a b : plausibility of a given b
+  mono_left : ∀ c, Monotone fun a => pl a c
+  pl_bot : ∀ c, pl ⊥ c = 0
+  pl_top : ∀ c, pl ⊤ c = 1
+  F : ℝ → ℝ → ℝ             -- conjunction functional
+  conj : ∀ a b c, pl (a ⊓ b) c = F (pl a (b ⊓ c)) (pl b c)
+  F_assoc : ∀ x y z, F (F x y) z = F x (F y z)
+  F_strictMono_left : ∀ y, 0 < y → StrictMono fun x => F x y
+\end{lstlisting}
+
+The deliberate omission is any field relating
+$\mathrm{pl}(a^{\mathsf{c}}, b)$ to $\mathrm{pl}(a, b)$.  That
+missing field is exactly R3.  Two details are themselves
+checker-forced.  Strict monotonicity of $F$ must be restricted to
+$0 < y$, because the boundary axioms force $F(x, 0) = 0$ for all
+$x$, so the unrestricted axiom makes the structure \emph{uninhabited}
+and every theorem about it vacuous.  We guard against this
+permanently: \texttt{coxModelENNReal} is an explicit model on the
+non-Boolean chain $\ENNReal$, built without classical logic (deciding
+$a = \top$ there is a constructor check), so the axiom class is
+inhabited by a genuinely non-classical instance.
+
+\subsection{The sum rule is irreducible}
+
+Classically, additivity is \emph{derived}: R3 turns disjunction into
+negated conjunction via De~Morgan, and the product rule does the
+rest.  Constructively that route is closed, since
+$a \vee b \neq \neg(\neg a \wedge \neg b)$ in general.  And this is
+not an artifact of one proof strategy:
+
+\begin{theorem}[\texttt{modularity\_irreducible},
+  \texttt{no\_disjunction\_functional}]
+\label{thm:no-functional}
+There is a five-element frame (the lower sets of the poset
+$o < a,\, o < b$ with $a, b$ incomparable) and a monotone, normalized
+assignment $q$ on it that is additive on disjoint joins yet not
+modular.  Moreover no binary operation $S$ on values satisfies
+$q(x \sqcup y) = S(q(x), q(y))$ for all $x, y$.  The pairs
+$({\downarrow}a, {\downarrow}a)$ and $({\downarrow}a, {\downarrow}b)$
+have identical value-pairs $(\tfrac12, \tfrac12)$ but joins valued
+$\tfrac12$ and $1$.
+\end{theorem}
+
+\noindent
+A disjunction's plausibility is not a function of its disjuncts'
+plausibilities, unlike a conjunction's, which the \texttt{conj}
+field reduces to values via conditioning.  So a constructive Cox
+theorem \emph{must} posit the sum-rule half.  Modularity is the
+posit, and Theorem~\ref{thm:mixture} is its independent
+justification: modularity says exactly that the calculus is closed
+under mixing certainties.
+
+\subsection{The theorem, corrected and proved}
+
+Our original target statement asked for a strictly monotone
+regraduation $g : \mathbb{R} \to \ENNReal$ with $g(0) = 0$.  The
+checker refused, for a reason no referee had caught on paper: strict
+monotonicity forces $g(-1) < g(0) = 0$, impossible in $\ENNReal$.
+The statement was not too hard.  It was \emph{unsatisfiable}, and
+the repair (strictness only on $[0,1]$, where plausibilities live)
+is exactly the domain hygiene that Halpern's critique of the
+classical theorem turns on.
+
+\begin{theorem}[\texttt{constructive\_cox}]
+\label{thm:cox}
+Every Cox model whose unconditional plausibility is modular
+regraduates to a valuation: there exist $v : \mathrm{Valuation}\;
+\Omega$ and $g$ strictly monotone on $[0,1]$ with $g(0)=0$,
+$g(1)=1$, and $v(a) = g(\mathrm{pl}(a, \top))$ for all $a$.
+\end{theorem}
+
+The regraduation for the sum-rule half is undemanding
+($g = \texttt{ENNReal.ofReal}$).  The substance lives in the
+product-rule half, showing $F$ regraduates to multiplication, which
+is Acz\'el's associativity theorem~\cite{aczel1966}, a statement of
+pure analysis whose type never mentions $\Omega$.  The
+constructive/classical divide is therefore \emph{entirely} in the
+sum rule.  \textsf{mathlib} has no Acz\'el theorem, no H\"older-style
+embedding for ordered semigroups on intervals, and no Cauchy
+functional equation under monotonicity (only under continuity), so
+we build the analytic core from scratch ($\approx$1{,}100 lines): a
+bundled \texttt{Scale} of Acz\'el hypotheses, a generator defined as
+the dyadic limit $g(b) = \bigsqcup_n (\text{count of } 2^n\text{-th
+roots under } b)/2^n$, and the H\"older-style conclusion, a
+normalized, strictly monotone additive generator and hence a
+strictly monotone multiplicative one, on the positive cone
+(\texttt{exists\_mul\_generator}, \texttt{aczelStatement\_cone}).
+The Archimedean property is \emph{derived} from continuity and
+positivity rather than assumed, and the interval form of
+divisibility is likewise a consequence of the intermediate value
+theorem (\texttt{exists\_diag\_eq}), though the bundled
+\texttt{Scale} takes divisibility as a hypothesis.
+Appendix~\ref{app:aczel} gives the construction.  The residual
+analytic gap, continuity of the generator and extension below the
+unit, is stated honestly there and in
+Section~\ref{sec:conclusion}, and is witnessed non-vacuously by the
+log-sum-exp archetype, for which the global continuous generator is
+$\exp$.

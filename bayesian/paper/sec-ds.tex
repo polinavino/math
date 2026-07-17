@@ -1,0 +1,121 @@
+\section{The Dempster--Shafer Reading, Completed}
+\label{sec:ds}
+
+Sections~\ref{sec:valuation}--\ref{sec:representation} keep meeting
+the \emph{shape} of Dempster--Shafer (DS)
+theory~\cite{dempster1967,shafer1976}: sub-additive complements, a
+belief/plausibility interval, mass functions.  This section makes the
+identification exact in both statics and dynamics, and locates, each
+time, the precise point where excluded middle is the difference.
+
+\subsection{Statics: total monotonicity via constructive
+inclusion--exclusion}
+
+The $\neg\neg$-stable (\emph{regular}) elements of a frame form a
+Boolean algebra with meet $\sqcap$ and join
+$(a \sqcup b)^{\mathsf{cc}}$ (Glivenko).  Call it the
+\emph{Booleanization}.  A DS belief function is a capacity on a
+Boolean algebra that is $n$-monotone for every $n$:
+$\Bel(\bigvee_i A_i) \ge \sum_{\emptyset \neq T}
+(-1)^{|T|+1} \Bel(\bigwedge_{i \in T} A_i)$.  The $2$-monotone case
+is a one-liner from modularity
+(\texttt{two\_monotone}).  The full tower follows from a fact that is
+interesting in its own right:
+
+\begin{theorem}[inclusion--exclusion,
+  \texttt{inclusion\_exclusion}]
+\label{thm:incl-excl}
+For every valuation on every frame and every finite family
+$a : \iota \to \Omega$, inclusion--exclusion holds \emph{with
+equality} for the frame join:
+\[
+  v\Bigl(\,\bigsqcup_{i \in s} a_i\Bigr)
+  \;=\; \sum_{\emptyset \neq T \subseteq s} (-1)^{|T|+1}\,
+        v\Bigl(\,\bigsqcap_{i \in T} a_i\Bigr).
+\]
+(Stated in Lean additively, with the odd-cardinality half of the
+signed sum set against the even-cardinality half, so that no
+$\ENNReal$ subtraction occurs.  The proof is induction with
+modularity and frame distributivity.)
+\end{theorem}
+
+\begin{theorem}[total monotonicity, \texttt{infty\_monotone}]
+\label{thm:infty}
+For every valuation, finite family, and $n$:
+\[
+  \sum_{\emptyset \neq T} (-1)^{|T|+1}
+  v\Bigl(\bigsqcap_{T} a_i\Bigr)
+  \;\le\;
+  v\Bigl(\bigl(\bigsqcup_i a_i\bigr)^{\mathsf{cc}}\Bigr).
+\]
+Read on the Booleanization, where $(\cdot)^{\mathsf{cc}} \circ
+\sqcup$ is the join and meets of regulars are regular, this is
+verbatim the $\infty$-monotone tower: $v$ restricted to its
+Booleanization is a bona fide belief function.
+\end{theorem}
+
+The proof of Theorem~\ref{thm:infty} from
+Theorem~\ref{thm:incl-excl} is one line: monotonicity along
+$a \le a^{\mathsf{cc}}$.  The conceptual point runs opposite to the
+usual telling.  Inclusion--exclusion does \emph{not} fail
+constructively.  It is exact for the intuitionistic disjunction, and
+total monotonicity is what that equality looks like through the
+double-negation nucleus: rounding a join up to its regular hull can
+only add value, and the defect is exactly the double-negation gap of
+Section~\ref{sec:valuation}.  Additive probability does not
+\emph{become} a belief function by losing an axiom.  It becomes one
+by being \emph{read through} $\neg\neg$.  With
+$\Pl(a) = 1 - v(a^{\mathsf{c}})$, the belief--plausibility interval
+has width exactly the slack
+(\texttt{plausibility\_sub\_self}).  The DS ``ignorance'' is
+boundary measure, not psychology.
+
+\subsection{Dynamics: Dempster against Bayes, separated by one
+number}
+
+DS theory carries two update rules that coincide classically.
+\emph{Geometric} conditioning renormalizes belief, and under the DS
+dictionary it \emph{is} the localic posterior
+$v(a \sqcap b)/v(b)$ of Section~\ref{sec:valuation}.
+\emph{Dempster's rule of conditioning}~\cite{shafer1976} discards
+the mass incompatible with the evidence and renormalizes by its
+plausibility:
+\[
+  v(a \,\|\, b) \;=\;
+  \frac{v(a \sqcup b^{\mathsf{c}}) - v(b^{\mathsf{c}})}
+       {1 - v(b^{\mathsf{c}})}.
+\]
+Both are again valuations (\texttt{dempsterCond}, whose modularity
+is the frame distributivity
+$(a \sqcup b^{\mathsf{c}}) \sqcap (a' \sqcup b^{\mathsf{c}})
+= (a \sqcap a') \sqcup b^{\mathsf{c}}$).  Their disagreement is
+governed by a single structural quantity, the \emph{excluded-middle
+gap} $\mathrm{emGap}(a,b) = v(a) - v(a \sqcap (b \sqcup
+b^{\mathsf{c}}))$, the mass of $a$ stranded outside $b$'s instance
+of excluded middle:
+
+\begin{lemma}[\texttt{sup\_compl\_decomp}]
+$v(a \sqcup b^{\mathsf{c}}) = v(b^{\mathsf{c}}) + v(a \sqcap b) +
+\mathrm{emGap}(a,b)$.  Dempster's numerator exceeds Bayes's by
+exactly the gap.
+\end{lemma}
+
+\begin{theorem}[the conditioning hinge,
+  \texttt{dempsterCond\_eq\_condVal\_iff\_slack}]
+\label{thm:cond-hinge}
+For $v(b) \neq 0$: Dempster conditioning on $b$ agrees with
+Bayesian/geometric conditioning on $b$ at \emph{every} proposition
+iff $\slack(b) = 0$.
+\end{theorem}
+
+Zero slack at the evidence kills the gap for every $a$ and makes the
+two normalizers coincide, since $1 - v(b^{\mathsf{c}}) = v(b)$.
+Conversely, testing at $a := b$, geometric conditioning gives
+certainty $1$ while Dempster gives $v(b)/(1 - v(b^{\mathsf{c}}))$,
+which is $1$ only if the slack vanishes.
+Theorem~\ref{thm:cond-hinge} is the dynamic companion of
+Theorem~\ref{thm:hinge}.  The static hinge locates classicality in
+the complement rule, and the dynamic hinge locates it in the
+agreement of the two DS update rules: one instance of excluded
+middle, at the evidence.  In the measure model, Dempster and Bayes
+disagree exactly when the evidence has a charged boundary.

@@ -1,0 +1,66 @@
+\section{Where Classicality Lives: the R3 Hinge}
+\label{sec:hinge}
+
+Van Horn's repaired Cox theorem~\cite{vanhorn2003} axiomatizes
+plausibility over classical propositions.  Its negation axiom, called
+\emph{R3}, posits that the plausibility of $\neg A$ is a fixed
+non-increasing function $S$ of the plausibility of $A$.  Consistency
+forces $S \circ S = \mathrm{id}$, an involution, and thence the
+complement rule $p \mapsto 1 - p$.  An involutive negation \emph{is}
+double-negation elimination, so R3 is where classical logic enters
+every known Cox-style derivation.  We isolate the exact content of
+R3's conclusion as a predicate on valuations and prove it equivalent
+to excluded middle.
+
+\begin{lstlisting}
+def HasClassicalNegation (v : Valuation Ω) : Prop :=
+  ∀ a, v a + v aᶜ = 1
+\end{lstlisting}
+
+\begin{theorem}[the R3 hinge]
+\label{thm:hinge}
+For a frame $\Omega$, every valuation on $\Omega$ has classical
+negation \emph{iff} $a \sqcup a^{\mathsf{c}} = \top$ for every
+$a \in \Omega$.
+\end{theorem}
+
+The forward direction (\texttt{hasClassicalNegation\_of\_em}) is a
+calculation.  The content is the converse
+(\texttt{em\_of\_forall\_hasClassicalNegation}): wherever excluded
+middle fails, a valuation with genuine slack must be
+\emph{manufactured}.  Suppose $a \sqcup a^{\mathsf{c}} \neq \top$.
+The prime ideal separation theorem
+(\textsf{mathlib}'s \texttt{DistribLattice.prime\_ideal\_of\_%
+disjoint\_filter\_ideal}) yields a prime ideal $J$ containing
+$a \sqcup a^{\mathsf{c}}$ but not $\top$.  The indicator of $J$'s
+complement,
+\[
+  v(x) = \begin{cases} 0 & x \in J \\ 1 & x \notin J, \end{cases}
+\]
+is a valuation.  Modularity in the only nontrivial case ($x, y
+\notin J$) is \emph{exactly} primeness, $x \sqcap y \in J
+\Rightarrow x \in J \vee y \in J$.  And this valuation assigns
+$v(a) + v(a^{\mathsf{c}}) = 0 \neq 1$.  So the complement rule is not
+one convention among many.  Quantified over all valuations, it is a
+statement \emph{about the algebra}, and the statement is excluded
+middle.
+
+\paragraph{Sharp valuations are the points of the locale.}
+The construction above is not ad hoc.  It is one half of an exact
+correspondence.  Call $v$ \emph{sharp} if it is $\{0,1\}$-valued, a
+state of full certainty.
+
+\begin{theorem}[\texttt{sharp\_iff\_point}]
+$v$ is sharp iff $v$ is the complement-indicator of a prime ideal.
+The maps are mutually inverse: the ideal recovered from $v$ is its
+zero-set, prime exactly because $v$ is sharp.
+\end{theorem}
+
+\noindent
+In locale-theoretic terms, the certainty limit of the probability
+theory recovers the \emph{points} of the locale.  (These are the
+finitely prime points.  The completely prime points would correspond
+to sharp valuations that are also Scott-continuous, a refinement we
+note but do not formalize.)  The hinge and the correspondence
+together are the paper's static answer to ``where does classicality
+live'': in one axiom, whose semantic shadow is point-hood.

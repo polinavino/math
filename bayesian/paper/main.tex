@@ -1,0 +1,203 @@
+%% =====================================================================
+%% main.tex --- The Complement Rule Is Excluded Middle:
+%%              Machine-Checked Probability over Intuitionistic Logic
+%% Draft for CPP 2027 submission (acmart sigplan).
+%%
+%% Build: make          (pdflatex + bibtex + 2x pdflatex)
+%% =====================================================================
+
+\documentclass[sigplan,10pt,review,anonymous]{acmart}
+
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
+\usepackage{listingsutf8}
+\usepackage{microtype}
+
+% --- Lean 4 listing setup ---------------------------------------------
+\lstdefinelanguage{Lean}{
+  morekeywords={theorem,lemma,def,noncomputable,structure,instance,
+                variable,import,namespace,end,open,scoped,where,
+                fun,match,with,if,then,else,let,in,by,do,
+                Prop,Type,Sort,deriving,inductive,abbrev,example,
+                forall,exists,class,extends},
+  sensitive=true,
+  morecomment=[s]{/-}{-/},
+  morecomment=[l]{--},
+  literate=
+    {->}{{$\rightarrow$}}{2}
+    {→}{{$\rightarrow$}}{1}
+    {↔}{{$\leftrightarrow$}}{1}
+    {↦}{{$\mapsto$}}{1}
+    {⟺}{{$\iff$}}{2}
+    {∀}{{$\forall$}}{1}
+    {∃}{{$\exists$}}{1}
+    {∧}{{$\wedge$}}{1}
+    {∨}{{$\vee$}}{1}
+    {¬}{{$\neg$}}{1}
+    {≤}{{$\le$}}{1}
+    {≥}{{$\ge$}}{1}
+    {≠}{{$\ne$}}{1}
+    {∈}{{$\in$}}{1}
+    {∉}{{$\notin$}}{1}
+    {⊤}{{$\top$}}{1}
+    {⊥}{{$\bot$}}{1}
+    {⊔}{{$\sqcup$}}{1}
+    {⊓}{{$\sqcap$}}{1}
+    {⋁}{{$\bigvee$}}{1}
+    {⨆}{{$\bigsqcup$}}{1}
+    {∑}{{$\sum$}}{1}
+    {∞}{{$\infty$}}{1}
+    {ℝ}{{$\mathbb{R}$}}{1}
+    {ℕ}{{$\mathbb{N}$}}{1}
+    {ℤ}{{$\mathbb{Z}$}}{1}
+    {Ω}{{$\Omega$}}{1}
+    {δ}{{$\delta$}}{1}
+    {μ}{{$\mu$}}{1}
+    {ρ}{{$\rho$}}{1}
+    {ι}{{$\iota$}}{1}
+    {σ}{{$\sigma$}}{1}
+    {∂}{{$\partial$}}{1}
+    {×}{{$\times$}}{1}
+    {⁻¹}{{${}^{-1}$}}{2}
+    {ᶜ}{{${}^{\mathsf{c}}$}}{1}
+    {ᶜᶜ}{{${}^{\mathsf{cc}}$}}{2}
+    {⟨}{{$\langle$}}{1}
+    {⟩}{{$\rangle$}}{1}
+    {∘}{{$\circ$}}{1}
+    {≡}{{$\equiv$}}{1}
+    {∅}{{$\emptyset$}}{1}
+    {□}{{$\Box$}}{1}
+    {▷}{{$\triangleright$}}{1}
+}
+
+\lstset{
+  language=Lean,
+  inputencoding=utf8/latin1,
+  extendedchars=true,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  showstringspaces=false,
+  breaklines=true,
+  xleftmargin=1em,
+  aboveskip=0.6em,
+  belowskip=0.6em,
+}
+
+\acmConference[CPP '27]{Certified Programs and Proofs}{January 2027}{(submitted)}
+\acmYear{2027}
+\acmISBN{}
+\acmDOI{}
+\citestyle{acmauthoryear}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\emergencystretch=3em
+
+% Shorthands
+\newcommand{\ENNReal}{\ensuremath{[0,\infty]}}
+\newcommand{\slack}{\mathrm{slack}}
+\newcommand{\Bel}{\mathrm{Bel}}
+\newcommand{\Pl}{\mathrm{Pl}}
+
+\begin{document}
+
+\title{The Complement Rule Is Excluded Middle:\\
+  Machine-Checked Probability over Intuitionistic Logic}
+
+\author{Anonymous Author(s)}
+\affiliation{\institution{Anonymous Institution}\city{}\country{}}
+
+\begin{abstract}
+Kolmogorov's axioms fix not only an arithmetic of chance but a
+\emph{logic} of events: a Boolean algebra.  There is no intrinsic
+reason for that choice.  Different situations call for different
+logics, and quantum mechanics long ago moved probability onto
+non-Boolean event structures.  We mechanize, in Lean~4 over
+\textsf{mathlib}, what probability becomes when the event logic is
+\emph{intuitionistic}: valuations on frames (complete Heyting
+algebras), the logic of verifiable propositions.  The development is
+about 3{,}950 lines, \texttt{sorry}-free, and its landmark theorems
+depend only on the three standard axioms.
+
+Three families of machine-checked results emerge.  \emph{Hinges:}
+the classical complement rule $v(\neg A) = 1 - v(A)$ holds for every
+valuation exactly when excluded middle holds in the algebra, so all
+of probability's classicality is one axiom.  Dynamically, Dempster's
+rule of conditioning agrees with Bayesian conditioning exactly when
+the evidence satisfies excluded middle.  \emph{Representation:} on
+finite frames every valuation is a classical probability mass
+function on points seen through an interior operator.  On infinite
+frames this fails, Scott continuity restores it, and in general
+there is an unconditional atomic/diffuse decomposition.  A valuation
+is a Dempster--Shafer belief function on its Booleanization, totally
+monotone, via an inclusion--exclusion identity that holds \emph{with
+equality} for the intuitionistic join.  \emph{Guards:} a
+Sierpi\'nski-space model built from a genuine measure shows the
+theory's ``slack'' is boundary mass, and a reduction to the halting
+problem shows the slack-free classical readout of a semidecidable
+event is uncomputable: slack is the price of a computable epistemic
+state.  Along the way the proof assistant caught an unsatisfiable
+statement of the central Cox-style theorem and forced the
+identification of which axiom is irreducible.  The analytic core
+(Acz\'el's associativity theorem, H\"older-style) is built from
+scratch as a dyadic-limit construction absent from \textsf{mathlib}.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003752.10003790.10003792</concept_id>
+<concept_desc>Theory of computation~Proof theory</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003752.10003790.10011740</concept_id>
+<concept_desc>Theory of computation~Type theory</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+<concept>
+<concept_id>10002950.10003648</concept_id>
+<concept_desc>Mathematics of computing~Probability and statistics</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Theory of computation~Proof theory}
+\ccsdesc[500]{Mathematics of computing~Probability and statistics}
+
+\keywords{intuitionistic logic, probability, Cox's theorem, belief
+functions, locales, Lean, mathlib, formalized mathematics}
+
+\maketitle
+
+\input{intro}
+\input{sec-valuation}
+\input{sec-hinge}
+\input{sec-representation}
+\input{sec-ds}
+\input{sec-cox}
+\input{sec-bridges}
+\input{sec-engineering}
+\input{sec-related}
+\input{sec-conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{refs}
+
+\appendix
+\input{app-aczel}
+
+\end{document}
