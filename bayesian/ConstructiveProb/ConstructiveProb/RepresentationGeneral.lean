@@ -39,11 +39,11 @@ theorem finite_sum_mass_le (v : Valuation (LowerSet P)) (S : Finset P) :
     · simp
     · obtain ⟨p, hpmax⟩ := (↑S : Set P).toFinite.exists_maximal (by simpa using hne)
       have hpS : p ∈ S := Finset.mem_coe.mp hpmax.1
-      have hmax : ∀ q ∈ S, ¬ p ≤ q ∨ q = p := fun q hq => by
-        by_cases hpq : p ≤ q
-        · exact Or.inr (le_antisymm (hpmax.2 (Finset.mem_coe.mpr hq) hpq) hpq)
-        · exact Or.inl hpq
-      have hpS' : p ∉ S.erase p := fun hmem => (Finset.mem_erase.mp hmem).1 rfl
+      -- no case split on the undecidable `p ≤ q`: for `q ∈ S.erase p` we have `q ≠ p`, and
+      -- `p ≤ q` with maximality would force `q = p`, so `¬ p ≤ q` holds outright
+      have hmax : ∀ q ∈ S.erase p, ¬ p ≤ q := fun q hq hpq =>
+        (Finset.mem_erase.mp hq).1
+          (le_antisymm (hpmax.2 (Finset.mem_coe.mpr (Finset.mem_of_mem_erase hq)) hpq) hpq)
       -- decompositions of the sum and of the generated lower set
       have hsum : ∑ q ∈ S, v.mass q = v.mass p + ∑ q ∈ S.erase p, v.mass q :=
         (Finset.add_sum_erase S v.mass hpS).symm
@@ -52,10 +52,7 @@ theorem finite_sum_mass_le (v : Valuation (LowerSet P)) (S : Finset P) :
       -- the meet bound: `↓p ⊓ (⨆_{S'} ↓q) ≤ {x < p}` since `p` is maximal
       have hAB : LowerSet.Iic p ⊓ (S.erase p).sup LowerSet.Iic ≤ LowerSet.Iio p := by
         rw [Finset.sup_inf_distrib_left]
-        refine Finset.sup_le fun q hq => Iic_inf_Iic_le_Iio ?_
-        rcases hmax q (Finset.mem_of_mem_erase hq) with hnle | rfl
-        · exact hnle
-        · exact absurd hq hpS'
+        exact Finset.sup_le fun q hq => Iic_inf_Iic_le_Iio (hmax q hq)
       -- induction hypothesis on the smaller set
       have hcard : (S.erase p).card < n := by
         rw [← hn]; exact Finset.card_erase_lt_of_mem hpS

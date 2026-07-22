@@ -30,7 +30,22 @@ counterexample is a classical fact about the theory.  Where the
 distinction has content we track it: the non-vacuity witness for
 \texttt{CoxModel} was re-based from \texttt{Prop} (which imports
 excluded middle through the back door) to the chain $\ENNReal$,
-where the needed case split is a constructor check.
+where the needed case split is a constructor check, witnessed by a
+computable \texttt{Decidable} instance rather than the classical
+one, and the maximal-point peel behind the general decomposition
+was arranged to make no excluded-middle case split in its script.
+
+The division also bites in a place the theory itself predicts.
+Every valuation in the development whose \emph{definition} requires
+classical logic is an indicator: the point valuations, the
+prime-ideal indicators behind \texttt{sharp\_iff\_point}, the
+$\top$-indicator, and the halting weights.  An indicator into
+$[0,\infty]$ must decide membership, so the sharp states are exactly
+the objects a constructive meta-theory could not build.  Likewise
+the hard direction of the R3 hinge rests on prime-ideal separation,
+a choice principle.  The formalization thus enacts its own thesis
+one level up: certainty and points are classical resources, inside
+the theory and above it.
 
 \paragraph{What the checker contributed.}
 Beyond the usual assurance, five findings in this paper originate in

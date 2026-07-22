@@ -34,9 +34,11 @@ $0 < y$, because the boundary axioms force $F(x, 0) = 0$ for all
 $x$, so the unrestricted axiom makes the structure \emph{uninhabited}
 and every theorem about it vacuous.  We guard against this
 permanently: \texttt{coxModelENNReal} is an explicit model on the
-non-Boolean chain $\ENNReal$, built without classical logic (deciding
-$a = \top$ there is a constructor check), so the axiom class is
-inhabited by a genuinely non-classical instance.
+non-Boolean chain $\ENNReal$, with no appeal to excluded middle at
+the object level.  Deciding $a = \top$ there is a constructor check,
+and the formalization supplies the computable \texttt{Decidable}
+instance witnessing this (\texttt{decEqTopENNReal}), so the axiom
+class is inhabited by a genuinely non-classical instance.
 
 \subsection{The sum rule is irreducible}
 

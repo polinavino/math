@@ -312,9 +312,9 @@ justified by `modularity_irreducible`):
   representation is *false* (the counterexample below). The honest general statement is an
   inequality: the point-masses are always a sub-probability, `∑ₚ v.mass p ≤ v ⊤`, and the
   shortfall is a diffuse remainder — a constructive analogue of the **Lebesgue decomposition**
-  (atomic + diffuse), holding for *every* frame with no finiteness and no classical logic. The
-  proof reuses the maximal-element peel, now over arbitrary finite subsets bounded by the whole,
-  then passes to the supremum.
+  (atomic + diffuse), holding for *every* frame, with no finiteness hypothesis and no
+  classicality assumption on the frame. The proof reuses the maximal-element peel, now over
+  arbitrary finite subsets bounded by the whole, then passes to the supremum.
 
 Everything else — conditioning, disjoint-additivity, the classical fragment, the concrete
 measure model — is a direct calculation or a corollary of these.
@@ -395,7 +395,8 @@ measure model — is a direct calculation or a corollary of these.
   *is* an intuitionistic-probability valuation `v U = μ U`, and this valuation *is* `P(□·)`
   restricted to the opens.
 - `nonempty_coxModel` — **the Cox axioms are not vacuous:** an explicit model on the chain
-  `ℝ≥0∞` (constructively, no excluded middle). This guards `constructive_cox` against the
+  `ℝ≥0∞` (its `a = ⊤` case split is a computable constructor check, `decEqTopENNReal`, not an
+  appeal to excluded middle). This guards `constructive_cox` against the
   vacuity that an over-strong axiom would silently create.
 - `eq_sum_mass` / `sum_mass` (in [`Representation.lean`](ConstructiveProb/Representation.lean))
   — **the finite representation theorem, the headline new result.** For a finite frame
@@ -436,8 +437,9 @@ measure model — is a direct calculation or a corollary of these.
   and a **diffuse part** `v ⊤ − ∑' p, v.mass p ≥ 0` — a constructive Lebesgue-style
   decomposition. The equality cases (finite; `ℕ` + Scott) are "purely atomic" (`IsPurelyAtomic`,
   zero diffuse part); the `topIndicator` counterexample is the extreme purely-diffuse opposite.
-  The proof peels a maximal point from each finite subset and uses modularity — it needs neither
-  excluded middle nor `Classical`.
+  The proof peels a maximal point from each finite subset and uses modularity; its script makes
+  no excluded-middle case split and never invokes `Classical` (its axiom footprint is still
+  mathlib's classical baseline, like every theorem here — see the meta-logic note below).
 - `Valuation.eq_sum_mass_of_finite` / `Valuation.isPurelyAtomic_of_scott` (in
   [`RepresentationGeneral.lean`](ConstructiveProb/RepresentationGeneral.lean)) — **Scott-continuity
   ⟹ purely atomic, in general.** `eq_sum_mass_of_finite` upgrades the finite representation to hold
@@ -471,8 +473,12 @@ measure model — is a direct calculation or a corollary of these.
 
 **✅ Proved — the product-rule half (Aczél/Hölder generator, [`Aczel.lean`](ConstructiveProb/Aczel.lean)):**
 
-This is the constructive content of Aczél's associativity theorem, built from scratch (mathlib
-has no ordered-semigroup embedding for interval operations). A `Scale` bundles Aczél's
+This is the *explicit* content of Aczél's associativity theorem — the generator is built as a
+concrete dyadic limit rather than conjured by an abstract existence argument — developed from
+scratch (mathlib has no ordered-semigroup embedding for interval operations). "Constructive"
+here means explicit construction, not constructive logic: the surrounding real analysis
+(density squeezes, `by_contra`, chosen roots) is classical meta-reasoning, flagged as such in
+`Aczel.lean` — see the meta-logic note below. A `Scale` bundles Aczél's
 hypotheses on a combination functional `F` — divisible, associative, positive-cone
 (`x < F x c`), jointly continuous, order-preserving, with an identity at `−∞`. The generator is
 constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots under `b`)/2ⁿ`.
@@ -614,6 +620,50 @@ constructed directly as a dyadic limit `g b = ⨆ₙ (count of `n`-th roots unde
   non-spatiality obstruction is the *same phenomenon* as undecidability (a halting locale has too
   few points), tying this frontier to the computability guard above.
 
+### A note on the meta-logic: Lean is classical — so what is "constructive" here?
+
+Everything in this repository is checked in Lean 4 over mathlib, whose ambient logic is
+**classical**: every theorem here reports `[propext, Classical.choice, Quot.sound]` under
+`#print axioms`. So in what sense is this a study of *constructive* probability?
+
+The constructive logic is the **object of study, not the reasoning tool** — exactly as a
+classical textbook proves theorems *about* intuitionistic logic (Kripke semantics, topological
+models), or Euclidean tools build models of non-Euclidean geometry. The constructive logic
+lives in the *algebra*: `Ω` is a frame (Heyting algebra), where `a ⊔ aᶜ = ⊤` genuinely fails,
+and no theorem ever assumes it holds — wherever classicality enters a statement it is an
+explicit, tracked hypothesis (on the frame, or on the element). What we prove *about* these
+objects, we prove with ordinary classical mathematics. The project's claims — the slack, the
+hinge, the representation theorems — are claims about which **object-level** principles are
+needed where, and those claims do not depend on the meta-logic used to establish them.
+
+The division is principled, and the formalization itself shows where it bites — pleasingly, at
+exactly the places the theory predicts:
+
+- **The classically-defined valuations are exactly the sharp ones.** Every valuation in this
+  development whose *definition* needs `Classical` is an indicator: the point valuations
+  `deltaPoint`, the prime-ideal indicators behind `sharp_iff_point`, the `topIndicator`, the
+  halting weights. An indicator into `[0,∞]` must *decide* membership — so the "states of
+  complete certainty" are precisely the objects a constructive meta-theory could not build.
+  Certainty is a classical luxury twice over: inside the theory (the slack vanishes only on
+  complemented elements) and above it.
+- **The hinge's hard direction is choice-powered.** `em_of_forall_hasClassicalNegation`
+  manufactures its slack-carrying counterexample via the prime-ideal separation theorem, a
+  choice principle (Zorn/BPI-strength in mathlib). The theory can *see* its own
+  non-classicality only from a classical vantage point — the same "too few points" phenomenon
+  that drives §6.5.
+- **Where the distinction has content, the code tracks it.** Counterexamples carry explicit
+  notes that they reason classically *about* the theory (`RepresentationInfinite`,
+  `SumIrreducible`, `haltingWeight`); the Cox witness's `a = ⊤` case split is a literal
+  computable constructor check (`decEqTopENNReal`); and the general decomposition
+  (`tsum_mass_le`) has a proof script with no excluded-middle case split at all.
+
+A fully constructive *meta*-theory is possible — the Coq/HoTT valuations line achieves it by
+valuing valuations in **lower reals** instead of `ℝ≥0∞` (see the comparison below) — but it
+serves a different goal (constructive measure theory). Here the goal is to *locate* the
+classicality inside probability, and a classical meta-theory is the standard, legitimate
+instrument for that — just as one classically proves that intuitionistic logic cannot derive
+excluded middle.
+
 ### Relation to prior formalizations — exactly what overlaps
 
 To be scrupulous about novelty (a reviewer will be): the **base object is prior art, including in
@@ -629,7 +679,12 @@ formalized form**, but the development built on it is not. Precisely:
   — precisely what makes the non-representable valuations (`topIndicator`) and the atomic/diffuse gap
   visible. (ii) They treat a valuation as the constructive analogue of a **measure** (their goal is
   Riesz/Fubini, the Lebesgue valuation, and a Giry-style monad for probabilistic programming); we
-  read the *same* object as **credence obtained by weakening the underlying logic**.
+  read the *same* object as **credence obtained by weakening the underlying logic**. (iii) Their
+  valuations take values in the **lower reals** — the device that makes their development
+  constructive in the *meta*-theory as well; ours take values in classical `ℝ≥0∞`, so our
+  constructivity is object-level only (no excluded middle assumed *on the frame*), not
+  meta-level. The project name should not be read as a claim of constructive meta-theory — see
+  the meta-logic note above.
 - **What is *not* formalized anywhere (the actual contribution).** The reading of the slack as the
   failure of excluded middle and its two-gap decomposition; the R3 hinge (additivity ⟺ EM); the
   constructive Cox theorem and the from-scratch Aczél/Hölder generator; the representation, mixture,

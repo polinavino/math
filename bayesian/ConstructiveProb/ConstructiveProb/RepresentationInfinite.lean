@@ -17,7 +17,10 @@ violates: `v ⊤ = 1` but `⨆ n, v (Iic n) = 0`).
 *Note on `Classical`.* Deciding `U = ⊤` for a lower set of `ℕ` is not constructive (it is a
 universal statement over `ℕ`), so the definition below uses classical logic. This is
 legitimate here: it constructs a **counterexample** — classical meta-reasoning *about* the
-theory — and does not enter the constructive positive development in `Basic`/`Representation`.
+theory — and is not needed by the positive development in `Basic`/`Representation`. (That
+development is object-level constructive — no excluded middle is assumed on the frame — but
+its indicator constructions, `Ideal.toValuation` and `deltaPoint`, likewise decide membership
+classically in the meta-logic; see the meta-logic note in the README.)
 -/
 import ConstructiveProb.Representation
 import Mathlib.Topology.Algebra.InfiniteSum.Basic

@@ -700,11 +700,24 @@ theorem constructive_cox (M : CoxModel Ω)
   intro x hx y _ hxy
   exact (ENNReal.ofReal_lt_ofReal_iff (lt_of_le_of_lt hx.1 hxy)).mpr hxy
 
+/-- Deciding `a = ⊤` in `ℝ≥0∞` really is a `WithTop` constructor check: this instance is
+**computable**. It matters for honesty: without it, the `if a = ⊤` in `coxModelENNReal` would
+elaborate through `LinearOrder.toDecidableEq` on the *noncomputable classical* order structure
+of `ℝ≥0∞`, and "the case split is a constructor check" would hold only in principle, not of the
+code as written. Local instance, so the rest of the development is unaffected. -/
+@[reducible] def decEqTopENNReal (a : ℝ≥0∞) : Decidable (a = ⊤) :=
+  a.recTopCoe (isTrue rfl) fun _ => isFalse ENNReal.coe_ne_top
+
+attribute [local instance] decEqTopENNReal
+
 /-- **The Cox axioms are not vacuous.** A witness on the *genuinely non-Boolean* chain `ℝ≥0∞`
 (the frame of `exists_positive_slack`), with plausibility `pl a _ = (if a = ⊤ then 1 else 0)`
-and multiplication as the conjunction functional. Deciding `a = ⊤` on `ℝ≥0∞` is **constructive**
-— a `WithTop` constructor check, no excluded middle — so, unlike a `Prop`-based model, this does
-not smuggle classical logic into a theory about constructive logic. `constructive_cox` thus
+and multiplication as the conjunction functional. The case split `a = ⊤` is a `WithTop`
+constructor check — the local `Decidable` instance above (`decEqTopENNReal`) makes the `if`
+below elaborate through that check rather than through the classical
+`LinearOrder.toDecidableEq` — so, unlike a `Prop`-based model, the *case split* smuggles no
+excluded middle into a theory about constructive logic. (The ambient meta-logic is still
+classical mathlib, as everywhere; the point is object-level.) `constructive_cox` thus
 quantifies over a nonempty class, guarding against the vacuity that the unrestricted
 strict-monotonicity axiom caused. -/
 noncomputable def coxModelENNReal : CoxModel ℝ≥0∞ where

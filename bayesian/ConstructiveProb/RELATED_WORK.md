@@ -115,7 +115,13 @@ center; do not present the DS/excluded-middle link as our discovery.
   against the paper): their valuations are **Scott-continuous** (ω-cpo-valued, for fixpoint
   semantics) and are used as the constructive analogue of a **measure**; we deliberately **omit
   Scott-continuity** (which is what exposes the non-representable valuations, `topIndicator`, and
-  the atomic/diffuse gap) and read the object as **logic-weakened credence**. It was **motivated by,
+  the atomic/diffuse gap) and read the object as **logic-weakened credence**. A third difference
+  a comparing reviewer will notice: their valuations take values in the **lower reals**
+  (`RlowPos`), the device that makes their development constructive at the *meta*-theory level,
+  whereas ours take values in mathlib's classical `ℝ≥0∞` — so our constructivity is object-level
+  only (no excluded middle on the frame; classical Lean meta-logic), and comparisons should not
+  read "ConstructiveProb" as a claim of constructive meta-theory. See the README's meta-logic
+  note. It was **motivated by,
   and reimplemented in HoTT to fix limitations of, the ALEA Coq library** (which uses setoids and a
   Giry-style monad on `Set` and cannot even prove the monad laws without funext) — *not* built on
   top of ALEA.
