@@ -212,11 +212,28 @@ open column). Sections: intro / valuations / R3 hinge / representation / DS (inc
 ∞-monotone + conditioning hinge) / Cox (irreducibility + corrected theorem) / bridges (GMT +
 halting guard) / engineering / related / conclusion / appendix (Aczél).
 
-**Before submission:** (1) verify every refs.bib entry against DBLP (hand-written; `sargsyan2023`
-and `faissole-spitters2017` flagged inside the file); (2) spend the headroom: more Lean listings
+**Before submission:** (1) verify every refs.bib entry against DBLP (hand-written; `sargsyan2023`,
+`faissole-spitters2017`, and the new `hempel1945` and `wolpert-kinney2024` flagged); (2) spend the headroom: more Lean listings
 (hinge proof sketch, dempsterCond, mass), possibly a figure (slack = boundary), proof sketches for
 the representation theorems; (3) abstract due Sep 3 — the paper abstract is drafted and can be
 trimmed to CFP length; (4) artifact packaging + anonymization.
+
+**Update (2026-08-08):** page-count note above is stale — build is now 12 pp total, body ≈10.5
+(ends mid-p.11), so **≈1.5 pages of true headroom** under the CPP rule (12 pp excluding refs +
+marked appendices). CFP format aligned (`\settopmatter{printfolios=true,printccs=false,printacmref=false}`).
+Intro restructured: contributions compressed to 3–4 lines each (now 8 items, mechanization last);
+raven-paradox aside added after the slack decomposition in sec-valuation; slack novelty scoped
+(term + logical reading ours, quantity = DS belief/plausibility width).
+**Classicality discussion: expand in place, no new section (decided 2026-08-13).** A planned
+"Classical Logic, Used Carefully" section was drafted then dropped: its skeleton turned out to
+already exist as sec-engineering's "Meta-logic against object logic" paragraphs (Lean classical +
+axiom footprint, classical counterexamples, choice-powered hinge, indicators, no-EM-assumed
+discipline), with the lower-reals Coq/HoTT contrast in sec-related. Overlap with the hinge
+section is thematic only (object-level vs meta-level). What remains is a TODO comment in
+sec-engineering.tex above that paragraph: (a) name the classical mathlib results consumed and
+their strength (prime ideal separation ~ BPI, classical analysis in Aczél) plus the rule for
+consuming them safely, (b) collect the non-vacuity guards in one visible place (cut from intro,
+currently piecemeal). Cost ~0.3 pp instead of 0.75.
 
 ## Sequencing note
 

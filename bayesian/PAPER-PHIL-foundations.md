@@ -283,3 +283,49 @@ State these as the horizon the thesis sits in, and explicitly defer them (each i
   under a weaker logic."
 - "If structure is primary and objects derived, credence lives on a locale — and then it is not
   additive."
+
+## 14. Worked-example candidate: noisy mathematics (Wolpert–Kinney) — added 2026-08-10
+
+**Source.** Complexity podcast ep. 94 (thermodynamics of communication) → Wolpert & Kinney,
+*Noisy Deductive Reasoning* (arXiv 2012.08298, in the FQXi *Undecidability, Uncomputability,
+and Unpredictability* volume, Springer 2021), expanded as *A Stochastic Model of Mathematics
+and Science*, Foundations of Physics 54:21 (2024), arXiv 2209.00543. Their move: theoremhood
+is governed by a probability distribution, because every physical reasoner is noisy and
+noise-free logic is thermodynamically expensive.
+
+**Three machine-checked things our framework says about that program:**
+
+1. **Theoremhood is a Σ₁/semidecidable event** — an *open* in the observational topology —
+   so the event logic of noisy mathematics is intuitionistic, not Boolean. The halting guard
+   (`sharpReadout_not_computable`) is the computability-theoretic twin of their thermodynamic
+   claim: a slack-free (classically additive) credence about a semidecidable event decides the
+   halting problem. Where they say a physical reasoner *happens* to be noisy, we say a
+   computable reasoner's credences about theoremhood *provably cannot* satisfy the complement
+   rule. If their distribution assumes P(thm φ) + P(not-thm φ) = 1, the R3 hinge says they
+   have silently assumed theoremhood is decided — false for r.e. theories. **Caveat: verify
+   against the full text before making this charge in print; the abstract does not pin down
+   their axioms.**
+
+2. **Independence bookkeeping comes for free.** ⊢φ and ⊢¬φ are both semidecidable opens,
+   disjoint by consistency, join ≠ ⊤ (incompleteness *is* failure of excluded middle in this
+   frame). Disjoint additivity gives v(⊢φ) + v(⊢¬φ) + slack = 1 with slack = credence in
+   independence / never-resolved. The binary framing conflates "not provable" with
+   "refutable"; the valuation makes independence a first-class mass carrier. Clay-problem
+   odds are three-way credences; multiple proofs = Bayesian confirmation of an open; evidence
+   for ⊢¬φ lowers Pl(⊢φ) through the pseudo-complement.
+
+3. **Their "objective distribution" speculation is our structural reading.** Slack = boundary
+   mass, a fact about the space of proof-search outcomes, no believing subject — the
+   epistemic-situation-not-agent principle. This example directly serves handoff §7.3
+   (accommodating DS/non-additive objects in the unified picture).
+
+**Optional Lean corollary** (if the example is used): a frame with two disjoint semidecidable
+generators and the three-way decomposition above, ~20 lines from `additive_of_disjoint` +
+the slack definition, natural home next to the Sierpiński model.
+
+**FM paper:** one-sentence related-work mention added to sec-related (non-Boolean paragraph),
+bib key `wolpert-kinney2024` (needs the DBLP verification pass like the rest).
+
+**Adjacent literature for Paper 2:** Garrabrant et al., *Logical Induction* (credences on
+sentences of arithmetic including undecidables) — natural comparison; our framework gives the
+logic-level explanation of why such credences must be non-classical.

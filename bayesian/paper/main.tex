@@ -8,7 +8,7 @@
 
 \documentclass[sigplan,10pt,review,anonymous]{acmart}
 
-\settopmatter{printacmref=false}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
 \setcopyright{none}
 \renewcommand\footnotetextcopyrightpermission[1]{}
 \pagestyle{plain}
@@ -122,42 +122,26 @@
 
 \begin{abstract}
 Kolmogorov's axioms fix not only an arithmetic of chance but a
-\emph{logic} of events: a Boolean algebra.  There is no intrinsic
-reason for that choice.  Different situations call for different
-logics, and quantum mechanics long ago moved probability onto
-non-Boolean event structures.  We mechanize, in Lean~4 over
-\textsf{mathlib}, what probability becomes when the event logic is
-\emph{intuitionistic}: valuations on frames (complete Heyting
-algebras), the logic of verifiable propositions.  The development is
-about 4{,}300 lines, \texttt{sorry}-free, and its landmark theorems
-depend only on the three standard axioms.
-
-Three families of machine-checked results emerge.  \emph{Hinges:}
-the classical complement rule $v(\neg A) = 1 - v(A)$ holds for every
-valuation exactly when excluded middle holds in the algebra, so all
-of probability's classicality is one axiom.  Dynamically, Dempster's
-rule of conditioning agrees with Bayesian conditioning exactly when
-the evidence satisfies excluded middle.  \emph{Representation:} on
-finite frames every valuation is a classical probability mass
-function on points seen through an interior operator.  On infinite
-frames this fails, Scott continuity restores it, and in general
-there is an unconditional atomic/diffuse decomposition.  A valuation
-is a Dempster--Shafer belief function on its Booleanization, totally
-monotone, via an inclusion--exclusion identity that holds \emph{with
-equality} for the intuitionistic join.  \emph{Guards:} a
-Sierpi\'nski-space model built from a genuine measure shows the
-theory's ``slack'' is boundary mass, and a reduction to the halting
-problem shows the slack-free classical readout of a semidecidable
-event is uncomputable: slack is the price of a computable epistemic
-state.  A machine-checked dichotomy then delimits the
-probability-monad question: product valuations are unique on chain
-products, provably non-unique on the powerset frame, where Fubini
-fails, while the countably-presented fragment composes commutatively.
-Along the way the proof assistant caught an unsatisfiable
-statement of the central Cox-style theorem and forced the
-identification of which axiom is irreducible.  The analytic core
-(Acz\'el's associativity theorem, H\"older-style) is built from
-scratch as a dyadic-limit construction absent from \textsf{mathlib}.
+\emph{logic} of events, a Boolean algebra, and quantum mechanics
+long ago showed that the logic is a modeling choice.  We mechanize,
+in Lean~4 over \textsf{mathlib}, what probability becomes when the
+event logic is \emph{intuitionistic}: valuations on frames, the
+algebras of verifiable propositions.  The complement rule
+$v(\neg A) = 1 - v(A)$ holds for every valuation exactly when
+excluded middle holds in the algebra, and Dempster conditioning
+agrees with Bayesian conditioning exactly when the evidence
+satisfies excluded middle: probability's classicality, static and
+dynamic, is one logical axiom.  On finite frames every valuation is
+a classical mass function on points, in general it splits into
+atomic and diffuse parts, and its Boolean core carries a totally
+monotone Dempster--Shafer belief function.  The ``slack'' replacing
+the complement rule is boundary mass in the measure model, and
+removing it from a semidecidable event solves the halting problem:
+slack is the price of a computable epistemic state.  A
+machine-checked dichotomy delimits the probability-monad question,
+the naive Cox statement is unsatisfiable, and the
+Acz\'el/H\"older analytic core is built from scratch, in about
+4{,}300 \texttt{sorry}-free lines.
 \end{abstract}
 
 \begin{CCSXML}

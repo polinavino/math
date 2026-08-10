@@ -3,11 +3,15 @@
 
 \subsection{The event logic}
 
-A \emph{frame} (locale) is a complete lattice in which finite meets
+A \emph{frame} is a complete lattice in which finite meets
 distribute over arbitrary joins.  Equivalently, it is a complete
 Heyting algebra.  Frames are the algebraic semantics of
 intuitionistic logic and the point-free abstraction of topological
-spaces.  The motivating example throughout is
+spaces.  The same objects with morphisms reversed form the category
+of \emph{locales}, so the distinction is invisible at the level of
+a single algebra.  We say \emph{frame} throughout and reserve
+\emph{locale} for the spatial and categorical statements (points of
+a locale, classifying locales) where that word is the standard one.  The motivating example throughout is
 $\Omega = \mathcal{O}(X)$, the opens of a space, with
 $\sqcap, \sqcup$ as intersection and union and the pseudo-complement
 $a^{\mathsf{c}}$ of an open given by the \emph{interior} of its set
@@ -118,15 +122,16 @@ conditional slack (\texttt{cond\_add\_compl\_le}).  Bayesian updating
 survives.  The assumption that $A$ and $\neg A$ exhaust the world
 does not.
 
-\paragraph{The classical fragment, a correction forced by the
-checker.}
-Where does honestly additive probability live inside $\Omega$?  The
-natural guess is the $\neg\neg$-stable (\emph{regular}) elements,
-which form a Boolean algebra by Glivenko's theorem.  The guess is
-\emph{wrong}, and the failed proof said why: the valuation's
-modularity governs the frame join $\sqcup$, while the regular
-elements' Boolean join is the regularized
-$(\cdot \sqcup \cdot)^{\mathsf{cc}}$.  A regular but uncomplemented
+\paragraph{The classical fragment.}
+We characterize the elements of $\Omega$ on which the classical
+complement rule holds.  The $\neg\neg$-stable (\emph{regular})
+elements, which form a Boolean algebra by Glivenko's theorem, are a
+natural candidate, but they do not suffice: modularity constrains
+the frame join $\sqcup$, whereas the Boolean join of regular
+elements is the regularized $(a \sqcup b)^{\mathsf{cc}}$, for which
+modularity survives only as the inequality
+$v(a) + v(b) \le v((a \sqcup b)^{\mathsf{cc}}) + v(a \sqcap b)$,
+the 2-monotonicity of Section~\ref{sec:ds}.  A regular but uncomplemented
 element (the open ray $(-\infty,0)$ in the opens of $\mathbb{R}$,
 under an atomic measure at $0$) still carries slack.  The correct
 classical fragment is the \emph{complemented} elements, where
