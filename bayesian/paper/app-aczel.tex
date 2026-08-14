@@ -6,11 +6,11 @@ product-rule half of Theorem~\ref{thm:cox}.  The body stands without
 it.  The target shape is Acz\'el's associativity
 theorem~\cite{aczel1966}: a suitably regular associative
 $F : \mathbb{R} \to \mathbb{R} \to \mathbb{R}$ regraduates to
-multiplication, $G(F\,x\,y) = G(x) \cdot G(y)$ for a strictly
-monotone $G$.  \textsf{mathlib} offers no route.  It has no
+multiplication, $G(F\,x\,y) = G(x) \cdot G(y)$ for all $x, y$ and a
+strictly monotone $G$.  \textsf{mathlib} offers no route.  It has no
 associativity representation, no H\"older-style embedding of ordered
-semigroups on intervals, and the Cauchy functional equation only
-under continuity, not monotonicity.
+semigroups on intervals, and no Cauchy functional equation under
+monotonicity (only under continuity).
 
 \paragraph{Hypotheses.}
 A \texttt{Scale} bundles: associativity of $F$, \emph{divisibility}
@@ -41,8 +41,9 @@ the coherence law that $2^\ell$ fine copies recompose one coarse
 mark.  Counting how many copies of the $n$-th root fit under $b$
 (\texttt{dcount}, well defined by the Archimedean property) gives
 dyadic approximants $g_n(b) = \mathrm{dcount}(b,n)/2^n$.  The
-refinement sandwich $2N + 1 \le N' \le 2N + 2$ makes them monotone
-and Cauchy, and the generator is their limit,
+refinement sandwich $2N + 1 \le N' \le 2N + 2$, where $N$ and $N'$
+are the counts at consecutive refinement levels $n$ and $n+1$, makes
+them monotone and Cauchy, and the generator is their limit,
 $g(b) = \bigsqcup_n g_n(b)$.
 
 \paragraph{Results (all \texttt{sorry}-free, standard axioms).}
@@ -51,16 +52,17 @@ Normalization: $g(u) = 1$.  Additivity:
 $g(F\,x\,y) = g(x) + g(y)$, by squeezing super- and sub-additive
 counting bounds ($\mathrm{dcount}\,x + \mathrm{dcount}\,y + 1 \le
 \mathrm{dcount}(F\,x\,y) \le \mathrm{dcount}\,x +
-\mathrm{dcount}\,y + 3$) against a vanishing $2^{-n}$ slack.  And
+\mathrm{dcount}\,y + 3$) against a vanishing $2^{-n}$ error term.  And
 \emph{strict} monotonicity, proved without any continuity of $g$ by
 a count-amplification argument: a shrinking root inserted between
-$x < y$ contributes a full extra block of $2^{n-M}$ copies.
+$x < y$ contributes a full extra block of $2^{n-M}$ copies, $M$
+being the refinement level of the inserted root.
 Exponentiating gives the multiplicative form, a strictly monotone
 $G$ with $G(F\,x\,y) = G(x)\,G(y)$ on the cone
 (\texttt{exists\_mul\_generator}), which is the conclusion shape of
 Acz\'el's theorem restricted to the cone
 (\texttt{aczelStatement\_cone}).  A bounded reorientation
-$\bar G = \exp(-g)$ transports it to the $[0,1]$, conjunctive
+$\bar G = \exp(-g)$ transports it to the $[0,1]$-valued conjunctive
 orientation of Section~\ref{sec:cox}.
 
 \paragraph{Honest residue.}

@@ -1,15 +1,44 @@
 \section{Where Classicality Lives: the R3 Hinge}
 \label{sec:hinge}
 
+Classicality lives at multiple levels in this work: one
+meta-theoretic, in the proof assistant itself, and one object-level,
+in the frame's own logic.
+
+\paragraph{Lean's meta-theory.}
+Lean's foundations include
+\texttt{Classical.choice}, and \textsf{mathlib} is built on it
+throughout.  For example, the order relation on 
+$\mathbb{R}$ and $\ENNReal$ has no
+computable \texttt{Decidable} instance in general, so any library
+lemma that case-splits on $x \le y$ for reals resolves that split via
+\texttt{Classical.propDecidable}. A
+formalization that never invokes excluded middle at the level of
+frame elements $a \in \Omega$ can therefore still be classical 
+through the arithmetic it borrows from the library.  We track
+this separately from object-level classicality throughout the paper.
+Theorem~\ref{thm:decomposition} of Section~\ref{sec:representation}
+rests only on this ambient baseline and contains no explicit case
+split. The Scott-continuity recovery theorem
+(Theorem~\ref{thm:recovery})
+invokes Lean's \texttt{classical} tactic directly, and the
+\texttt{CoxModel} witness of Section~\ref{sec:cox} goes the other
+way, replacing the default with an explicit computable
+\texttt{Decidable} instance to keep that one instance genuinely
+non-classical.
+
+\paragraph{Object-level classicality: the R3 axiom.}
 Van Horn's repaired Cox theorem~\cite{vanhorn2003} axiomatizes
 plausibility over classical propositions.  Its negation axiom, called
 \emph{R3}, posits that the plausibility of $\neg A$ is a fixed
 non-increasing function $S$ of the plausibility of $A$.  Consistency
-forces $S \circ S = \mathrm{id}$, an involution, and thence the
-complement rule $p \mapsto 1 - p$.  An involutive negation \emph{is}
+forces the involution $S \circ S = \mathrm{id}$, and therefore the
+complement rule $p \mapsto 1 - p$.  We show that the 
+involutive negation \emph{is}
 double-negation elimination, so R3 is where classical logic enters
-every known Cox-style derivation.  We isolate the exact content of
-R3's conclusion as a predicate on valuations and prove it equivalent
+every known Cox-style derivation.  To do this, we first 
+isolate the exact content of
+R3's conclusion as a predicate on valuations, then prove equivalence
 to excluded middle.
 
 \begin{lstlisting}
@@ -19,7 +48,7 @@ def HasClassicalNegation (v : Valuation Ω) : Prop :=
 
 \begin{theorem}[the R3 hinge]
 \label{thm:hinge}
-For a frame $\Omega$, every valuation on $\Omega$ has classical
+For every frame $\Omega$, every valuation on $\Omega$ has classical
 negation \emph{iff} $a \sqcup a^{\mathsf{c}} = \top$ for every
 $a \in \Omega$.
 \end{theorem}
@@ -42,7 +71,7 @@ is a valuation.  Modularity in the only nontrivial case ($x, y
 \Rightarrow x \in J \vee y \in J$.  And this valuation assigns
 $v(a) + v(a^{\mathsf{c}}) = 0 \neq 1$.  So the complement rule is not
 one convention among many.  Quantified over all valuations, it is a
-statement \emph{about the algebra}, and the statement is excluded
+statement \emph{about the algebra} that is equivalent to excluded
 middle.
 
 \paragraph{Sharp valuations are the points of the locale.}
@@ -52,28 +81,35 @@ state of full certainty.  Sharpness characterizes exactly the
 prime-ideal indicators:
 
 \begin{theorem}[\texttt{sharp\_iff\_point}]
-$v$ is sharp iff $v$ is the complement-indicator of a prime ideal.
-The maps are mutually inverse: the ideal recovered from $v$ is its
-zero-set, prime exactly because $v$ is sharp.
+For every valuation $v$ on a frame $\Omega$, $v$ is sharp iff $v$ is
+the complement-indicator of a prime ideal.
 \end{theorem}
 
 \noindent
-In locale-theoretic terms, the certainty limit of the probability
-theory recovers the \emph{points} of the locale, and the refinement
-to points in the spatial sense is exact as well.  A prime ideal is
+This theorem is witnessed by two mutually inverse maps: $v \mapsto Z(v) =
+\{x \in \Omega : v(x) = 0\}$, which computes the zero-set of a sharp valuation, 
+and the map taking
+$J$ to its complement-indicator (the valuation of
+Theorem~\ref{thm:hinge}'s construction).  $Z(v)$ is prime exactly
+because $v$ is sharp, and the complement-indicator of $Z(v)$
+recovers $v$ itself.  In locale-theoretic terms, sharp valuations
+recover the \emph{points} of the locale.  A prime ideal is
 \emph{completely prime} when it is also closed under arbitrary
-(not just finite) suprema of its members.
-
-\begin{theorem}[\texttt{sharp\_scott\_iff\_\allowbreak completelyPrimePoint}]
-$v$ is sharp and Scott-continuous iff $v$ is the complement-indicator
-of a completely prime ideal.
-\end{theorem}
-
-\noindent
-So the finitely prime points of \texttt{sharp\_iff\_point} sharpen to
+(not just finite) suprema of its members. 
+The finitely prime points 
+of \texttt{sharp\_iff\_point} sharpen to
 the completely prime points exactly where Scott continuity is added,
 recovering points of the locale in the sense used
-by~\cite{vickers2008,coquand-spitters2009}.  The hinge and the two
-correspondences together are the paper's static answer to ``where
-does classicality live'': in one axiom, whose semantic shadow is
-point-hood.
+by~\cite{vickers2008,coquand-spitters2009}:
+
+\begin{theorem}[\texttt{sharp\_scott\_iff\_\allowbreak completelyPrimePoint}]
+For every valuation $v$ on a frame $\Omega$, $v$ is sharp and
+Scott-continuous iff $v$ is the complement-indicator of a completely
+prime ideal.
+\end{theorem}
+
+\noindent  The hinge and the two
+correspondences together answer the question ``where
+does classicality live'': whenever
+excluded middle fails at some $a$, the failure is witnessed by a
+point of the locale.

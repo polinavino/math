@@ -17,7 +17,7 @@ Our valuations are the quantitative face of that translation:
 Let $\mu$ be a probability measure on a space $X$.  Then
 $U \mapsto \mu(U)$ on the frame $\mathcal{O}(X)$ is a valuation.
 Equivalently, $v = \mu \circ \mathrm{int}$ as a function of arbitrary
-sets, that is, $v(A) = P(\Box A)$.
+sets, that is, $v(A) = \mu(\Box A)$.
 \end{theorem}
 
 \noindent
@@ -27,7 +27,8 @@ The slack of an open $U$ is then $1 - \mu(U) -
 boundary $\partial U$.  \emph{Slack is boundary mass}, and now
 provably so in general:
 
-\begin{theorem}[\texttt{Measure.\allowbreak toValuationOpens\_slack\_eq\_frontier}]
+\begin{theorem}\strut\\
+{\upshape(\texttt{Measure.toValuationOpens\_slack\_eq\_frontier})}\\
 For any probability measure $\mu$ on a topological space $X$ and any
 open $U$, $\slack(U) = \mu(\partial U)$.
 \end{theorem}
@@ -49,6 +50,20 @@ $\Bel = P(\Box\,\cdot)$ of the DS literature~\cite{ruspini1986}
 arising from the logic itself.  Theorem~\ref{thm:finite-rep} is the
 converse in the finite case, and the general converse is the open
 frontier of Section~\ref{sec:representation}.
+
+\begin{remark}[\texttt{isDeMorgan\_opens\_iff\_\allowbreak
+extremallyDisconnected}]
+Section~\ref{sec:valuation} noted that imposing weak excluded middle
+on the whole frame collapses slack to pure double-negation
+instability.  For $\Omega = \mathcal{O}(X)$ this global condition is
+not abstract: it holds exactly when $X$ is
+\emph{extremally disconnected}, meaning the closure of every open
+set is already open.  These are the Stonean spaces (Stone--\v{C}ech
+remainders, Stone spaces of complete Boolean algebras).  As before,
+this is a parallel development and an obvious complement to the
+fully constructive theory the paper builds on $\mathcal{O}(X)$.  No
+other result here assumes it.
+\end{remark}
 
 \subsection{The computability guard}
 
@@ -82,14 +97,14 @@ fact.  The family is classically well defined, but no algorithm can
 read it off:
 
 \begin{theorem}[\texttt{sharpReadout\_not\_computable}]
-Deciding whether the sharp classical readout assigns belief $1$ to
+Deciding whether the sharp classical readout assigns weight $1$ to
 the halting event is exactly the halting problem, hence not
 computable (\texttt{ComputablePred.\allowbreak halting\_problem}).
 \end{theorem}
 
 \noindent
 Any axiom strong enough to force classical collapse therefore demands
-of its models an uncomputable epistemic state.  Slack is not a defect
+of its models a state that cannot be computed.  Slack is not a defect
 the constructive theory should apologize for.  It is the price of a
 computable one.  This guard plays for the sum rule the role the
 explicit \texttt{CoxModel} instance plays for the product rule

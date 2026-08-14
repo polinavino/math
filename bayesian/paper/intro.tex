@@ -7,7 +7,7 @@ specify an arithmetic of chance (non-negativity, normalization,
 additivity). Beneath that arithmetic sits a logic: the events
 form a Boolean $\sigma$-algebra, closed under complement and
 satisfying excluded middle.  The complement rule,
-$P(\neg A) = 1 - P(A)$, is where the two layers touch.  It is an
+$P(A^{\mathsf{c}}) = 1 - P(A)$, is where the two layers touch.  It is an
 arithmetical equation about a logical operation, obeyed by
 every assignment of degrees of certainty. In the limiting case 
 of all-or-nothing probabilities, it becomes
@@ -27,19 +27,20 @@ certainty over a space of propositions, then the logic of those
 propositions is a \emph{parameter} of the theory, and Kolmogorov's
 calculus is the value of that parameter at Boolean logic.
 
-This is not a speculative proposal, because physics has already
-forced the move once.  Quantum probability lives on orthomodular
+Physics has already
+introduced a use case for a logic not based in Boolean algebra.  
+Quantum probability lives on orthomodular
 lattices of projections rather than Boolean
-algebras~\cite{birkhoff-vonneumann1936}, and Gleason's
-theorem~\cite{gleason1957} plays the
-role there that this paper's representation theorems play here:
-it identifies the states compatible with the event logic.  Nobody
-concludes that quantum probability is ``not really probability.''
-The conclusion is that the Boolean substrate was a modeling choice.
-Our question is what happens at a different value of the same 
-parameter, motivated by the logic used to reason about computation:
-what does probability become when the logic of events is
-\emph{intuitionistic}?
+algebras~\cite{birkhoff-vonneumann1936}. Gleason's
+theorem~\cite{gleason1957} does for quantum probability what this
+paper's representation theorems do here: it identifies the states
+compatible with the event logic.
+It seems natural to conclude that the Boolean substrate 
+is a modeling choice.
+In this work, investigate what happens when we change this
+parameter. Specifically, we ask
+"what does probability become when the logic of events is
+\emph{intuitionistic}?".
 
 Intuitionistic logic is the natural first non-Boolean instance to 
 study using the proofs-as-programs paradigm. 
@@ -63,14 +64,16 @@ The choice of logic fixes the event algebra.  What remains is to
 fix the arithmetic on top of it, keeping only the axioms that can
 be stated without a complement.
 A \emph{valuation} on a frame $\Omega$ is a monotone, normalized,
-modular map $v : \Omega \to \ENNReal$.  Modularity is inclusion--exclusion,
-$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, and no axiom mentions
-complement.  In a Heyting algebra the pseudo-complement satisfies
-$a \sqcap \neg a = \bot$ but not, in general,
-$a \sqcup \neg a = \top$.  The complement rule therefore degrades
-to a derived \emph{inequality} $v(a) + v(\neg a) \le 1$, with a gap
+modular map $v : \Omega \to \ENNReal$.  For $v$, modularity means
+inclusion--exclusion,
+$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, and no axiom mentions a
+complement.  In a Heyting algebra the pseudo-complement $a^{\mathsf{c}}$
+satisfies
+$a \sqcap a^{\mathsf{c}} = \bot$ but not, in general,
+$a \sqcup a^{\mathsf{c}} = \top$.  The complement rule therefore degrades
+to a derived \emph{inequality} $v(a) + v(a^{\mathsf{c}}) \le 1$, with a gap
 \[
-  \slack(a) \;=\; 1 - v(a) - v(\neg a)
+  \slack(a) \;=\; 1 - v(a) - v(a^{\mathsf{c}})
 \]
 measuring exactly the valuation of the region where excluded middle
 fails for $a$.  The term \emph{slack}, and this logical reading,
@@ -92,13 +95,13 @@ The statistical \emph{operations} are logic-uniform.  The
 conditional is still $v(a \sqcap b)/v(b)$, and the product rule and
 Bayes symmetry hold verbatim.  What varies is the set of
 \emph{identities} those operations satisfy, and with it the licensed
-computations.  The classical case split over $\{A, \neg A\}$, and
+computations.  The classical case split over $\{A, A^{\mathsf{c}}\}$, and
 with it the usual denominator of Bayes' theorem
-$P(B) = P(B \mid A)\,P(A) + P(B \mid \neg A)\,P(\neg A)$, degrades to
+$P(B) = P(B \mid A)\,P(A) + P(B \mid A^{\mathsf{c}})\,P(A^{\mathsf{c}})$, degrades to
 a lower bound whose deficit is a conditional slack.  Marginalization
 is exact only over \emph{genuine} partitions, families that
 actually join to $\top$.  The complement trick
-$P(A) = 1 - P(\neg A)$ degrades to the interval
+$P(A) = 1 - P(A^{\mathsf{c}})$ degrades to the interval
 $[\,v(A),\, 1 - v(A^{\mathsf{c}})\,]$ of width $\slack(A)$, so point
 statistics becomes interval statistics exactly on the events the
 logic leaves undecided, and collapses back to points on complemented
@@ -108,7 +111,8 @@ posteriors from the same evidence unless its slack vanishes.
 
 The choice of logic changes the
 query being answered: the value of an event $A$ is $P(\Box A)$,
-i.e. the probability of its verifiable part. 
+where $\Box A$ is the interior of $A$, i.e. the probability of its
+verifiable part.
 In the measure model, slack is boundary mass, so a nonatomic
 distribution queried on intervals behaves entirely classically,
 since an interval's boundary is two points, which carry no mass.
@@ -117,7 +121,7 @@ boundaries and at semidecidable hypotheses.
 
 A theory this close to excluded middle must be developed with
 unusual care, because classicality is easy to smuggle in: a single
-informal case split over $\{A, \neg A\}$ silently decides an
+informal case split over $\{A, A^{\mathsf{c}}\}$ silently decides an
 undecidable event.  The risk is documented even classically, as
 Cox's original theorem required repair after Halpern's
 counterexample~\cite{cox1946,halpern1999,vanhorn2003}, and the
@@ -133,6 +137,15 @@ Every appearance of classical logic in this work, including at the
 meta-theory level, is tracked and justified at the point it is
 used, as with the computable \texttt{Decidable} instance behind the
 \texttt{CoxModel} non-vacuity witness of Section~\ref{sec:cox}.
+
+Full excluded middle is not the only stop between plain
+intuitionistic logic and Boolean logic. Asking what changes at
+an intermediate stop is a natural companion question to our main
+inquiry into intuitionistic probability.  Weak excluded middle,
+$a^{\mathsf{cc}} \sqcup a^{\mathsf{c}} = \top$, is one such case. Using
+our valuation machinery, we can demonstrate that slack collapses
+to the regularity defect alone under exactly this condition, dropping
+the independent De~Morgan gap.
 
 \paragraph{Contributions.} Our contributions are as follows:
 
@@ -167,6 +180,11 @@ used, as with the computable \texttt{Decidable} instance behind the
   Product valuations are unique on chain products and provably
   non-unique on the powerset frame, where Fubini fails.  The
   countable fragment composes associatively and commutatively;
+
+\item \textbf{Weak excluded middle.}
+  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  The global weak
+  excluded middle condition is exactly extremal disconnectedness, the class of
+  Stonean spaces;
 
 \item \textbf{Mechanization}.
   Everything above is mechanized in Lean~4

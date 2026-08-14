@@ -127,28 +127,30 @@
 \affiliation{\institution{Anonymous Institution}\city{}\country{}}
 
 \begin{abstract}
-Kolmogorov's probability is defined within a classical logic framework.
-Classical logic can also be derived from its axioms when 
-reasoning about events that are certain. Quantum
-mechanics has showed that this logical substrate is just 
+Kolmogorov's probability is defined within a classical logic
+framework, whose complement rule becomes equivalent to the law of
+excluded middle in the limiting case of certainty. Quantum
+mechanics has shown that this logical substrate is just
 one of many possible logical modeling choices.  We mechanize,
 in Lean~4 over \textsf{mathlib}, what probability becomes when the
 event logic is \emph{intuitionistic}: valuations on frames, the
 algebras of verifiable propositions.  Two hinges anchor the development:
 (1) the complement rule
-$v(\neg A) = 1 - v(A)$ holds for every valuation exactly when the
+$v(A^{\mathsf{c}}) = 1 - v(A)$ holds for every valuation exactly when the
 algebra satisfies excluded middle, and (2) Dempster conditioning agrees
-with Bayesian conditioning exactly when the evidence does.
+with Bayesian conditioning at a piece of evidence exactly when that
+evidence carries zero slack.
 On finite frames, every valuation is
-a classical mass function on points. In general, it splits into
-atomic and diffuse parts, and its Boolean core carries a totally
-monotone Dempster--Shafer belief function.  The ``slack'' replacing
-the complement rule is boundary mass in the measure model, and
-removing it from a semidecidable event forces the halting problem
-to be solvable.  We further prove a dichotomy delimiting the probability-monad
-question, show that the naive transcription of Cox's theorem is
-unsatisfiable, and build the Acz\'el/H\"older analytic core from
-scratch.  
+a classical mass function on points. In the general case, valuation splits into
+atomic and diffuse parts. Its Boolean core carries a totally
+monotone Dempster--Shafer belief function.  
+We define slack as the mass that escapes point-valued certainty: it
+is boundary mass in the measure model. On a semidecidable event,
+forcing it to zero is exactly as hard as solving the halting
+problem.  We further prove a dichotomy settling where the
+probability monad exists and where it fails, show that the naive
+transcription of Cox's theorem is unsatisfiable, and build the
+Acz\'el/H\"older analytic core from scratch.
 \end{abstract}
 
 \begin{CCSXML}
