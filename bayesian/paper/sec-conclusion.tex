@@ -37,8 +37,11 @@ Within a fixed doctrine the connection to the categorical picture is
 concrete.  Pushforward along frame homomorphisms preserves all four
 valuation axioms, making $\mathrm{Val}(-)$ a functor on locales, the
 localic face of the functor part of the Giry
-monad~\cite{giry1982}.  This is a routine verification that we state
-but have not mechanized.  The point valuations $\delta_p$ of
+monad~\cite{giry1982}.  This is now mechanized end to end
+(\texttt{Valuation.comap} builds the pushforward, and
+\texttt{comap\_id}/\texttt{comap\_comp} check the two functor laws
+against identity and composition of frame homomorphisms).  The
+point valuations $\delta_p$ of
 Section~\ref{sec:representation} are the evident unit (these
 \emph{are} formalized), and Theorem~\ref{thm:finite-rep} shows that
 on finite frames $\mathrm{Val}$ agrees, on objects, with the
@@ -82,7 +85,7 @@ $\mathcal{U}$ on $\mathbb{N}$, the two iteration orders of its
 tensor with itself and its diagonal pushforward all carry identical
 values on \emph{every} rectangle, yet they differ on the upper
 triangle $\{(m, m') \mid m < m'\}$
-(\texttt{product\_valuation\_not\_unique}).  In particular the two
+(\texttt{product\_valuation\_not\_\allowbreak unique}).  In particular the two
 orders of iterated integration of the same marginal data disagree:
 \emph{Fubini fails}, concretely
 (\texttt{fubini\_fails\_for\_valuations}).  Compare the Fubini

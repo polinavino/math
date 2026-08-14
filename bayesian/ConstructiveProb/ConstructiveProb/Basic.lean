@@ -840,6 +840,26 @@ theorem interiorMeasure_add_compl_le (μ : Measure X) [IsProbabilityMeasure μ] 
   rw [← measure_union hdisj isOpen_interior.measurableSet]
   exact le_trans (measure_mono (Set.subset_univ _)) measure_univ.le
 
+/-- **Slack is boundary mass, in general (proved).** For any probability measure `μ` and
+any open `U`, the slack of the GMT valuation at `U` is exactly the `μ`-measure of the
+topological frontier of `U`. The Heyting complement of `U` in `Opens X` is the interior of
+its set complement, so the undecided region — the complement of `U ⊔ Uᶜ` — is
+`closure U \ U = ∂U`. This upgrades the Sierpiński instance (`slack_eq_boundary`) to every
+topological model: the Dempster–Shafer "ignorance" at `U` is the measure of the frontier
+where a finite-precision observer can never decide membership. -/
+theorem toValuationOpens_slack_eq_frontier (μ : Measure X) [IsProbabilityMeasure μ]
+    (U : Opens X) :
+    μ.toValuationOpens.slack U = μ (frontier (U : Set X)) := by
+  have hUm : MeasurableSet (U : Set X) := U.isOpen.measurableSet
+  have hIm : MeasurableSet (interior ((U : Set X)ᶜ)) := isOpen_interior.measurableSet
+  have hcoe : ((U ⊔ Uᶜ : Opens X) : Set X) = (U : Set X) ∪ interior ((U : Set X)ᶜ) := by
+    rw [Opens.coe_sup, Opens.coe_compl_eq_interior_compl]
+  have hfront : ((U : Set X) ∪ interior ((U : Set X)ᶜ))ᶜ = frontier (U : Set X) := by
+    rw [interior_compl, Set.compl_union, compl_compl, Set.inter_comm, ← Set.sdiff_eq,
+      ← U.isOpen.frontier_eq]
+  rw [Valuation.slack_eq_one_sub_sup, Measure.toValuationOpens_apply, hcoe, ← hfront,
+    measure_compl (hUm.union hIm) (measure_ne_top μ _), measure_univ]
+
 end GMT
 
 end ConstructiveProb

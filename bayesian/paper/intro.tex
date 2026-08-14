@@ -129,8 +129,10 @@ is not merely unprovable but
 irreducible: a disjunction's value is provably not a function of
 the values of its disjuncts, so
 modularity must be posited rather than derived.
-Section~\ref{sec:engineering} justifies each appearance of
-classical logic in this work, including at the meta-theory level.
+Every appearance of classical logic in this work, including at the
+meta-theory level, is tracked and justified at the point it is
+used, as with the computable \texttt{Decidable} instance behind the
+\texttt{CoxModel} non-vacuity witness of Section~\ref{sec:cox}.
 
 \paragraph{Contributions.} Our contributions are as follows:
 
@@ -166,9 +168,9 @@ classical logic in this work, including at the meta-theory level.
   non-unique on the powerset frame, where Fubini fails.  The
   countable fragment composes associatively and commutatively;
 
-\item \textbf{Mechanization} (Section~\ref{sec:engineering}).
-  Everything above is mechanized in (Lean~4
-  using \textsf{mathlib}), and is (to our knowledge) the first
+\item \textbf{Mechanization}.
+  Everything above is mechanized in Lean~4
+  using \textsf{mathlib}, and is (to our knowledge) the first
   mechanization of non-additive probability over intuitionistic
   logic.
 \end{enumerate}

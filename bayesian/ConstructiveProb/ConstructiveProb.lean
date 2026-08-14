@@ -13,3 +13,4 @@ import ConstructiveProb.Sierpinski
 import ConstructiveProb.ProductRigidity
 import ConstructiveProb.CountableMix
 import ConstructiveProb.ProductFreedom
+import ConstructiveProb.Points

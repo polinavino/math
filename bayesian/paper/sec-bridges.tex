@@ -24,11 +24,23 @@ sets, that is, $v(A) = P(\Box A)$.
 Modularity is $\mu(U \cup V) + \mu(U \cap V) = \mu(U) + \mu(V)$.
 The slack of an open $U$ is then $1 - \mu(U) -
 \mu(\mathrm{int}\,U^{\complement})$, which is the measure of the
-boundary $\partial U$.  \emph{Slack is boundary mass.}  (The general
-boundary identity is elementary measure theory.  The development
-proves the complement sub-additivity inequality in general,
-\texttt{interiorMeasure\_add\_compl\_le}, and mechanizes the boundary
-identity end to end in the Sierpi\'nski model below.)  The DS
+boundary $\partial U$.  \emph{Slack is boundary mass}, and now
+provably so in general:
+
+\begin{theorem}[\texttt{Measure.\allowbreak toValuationOpens\_slack\_eq\_frontier}]
+For any probability measure $\mu$ on a topological space $X$ and any
+open $U$, $\slack(U) = \mu(\partial U)$.
+\end{theorem}
+
+\noindent
+The Heyting complement of $U$ in $\mathcal{O}(X)$ is the interior of
+its set complement, so the undecided region, the complement of
+$U \sqcup U^{\mathsf{c}}$, is exactly
+$\overline{U} \setminus U = \partial U$.  The development also keeps
+the weaker complement sub-additivity inequality
+(\texttt{interiorMeasure\_add\_\allowbreak compl\_le}), and the Sierpi\'nski
+model below instantiates the identity in the specific case that
+isolates the halting problem.  The DS
 ``ignorance'' of Section~\ref{sec:ds} is, in this model, the measure
 charged to the frontier where a finite-precision observer can never
 decide membership, a structural quantity with no epistemic subject.
@@ -72,7 +84,7 @@ read it off:
 \begin{theorem}[\texttt{sharpReadout\_not\_computable}]
 Deciding whether the sharp classical readout assigns belief $1$ to
 the halting event is exactly the halting problem, hence not
-computable (\texttt{ComputablePred.halting\_problem}).
+computable (\texttt{ComputablePred.\allowbreak halting\_problem}).
 \end{theorem}
 
 \noindent

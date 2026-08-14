@@ -8,9 +8,14 @@ in general the former, with Scott continuity marking the boundary.
 \subsection{Finite frames: every valuation is a PMF on points}
 
 Every finite frame is the lattice of \emph{lower sets} of a finite
-poset $P$, by Birkhoff duality.  We work with \texttt{LowerSet P}
-directly and cite the duality rather than mechanize it.  Define the
-\emph{mass} of a point as the discrete derivative of $v$:
+poset $P$, by Birkhoff duality
+(\texttt{OrderIso.lowerSetSupIrred} in \textsf{mathlib}, taking $P$
+to be the sup-irreducible elements of the frame).  We transport the
+finite representation theorem below across this isomorphism rather
+than restate it for an arbitrary finite frame directly
+(\texttt{Valuation.\allowbreak exists\_pmf\_presentation}), so the reduction to
+\texttt{LowerSet P} is itself mechanized, not merely cited.  Define
+the \emph{mass} of a point as the discrete derivative of $v$:
 \begin{lstlisting}
 def Valuation.mass (v : Valuation (LowerSet P)) (p : P) :
     ℝ≥0∞ := v (LowerSet.Iic p) - v (LowerSet.Iio p)
@@ -63,7 +68,7 @@ Both halves of the finite theorem fail at the first infinite frame,
 and the failure is informative.
 
 \begin{theorem}[obstruction,
-  \texttt{exists\_valuation\_not\_point\_representable}]
+  \texttt{exists\_valuation\_not\_\allowbreak point\_representable}]
 \label{thm:obstruction}
 On $\mathrm{Low}(\mathbb{N})$, the indicator of $\top$ is a valuation
 with $\mathrm{mass}(p) = 0$ at every point yet $v(\top) = 1$.  The
@@ -104,9 +109,9 @@ Scott cases are the purely atomic extreme, and the $\top$-indicator
 is the purely diffuse one.  The proof of
 Theorem~\ref{thm:decomposition} re-runs the maximal-point peel over
 arbitrary finite subsets, bounded by the whole, and passes to the
-supremum.  Its proof script makes no excluded-middle case split.
-Classicality enters only through \textsf{mathlib}'s baseline
-(Section~\ref{sec:engineering}).  Representing the diffuse part on
+supremum.  Its proof script makes no excluded-middle case split,
+with classicality entering only through \textsf{mathlib}'s baseline.
+Representing the diffuse part on
 non-spatial frames, where, tellingly, the obstruction is \emph{too
 few points}, the same phenomenon as undecidability in
 Section~\ref{sec:bridges}, is the open frontier

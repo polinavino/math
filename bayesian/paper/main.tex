@@ -104,6 +104,12 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
+% amsthm wraps the theorem-name argument in \mbox by default, which makes
+% it unbreakable and lets long \texttt{} identifiers overflow the narrow
+% two-column width even with \allowbreak inserted.  Drop the \mbox so the
+% note breaks like ordinary text.
+\renewcommand{\thmnote}[1]{\normalfont #1}
+
 \emergencystretch=3em
 
 % Shorthands
@@ -121,27 +127,28 @@
 \affiliation{\institution{Anonymous Institution}\city{}\country{}}
 
 \begin{abstract}
-Kolmogorov's axioms fix not only an arithmetic of chance but a
-\emph{logic} of events, a Boolean algebra, and quantum mechanics
-long ago showed that the logic is a modeling choice.  We mechanize,
+Kolmogorov's probability is defined within a classical logic framework.
+Classical logic can also be derived from its axioms when 
+reasoning about events that are certain. Quantum
+mechanics has showed that this logical substrate is just 
+one of many possible logical modeling choices.  We mechanize,
 in Lean~4 over \textsf{mathlib}, what probability becomes when the
 event logic is \emph{intuitionistic}: valuations on frames, the
-algebras of verifiable propositions.  The complement rule
-$v(\neg A) = 1 - v(A)$ holds for every valuation exactly when
-excluded middle holds in the algebra, and Dempster conditioning
-agrees with Bayesian conditioning exactly when the evidence
-satisfies excluded middle: probability's classicality, static and
-dynamic, is one logical axiom.  On finite frames every valuation is
-a classical mass function on points, in general it splits into
+algebras of verifiable propositions.  Two hinges anchor the development:
+(1) the complement rule
+$v(\neg A) = 1 - v(A)$ holds for every valuation exactly when the
+algebra satisfies excluded middle, and (2) Dempster conditioning agrees
+with Bayesian conditioning exactly when the evidence does.
+On finite frames, every valuation is
+a classical mass function on points. In general, it splits into
 atomic and diffuse parts, and its Boolean core carries a totally
 monotone Dempster--Shafer belief function.  The ``slack'' replacing
 the complement rule is boundary mass in the measure model, and
-removing it from a semidecidable event solves the halting problem:
-slack is the price of a computable epistemic state.  A
-machine-checked dichotomy delimits the probability-monad question,
-the naive Cox statement is unsatisfiable, and the
-Acz\'el/H\"older analytic core is built from scratch, in about
-4{,}300 \texttt{sorry}-free lines.
+removing it from a semidecidable event forces the halting problem
+to be solvable.  We further prove a dichotomy delimiting the probability-monad
+question, show that the naive transcription of Cox's theorem is
+unsatisfiable, and build the Acz\'el/H\"older analytic core from
+scratch.  
 \end{abstract}
 
 \begin{CCSXML}
@@ -178,7 +185,6 @@ functions, locales, Lean, mathlib, formalized mathematics}
 \input{sec-ds}
 \input{sec-cox}
 \input{sec-bridges}
-\input{sec-engineering}
 \input{sec-related}
 \input{sec-conclusion}
 
