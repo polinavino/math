@@ -42,68 +42,46 @@ All claims are mechanized in Rocq.
 \begin{enumerate}
 
 \item \textbf{A structural diagnostic for the internal Löb rule}
-(Section~\ref{sec:imp-vs-lam}).  Recursive Hoare-style rules come in
-two kinds, distinguished by the \emph{recursion locus} of the
-soundness predicate.  For the IMP \texttt{while} rule
-(Section~\ref{sec:imp}), the soundness predicate is recursive only in
-the step index. Outer induction on $n$ and an appeal to the internal
-Löb rule produce structurally identical proofs, and we mechanize
-both (\texttt{hoare\_while}, \texttt{hoare\_while\_iLob}).  For the
-\texttt{fix} rule of an untyped $\lambda$-calculus
-(Section~\ref{sec:lam}), the soundness predicate is recursive in
-the program itself. Meta-level induction on $n$ remains available
-but no longer plays to the predicate's structure, while internal
-Löb does.  This articulation does not, to our knowledge, appear in
-either the synthetic guarded domain theory literature or in the Iris
-literature, where internal Löb is heavily used but the question of
-when it is essential is not explicitly diagnosed.
+(Section~\ref{sec:imp-vs-lam}).  Recursive Hoare-style rules split by
+the \emph{recursion locus} of the soundness predicate.  For IMP's
+\texttt{while} it recurses only in the step index, where outer
+induction on $n$ and internal Löb give structurally identical proofs
+(\texttt{hoare\_while}, \texttt{hoare\_while\_iLob}).  For \texttt{fix}
+it recurses in the program itself, where only internal Löb plays to
+that structure.
 
 \item \textbf{A characterization of L\"ob's rule by well-foundedness}
 (Section~\ref{sec:lob-essential}).  In any forcing-style pre-structure
-satisfying the order-theoretic axioms of our abstract framework,
-L\"ob's rule holds for every iProp iff the strict refinement relation
-is well-founded.  The forward direction is the standard
-well-founded-induction proof, replayed in the pre-structure. The
+satisfying our order-theoretic axioms, L\"ob's rule holds for every
+iProp iff the strict refinement relation is well-founded.  The
 backward direction uses the \emph{forcing-accessibility} predicate
 $\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$ as an
-internal iProp witness whose L\"ob premise is forced everywhere, so a
-universal L\"ob assumption forces every condition to be accessible.
-A concrete would-be forcing structure over $\mathbb{Z}$ where every
-iProp construction goes through but L\"ob's rule fails on $\bot$
-realises one direction constructively.  This is a step-indexed Hoare
-logic counterpart of a classical fact about G\"odel--L\"ob modal
-logic~\cite{smorynski1985,boolos1993} that, in the iff form stated and
-mechanized in the verification setting, does not appear in the
-literature we surveyed.  Methodologically, the well-foundedness of
-the forcing notion is constitutive of the modal logic, not a
-presentation choice that can be lifted away by a clever recursion on
-rank.
+internal iProp witness forced everywhere, and a $\mathbb{Z}$ instance
+where L\"ob fails on $\bot$ realises the other direction. This iff, a
+step-indexed counterpart of a classical Gödel--Löb
+fact~\cite{smorynski1985,boolos1993}, does not appear in the
+verification literature we surveyed.
 
 \item \textbf{A mechanized forcing-style re-presentation of
-step-indexed Hoare logic} (Sections~\ref{sec:prop}--\ref{sec:lam}),
-together with an \textbf{abstract forcing framework parametric in
-the forcing notion} (Section~\ref{sec:abstract}).  The abstract
-framework instantiates at $(\omega, \le)$ to recover the standard
-step-indexed semantics, at the pointwise product to demonstrate
-genericity, and at the lexicographic $\omega^2$ of transfinite
+step-indexed Hoare logic} (Sections~\ref{sec:prop}--\ref{sec:lam})
+with an \textbf{abstract framework parametric in the forcing notion}
+(Section~\ref{sec:abstract}), instantiated at $(\omega, \le)$, the
+pointwise product, and the lexicographic $\omega^2$ of transfinite
 step-indexing~\cite{svendsen2016transfinite,spies2021transfinite},
 which a mechanized propositional sentence \emph{separates} from
-$\omega$ (iterated later exhausts at $\omega$, not at $\omega^2$).
-Löb's rule, in the abstract setting, is proved by
-\texttt{well\_founded\_ind} on the strict refinement relation, making
-precise the equivalence between the internal Löb rule and
-well-founded induction on the forcing order.
+$\omega$.  Löb's rule is proved uniformly by
+\texttt{well\_founded\_ind} on the strict refinement relation.
 
 \item \textbf{The propositional fragment of the
 Jaber--Tabareau--Sozeau forcing translation of
 CIC~\cite{jaber-tabareau-sozeau-2012}, mechanized}
-(Appendix~\ref{sec:bridge}).  We write the JTS translation as a
-standalone syntactic \texttt{Fixpoint} on a deep-embedded language
-with $\triangleright$ and prove a factorization theorem: over an
-\emph{arbitrary} forcing structure it coincides pointwise with the
-framework's semantics (\texttt{jts\_is\_interp}), and L\"ob's rule
-holds of the translated formulas (\texttt{jts\_Lob}).  The
-\emph{term-level} translation of full CIC remains future work.
+(Appendix~\ref{sec:bridge}).  We give it as a standalone
+\texttt{Fixpoint} on a deep-embedded language with $\triangleright$
+and prove that over an \emph{arbitrary} forcing structure it
+coincides pointwise with the framework's semantics
+(\texttt{jts\_is\_interp}) and validates L\"ob's rule
+(\texttt{jts\_Lob}).  The \emph{term-level} translation of full CIC
+remains future work.
 
 \end{enumerate}
 

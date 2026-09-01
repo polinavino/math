@@ -1,4 +1,4 @@
-\section{Where Classicality Lives: the R3 Hinge}
+\section{Where Classicality Lives}
 \label{sec:hinge}
 
 Classicality lives at multiple levels in this work: one
@@ -46,7 +46,7 @@ def HasClassicalNegation (v : Valuation Ω) : Prop :=
   ∀ a, v a + v aᶜ = 1
 \end{lstlisting}
 
-\begin{theorem}[the R3 hinge]
+\begin{theorem}[the R3 characterization]
 \label{thm:hinge}
 For every frame $\Omega$, every valuation on $\Omega$ has classical
 negation \emph{iff} $a \sqcup a^{\mathsf{c}} = \top$ for every
@@ -58,9 +58,16 @@ calculation.  The content is the converse
 (\texttt{em\_of\_forall\_\allowbreak hasClassicalNegation}): wherever excluded
 middle fails, a valuation with genuine slack must be
 \emph{manufactured}.  Suppose $a \sqcup a^{\mathsf{c}} \neq \top$.
+
+\begin{definition}[ideal, prime ideal]
+An \emph{ideal} $J \subseteq \Omega$ is downward closed and closed
+under finite joins.  $J$ is \emph{prime} if $\top \notin J$ and
+$a \sqcap b \in J$ implies $a \in J$ or $b \in J$.
+\end{definition}
+
 The prime ideal separation theorem
 (\textsf{mathlib}'s \texttt{DistribLattice.\allowbreak prime\_ideal\_of\_%
-disjoint\_filter\_ideal}) yields a prime ideal $J$ containing
+\allowbreak disjoint\_filter\_ideal}) yields a prime ideal $J$ containing
 $a \sqcup a^{\mathsf{c}}$ but not $\top$.  The indicator of $J$'s
 complement,
 \[
@@ -108,7 +115,7 @@ Scott-continuous iff $v$ is the complement-indicator of a completely
 prime ideal.
 \end{theorem}
 
-\noindent  The hinge and the two
+\noindent  The characterization and the two
 correspondences together answer the question ``where
 does classicality live'': whenever
 excluded middle fails at some $a$, the failure is witnessed by a

@@ -1,11 +1,21 @@
 \section{Valuations on Frames}
 \label{sec:valuation}
 
-\subsection{The event logic}
+\subsection{The Event Logic}
 
-A \emph{frame} is a complete lattice in which finite meets
-distribute over arbitrary joins.  Equivalently, it is a complete
-Heyting algebra.  Frames are the algebraic semantics of
+\begin{definition}[frame]
+A \emph{frame} is a complete lattice $\Omega$ in which finite meets
+distribute over arbitrary joins,
+\[
+  a \sqcap \Bigl(\bigsqcup_{i \in I} b_i\Bigr)
+  \;=\; \bigsqcup_{i \in I} (a \sqcap b_i)
+\]
+for every $a \in \Omega$ and every family $\{b_i\}_{i \in I}
+\subseteq \Omega$.  Equivalently, it is a complete Heyting algebra.
+\end{definition}
+
+\noindent
+Frames are the algebraic semantics of
 intuitionistic logic and the point-free abstraction of topological
 spaces.  The same objects with morphisms reversed form the category
 of \emph{locales}, so the distinction is invisible at the level of
@@ -24,17 +34,17 @@ algebras.  An element with $a \sqcup a^{\mathsf{c}} = \top$ is
 \emph{complemented}: it satisfies its own instance of excluded
 middle.
 
-\subsection{The valuation structure}
+\subsection{The Valuation Structure}
 
 The central object assigns a degree of certainty to each element of
 the frame, with inclusion--exclusion as the only interaction axiom:
 
 \begin{definition}[\texttt{Valuation}]
 \label{def:valuation}
-A \emph{valuation} on a frame $\Omega$ is a function
+A \emph{valuation} on a frame $\Omega$ is a \emph{monotone} function
 $v : \Omega \to \ENNReal$ with
-$v(\bot) = 0$, $v(\top) = 1$ (monotonicity), and, for all $a, b \in
-\Omega$, \emph{modularity}:
+$v(\bot) = 0$, $v(\top) = 1$ (\emph{normalization}), and, for all
+$a, b \in \Omega$, \emph{modularity}:
 \[
   v(a) + v(b) \;=\; v(a \sqcup b) + v(a \sqcap b).
 \]
@@ -60,7 +70,7 @@ omission is invisible, because the complement rule is derivable from
 additivity and $a \vee \neg a = \top$.  Constructively, this changes
 the definition of what probability is.
 
-\subsection{Slack, and its two independent obstructions}
+\subsection{Slack}
 
 Modularity applied to the disjoint pair $(a, a^{\mathsf{c}})$
 collapses to
@@ -87,6 +97,11 @@ against negation, is always disjoint. However, it is a partition only under
 ($a^{\mathsf{c}} \sqcup a^{\mathsf{cc}} = \top$).
 Applying modularity to this disjoint pair splits
 the slack into two logically independent gaps:
+
+\begin{definition}[regular element]
+An element $a \in \Omega$ is \emph{regular} (or $\neg\neg$-stable) if
+$a = a^{\mathsf{cc}}$.
+\end{definition}
 
 \begin{theorem}[\texttt{slack\_eq\_dnGap\_\allowbreak add\_deMorganGap}]
 For every valuation $v$ on a frame $\Omega$ and every $a \in \Omega$,
@@ -129,7 +144,7 @@ It easily follows from decomposition for free, and a concrete
 instance appears in Section~\ref{sec:bridges}.
 \end{remark}
 
-\subsection{What survives without excluded middle}
+\subsection{What Survives without Excluded Middle}
 
 Three classical pillars survive intact, and one fails in a precisely
 delimited way.  \emph{Disjoint additivity} is unconditional:

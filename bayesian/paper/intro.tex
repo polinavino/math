@@ -4,7 +4,7 @@
 Classical logic underlies Kolmogorov's probability.  The axioms
 of this probability
 specify an arithmetic of chance (non-negativity, normalization,
-additivity). Beneath that arithmetic sits a logic: the events
+$\sigma$-additivity). Beneath that arithmetic sits a logic: the events
 form a Boolean $\sigma$-algebra, closed under complement and
 satisfying excluded middle.  The complement rule,
 $P(A^{\mathsf{c}}) = 1 - P(A)$, is where the two layers touch.  It is an
@@ -87,8 +87,8 @@ the concrete model where $\Omega$ is the opens of
 a space carrying a probability measure $\mu$, the slack of an open
 $U$ is precisely $\mu(\partial U)$, the measure of its topological
 boundary. The slack of an open set is a structural quantity, not a
-measure of ignorance.  The theory that results is recognizably the
-\emph{shape} of Dempster--Shafer belief functions, but derived from
+measure of ignorance.  The theory that results recognizably has the same
+structure as the Dempster--Shafer belief functions, but derived from
 the underlying logic rather than postulated.
 
 The statistical \emph{operations} are logic-uniform.  The
@@ -110,9 +110,8 @@ conditioning, classically indistinguishable, give different
 posteriors from the same evidence unless its slack vanishes.
 
 The choice of logic changes the
-query being answered: the value of an event $A$ is $P(\Box A)$,
-where $\Box A$ is the interior of $A$, i.e. the probability of its
-verifiable part.
+query being answered: the value of an event $A$ is $P(\mathrm{int}\,A)$, i.e. the
+probability of its verifiable part.
 In the measure model, slack is boundary mass, so a nonatomic
 distribution queried on intervals behaves entirely classically,
 since an interval's boundary is two points, which carry no mass.
@@ -150,7 +149,7 @@ the independent De~Morgan gap.
 \paragraph{Contributions.} Our contributions are as follows:
 
 \begin{enumerate}
-\item \textbf{The two hinges}
+\item \textbf{The two characterizations}
   (Sections~\ref{sec:hinge} and~\ref{sec:ds}).  The complement rule
   holds for \emph{every} valuation iff excluded middle holds in the
   frame, an equivalence isolating the exact content of Van Horn's

@@ -1,25 +1,25 @@
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Step-indexing and the topos of trees}
+\subsection{Step-Indexing and the Topos of Trees}
 \label{sec:topos}
 
 Step-indexed logical relations were introduced by Appel and McAllester
-\cite{appel-mcallester2001} to give a semantic account of recursive
+\citeyearpar{appel-mcallester2001} to give a semantic account of recursive
 types: two terms are equivalent at index $n$ if no context running for
 at most $n$ steps can distinguish them, and the desired equivalence is
 the intersection over all $n$.  The downward-closure property they
 identify is the monotonicity of step-indexed propositions in our
-framework.  Ahmed \cite{ahmed2004} extended the technique to
+framework.  Ahmed \citeyearpar{ahmed2004} extended the technique to
 higher-order store, the canonical setting where step-indexing is
 essential rather than convenient.  Birkedal and collaborators
-\cite{birkedal-et-al-2011-stepindexed} scaled it to capability calculi.
+\citeyearpar{birkedal-et-al-2011-stepindexed} scaled it to capability calculi.
 The \emph{later} modality $\triangleright$ itself was introduced by
-Appel, Melli\`es, Richards, and Vouillon \cite{appel-melham-mcallester2007}
+Appel, Melli\`es, Richards, and Vouillon \citeyearpar{appel-melham-mcallester2007}
 to guard the step-indexed recursion syntactically.
 
 The categorical reformulation is due to Birkedal, Møgelberg,
-Schwinghammer, and Støvring \cite{birkedal-et-al-2012}: step-indexed
+Schwinghammer, and Støvring \citeyearpar{birkedal-et-al-2012}: step-indexed
 propositions are the propositions of the internal logic of the
 \emph{topos of trees}, the presheaf topos on $(\omega, \le)$, with
 $\triangleright$ as a particular endofunctor and Löb's rule reflecting
@@ -42,11 +42,11 @@ extensions to higher-order ghost state, transfinite step-indices
 internal logic of Iris is a step-indexed modal logic with $\triangleright$
 and a Löb rule used pervasively as a workhorse.  Related step-indexed
 verification systems include VST \cite{appel2014vst}.  Atkey and
-McBride \cite{atkey-mcbride2013} use $\triangleright$ to characterize
+McBride \citeyearpar{atkey-mcbride2013} use $\triangleright$ to characterize
 productive coprogramming, and Clouston, Bizjak, Grathwohl, and
-Birkedal \cite{clouston-et-al-2015,clouston-et-al-2017} develop
+Birkedal \citeyearpar{clouston-et-al-2015,clouston-et-al-2017} develop
 guarded $\lambda$-calculi with $\triangleright$ as a primitive type
-former. Møgelberg and others \cite{mogelberg2014,bizjak-mogelberg-2018}
+former. Møgelberg and others \citeyearpar{mogelberg2014,bizjak-mogelberg-2018}
 extend these to dependent types.
 
 \paragraph{Why not build this on Iris?}
@@ -69,7 +69,7 @@ paper is intended not to compete with Iris but to expose the
 structural features of its soundness machinery in a setting small
 enough that the two observations are stateable.
 
-\subsection{Forcing, ramified and unramified, and the JTS translation}
+\subsection{Forcing, Ramified and Unramified, and the JTS Translation}
 
 Cohen introduced forcing in 1963
 \cite{cohen1963-independence-i,cohen1963-independence-ii,cohen1966}
@@ -95,7 +95,7 @@ argue is \emph{not} eliminable in the step-indexed setting.
 
 A parallel literature in the constructive type theory community
 develops syntactic \emph{forcing translations} of type theories.
-Jaber, Tabareau, and Sozeau \cite{jaber-tabareau-sozeau-2012} give a
+Jaber, Tabareau, and Sozeau \citeyearpar{jaber-tabareau-sozeau-2012} give a
 forcing translation of CIC: for a forcing notion $P$, a syntactic
 translation takes a CIC term $M : T$ to a forced term $M^P : T^P$.
 For propositions, $T^P$ is a downward-closed predicate on $P$:
@@ -114,7 +114,7 @@ formalized against our \texttt{iProp} in Appendix~\ref{sec:bridge}
 (the factorization theorem \texttt{jts\_is\_interp}); the term-level
 fragment is the natural future direction.
 
-\subsection{The modal logic of provability}
+\subsection{The Modal Logic of Provability}
 
 The Gödel--Löb provability logic \textsf{GL} is the modal logic
 characterized by the axiom $\Box(\Box \varphi \to \varphi) \to
@@ -123,8 +123,8 @@ characterized by the axiom $\Box(\Box \varphi \to \varphi) \to
 for arithmetical interpretations of $\Box$ as ``provable in PA.''  On
 the model-theoretic side, \textsf{GL} is sound and complete for the
 class of transitive Kripke frames whose accessibility relation is
-\emph{converse well-founded}. See Smoryński \cite{smorynski1985} and
-Boolos \cite{boolos1993}.
+\emph{converse well-founded}. See Smoryński \citeyearpar{smorynski1985} and
+Boolos \citeyearpar{boolos1993}.
 
 The relevance to our work is direct.  The $\triangleright$ modality of
 step-indexed logic is formally a \textsf{GL}-style $\Box$ once the
@@ -139,7 +139,7 @@ that condition fails.  In modal logic this is folklore.  Brought into
 the step-indexed Hoare logic setting and mechanized, as far as we can
 determine, it has not previously appeared.
 
-\subsection{What this paper contributes}
+\subsection{What This Paper Contributes}
 
 Each ingredient is individually known to specialists in some adjacent
 community: topos-of-trees to guarded domain theory, \textsf{GL}

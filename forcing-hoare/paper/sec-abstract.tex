@@ -57,27 +57,16 @@ downward-closed $\varphi$, the same as ``$\varphi$ holds at $n$.''
 \paragraph{Löb's rule, by well-founded induction.}
 \begin{lstlisting}
 Lemma iLob (φ : iProp) : (▷ φ → φ) ⊢ φ.
-Proof.
-  intros p. revert p.
-  apply (well_founded_ind (fs_lt_wf FS)
-                          (fun p => p ⊩ (▷ φ → φ) -> p ⊩ φ)).
-  intros p IH Hp.
-  apply Hp; [apply (fs_le_refl FS)|].
-  intros p' Hp'.
-  apply IH; [exact Hp'|].
-  eapply imono; [apply (fs_lt_le FS); exact Hp' | exact Hp].
-Qed.
 \end{lstlisting}
 \noindent
-Well-founded induction on $p$: at each $p$, the induction hypothesis
-gives $\varphi$ at every strict predecessor $p'$.  Apply $\mathtt{Hp}$
-at $p$ itself (using $\mathtt{fs\_le\_refl}$ to witness $p \le p$),
-leaving $\triangleright \varphi$ at $p$ to prove, which by the
-definition of $\triangleright$ is the quantified statement that
-$\varphi$ holds at every strict predecessor, available from the IH.
-This is the literal statement of the equivalence: \emph{Löb's rule is
-well-founded induction on the forcing order, internalized into the
-logic}.
+The proof is well-founded induction on the condition $p$ along
+$\mathtt{fs\_lt}$.  The induction hypothesis gives $\varphi$ at every
+strict predecessor of $p$, which by definition of the later modality
+is exactly $\triangleright \varphi$ at $p$.  Feeding that to the
+premise $\triangleright \varphi \to \varphi$ gives $\varphi$ at $p$.
+The entire script is one \texttt{well\_founded\_ind}, making precise
+that \emph{Löb's rule is well-founded induction on the forcing order,
+internalized into the logic}.
 
 \paragraph{Instances.}
 The natural numbers with their usual order:
@@ -110,7 +99,7 @@ components, where Löb's rule lets one reason about recursion that
 descends in either or both components.
 
 The \emph{transfinite} family is developed as well
-(\texttt{Phase4b\_Transfinite.v}): the lexicographic order on
+(\texttt{Phase4b\_\allowbreak Transfinite.v}): the lexicographic order on
 $\mathbb{N} \times \mathbb{N}$ has order type $\omega^2$ --- the
 index structure of transfinite
 step-indexing~\cite{svendsen2016transfinite}, generalized to

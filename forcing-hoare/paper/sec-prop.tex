@@ -133,31 +133,22 @@ For every \texttt{iProp} $\varphi$, $(\triangleright \varphi \to
 \end{theorem}
 
 \noindent
-We give the rule the standard step-indexed proof, by induction on
-$n$:
+The rule has the standard step-indexed proof:
 
 \begin{lstlisting}
 Lemma iLob φ : (▷ φ → φ) ⊢ φ.
-Proof.
-  intros n Hn.
-  induction n as [|n IH].
-  - apply (Hn 0); [lia | exact I].
-  - apply (Hn (S n)); [lia | simpl].
-    apply IH.
-    intros m Hm Hlate.
-    apply (Hn m); [lia | exact Hlate].
-Qed.
 \end{lstlisting}
 
-It is worth noticing what this proof actually uses.  The base case
-relies on the fact that $\triangleright \varphi$ at $n=0$ is
-\emph{vacuously} \texttt{True}, while the inductive step uses the
-hypothesis at $n+1$ together with the induction hypothesis at $n$.
-In other words, Löb's rule is, at the meta level, well-founded
-induction on the forcing order $\omega$.  This observation will
-return in Section~\ref{sec:abstract}: we will see there that in the
-abstract framework Löb's rule \emph{is} \texttt{well\_founded\_ind}
-on the strict refinement relation.
+\noindent
+The proof is induction on the step index $n$.  At $n = 0$ the
+antecedent $\triangleright \varphi$ is \emph{vacuously} \texttt{True},
+so the premise hands back $\varphi$ directly.  At $n+1$ the premise
+reduces the goal to $\triangleright \varphi$ there, that is $\varphi$
+at $n$, which is the induction hypothesis.  So Löb's rule is, at the
+meta level, well-founded induction on the forcing order $\omega$, the
+identity made abstract in Section~\ref{sec:abstract} (there it
+\emph{is} \texttt{well\_founded\_ind} on the strict refinement
+relation).
 
 \paragraph{Step-indexing is not collapsing.}
 A useful sanity check is that the later modality changes the
@@ -168,7 +159,6 @@ is \texttt{False}, so the entailment fails at $n = 0$:
 
 \begin{lstlisting}
 Lemma iLater_False_distinct : ~ (▷ ⊥ ⊢ ⊥).
-Proof. intros H. apply (H 0); simpl; exact I. Qed.
 \end{lstlisting}
 
 \noindent

@@ -106,21 +106,6 @@ Theorem wp_fix body S :
      recursive_spec e_self S
        ⊢ recursive_spec (subst e_self body) S) ->
   ⊤ ⊢ recursive_spec (EFix body) S.
-Proof.
-  intros Hbody.
-  apply ientails_trans with
-    (iLater (recursive_spec (EFix body) S)
-       → recursive_spec (EFix body) S).
-  - intros n _ m Hmn Hlater. destruct m as [|m'].
-    + intros v Hvalue HS. simpl. trivial.
-    + simpl in Hlater. intros v Hvalue HS.
-      (* fix-unfolding via wp_pure_step_at; the recursive *)
-      (* obligation is discharged from Hlater at m'.      *)
-      apply (wp_pure_step_at m' (EApp (EFix body) v)
-               (EApp (subst (EFix body) body) v) S); [.. |
-        apply (Hbody (EFix body) (VFix body) m' Hlater v Hvalue HS)].
-  - apply iLob.
-Qed.
 \end{lstlisting}
 \noindent
 No induction on $n$ appears in this proof. All recursive content is
@@ -175,7 +160,6 @@ Definition bottom : expr := EFix (EVar 0).
 
 Theorem bottom_spec (S : expr -> Prop) :
   ⊤ ⊢ recursive_spec bottom S.
-Proof. apply wp_fix. intros e_self Hself. apply ientails_refl. Qed.
 \end{lstlisting}
 \noindent
 For $\mathtt{bottom}$ the body is the bare self-reference, so

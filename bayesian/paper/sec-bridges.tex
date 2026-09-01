@@ -1,31 +1,36 @@
 \section{Two Grounding Models}
 \label{sec:bridges}
 
-Two concrete models anchor the abstract theory.  One shows every
+Two concrete models demonstrate that our abstract theory is 
+non-degenerate.  One shows every
 classical measure \emph{contains} an intuitionistic probability.
 The other shows the intuitionistic theory cannot collapse back
 without solving the halting problem.
 
-\subsection{Measures through the interior operator}
+\subsection{Measures through the Interior Operator}
+\label{sec:interior-bridge}
 
 G\"odel--McKinsey--Tarski interpret intuitionistic logic in modal
-$\mathsf{S4}$, semantically: propositions are \emph{open} sets, and
-$\Box$ is topological interior~\cite{godel1933,mckinsey-tarski1944}.
-Our valuations are the quantitative face of that translation:
+$\mathsf{S4}$: propositions are \emph{open} sets, and
+the modal necessity operator $\Box$ of $\mathsf{S4}$ is interpreted
+as the topological interior, written $\mathrm{int}(\cdot)$
+below~\cite{godel1933,mckinsey-tarski1944}.
+Our valuations quantify that same translation:
 
 \begin{theorem}[\texttt{Measure.toValuationOpens}]
-Let $\mu$ be a probability measure on a space $X$.  Then
-$U \mapsto \mu(U)$ on the frame $\mathcal{O}(X)$ is a valuation.
-Equivalently, $v = \mu \circ \mathrm{int}$ as a function of arbitrary
-sets, that is, $v(A) = \mu(\Box A)$.
+Let $\mu$ be a probability measure on a space $X$, $A \subseteq X$, 
+and define $v(A) = \mu(\mathrm{int}\,A)$.  Since
+$\mathrm{int}\,U = U$ for open $U$, $v$ restricts on the frame
+$\mathcal{O}(X)$ to $U \mapsto \mu(U)$, and this restriction is a
+valuation.
 \end{theorem}
 
 \noindent
 Modularity is $\mu(U \cup V) + \mu(U \cap V) = \mu(U) + \mu(V)$.
 The slack of an open $U$ is then $1 - \mu(U) -
 \mu(\mathrm{int}\,U^{\complement})$, which is the measure of the
-boundary $\partial U$.  \emph{Slack is boundary mass}, and now
-provably so in general:
+boundary $\partial U$.  We can now prove that generally, slack is 
+exactly the boundary mass:
 
 \begin{theorem}\strut\\
 {\upshape(\texttt{Measure.toValuationOpens\_slack\_eq\_frontier})}\\
@@ -35,78 +40,140 @@ open $U$, $\slack(U) = \mu(\partial U)$.
 
 \noindent
 The Heyting complement of $U$ in $\mathcal{O}(X)$ is the interior of
-its set complement, so the undecided region, the complement of
+its set complement. So, the undecided region, the complement of
 $U \sqcup U^{\mathsf{c}}$, is exactly
-$\overline{U} \setminus U = \partial U$.  The development also keeps
-the weaker complement sub-additivity inequality
-(\texttt{interiorMeasure\_add\_\allowbreak compl\_le}), and the Sierpi\'nski
-model below instantiates the identity in the specific case that
-isolates the halting problem.  The DS
-``ignorance'' of Section~\ref{sec:ds} is, in this model, the measure
-charged to the frontier where a finite-precision observer can never
-decide membership, a structural quantity with no epistemic subject.
-This also exhibits the modal identification
-$\Bel = P(\Box\,\cdot)$ of the DS literature~\cite{ruspini1986}
-arising from the logic itself.  Theorem~\ref{thm:finite-rep} is the
-converse in the finite case, and the general converse is the open
-frontier of Section~\ref{sec:representation}.
+$\overline{U} \setminus U = \partial U$.  The general sub-additivity
+inequality of Section~\ref{sec:valuation} still holds here
+(\texttt{interiorMeasure\_add\_\allowbreak compl\_le}).  This
+identification of slack with boundary mass also exhibits the modal
+identification $\Bel = P(\Box\,\cdot)$ of the DS
+literature~\cite{ruspini1986} arising from the logic itself.
+Theorem~\ref{thm:finite-rep} is the
+converse in the finite case (in the general case, the converse is the open
+problem, see Section~\ref{sec:representation}).
+
+To characterize weak excluded middle spaces, we give the 
+(standard) definitions required: 
+
+\begin{definition}[extremally disconnected]
+A topological space $X$ is \emph{extremally disconnected} if the
+closure of every open set is again open.
+\end{definition}
+
+\begin{definition}[Stone space, Stonean space]
+The \emph{Stone space} of a Boolean algebra $B$ is the space of
+ultrafilters on $B$ (equivalently, the $2$-valued homomorphisms
+$B \to \{0,1\}$), topologized by the clopen basis $\{U : b \in U\}$
+for $b \in B$. \emph{Stone duality} identifies Boolean algebras with
+exactly the compact, Hausdorff, totally disconnected spaces arising
+this way.  A \emph{Stonean space} is a compact Hausdorff space that
+is also extremally disconnected. Equivalently, it is the Stone space
+of a \emph{complete} Boolean algebra.
+\end{definition}
 
 \begin{remark}[\texttt{isDeMorgan\_opens\_iff\_\allowbreak
-extremallyDisconnected}]
+extremally\allowbreak Disconnected}]
 Section~\ref{sec:valuation} noted that imposing weak excluded middle
 on the whole frame collapses slack to pure double-negation
-instability.  For $\Omega = \mathcal{O}(X)$ this global condition is
-not abstract: it holds exactly when $X$ is
-\emph{extremally disconnected}, meaning the closure of every open
-set is already open.  These are the Stonean spaces (Stone--\v{C}ech
-remainders, Stone spaces of complete Boolean algebras).  As before,
-this is a parallel development and an obvious complement to the
-fully constructive theory the paper builds on $\mathcal{O}(X)$.  No
-other result here assumes it.
+instability.  For $\Omega = \mathcal{O}(X)$, this global condition
+holds exactly when $X$ is extremally disconnected.
 \end{remark}
 
-\subsection{The computability guard}
+An immediate corollary gives the characterization:
 
-The design constraint on every axiom set in this paper is that it
-must not silently force $\slack \equiv 0$.  Otherwise the
-``constructive'' theory is Kolmogorov in disguise.  Our guard is a
-model in which collapse is not merely false but \emph{uncomputable}.
+\begin{corollary}[\texttt{isDeMorgan\_opens\_iff\_stonean}]
+Given a compact Hausdorff space $X$, weak excluded middle on
+$\mathcal{O}(X)$ holds exactly when $X$ is a Stonean space.
+\end{corollary}
 
-A semidecidable proposition is an open in the Sierpi\'nski topology
-on \texttt{Prop}: verifiable by a finite computation, never refutable
-by one.  On the three-open frame $\mathcal{O}(\mathbb{S}) =
-\{\bot, \mathit{halts}, \top\}$ we prove the $\Sigma_1$ asymmetry as
-a theorem, $\mathit{halts}^{\mathsf{c}} = \bot$ (every nonempty open
-of $\mathbb{S}$ contains $\mathsf{True}$, so nothing partially
-refutes a semidecidable event), and build the valuation from a
-genuine measure $p \cdot \delta_{\mathsf{True}} + (1-p) \cdot
-\delta_{\mathsf{False}}$ through the bridge above.  The slack
-computes end to end (\texttt{slack\_eq\_boundary}):
-\[
-  \slack(\mathit{halts}) \;=\; 1 - p \;=\;
-  \mu\bigl(\partial\,\{q \mid q\}\bigr)
-  \;=\; \mu\{\mathsf{False}\},
-\]
-the mass of the point where the computation stays silent forever.
+\subsection{The Computability Guard}
+\label{sec:computability-guard}
 
-The guard itself is grounded in \textsf{mathlib}'s computability
-theory.  For a code $c$ and input $n$, the \emph{sharp classical
-readout} assigns the slack-free valuation answering ``does $c$ halt
-on $n$?'' with certainty, weight $1$ or $0$ by the actual halting
-fact.  The family is classically well defined, but no algorithm can
-read it off:
+The usefulness of the work done in this paper relies on the 
+non-degeneracy of the spaces we study (i.e. ones where $\slack \equiv 0$
+does not always hold). We must provide a witness for this non-degeneracy,
+and we do so using computability and decidability concepts:
 
-\begin{theorem}[\texttt{sharpReadout\_not\_computable}]
-Deciding whether the sharp classical readout assigns weight $1$ to
-the halting event is exactly the halting problem, hence not
-computable (\texttt{ComputablePred.\allowbreak halting\_problem}).
+\begin{definition}[semidecidable proposition]
+A proposition is \emph{semidecidable} if it is an open in the
+Sierpi\'nski topology on \texttt{Prop}~\cite{escardo2004,rosolini1986}.
+\end{definition}
+
+\noindent
+On the frame $\mathcal{O}(\mathbb{S}) =
+\{\bot, \mathit{halts}, \top\}$ (containing three open sets),
+the $\Sigma_1$ asymmetry is a theorem:
+
+\begin{theorem}[\texttt{haltsOpen\_compl}]
+\label{thm:sigma1-asymmetry}
+$\mathit{halts}^{\mathsf{c}} = \bot$.
 \end{theorem}
 
 \noindent
-Any axiom strong enough to force classical collapse therefore demands
-of its models a state that cannot be computed.  Slack is not a defect
-the constructive theory should apologize for.  It is the price of a
-computable one.  This guard plays for the sum rule the role the
+Every nonempty open of $\mathbb{S}$ contains $\mathsf{True}$, so
+$\bot$ is the only open disjoint from $\mathit{halts}$. Thus, no nonempty
+open of $\mathbb{S}$ is evidence that the computation does not halt.
+
+We now instantiate the \texttt{Measure.toValuationOpens} construction
+of Section \ref{sec:interior-bridge} at $X = \mathbb{S}$,
+allowing us to compute the slack:
+
+\begin{theorem}[\texttt{slack\_eq\_boundary}]
+\label{thm:slack-eq-boundary}
+Let $\mu = p \cdot \delta_{\mathsf{True}} + (1-p) \cdot
+\delta_{\mathsf{False}}$, and let $v$ be the resulting valuation.
+Then
+\[
+  \slack(\mathit{halts}) \;=\; 1 - p \;=\;
+  \mu\bigl(\partial\,\{q \mid q\}\bigr)
+  \;=\; \mu\{\mathsf{False}\}.
+\]
+\end{theorem}
+
+\noindent
+Since $\mathit{halts}$ is already open, $v(\mathit{halts}) =
+\mu(\mathit{halts}) = p$, which we can use to prove the above theorem. 
+The measure of the slack (i.e. the measure of the outcome when the 
+computation never halts) is the same as the measure of single point 
+${\mathsf{False}}$ in a two-point space.
+The DS ``ignorance'' of Section~\ref{sec:ds} is, in this model,
+exactly this mass: the probability on the one outcome that no finite
+observation can ever resolve. This probability is a fact about the model, 
+not about anyone's ignorance.
+
+\begin{definition}[halting problem]
+For a code $c$ and input $n$, the \emph{halting problem} is the
+predicate $H(c, n) = $ ``the machine with code $c$ halts on input
+$n$,'' (\texttt{ComputablePred}). 
+\end{definition}
+
+\noindent
+Slack cannot be eliminated by simply declaring a classical answer
+for each code. The family of valuations
+defined below attempts to do this:
+
+\begin{definition}[sharp classical readout]
+For a given $n$, the \emph{sharp classical readout} is the family
+of slack-free valuations $\rho_n(c) \in \mathrm{Valuation}(\mathcal{O}(\mathbb{S}))$,
+with $\rho_n(c)(\mathit{halts}) = 1$ if $H(c,n)$
+holds, and $\rho_n(c)(\mathit{halts}) = 0$ otherwise.
+\end{definition}
+
+\noindent
+However, this family is provably not computable:
+
+\begin{theorem}[\texttt{sharpReadout\_not\_computable}]
+For every $n$, the predicate $c \mapsto \bigl(\rho_n(c)(\mathit{halts}) = 1\bigr)$
+is exactly $H(\cdot, n)$, hence not computable
+(\texttt{ComputablePred.\allowbreak halting\_problem}).
+\end{theorem}
+
+\noindent
+We can conclude that slack is not a defect
+the constructive theory: any axiom strong enough to force classical 
+collapse demands
+of its models to compute the uncomputable. 
+For the sum rule, this guard plays the role the
 explicit \texttt{CoxModel} instance plays for the product rule
-(Section~\ref{sec:cox}): each axiom set in the paper ships with a
-machine-checked witness that it has non-degenerate models.
+(Section~\ref{sec:cox}): each axiom set in the paper comes with 
+non-degenerate models satisfying it.

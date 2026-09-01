@@ -1,4 +1,4 @@
-\section{Well-foundedness is Essential}
+\section{Well-Foundedness Is Essential}
 \label{sec:lob-essential}
 
 The abstract framework of Section~\ref{sec:abstract} carries one
@@ -75,10 +75,6 @@ iProp:
 \begin{lstlisting}
 Lemma lob_premise_at p :
   p ⊩ (iImplZ (iLaterZ iFalseZ) iFalseZ).
-Proof.
-  intros q Hqp Hlater.
-  apply (Hlater (q - 1)); lia.
-Qed.
 \end{lstlisting}
 
 \noindent
@@ -98,7 +94,6 @@ condition.  This obviously fails:
 \begin{lstlisting}
 Lemma lob_conclusion_fails :
   ~ (forall p, iholdZ iFalseZ p).
-Proof. intros H. exact (H 0). Qed.
 \end{lstlisting}
 
 \noindent
@@ -111,10 +106,6 @@ nowhere, so the entailment fails.
 \begin{lstlisting}
 Theorem lob_fails_over_Z :
   ~ (iImplZ (iLaterZ iFalseZ) iFalseZ ⊨⊢ iFalseZ).
-Proof.
-  intros Hent. apply lob_conclusion_fails.
-  intros p. apply Hent. apply lob_premise_at.
-Qed.
 \end{lstlisting}
 
 This concludes the counterexample: there is a forcing-like structure

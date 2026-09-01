@@ -1,16 +1,16 @@
-\section{The Dempster--Shafer Reading, Completed}
+\section{The Dempster--Shafer Reading}
 \label{sec:ds}
 
 Sections~\ref{sec:valuation}--\ref{sec:representation} independently
-recover the \emph{shape} of Dempster--Shafer (DS)
+arrive at the same structure as Dempster--Shafer (DS)
 theory~\cite{dempster1967,shafer1976}, including sub-additive complements, a
 belief/plausibility interval, and mass functions.  
 This section makes the identification exact in both statics and
 dynamics.  In each case, it locates the precise point where excluded
 middle makes a difference.
 
-\subsection{Statics: total monotonicity via constructive
-inclusion--exclusion}
+\subsection{Total Monotonicity via Constructive
+Inclusion--Exclusion}
 
 The $\neg\neg$-stable (\emph{regular}) elements of a frame form a
 Boolean algebra with meet $\sqcap$ and join
@@ -84,7 +84,7 @@ Section~\ref{sec:valuation}.
 
 Additive probability does not become a
 belief function by weakening an axiom, since modularity for $v$ is
-never relaxed.  What changes is only the join used to state the
+never relaxed.  What changes is only the choice of join used to state the
 tower: the frame join $\bigsqcup$ is replaced by its
 double-negation closure $(\cdot)^{\mathsf{cc}} \circ \sqcup$.  A
 belief function is thus the same additive valuation $v$, evaluated
@@ -94,21 +94,32 @@ has width exactly the slack
 (\texttt{plausibility\_sub\_self}).  The DS ``ignorance'' is
 boundary measure, not psychology.
 
-\subsection{Dynamics: the conditioning hinge}
+\subsection{The Conditioning Characterization}
 
 DS theory carries two update rules that coincide classically.
 \emph{Geometric} conditioning renormalizes belief, and under the DS
 dictionary it \emph{is} the localic posterior
 $v(a \sqcap b)/v(b)$ of Section~\ref{sec:valuation}.
-\emph{Dempster's rule of conditioning}~\cite{shafer1976} discards
-the mass incompatible with the evidence and renormalizes by its
-plausibility:
+
+\begin{definition}[Dempster's rule of conditioning]
+\label{def:dempster}
+For a valuation $v$ on a frame $\Omega$ and $a, b \in \Omega$,
+\emph{Dempster's rule of conditioning}~\cite{shafer1976} 
+states that
 \[
   v(a \,\|\, b) \;=\;
   \frac{v(a \sqcup b^{\mathsf{c}}) - v(b^{\mathsf{c}})}
        {1 - v(b^{\mathsf{c}})}.
 \]
-Both are again valuations (\texttt{dempsterCond}).  Their modularity
+\end{definition}
+
+\noindent
+That is, the DS conditioning rule discards
+the mass incompatible with the evidence and renormalizes by its
+plausibility.
+Both the geometric posterior of Section~\ref{sec:valuation} and
+Dempster's rule of Definition~\ref{def:dempster} are again
+valuations (\texttt{dempsterCond}).  Their modularity
 is the frame distributivity
 $(a \sqcup b^{\mathsf{c}}) \sqcap (a' \sqcup b^{\mathsf{c}})
 = (a \sqcap a') \sqcup b^{\mathsf{c}}$.  Their disagreement is
@@ -126,10 +137,10 @@ $v(a \sqcup b^{\mathsf{c}}) = v(b^{\mathsf{c}}) + v(a \sqcap b) +
 
 Dempster's numerator therefore exceeds Bayes's by exactly
 $\mathrm{emGap}(a,b)$.  This gap depends on $a$, but whether it
-vanishes at \emph{every} $a$, in turn, depends on a single number,
+vanishes at \emph{every} $a$ depends only on
 the slack at the evidence $b$:
 
-\begin{theorem}[the conditioning hinge,
+\begin{theorem}[the conditioning characterization,
   \texttt{dempsterCond\_eq\_\allowbreak condVal\_iff\_slack}]
 \label{thm:cond-hinge}
 For every valuation $v$ on every frame $\Omega$ and every
@@ -147,9 +158,15 @@ certainty $1$, while Dempster gives $v(b)/(1 - v(b^{\mathsf{c}}))$,
 Theorem~\ref{thm:cond-hinge} is the valuation-relative analogue of
 Theorem~\ref{thm:hinge}: both are iff statements about the same
 proposition, $b \sqcup b^{\mathsf{c}} = \top$.  
-The static hinge is an equation in the frame itself, between
-$b \sqcup b^{\mathsf{c}}$ and $\top$, with no valuation involved.
-The dynamic hinge tests the same proposition through $v$:
+
+We call the frame-level fact \emph{static} and the valuation-level
+fact \emph{dynamic} because the former is a fixed structural property of
+$\Omega$ with no notion of updating, while the latter characterizes
+when a \emph{process} (conditioning $v$ on evidence $b$) behaves
+classically.  The static characterization is an equation in the
+frame itself, between $b \sqcup b^{\mathsf{c}}$ and $\top$, with no
+valuation involved.  The dynamic characterization tests the same
+proposition through $v$:
 $\slack(b) = 0$ is exactly $v(b \sqcup b^{\mathsf{c}}) = v(\top)$.
 Dempster and Bayes therefore coincide at $b$ whenever $v$ cannot
 distinguish $b \sqcup b^{\mathsf{c}}$ from $\top$, even if the two

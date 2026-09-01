@@ -4,7 +4,7 @@
 A parallel literature, alongside the topos-of-trees account of
 step-indexing surveyed in Section~\ref{sec:topos}, develops
 \emph{syntactic} forcing translations of type theories.  Jaber,
-Tabareau, and Sozeau \cite{jaber-tabareau-sozeau-2012} give a forcing
+Tabareau, and Sozeau \citeyearpar{jaber-tabareau-sozeau-2012} give a forcing
 translation of the Calculus of Constructions: for any forcing notion
 $P$, they produce a syntactic translation that takes a CIC term
 $M : T$ to a forced term $M^P : T^P$, where the type translation
@@ -115,20 +115,12 @@ the forcing translation, the $\triangleright$ modality, is
 \paragraph{Commutation with the Heyting connectives.}
 The embedding is a Heyting algebra homomorphism: it commutes with
 each of $\top$, $\bot$, $\wedge$, $\vee$, $\to$ in both directions of
-entailment.  The proofs are short and structural:
-
-\begin{lstlisting}
-Lemma embed_True_l : ⌜ True ⌝ ⊢ iTrue.
-Lemma embed_True_r : iTrue ⊢ ⌜ True ⌝.
-Lemma embed_False_l : ⌜ False ⌝ ⊢ iFalse.
-Lemma embed_False_r : iFalse ⊢ ⌜ False ⌝.
-Lemma embed_and_intro P Q : ⌜ P /\ Q ⌝ ⊢ ⌜ P ⌝ ∧ ⌜ Q ⌝.
-Lemma embed_and_elim P Q : ⌜ P ⌝ ∧ ⌜ Q ⌝ ⊢ ⌜ P /\ Q ⌝.
-Lemma embed_or_intro P Q : ⌜ P \/ Q ⌝ ⊢ ⌜ P ⌝ ∨ ⌜ Q ⌝.
-Lemma embed_or_elim P Q : ⌜ P ⌝ ∨ ⌜ Q ⌝ ⊢ ⌜ P \/ Q ⌝.
-Lemma embed_impl_intro P Q : ⌜ P -> Q ⌝ ⊢ (⌜ P ⌝ → ⌜ Q ⌝).
-Lemma embed_impl_elim P Q : (⌜ P ⌝ → ⌜ Q ⌝) ⊢ ⌜ P -> Q ⌝.
-\end{lstlisting}
+entailment, in the short structural lemmas
+\texttt{embed\_True\_l}, \texttt{embed\_True\_r},
+\texttt{embed\_False\_l}, \texttt{embed\_False\_r},
+\texttt{embed\_and\_intro}, \texttt{embed\_and\_elim},
+\texttt{embed\_or\_intro}, \texttt{embed\_or\_elim},
+\texttt{embed\_impl\_intro}, and \texttt{embed\_impl\_elim}.
 
 \noindent
 The most interesting case is the implication direction
@@ -164,9 +156,6 @@ witness:
 \begin{lstlisting}
 Lemma embed_later_distinct :
   ~ (▷ ⌜ False ⌝ ⊢ ⌜ False ⌝).
-Proof.
-  intros H. apply (H 0). simpl. trivial.
-Qed.
 \end{lstlisting}
 
 \noindent

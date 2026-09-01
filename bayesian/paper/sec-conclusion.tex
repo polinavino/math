@@ -34,10 +34,15 @@ our knowledge no proof assistant has for \emph{any} logic.
 
 \paragraph{The functor is literal, the monad is delimited.}
 Within a fixed doctrine, that is, a fixed choice of logic, the
-connection to the categorical picture is concrete.  Pushforward along frame homomorphisms preserves all four
+connection to the categorical picture is concrete.  Pushforward along
+a frame homomorphism $f : \Omega \to \Omega'$ sends a valuation $v$
+on $\Omega'$ to $(f_* v)(a) = v(f(a))$ on $\Omega$, and this
+preserves all four
 valuation axioms, making $\mathrm{Val}(-)$ a functor on locales, the
 localic face of the functor part of the Giry
-monad~\cite{giry1982}.  This is now mechanized end to end
+monad~\cite{giry1982} (which sends a measurable space to its space
+of probability measures, with unit the Dirac measures and
+multiplication given by integration).  This is now mechanized end to end
 (\texttt{Valuation.comap} builds the pushforward, and
 \texttt{comap\_id}/\texttt{comap\_comp} check the two functor laws
 against identity and composition of frame homomorphisms).  The

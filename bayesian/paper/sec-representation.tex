@@ -1,4 +1,4 @@
-\section{Representation: Points, Masses, Mixtures}
+\section{Valuation Representation}
 \label{sec:representation}
 
 Every valuation on a finite frame is a probability mass function on
@@ -6,13 +6,24 @@ points. On infinite frames, this can fail, and Scott continuity
 marks the boundary between where it still holds and where
 it does not.
 
-\subsection{Finite frames: every valuation is a PMF on points}
+\subsection{Finite Frames Representation}
 
+\begin{theorem}[Birkhoff duality]
+Every finite distributive lattice is isomorphic to the lattice of
+lower sets of a finite poset: its sup-irreducible elements form a
+poset $P$ whose lower sets reconstruct the lattice, and every finite
+poset arises this way from its own lattice of lower sets.
+\end{theorem}
+
+\noindent
 Let $P$ be the finite poset of
 sup-irreducible elements of a finite frame.
 Then, by Birkhoff duality
 (\texttt{OrderIso.lowerSetSupIrred}),
-every finite frame is the lattice of \emph{lower sets} of $P$. 
+every finite frame is the lattice of \emph{lower sets} of $P$: a
+\emph{lower set} $U \subseteq P$ satisfies $p \in U,\, q \le p
+\Rightarrow q \in U$, with $\mathrm{Iic}\,p = \{q : q \le p\}$ and
+$\mathrm{Iio}\,p = \{q : q < p\}$ its principal instances at $p$.
 We prove the finite representation theorem below on
 \texttt{LowerSet P}
 (\texttt{Valuation.\allowbreak exists\_pmf\_presentation}).  
@@ -46,7 +57,7 @@ changes $v$ by exactly $\mathrm{mass}(p)$.
 $\mathrm{mass}$ the type \texttt{PMF} on $P$, i.e. a
 classical probability mass function.  And since lower sets are
 exactly the opens of the Alexandrov topology, where interior is the
-identity, the theorem also reads $v = \mu \circ \Box$, i.e. 
+identity, the theorem also reads $v = \mu \circ \mathrm{int}$, i.e.
 every valuation on a
 finite frame is the classical measure $\mu$ applied after
 taking the interior.
@@ -77,7 +88,7 @@ is linear.  Section~\ref{sec:cox} shows modularity cannot instead be
 outright, and doing so is exactly what makes every valuation a
 mixture of sharp, all-or-nothing certainties.
 
-\subsection{The infinite boundary: enter Scott continuity}
+\subsection{Infinite Boundary Representation via Scott Continuity}
 
 Both halves of the finite theorem fail for infinite frames:
 
@@ -92,8 +103,21 @@ $v(\top) = 1$.
 \noindent
 No point carries any of the mass.  The failure is one of
 approximation: $v(\top)$ is not the supremum of $v(\mathrm{Iic}\,n)$
-over the finite stages.  Requiring that approximation, i.e. Scott
-continuity, restores the representation:
+over the finite stages. In order to recover the representation,
+we introduce Scott continuity:
+
+\begin{definition}[directed set, Scott continuity]
+A subset $D \subseteq \Omega$ is \emph{directed} if it is nonempty
+and every pair of its elements has an upper bound in $D$.  A
+valuation $v$ is \emph{Scott-continuous} if
+$v(\bigsqcup D) = \sup_{a \in D} v(a)$ for every directed $D$.
+\end{definition}
+
+We must require Scott continuity 
+explicitly, as the representation result may fail otherwise. 
+For example, Scott continuity (\texttt{topIndicator\_not\_scott}) 
+failure can be demonstrated for a whole class of valuations
+(Theorem \ref{thm:recovery}):
 
 \begin{theorem}[recovery, \texttt{eq\_tsum\_mass\_of\_scott},
   generalized by \texttt{isPurelyAtomic\_of\_scott}]
@@ -103,9 +127,7 @@ $v(\top) = \bigsqcup_n v(\mathrm{Iic}\,n)$
 then $v(\top) = \sum'_n \mathrm{mass}(n)$.
 \end{theorem}
 
-The counterexample of
-Theorem~\ref{thm:obstruction} demonstrates a failure of Scott
-continuity (\texttt{topIndicator\_not\_scott}).  In general, on
+In general, on
 any poset all of whose principal downsets are finite, Scott
 continuity implies zero diffuse part without additional preconditions.
 However, subtraction in $\ENNReal$ is truncated at $0$, so if
@@ -143,4 +165,4 @@ of the reals (a default in \textsf{mathlib}).
 Representing the diffuse part on non-spatial frames remains the open
 frontier.  The obstruction
 there is again that the frame has \emph{too few points}, the same
-phenomenon behind the undecidability of Section~\ref{sec:bridges}.
+one as behind the undecidability of Section~\ref{sec:bridges}.

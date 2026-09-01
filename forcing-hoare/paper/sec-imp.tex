@@ -74,17 +74,6 @@ Lemma hoare_while P b c :
   hoare_valid (fun s => P s /\ beval s b = true) c P ->
   hoare_valid P (CWhile b c)
               (fun s => P s /\ beval s b = false).
-Proof.
-  intros HC. rewrite hoare_valid_alt in HC. apply hoare_valid_alt.
-  intros n. induction n as [|n IH]; intros s HP.
-  - simpl. trivial.
-  - rewrite wp_at_S. split; [discriminate|].
-    intros c' s' Hstep. inversion Hstep; subst.
-    + apply wp_seq. eapply wp_at_post_mono.
-      2: { apply HC; split; [exact HP | assumption]. }
-      intros s'' HP'. apply IH. exact HP'.  (* recurse via IH *)
-    + .. (* StepWhileFalse: CSkip with postcondition *)
-Qed.
 \end{lstlisting}
 
 \paragraph{The same rule, via the internal Löb.}
@@ -100,24 +89,9 @@ argument that case-analyses on the depth supplied to the
 Lemma hoare_while_iLob P b c :
   hoare_valid (fun s => P s /\ beval s b = true) c P ->
   hoare_valid P (CWhile b c) (fun s => P s /\ beval s b = false).
-Proof.
-  intros HC. rewrite hoare_valid_alt in HC. unfold hoare_valid.
-  apply ientails_trans with
-    (iLater (hoare P (CWhile b c) (...)) →
-     hoare P (CWhile b c) (...)).
-  - intros n _ m Hmn Hlater s HP. destruct m as [|m'].
-    + simpl. trivial.
-    + simpl in Hlater. rewrite wp_at_S. split; [discriminate|].
-      intros c' s' Hstep. inversion Hstep; subst.
-      * apply wp_seq. eapply wp_at_post_mono.
-        2: { apply HC; split; [exact HP | assumption]. }
-        intros s'' HP''. apply Hlater. exact HP''.  (* recurse via Hlater *)
-      * .. (* StepWhileFalse *)
-  - apply iLob.
-Qed.
 \end{lstlisting}
 \noindent
-The first bullet contains no induction on $n$.  All recursive content
+The intermediate entailment contains no induction on $n$.  All recursive content
 is hidden inside \texttt{iLob}'s proof, written once in
 Section~\ref{sec:prop} and not reproduced at every Hoare-style
 soundness proof.  The six rules (skip, assign, seq, if, while,

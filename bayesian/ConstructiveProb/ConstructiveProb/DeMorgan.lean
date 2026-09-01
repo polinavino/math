@@ -92,6 +92,13 @@ theorem isDeMorgan_opens_iff_extremallyDisconnected :
     rw [Opens.coe_top]
     exact hcoe
 
+/-- **Corollary, restricted to compact Hausdorff spaces.** Compactness and Hausdorff-ness play no
+role in the equivalence itself — they only make `ExtremallyDisconnected X` the classical notion of
+`X` being **Stonean** (equivalently, the Stone space of a complete Boolean algebra). -/
+theorem isDeMorgan_opens_iff_stonean [CompactSpace X] [T2Space X] :
+    Order.Frame.IsDeMorgan (Opens X) ↔ ExtremallyDisconnected X :=
+  isDeMorgan_opens_iff_extremallyDisconnected
+
 end Topology
 
 end
