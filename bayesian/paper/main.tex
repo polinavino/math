@@ -146,10 +146,11 @@ monotone Dempster--Shafer belief function.
 We define slack as the mass that escapes point-valued certainty: it
 is boundary mass in the measure model. On a semidecidable event,
 forcing it to zero is exactly as hard as solving the halting
-problem.  We further prove a dichotomy settling where the
-probability monad exists and where it fails, show that the naive
-transcription of Cox's theorem is unsatisfiable, and build the
-Acz\'el/H\"older analytic core from scratch.
+problem.  We further prove that product valuations are unique on chain
+products and provably non-unique on the powerset frame, where
+Fubini fails, show that the naive transcription of Cox's theorem is
+unsatisfiable, and build the Acz\'el/H\"older analytic core from
+scratch.
 \end{abstract}
 
 \begin{CCSXML}
@@ -188,6 +189,11 @@ functions, locales, Lean, mathlib, formalized mathematics}
 \input{sec-bridges}
 \input{sec-related}
 \input{sec-conclusion}
+
+\begin{acks}
+Claude (Anthropic) was used to assist with drafting and debugging
+the Lean formalization.
+\end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}

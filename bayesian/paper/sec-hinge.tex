@@ -42,7 +42,7 @@ R3's conclusion as a predicate on valuations, then prove equivalence
 to excluded middle.
 
 \begin{lstlisting}
-def HasClassicalNegation (v : Valuation Ω) : Prop :=
+def Valuation.HasClassicalNegation (v : Valuation Ω) : Prop :=
   ∀ a, v a + v aᶜ = 1
 \end{lstlisting}
 

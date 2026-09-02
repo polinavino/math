@@ -8,7 +8,7 @@ it does not.
 
 \subsection{Finite Frames Representation}
 
-\begin{theorem}[Birkhoff duality]
+\begin{theorem}[Birkhoff duality~\cite{birkhoff1937}]
 Every finite distributive lattice is isomorphic to the lattice of
 lower sets of a finite poset: its sup-irreducible elements form a
 poset $P$ whose lower sets reconstruct the lattice, and every finite
@@ -25,11 +25,11 @@ every finite frame is the lattice of \emph{lower sets} of $P$: a
 \Rightarrow q \in U$, with $\mathrm{Iic}\,p = \{q : q \le p\}$ and
 $\mathrm{Iio}\,p = \{q : q < p\}$ its principal instances at $p$.
 We prove the finite representation theorem below on
-\texttt{LowerSet P}
-(\texttt{Valuation.\allowbreak exists\_pmf\_presentation}).  
+\texttt{LowerSet P}.
 Transporting
 it across the isomorphism above then gives the theorem for every
-finite frame, not just lower sets.  Let us define the \emph{mass} of a
+finite frame, not just lower sets
+(\texttt{Valuation.\allowbreak exists\_pmf\_presentation}).  Let us define the \emph{mass} of a
 point as the discrete derivative of $v$:
 \begin{lstlisting}
 def Valuation.mass (v : Valuation (LowerSet P)) (p : P) :
@@ -41,7 +41,7 @@ The masses also sum to $1$, forming a
 probability distribution on $P$:
 
 \begin{theorem}[finite representation,
-  \texttt{eq\_sum\_mass}, \texttt{sum\_mass}]
+  \texttt{Valuation.eq\_sum\_mass}, \texttt{Valuation.sum\_mass}]
 \label{thm:finite-rep}
 For a finite $P$, any valuation $v$ on $\mathrm{Low}(P)$, and any
 $U \in \mathrm{Low}(P)$,
@@ -72,7 +72,7 @@ $\delta_p$ be the valuation with $\delta_p(U) = 1$ if $p \in U$, and
 $\delta_p(U) = 0$ otherwise:
 
 \begin{theorem}[mixture characterization,
-  \texttt{eq\_mix\_deltaPoint}]
+  \texttt{Valuation.eq\_mix\_deltaPoint}]
 \label{thm:mixture}
 On a finite frame, every valuation $v$ satisfies
 $v = \sum_p \mathrm{mass}(p)\cdot\delta_p$.
@@ -93,7 +93,8 @@ mixture of sharp, all-or-nothing certainties.
 Both halves of the finite theorem fail for infinite frames:
 
 \begin{theorem}[obstruction,
-  \texttt{exists\_valuation\_not\_\allowbreak point\_representable}]
+  \texttt{exists\_valuation\_not\_\allowbreak point\_representable},
+  \texttt{topIndicator\_mass}]
 \label{thm:obstruction}
 On $\mathrm{Low}(\mathbb{N})$, the indicator $v$ of $\top$ is a
 valuation with $\mathrm{mass}(p) = 0$ for every point $p$, and
@@ -113,14 +114,14 @@ valuation $v$ is \emph{Scott-continuous} if
 $v(\bigsqcup D) = \sup_{a \in D} v(a)$ for every directed $D$.
 \end{definition}
 
-We must require Scott continuity 
-explicitly, as the representation result may fail otherwise. 
-For example, Scott continuity (\texttt{topIndicator\_not\_scott}) 
-failure can be demonstrated for a whole class of valuations
-(Theorem \ref{thm:recovery}):
+We must require Scott continuity
+explicitly, as the representation result may fail otherwise.
+The $\top$-indicator of Theorem~\ref{thm:obstruction} witnesses this:
+it is not Scott-continuous (\texttt{topIndicator\_not\_scott}).  Scott
+continuity is exactly what restores the representation:
 
 \begin{theorem}[recovery, \texttt{eq\_tsum\_mass\_of\_scott},
-  generalized by \texttt{isPurelyAtomic\_of\_scott}]
+  generalized by \texttt{Valuation.isPurelyAtomic\_of\_scott}]
 \label{thm:recovery}
 Let $v$ be a valuation on $\mathrm{Low}(\mathbb{N})$. If
 $v(\top) = \bigsqcup_n v(\mathrm{Iic}\,n)$
