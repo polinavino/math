@@ -49,7 +49,7 @@ def Valuation.HasClassicalNegation (v : Valuation Ω) : Prop :=
 \begin{theorem}[the R3 characterization]
 \label{thm:hinge}
 For every frame $\Omega$, every valuation on $\Omega$ has classical
-negation \emph{iff} $a \sqcup a^{\mathsf{c}} = \top$ for every
+negation \emph{iff} $a \sqcup \neg a = \top$ for every
 $a \in \Omega$.
 \end{theorem}
 
@@ -57,7 +57,7 @@ The forward direction (\texttt{hasClassicalNegation\_of\_em}) is a
 calculation.  The content is the converse
 (\texttt{em\_of\_forall\_\allowbreak hasClassicalNegation}): wherever excluded
 middle fails, a valuation with genuine slack must be
-\emph{manufactured}.  Suppose $a \sqcup a^{\mathsf{c}} \neq \top$.
+\emph{manufactured}.  Suppose $a \sqcup \neg a \neq \top$.
 
 \begin{definition}[ideal, prime ideal]
 An \emph{ideal} $J \subseteq \Omega$ is downward closed and closed
@@ -67,8 +67,8 @@ $a \sqcap b \in J$ implies $a \in J$ or $b \in J$.
 
 The prime ideal separation theorem
 (\textsf{mathlib}'s \texttt{DistribLattice.\allowbreak prime\_ideal\_of\_%
-\allowbreak disjoint\_filter\_ideal}) yields a prime ideal $J$ containing
-$a \sqcup a^{\mathsf{c}}$ but not $\top$.  The indicator of $J$'s
+\allowbreak disjoint\_\allowbreak filter\_ideal}) yields a prime ideal $J$ containing
+$a \sqcup \neg a$ but not $\top$.  The indicator of $J$'s
 complement,
 \[
   v(x) = \begin{cases} 0 & x \in J \\ 1 & x \notin J, \end{cases}
@@ -76,7 +76,7 @@ complement,
 is a valuation.  Modularity in the only nontrivial case ($x, y
 \notin J$) is \emph{exactly} primeness, $x \sqcap y \in J
 \Rightarrow x \in J \vee y \in J$.  And this valuation assigns
-$v(a) + v(a^{\mathsf{c}}) = 0 \neq 1$.  So the complement rule is not
+$v(a) + v(\neg a) = 0 \neq 1$.  So the complement rule is not
 one convention among many.  Quantified over all valuations, it is a
 statement \emph{about the algebra} that is equivalent to excluded
 middle.

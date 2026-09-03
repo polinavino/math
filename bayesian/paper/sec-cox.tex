@@ -29,7 +29,7 @@ structure CoxModel (Ω : Type*) [Order.Frame Ω] where
 
 The missing R3 axiom can be observed in the omission of 
 any constraint on the relation between
-$\mathrm{pl}(a^{\mathsf{c}}, b)$ and $\mathrm{pl}(a, b)$.  
+$\mathrm{pl}(\neg a, b)$ and $\mathrm{pl}(a, b)$.
 The $\mathtt{CoxModel}$ restricts monotonicity of $F$ to
 $0 < y$ to avoid a contradiction with the fact that 
 the boundary axioms force $F(x, 0) = 0$ for all
@@ -44,7 +44,7 @@ negated conjunction via De~Morgan, and the product rule does the
 rest.  Constructively that route is closed, since
 $a \vee b \neq \neg(\neg a \wedge \neg b)$ in general:
 
-\begin{theorem}[\texttt{modularity\_irreducible},
+\begin{theorem}[\texttt{modularity\_\allowbreak irreducible},
   \texttt{no\_disjunction\_\allowbreak functional}]
 \label{thm:no-functional}
 Let $\Omega$ be the five-element frame of lower sets of the poset

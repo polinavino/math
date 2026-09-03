@@ -7,7 +7,7 @@ specify an arithmetic of chance (non-negativity, normalization,
 $\sigma$-additivity). Beneath that arithmetic sits a logic: the events
 form a Boolean $\sigma$-algebra, closed under complement and
 satisfying excluded middle.  The complement rule,
-$P(A^{\mathsf{c}}) = 1 - P(A)$, is where the two layers touch.  It is an
+$P(A^{c}) = 1 - P(A)$, is where the two layers touch.  It is an
 arithmetical equation about a logical operation, obeyed by
 every assignment of degrees of certainty. In the limiting case 
 of all-or-nothing probabilities, it becomes
@@ -67,13 +67,13 @@ A \emph{valuation} on a frame $\Omega$ is a monotone, normalized,
 modular map $v : \Omega \to \ENNReal$.  For $v$, modularity means
 inclusion--exclusion,
 $v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, and no axiom mentions a
-complement.  In a Heyting algebra the pseudo-complement $a^{\mathsf{c}}$
+complement.  In a Heyting algebra the pseudocomplement $\neg a$
 satisfies
-$a \sqcap a^{\mathsf{c}} = \bot$ but not, in general,
-$a \sqcup a^{\mathsf{c}} = \top$.  The complement rule therefore degrades
-to a derived \emph{inequality} $v(a) + v(a^{\mathsf{c}}) \le 1$, with a gap
+$a \sqcap \neg a = \bot$ but not, in general,
+$a \sqcup \neg a = \top$.  The complement rule therefore degrades
+to a derived \emph{inequality} $v(a) + v(\neg a) \le 1$, with a gap
 \[
-  \slack(a) \;=\; 1 - v(a) - v(a^{\mathsf{c}})
+  \slack(a) \;=\; 1 - v(a) - v(\neg a)
 \]
 measuring exactly the valuation of the region where excluded middle
 fails for $a$.  The term \emph{slack}, and this logical reading,
@@ -95,14 +95,14 @@ The statistical \emph{operations} are logic-uniform.  The
 conditional is still $v(a \sqcap b)/v(b)$, and the product rule and
 Bayes symmetry hold verbatim.  What varies is the set of
 \emph{identities} those operations satisfy, and with it the licensed
-computations.  The classical case split over $\{A, A^{\mathsf{c}}\}$, and
+computations.  The classical case split over $\{A, \neg A\}$, and
 with it the usual denominator of Bayes' theorem
-$P(B) = P(B \mid A)\,P(A) + P(B \mid A^{\mathsf{c}})\,P(A^{\mathsf{c}})$, degrades to
+$P(B) = P(B \mid A)\,P(A) + P(B \mid \neg A)\,P(\neg A)$, degrades to
 a lower bound whose deficit is a conditional slack.  Marginalization
 is exact only over \emph{genuine} partitions, families that
 actually join to $\top$.  The complement trick
-$P(A) = 1 - P(A^{\mathsf{c}})$ degrades to the interval
-$[\,v(A),\, 1 - v(A^{\mathsf{c}})\,]$ of width $\slack(A)$, so point
+$P(A) = 1 - P(\neg A)$ degrades to the interval
+$[\,v(A),\, 1 - v(\neg A)\,]$ of width $\slack(A)$, so point
 statistics becomes interval statistics exactly on the events the
 logic leaves undecided, and collapses back to points on complemented
 ones.  Updating itself forks: Dempster's rule and Bayesian
@@ -120,7 +120,7 @@ boundaries and at semidecidable hypotheses.
 
 A theory this close to excluded middle must be developed with
 unusual care, because classicality is easy to smuggle in: a single
-informal case split over $\{A, A^{\mathsf{c}}\}$ silently decides an
+informal case split over $\{A, \neg A\}$ silently decides an
 undecidable event.  The risk is documented even classically, as
 Cox's original theorem required repair after Halpern's
 counterexample~\cite{cox1946,halpern1999,vanhorn2003}, and the
@@ -141,7 +141,7 @@ Full excluded middle is not the only stop between plain
 intuitionistic logic and Boolean logic. Asking what changes at
 an intermediate stop is a natural companion question to our main
 inquiry into intuitionistic probability.  Weak excluded middle,
-$a^{\mathsf{cc}} \sqcup a^{\mathsf{c}} = \top$, is one such case. Using
+$\neg\neg a \sqcup \neg a = \top$, is one such case. Using
 our valuation machinery, we can demonstrate that slack collapses
 to the regularity defect alone under exactly this condition, dropping
 the independent De~Morgan gap.
@@ -162,7 +162,7 @@ the independent De~Morgan gap.
   general it splits into atomic and diffuse parts, and on its
   Boolean core of regular elements it is a belief function;
 
-\item \textbf{The Cox program, dissected} (Section~\ref{sec:cox},
+\item \textbf{Cox's theorem, dissected} (Section~\ref{sec:cox},
   Appendix~\ref{app:aczel}).  The product-rule half is independent
   of the logic, proved by an Acz\'el/H\"older generator built from
   scratch.  The sum-rule half (a theorem in classical Cox) admits

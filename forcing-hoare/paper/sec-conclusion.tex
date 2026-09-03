@@ -9,7 +9,7 @@ recursive only in the step index (IMP's \texttt{while}), meta-level
 induction on $n$ and the internal Löb rule give structurally
 identical proofs, which we mechanize side by side. When it is
 recursive in the program itself (the $\lambda$-calculus \texttt{fix}),
-only the internal Löb rule plays to the predicate's structure.  The
+only the internal Löb rule matches the predicate's structure.  The
 second is the characterization of Section~\ref{sec:lob-essential}: in
 any pre-structure satisfying the order-theoretic axioms of the
 abstract framework, L\"ob's rule holds for every iProp if and only if
@@ -40,6 +40,6 @@ The question we are most interested in is whether the recursion-locus
 diagnostic can be sharpened to a syntactic check on iProp definitions,
 applicable automatically to Iris-style soundness proofs.
 
-The broader point is that step-indexed reasoning, viewed as a forcing
-construction, links three traditions that rarely meet: set-theoretic
-forcing, the modal logic of provability, and step-indexed verification.
+Viewed as a forcing construction, step-indexed reasoning links three
+traditions: set-theoretic forcing, the modal logic of provability, and
+step-indexed verification.

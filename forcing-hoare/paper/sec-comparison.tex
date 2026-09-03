@@ -83,9 +83,8 @@ definition for the same program at a lower depth, then internal Löb is
 the \emph{natural} soundness tool: it has the recursive obligation built
 into its conclusion, and discharging it requires no machinery beyond
 the rule itself.  Meta-level induction on the step index remains
-\emph{available}, meaning it does not become impossible, but it has to
-manufacture the recursive reasoning from outside the predicate it is
-proving, instead of finding it already inside.  If the soundness
+\emph{available}, but it has to supply the recursive reasoning from
+outside the predicate it is proving rather than from within it.  If the soundness
 predicate is only recursive in the depth, an outer induction is
 interchangeable with Löb and either is cheap.
 \end{quote}
@@ -93,8 +92,8 @@ The claim is a structural-naturalness one, not an impossibility one.
 The IMP \texttt{wp\_at}, \texttt{hoare}, and \texttt{while} fall on
 the easy side of this diagnostic.  The
 $\lambda$-calculus \texttt{recursive\_spec} for \texttt{EFix body}
-with predicate $S$ falls on the hard side, and Löb earns its keep
-there.
+with predicate $S$ falls on the hard side, where internal Löb is the
+natural tool.
 
 \paragraph{Locating the locus syntactically.}
 The diagnostic above is informal. We have not formalized it as a
@@ -117,10 +116,9 @@ the body's recursive call invokes the same fix-point), so that the
 recursive obligation cannot be discharged purely by descent on the
 depth: the iProp itself has to be available at the lower index
 as data, which is exactly what the antecedent
-$\triangleright \Phi$ of Löb's rule supplies.  The two cases of this
-paper fall cleanly on the two sides of this distinction. Whether
-the characterization can be sharpened to a syntactic check on
-arbitrary iProp definitions is open.
+$\triangleright \Phi$ of Löb's rule supplies.  Whether the
+characterization can be sharpened to a syntactic check on arbitrary
+iProp definitions is open.
 
 \paragraph{What this says about step-indexed Hoare logic.}
 In the verification literature, Löb's rule is sometimes presented as
@@ -130,11 +128,11 @@ step-indexed argument''.  Our diagnostic says this is right for
 first-order recursion (the IMP case) but understates what is
 happening in higher-order recursion (the $\lambda$-fix case).  When
 the soundness predicate is genuinely self-referential in the
-program, an outer induction on $n$ is still possible but is no
-longer playing to the structure of the predicate.  The internal Löb
-rule is what plays to that structure. It is, at bottom,
-well-founded induction on the forcing order, internalized into the
-logic so that it can act on the recursive proposition directly.
+program, an outer induction on $n$ is still possible but no longer
+matches the structure of the predicate.  The internal Löb rule
+matches that structure: it is well-founded induction on the forcing
+order, internalized into the logic so that it acts on the recursive
+proposition directly.
 Section~\ref{sec:abstract} will make precise what
 ``internalized'' means by showing the abstract framework's Löb
 rule is literally an appeal to \texttt{well\_founded\_ind}.

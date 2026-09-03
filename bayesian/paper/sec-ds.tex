@@ -14,7 +14,7 @@ Inclusion--Exclusion}
 
 The $\neg\neg$-stable (\emph{regular}) elements of a frame form a
 Boolean algebra with meet $\sqcap$ and join
-$(a \sqcup b)^{\mathsf{cc}}$ (Glivenko).  Let us call the resulting 
+$\neg\neg(a \sqcup b)$ (Glivenko).  Let us call the resulting
 algebra the
 \emph{Booleanization} of this set.  
 A DS \emph{belief function} is a capacity on a
@@ -46,7 +46,7 @@ $\ENNReal$ subtraction occurs.  The proof is by induction with
 modularity and frame distributivity.
 
 Replacing the frame join $\bigsqcup_i a_i$ on the equality's other
-side with its double negation $(\bigsqcup_i a_i)^{\mathsf{cc}}$, the
+side with its double negation $\neg\neg\bigl(\bigsqcup_i a_i\bigr)$, the
 Booleanization's own join, yields the following inequality:
 
 \begin{theorem}[total monotonicity, \texttt{infty\_monotone}]
@@ -57,12 +57,12 @@ $a : \iota \to \Omega$, and every finite $s \subseteq \iota$:
   \sum_{\emptyset \neq T \subseteq s} (-1)^{|T|+1}
   v\Bigl(\bigsqcap_{i \in T} a_i\Bigr)
   \;\le\;
-  v\Bigl(\bigl(\bigsqcup_{i \in s} a_i\bigr)^{\mathsf{cc}}\Bigr).
+  v\Bigl(\neg\neg\bigl(\bigsqcup_{i \in s} a_i\bigr)\Bigr).
 \]
 \end{theorem}
 
 The Booleanization's join is given by
-$(\cdot)^{\mathsf{cc}} \circ \sqcup$, and its meets of regular
+$\neg\neg \circ \sqcup$, and its meets of regular
 elements are again regular. Interpreted in this way, 
 Theorem~\ref{thm:infty} states exactly
 the $\infty$-monotone tower: $v$ restricted to its Booleanization is
@@ -70,14 +70,14 @@ a belief function.
 
 The proof of Theorem~\ref{thm:infty} from
 Theorem~\ref{thm:incl-excl} follows from the monotonicity along
-$a \le a^{\mathsf{cc}}$.  
+$a \le \neg\neg a$.
 Here, inclusion--exclusion does \emph{not} fail
 constructively.  It is exact for the intuitionistic disjunction.
 Applying the double-negation nucleus (a closure operator preserving
-finite meets) $(\cdot)^{\mathsf{cc}}$ to the
+finite meets) $\neg\neg$ to the
 join on the equality's right-hand side can only enlarge it. This 
 follows from the fact that
-$a \le a^{\mathsf{cc}}$ and $v$ are monotone, which turns the equality
+$a \le \neg\neg a$ and $v$ are monotone, which turns the equality
 into the inequality of Theorem~\ref{thm:infty}.  The amount by which
 the right-hand side is enlarged is exactly the double-negation gap of
 Section~\ref{sec:valuation}.
@@ -86,10 +86,10 @@ Additive probability does not become a
 belief function by weakening an axiom, since modularity for $v$ is
 never relaxed.  What changes is only the choice of join used to state the
 tower: the frame join $\bigsqcup$ is replaced by its
-double-negation closure $(\cdot)^{\mathsf{cc}} \circ \sqcup$.  A
+double-negation closure $\neg\neg \circ \sqcup$.  A
 belief function is thus the same additive valuation $v$, evaluated
 against that closure rather than against the frame join.  With
-$\Pl(a) = 1 - v(a^{\mathsf{c}})$, the belief--plausibility interval
+$\Pl(a) = 1 - v(\neg a)$, the belief--plausibility interval
 has width exactly the slack
 (\texttt{plausibility\_sub\_self}).  The DS ``ignorance'' is
 boundary measure, not psychology.
@@ -108,8 +108,8 @@ For a valuation $v$ on a frame $\Omega$ and $a, b \in \Omega$,
 states that
 \[
   v(a \,\|\, b) \;=\;
-  \frac{v(a \sqcup b^{\mathsf{c}}) - v(b^{\mathsf{c}})}
-       {1 - v(b^{\mathsf{c}})}.
+  \frac{v(a \sqcup \neg b) - v(\neg b)}
+       {1 - v(\neg b)}.
 \]
 \end{definition}
 
@@ -121,17 +121,17 @@ Both the geometric posterior of Section~\ref{sec:valuation} and
 Dempster's rule of Definition~\ref{def:dempster} are again
 valuations (\texttt{dempsterCond}).  Their modularity
 is the frame distributivity
-$(a \sqcup b^{\mathsf{c}}) \sqcap (a' \sqcup b^{\mathsf{c}})
-= (a \sqcap a') \sqcup b^{\mathsf{c}}$.  Their disagreement is
+$(a \sqcup \neg b) \sqcap (a' \sqcup \neg b)
+= (a \sqcap a') \sqcup \neg b$.  Their disagreement is
 given by the \emph{excluded-middle
 gap} $\mathrm{emGap}(a,b) = v(a) - v(a \sqcap (b \sqcup
-b^{\mathsf{c}}))$, i.e. the mass of $a$ outside $b$'s instance
+\neg b))$, i.e. the mass of $a$ outside $b$'s instance
 of excluded middle:
 
 \begin{lemma}[\texttt{sup\_compl\_decomp}]
 For every valuation $v$ on every frame $\Omega$ and every
 $a, b \in \Omega$,
-$v(a \sqcup b^{\mathsf{c}}) = v(b^{\mathsf{c}}) + v(a \sqcap b) +
+$v(a \sqcup \neg b) = v(\neg b) + v(a \sqcap b) +
 \mathrm{emGap}(a,b)$.
 \end{lemma}
 
@@ -151,25 +151,25 @@ $a \in \Omega\bigr)$ iff $\slack(b) = 0$.
 
 The hypothesis $\slack(b) = 0$ eliminates the gap
 $\mathrm{emGap}(a,b)$ for every $a$ and makes the two normalizers
-coincide, since $1 - v(b^{\mathsf{c}}) = v(b)$.
+coincide, since $1 - v(\neg b) = v(b)$.
 Conversely, testing at $a := b$, geometric conditioning gives
-certainty $1$, while Dempster gives $v(b)/(1 - v(b^{\mathsf{c}}))$,
+certainty $1$, while Dempster gives $v(b)/(1 - v(\neg b))$,
 (which is $1$ only if the slack vanishes).
 Theorem~\ref{thm:cond-hinge} is the valuation-relative analogue of
 Theorem~\ref{thm:hinge}: both are iff statements about the same
-proposition, $b \sqcup b^{\mathsf{c}} = \top$.  
+proposition, $b \sqcup \neg b = \top$.
 
 We call the frame-level fact \emph{static} and the valuation-level
 fact \emph{dynamic} because the former is a fixed structural property of
 $\Omega$ with no notion of updating, while the latter characterizes
 when a \emph{process} (conditioning $v$ on evidence $b$) behaves
 classically.  The static characterization is an equation in the
-frame itself, between $b \sqcup b^{\mathsf{c}}$ and $\top$, with no
+frame itself, between $b \sqcup \neg b$ and $\top$, with no
 valuation involved.  The dynamic characterization tests the same
 proposition through $v$:
-$\slack(b) = 0$ is exactly $v(b \sqcup b^{\mathsf{c}}) = v(\top)$.
+$\slack(b) = 0$ is exactly $v(b \sqcup \neg b) = v(\top)$.
 Dempster and Bayes therefore coincide at $b$ whenever $v$ cannot
-distinguish $b \sqcup b^{\mathsf{c}}$ from $\top$, even if the two
+distinguish $b \sqcup \neg b$ from $\top$, even if the two
 differ in the frame itself.  
 In the measure model, Dempster and Bayes disagree precisely when the
 evidence's boundary carries mass.

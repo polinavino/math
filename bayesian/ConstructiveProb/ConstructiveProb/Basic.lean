@@ -138,6 +138,12 @@ noncomputable def dnGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := v aᶜᶜ - 
 the *dense* element `aᶜᶜ ⊔ aᶜ` falls short of `⊤`. Zero when `aᶜᶜ ⊔ aᶜ = ⊤`. -/
 noncomputable def deMorganGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - (v aᶜᶜ + v aᶜ)
 
+/-- Monotonicity applied to `a ≤ aᶜᶜ`: a valuation never assigns `a` more mass than its
+regularization `¬¬a`. This is what makes `dnGap a = v aᶜᶜ - v a` an honest, order-witnessed
+difference rather than a `0` manufactured by `ℝ≥0∞`'s truncated subtraction. -/
+theorem le_compl_compl (v : Valuation Ω) (a : Ω) : v a ≤ v aᶜᶜ :=
+  v.mono _root_.le_compl_compl
+
 /-- `¬¬a` and `¬a` are disjoint (`aᶜᶜ ⊓ aᶜ = ⊥`), so modularity makes their valuations add to
 the join — the mirror of `add_compl_eq_sup`, one level up in double negation. -/
 theorem add_compl_compl_eq_sup (v : Valuation Ω) (a : Ω) : v aᶜᶜ + v aᶜ = v (aᶜᶜ ⊔ aᶜ) := by
@@ -152,7 +158,7 @@ excluded middle fails): `slack a = dnGap a + deMorganGap a`. Both summands are `
 independent obstructions. -/
 theorem slack_eq_dnGap_add_deMorganGap (v : Valuation Ω) (a : Ω) :
     v.slack a = v.dnGap a + v.deMorganGap a := by
-  have hle1 : v a ≤ v aᶜᶜ := v.mono le_compl_compl
+  have hle1 : v a ≤ v aᶜᶜ := v.le_compl_compl a
   have hle2 : v aᶜᶜ + v aᶜ ≤ 1 := by rw [add_compl_compl_eq_sup]; exact v.le_one _
   have hb : v a + v aᶜ ≠ ∞ := ne_top_of_le_ne_top ENNReal.one_ne_top (add_compl_le_one v a)
   rw [slack, dnGap, deMorganGap]
@@ -164,6 +170,15 @@ theorem slack_eq_dnGap_add_deMorganGap (v : Valuation Ω) (a : Ω) :
       show v aᶜᶜ + ((1 - (v aᶜᶜ + v aᶜ)) + v aᶜ)
         = (1 - (v aᶜᶜ + v aᶜ)) + (v aᶜᶜ + v aᶜ) from by ring,
       tsub_add_cancel_of_le hle2]
+
+/-- **The slack decomposition, spelled out.** Same content as
+`slack_eq_dnGap_add_deMorganGap`, with `dnGap`/`deMorganGap` unfolded to the subtractions they
+abbreviate. Combined with `le_compl_compl`, this pins `slack a` down as an explicit closed-form
+function of `v a`, `v aᶜ`, and `v aᶜᶜ` alone, with the first summand a genuine (non-truncated)
+difference. -/
+theorem slack_eq_sub_add_sub (v : Valuation Ω) (a : Ω) :
+    v.slack a = (v aᶜᶜ - v a) + (1 - (v aᶜᶜ + v aᶜ)) := by
+  rw [slack_eq_dnGap_add_deMorganGap, dnGap, deMorganGap]
 
 /-- The double-negation gap vanishes on regular elements (`aᶜᶜ = a`). -/
 theorem dnGap_eq_zero_of_regular (v : Valuation Ω) {a : Ω} (ha : aᶜᶜ = a) : v.dnGap a = 0 := by

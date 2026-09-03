@@ -41,7 +41,7 @@ open $U$, $\slack(U) = \mu(\partial U)$.
 \noindent
 The Heyting complement of $U$ in $\mathcal{O}(X)$ is the interior of
 its set complement. So, the undecided region, the complement of
-$U \sqcup U^{\mathsf{c}}$, is exactly
+$U \sqcup \neg U$, is exactly
 $\overline{U} \setminus U = \partial U$.  The general sub-additivity
 inequality of Section~\ref{sec:valuation} still holds here
 (\texttt{interiorMeasure\_add\_\allowbreak compl\_le}).  This
@@ -106,7 +106,7 @@ the $\Sigma_1$ asymmetry is a theorem:
 
 \begin{theorem}[\texttt{haltsOpen\_compl}]
 \label{thm:sigma1-asymmetry}
-$\mathit{halts}^{\mathsf{c}} = \bot$.
+$\neg\mathit{halts} = \bot$.
 \end{theorem}
 
 \noindent
@@ -176,4 +176,4 @@ of its models to compute the uncomputable.
 For the sum rule, this guard plays the role the
 explicit \texttt{CoxModel} instance plays for the product rule
 (Section~\ref{sec:cox}): each axiom set in the paper comes with 
-non-degenerate models satisfying it.
+non-trivial models satisfying it.

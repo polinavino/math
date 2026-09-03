@@ -52,7 +52,7 @@ theorem Valuation.two_monotone (v : Valuation Ω) (a b : Ω) :
     v a + v b ≤ v (a ⊔ b)ᶜᶜ + v (a ⊓ b) := by
   rw [v.modular a b]
   gcongr
-  exact v.mono le_compl_compl
+  exact v.mono _root_.le_compl_compl
 
 /-- The **plausibility** dual of a valuation: `Pl a := 1 − v aᶜ`. With `Bel = v`, the pair
 `(Bel a, Pl a) = (v a, 1 − v aᶜ)` is the Dempster–Shafer belief/plausibility interval. -/

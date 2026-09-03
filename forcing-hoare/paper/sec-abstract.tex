@@ -106,7 +106,7 @@ step-indexing~\cite{svendsen2016transfinite}, generalized to
 ordinals by Transfinite Iris~\cite{spies2021transfinite} --- with
 well-foundedness by a nested strong induction and \texttt{iLob} by
 the same \texttt{well\_founded\_ind} as everywhere.  The abstraction
-is not idle: a mechanized propositional sentence \emph{separates}
+is not vacuous: a mechanized propositional sentence \emph{separates}
 the instances.  Over $\omega$, iterated later \emph{exhausts}:
 $\triangleright^{n+1} \bot$ is forced at index $n$, so every
 condition forces some finite $\triangleright^k \bot$
@@ -115,9 +115,7 @@ $(1,0)$, above the fan $(0,0) \prec (0,1) \prec \cdots$, forces no
 finite $\triangleright^k \bot$ (\texttt{lex\_FS\_not\_exhausts}).
 This index-exhaustion sentence is the propositional core of the
 ``existential dilemma'' motivating transfinite
-indexing~\cite{spies2021transfinite}: over $\omega$, iterated
-$\triangleright$ eventually says nothing; transfinitely it retains
-content at every depth.
+indexing~\cite{spies2021transfinite}.
 
 \paragraph{Soundness of propositional GL.}
 As a concrete check, we define syntactic \textsf{GL} formulas
@@ -130,13 +128,7 @@ what the topos-of-trees literature establishes abstractly: our
 $\mathtt{iProp}$-with-$\triangleright$ structure is a sound model of
 the modal core of \textsf{GL}.
 
-We have shown that the data of a step-indexed logic is captured by a
-\texttt{ForcingStructure} record, that the propositional fragment is
-parametric in this data, that the internal Löb rule is, in any such
-structure, a direct instance of well-founded induction, and that the
-standard $(\omega, \le)$ choice is one instance among others ---
-including an $\omega^2$ instance separated from it by a mechanized
-propositional sentence.  The IMP and $\lambda$-calculus
-developments of Sections~\ref{sec:imp}--\ref{sec:lam} can be lifted
-to be parametric in the forcing structure with mostly bookkeeping
-changes, not done here for readability.
+The IMP and $\lambda$-calculus developments of
+Sections~\ref{sec:imp}--\ref{sec:lam} lift to be parametric in the
+forcing structure with mostly bookkeeping changes, omitted here for
+readability.

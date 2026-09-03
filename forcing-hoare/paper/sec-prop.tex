@@ -71,10 +71,11 @@ are routine. In each case the proof simply transports the membership
 witness through the order.
 
 \paragraph{The later modality.}
-The genuinely new ingredient over the standard Kripke interpretation
-of intuitionistic logic is the \emph{later} modality $\triangleright$.
-It is the operator that says ``to talk about a proposition here, you
-must drop one level''.  In our $(\omega, \le)$ orientation, $\triangleright \varphi$ at depth $n$ holds if $n = 0$ (we are at the weakest condition and the modality is vacuously satisfied) or if $\varphi$ holds at the shallower depth $n - 1$:
+The new ingredient over the standard Kripke interpretation of
+intuitionistic logic is the \emph{later} modality $\triangleright$.
+It shifts a proposition down one level: asserting $\triangleright
+\varphi$ at a condition requires $\varphi$ only at strictly lower
+conditions.  In our $(\omega, \le)$ orientation, $\triangleright \varphi$ at depth $n$ holds if $n = 0$ (we are at the weakest condition and the modality is vacuously satisfied) or if $\varphi$ holds at the shallower depth $n - 1$:
 
 \begin{lstlisting}
 Definition iLater (φ : iProp) : iProp :=
@@ -112,11 +113,9 @@ Lemma iImpl_elim φ ψ : (φ → ψ) ∧ φ ⊢ ψ.
 \end{lstlisting}
 
 \noindent
-Each proof simply moves the assumed monotonicity through the
-relevant connective. The work is small but worth doing
-mechanically because it confirms that the framework is genuinely a
-Heyting algebra without any informal appeal to topos-theoretic
-abstractions.
+Each proof moves the assumed monotonicity through the relevant
+connective, confirming mechanically that the framework is a Heyting
+algebra with no appeal to topos-theoretic abstractions.
 
 The basic laws of the later modality follow the same pattern.  We
 prove that $\triangleright$ is monotone in the entailment order,
@@ -126,7 +125,7 @@ distributes over $\wedge$ in both directions, and that
 $\triangleright \top$ is interderivable with $\top$.
 
 \paragraph{Löb's rule.}
-The technical heart of the propositional layer is Löb's rule:
+The central result of the propositional layer is Löb's rule:
 \begin{theorem}[Löb's rule]
 For every \texttt{iProp} $\varphi$, $(\triangleright \varphi \to
 \varphi) \vdash \varphi$.
@@ -162,11 +161,7 @@ Lemma iLater_False_distinct : ~ (▷ ⊥ ⊢ ⊥).
 \end{lstlisting}
 
 \noindent
-This is the canonical witness that step-indexing genuinely extends
-the propositional theory, rather than collapsing to ordinary
-intuitionistic logic.  We will revisit it in
-Section~\ref{sec:lob-essential} to make the converse point: if we
-\emph{drop} the well-foundedness of the forcing order, then
-$\triangleright \bot$ becomes equivalent to $\bot$ in a way that
-breaks Löb's rule entirely.
+Section~\ref{sec:lob-essential} makes the converse point: dropping
+well-foundedness of the forcing order makes $\triangleright \bot$
+equivalent to $\bot$ and breaks Löb's rule.
 

@@ -47,7 +47,7 @@ the \emph{recursion locus} of the soundness predicate.  For IMP's
 \texttt{while} it recurses only in the step index, where outer
 induction on $n$ and internal Löb give structurally identical proofs
 (\texttt{hoare\_while}, \texttt{hoare\_while\_iLob}).  For \texttt{fix}
-it recurses in the program itself, where only internal Löb plays to
+it recurses in the program itself, where only internal Löb matches
 that structure.
 
 \item \textbf{A characterization of L\"ob's rule by well-foundedness}
@@ -95,7 +95,7 @@ that coincide with our \texttt{iProp}.  The framework we give is the
 smallest such account that supports the two technical observations
 above.  Its purpose is to expose the structure inside these existing
 constructions that makes the diagnostic and the counterexample
-stateable in the first place.
+stateable.
 
 \paragraph{Scope.}
 We work at the level of plain Hoare triples and a partial-correctness

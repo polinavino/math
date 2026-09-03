@@ -1,9 +1,9 @@
 \section{Hoare Logic for an Untyped $\lambda$-Calculus with Recursion}
 \label{sec:lam}
 
-For IMP, step-indexing was overkill: the index was a presentation
-convenience.  We now move to a language where it is no longer
-optional: an untyped $\lambda$-calculus with a fix-point operator.
+For IMP, step-indexing was inessential: the index was a presentation
+convenience.  We now move to a language where it is not: an untyped
+$\lambda$-calculus with a fix-point operator.
 Two things change.  First, the wp predicate must explicitly encode
 \emph{safety}, since the language has stuck terms (e.g.\
 $\mathtt{EApp}\, (\mathtt{EInt}\, 5)\, (\mathtt{EInt}\, 3)$).  Second,
@@ -109,13 +109,13 @@ Theorem wp_fix body S :
 \end{lstlisting}
 \noindent
 No induction on $n$ appears in this proof. All recursive content is
-hidden inside \texttt{iLob}, written once in Section~\ref{sec:prop}.
+contained in \texttt{iLob}, written once in Section~\ref{sec:prop}.
 The soundness predicate $\mathtt{recursive\_spec}$ is recursive in
 the function being verified, so the natural proof must invoke some
-recursive reasoning principle.  A meta-level induction would have to
-manufacture that recursion from outside, while the internal Löb rule
-has it built in.  Section~\ref{sec:imp-vs-lam} makes this structural
-observation precise.
+recursive reasoning principle.  A meta-level induction would supply
+that recursion from outside the predicate. The internal Löb rule
+already contains it.  Section~\ref{sec:imp-vs-lam} makes this
+structural observation precise.
 
 \paragraph{Distinct pre- and postconditions.}
 The single-predicate \texttt{recursive\_spec} keeps the diagnostic of
@@ -167,5 +167,4 @@ substitution gives $e_{\mathrm{self}}$ unchanged and the Lipschitz
 premise collapses to reflexivity.  The conclusion, that
 $\mathtt{bottom}$ satisfies every recursive spec, is the familiar
 observation that a divergent program satisfies any partial-correctness
-specification vacuously. Here it appears as a one-liner because the
-forcing framework absorbs the divergence into the wp's index hierarchy.
+specification vacuously.

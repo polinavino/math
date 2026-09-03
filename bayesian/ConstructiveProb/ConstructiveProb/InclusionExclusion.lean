@@ -169,7 +169,7 @@ theorem infty_monotone (v : Valuation Ω) (s : Finset ι) (a : ι → Ω) :
     v.iesOdd s a ≤ v ((s.sup a)ᶜᶜ) + v.iesEven s a := by
   rw [← v.inclusion_exclusion s a]
   gcongr
-  exact v.mono le_compl_compl
+  exact v.mono _root_.le_compl_compl
 
 /-- In the classical (Boolean) limit the tower collapses back to an equality: `xᶜᶜ = x`, so
 inclusion–exclusion holds with equality *through the Boolean join as well* — recovering the

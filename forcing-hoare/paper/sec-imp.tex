@@ -20,17 +20,15 @@ Inductive cmd : Type :=
   | CWhile : bexp -> cmd -> cmd.
 \end{lstlisting}
 \noindent
-Each small step corresponds to one decrement of the step-index clock
-that the wp predicate tracks.
+Each small step corresponds to one decrement of the step index
+tracked by the wp predicate.
 
 \paragraph{Step-indexed wp and the Hoare triple.}
 The wp predicate is the step-indexed analogue of the Dijkstra wp:
 $\mathtt{wp\_at}\, n\, c\, Q\, s$ says that running $c$ from $s$ for at
 most $n$ steps is safe and any final state satisfies $Q$.  In IMP,
 every non-\texttt{CSkip} command can step, so the safety condition is
-automatic and we do not record it explicitly. The invisibility of
-safety in IMP is what makes this section a calibration, and
-Section~\ref{sec:lam} is where it becomes visible.
+automatic and we do not record it explicitly.
 \begin{lstlisting}
 Fixpoint wp_at (n : nat) (c : cmd)
                (Q : state -> Prop) (s : state) : Prop :=
@@ -57,9 +55,9 @@ $n+1$ and inversion on the available step.  Sequencing requires a
 small auxiliary lemma \texttt{wp\_seq} decomposing the wp of
 \texttt{CSeq c1 c2} into the wp of \texttt{c1} targeting the wp of
 \texttt{c2}, with one use of \texttt{wp\_at\_mono} to align indices.
-None of these five rules uses the propositional layer. We could state
-them entirely at the meta level.  The propositional layer pays off
-for \texttt{while}.
+None of these five rules uses the propositional layer, and they
+could be stated entirely at the meta level.  The propositional layer
+becomes useful only for \texttt{while}.
 
 \paragraph{The \texttt{while} rule, meta-level induction.}
 Soundness of
@@ -92,14 +90,13 @@ Lemma hoare_while_iLob P b c :
 \end{lstlisting}
 \noindent
 The intermediate entailment contains no induction on $n$.  All recursive content
-is hidden inside \texttt{iLob}'s proof, written once in
-Section~\ref{sec:prop} and not reproduced at every Hoare-style
-soundness proof.  The six rules (skip, assign, seq, if, while,
-consequence) are packaged as a single theorem
-\texttt{imp\_hoare\_rules}.  In the forcing-style semantics, soundness
-of Hoare logic over IMP is structurally identical to the soundness
-statement using the standard direct semantics.  This is part of the
-point: at the first-order level the forcing reading is a different
-\emph{presentation} of the same theorems.  Section~\ref{sec:lam}
-moves to a setting where the re-presentation produces a noticeably
-different proof obligation.
+is in \texttt{iLob}'s proof, written once in
+Section~\ref{sec:prop} rather than at every soundness proof.  The six
+rules (skip, assign, seq, if, while, consequence) are packaged as a
+single theorem \texttt{imp\_hoare\_rules}.  In the forcing-style
+semantics, soundness of Hoare logic over IMP is structurally
+identical to the soundness statement using the standard direct
+semantics: at the first-order level the forcing reading is a
+different \emph{presentation} of the same theorems.
+Section~\ref{sec:lam} moves to a setting where the re-presentation
+produces a different proof obligation.
