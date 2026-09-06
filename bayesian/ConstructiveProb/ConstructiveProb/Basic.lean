@@ -202,6 +202,59 @@ theorem slack_eq_zero_iff (v : Valuation Ω) (a : Ω) :
     v.slack a = 0 ↔ v.dnGap a = 0 ∧ v.deMorganGap a = 0 := by
   rw [slack_eq_dnGap_add_deMorganGap, add_eq_zero]
 
+/-- **Slack is submodular.** A necessary condition on slack alone, forced by `v`'s own
+modularity plus monotonicity: it cannot be prescribed independently of the valuation it
+is derived from. Proof sketch: `v`'s modular law applied to `(a, b)` and to `(aᶜ, bᶜ)`,
+combined with the De Morgan equality `(a ⊔ b)ᶜ = aᶜ ⊓ bᶜ` and the De Morgan inequality
+`aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ` (monotone under `v`), telescopes the four defining identities
+`slack x + (v x + v xᶜ) = 1` (for `x = a, b, a ⊔ b, a ⊓ b`) into the stated inequality. -/
+theorem slack_submodular (v : Valuation Ω) (a b : Ω) :
+    v.slack (a ⊔ b) + v.slack (a ⊓ b) ≤ v.slack a + v.slack b := by
+  have h1 : v.slack (a ⊔ b) + (v (a ⊔ b) + v (a ⊔ b)ᶜ) = 1 :=
+    tsub_add_cancel_of_le (v.add_compl_le_one (a ⊔ b))
+  have h2 : v.slack (a ⊓ b) + (v (a ⊓ b) + v (a ⊓ b)ᶜ) = 1 :=
+    tsub_add_cancel_of_le (v.add_compl_le_one (a ⊓ b))
+  have h3 : v.slack a + (v a + v aᶜ) = 1 := tsub_add_cancel_of_le (v.add_compl_le_one a)
+  have h4 : v.slack b + (v b + v bᶜ) = 1 := tsub_add_cancel_of_le (v.add_compl_le_one b)
+  have hmod : v (a ⊔ b) + v (a ⊓ b) = v a + v b := (v.modular a b).symm
+  have hmodc : v aᶜ + v bᶜ = v (aᶜ ⊔ bᶜ) + v (aᶜ ⊓ bᶜ) := v.modular aᶜ bᶜ
+  have hdm : v (a ⊔ b)ᶜ = v (aᶜ ⊓ bᶜ) := by rw [compl_sup]
+  have hle : v (aᶜ ⊔ bᶜ) ≤ v (a ⊓ b)ᶜ := v.mono compl_sup_compl_le
+  set C1 : ℝ≥0∞ := (v a + v b) + v (aᶜ ⊓ bᶜ) + v (a ⊓ b)ᶜ with hC1def
+  set C2 : ℝ≥0∞ := (v a + v b) + v (aᶜ ⊓ bᶜ) + v (aᶜ ⊔ bᶜ) with hC2def
+  have e1 : (v a + v b) + v (aᶜ ⊓ bᶜ) + v (a ⊓ b)ᶜ
+      = (v (a ⊔ b) + v (a ⊔ b)ᶜ) + (v (a ⊓ b) + v (a ⊓ b)ᶜ) := by
+    rw [← hmod, ← hdm]; ring
+  have e2 : (v a + v b) + v (aᶜ ⊓ bᶜ) + v (aᶜ ⊔ bᶜ) = (v a + v aᶜ) + (v b + v bᶜ) := by
+    have hswap : (v a + v aᶜ) + (v b + v bᶜ) = (v a + v b) + (v aᶜ + v bᶜ) := by ring
+    rw [hswap, hmodc]; ring
+  have hC1 : v.slack (a ⊔ b) + v.slack (a ⊓ b) + C1 = 1 + 1 := by
+    rw [hC1def, e1,
+      show v.slack (a ⊔ b) + v.slack (a ⊓ b)
+          + ((v (a ⊔ b) + v (a ⊔ b)ᶜ) + (v (a ⊓ b) + v (a ⊓ b)ᶜ))
+        = (v.slack (a ⊔ b) + (v (a ⊔ b) + v (a ⊔ b)ᶜ))
+          + (v.slack (a ⊓ b) + (v (a ⊓ b) + v (a ⊓ b)ᶜ)) from by ring,
+      h1, h2]
+  have hC2 : v.slack a + v.slack b + C2 = 1 + 1 := by
+    rw [hC2def, e2,
+      show v.slack a + v.slack b + ((v a + v aᶜ) + (v b + v bᶜ))
+        = (v.slack a + (v a + v aᶜ)) + (v.slack b + (v b + v bᶜ)) from by ring,
+      h3, h4]
+  have hCle : C2 ≤ C1 := by rw [hC2def, hC1def]; gcongr
+  have hne : ∀ x : Ω, v x ≠ ⊤ := fun x => ((v.le_one x).trans_lt ENNReal.one_lt_top).ne
+  have hC1ne : C1 ≠ ⊤ := by
+    rw [hC1def]
+    exact ENNReal.add_ne_top.mpr
+      ⟨ENNReal.add_ne_top.mpr ⟨ENNReal.add_ne_top.mpr ⟨hne a, hne b⟩,
+        hne _⟩, hne _⟩
+  have key : v.slack (a ⊔ b) + v.slack (a ⊓ b) + C1 = v.slack a + v.slack b + C2 :=
+    hC1.trans hC2.symm
+  have step1 : v.slack a + v.slack b + C2 ≤ v.slack a + v.slack b + C1 :=
+    add_le_add le_rfl hCle
+  have step2 : v.slack (a ⊔ b) + v.slack (a ⊓ b) + C1 ≤ v.slack a + v.slack b + C1 :=
+    key.le.trans step1
+  exact (ENNReal.add_le_add_iff_right hC1ne).mp step2
+
 end Valuation
 
 /-! ## Convex combinations of valuations

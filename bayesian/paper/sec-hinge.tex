@@ -1,9 +1,9 @@
-\section{Where Classicality Lives}
+\section{Classicality in Theory and Metatheory}
 \label{sec:hinge}
 
-Classicality lives at multiple levels in this work: one
-meta-theoretic, in the proof assistant itself, and one object-level,
-in the frame's own logic.
+Classicality enters this work twice: in the metatheory, the logic
+of the proof assistant itself, and in the object theory, the frame's
+own logic.
 
 \paragraph{Lean's meta-theory.}
 Lean's foundations include
@@ -22,7 +22,7 @@ rests only on this ambient baseline and contains no explicit case
 split. The Scott-continuity recovery theorem
 (Theorem~\ref{thm:recovery})
 invokes Lean's \texttt{classical} tactic directly, and the
-\texttt{CoxModel} witness of Section~\ref{sec:cox} goes the other
+explicit Cox model of Section~\ref{sec:cox} goes the other
 way, replacing the default with an explicit computable
 \texttt{Decidable} instance to keep that one instance genuinely
 non-classical.
@@ -41,23 +41,20 @@ isolate the exact content of
 R3's conclusion as a predicate on valuations, then prove equivalence
 to excluded middle.
 
-\begin{lstlisting}
-def Valuation.HasClassicalNegation (v : Valuation Ω) : Prop :=
-  ∀ a, v a + v aᶜ = 1
-\end{lstlisting}
+That predicate is \emph{classical negation}: a valuation $v$ has
+classical negation if $v(a) + v(\neg a) = 1$ for every $a \in \Omega$.
 
-\begin{theorem}[the R3 characterization]
+\begin{theorem}[the R3 characterization\leanref{hinge}]
 \label{thm:hinge}
 For every frame $\Omega$, every valuation on $\Omega$ has classical
 negation \emph{iff} $a \sqcup \neg a = \top$ for every
 $a \in \Omega$.
 \end{theorem}
 
-The forward direction (\texttt{hasClassicalNegation\_of\_em}) is a
-calculation.  The content is the converse
-(\texttt{em\_of\_forall\_\allowbreak hasClassicalNegation}): wherever excluded
+The forward direction is a
+calculation.  The content is the converse: wherever excluded
 middle fails, a valuation with genuine slack must be
-\emph{manufactured}.  Suppose $a \sqcup \neg a \neq \top$.
+\emph{constructed}.  Suppose $a \sqcup \neg a \neq \top$.
 
 \begin{definition}[ideal, prime ideal]
 An \emph{ideal} $J \subseteq \Omega$ is downward closed and closed
@@ -76,24 +73,22 @@ complement,
 is a valuation.  Modularity in the only nontrivial case ($x, y
 \notin J$) is \emph{exactly} primeness, $x \sqcap y \in J
 \Rightarrow x \in J \vee y \in J$.  And this valuation assigns
-$v(a) + v(\neg a) = 0 \neq 1$.  So the complement rule is not
-one convention among many.  Quantified over all valuations, it is a
-statement \emph{about the algebra} that is equivalent to excluded
-middle.
+$v(a) + v(\neg a) = 0 \neq 1$.
 
 \paragraph{Sharp valuations are the points of the locale.}
-The construction above is not ad hoc.  It is one half of an exact
+The construction above is one half of an exact
 correspondence.  Call $v$ \emph{sharp} if it is $\{0,1\}$-valued, a
 state of full certainty.  Sharpness characterizes exactly the
 prime-ideal indicators:
 
-\begin{theorem}[\texttt{sharp\_iff\_point}]
+\begin{theorem}[sharp valuations are points\leanref{sharp-iff-point}]
+\label{thm:sharp-iff-point}
 For every valuation $v$ on a frame $\Omega$, $v$ is sharp iff $v$ is
 the complement-indicator of a prime ideal.
 \end{theorem}
 
 \noindent
-This theorem is witnessed by two mutually inverse maps: $v \mapsto Z(v) =
+The correspondence is given by two mutually inverse maps: $v \mapsto Z(v) =
 \{x \in \Omega : v(x) = 0\}$, which computes the zero-set of a sharp valuation, 
 and the map taking
 $J$ to its complement-indicator (the valuation of
@@ -104,19 +99,19 @@ recover the \emph{points} of the locale.  A prime ideal is
 \emph{completely prime} when it is also closed under arbitrary
 (not just finite) suprema of its members. 
 The finitely prime points 
-of \texttt{sharp\_iff\_point} sharpen to
+of Theorem~\ref{thm:sharp-iff-point} sharpen to
 the completely prime points exactly where Scott continuity is added,
 recovering points of the locale in the sense used
 by~\cite{vickers2008,coquand-spitters2009}:
 
-\begin{theorem}[\texttt{sharp\_scott\_iff\_\allowbreak completelyPrimePoint}]
+\begin{theorem}[Scott-continuous sharp valuations\leanref{sharp-scott-iff-completelyprimepoint}]
 For every valuation $v$ on a frame $\Omega$, $v$ is sharp and
 Scott-continuous iff $v$ is the complement-indicator of a completely
 prime ideal.
 \end{theorem}
 
 \noindent  The characterization and the two
-correspondences together answer the question ``where
-does classicality live'': whenever
-excluded middle fails at some $a$, the failure is witnessed by a
+correspondences together locate the object-level classicality
+precisely: whenever
+excluded middle fails at some $a$, the failure occurs at a
 point of the locale.

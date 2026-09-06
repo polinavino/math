@@ -1,4 +1,4 @@
-\section{The Cox Program, Dissected}
+\section{Cox's Theorem}
 \label{sec:cox}
 
 Cox's theorem~\cite{cox1946,jaynes2003} derives the probability
@@ -7,35 +7,37 @@ counterexample~\cite{halpern1999}, its repaired
 forms~\cite{vanhorn2003,arnborg-sjodin2000} fix the calculus up to
 monotone regraduation.  Every known derivation is classical, and
 Section~\ref{sec:hinge} showed why: the negation axiom R3 \emph{is}
-excluded middle.  Dropping the R3 axiom has the following 
-effects: product rule is unaffected (as it is logic-free),
-the sum rule becomes an axiom rather than a result.
-As a result, the naive constructive statement (strict monotonicity
-on all of $\mathbb{R}$) is false.
+excluded middle.  Dropping R3 leaves the product rule
+unaffected, since it is logic-free, and requires the sum rule to become an axiom
+rather than a theorem.  Separately, the naive constructive statement,
+demanding a regraduation strictly monotone on all of $\mathbb{R}$, is
+unsatisfiable (Section~\ref{sec:cox-theorem}).
 
 \subsection{A Cox Structure without Negation}
 
-\begin{lstlisting}
-structure CoxModel (Ω : Type*) [Order.Frame Ω] where
-  pl : Ω → Ω → ℝ            -- pl a b : plausibility of a given b
-  mono_left : ∀ c, Monotone fun a => pl a c
-  pl_bot : ∀ c, pl ⊥ c = 0
-  pl_top : ∀ c, pl ⊤ c = 1
-  F : ℝ → ℝ → ℝ             -- conjunction functional
-  conj : ∀ a b c, pl (a ⊓ b) c = F (pl a (b ⊓ c)) (pl b c)
-  F_assoc : ∀ x y z, F (F x y) z = F x (F y z)
-  F_strictMono_left : ∀ y, 0 < y → StrictMono fun x => F x y
-\end{lstlisting}
+\begin{definition}[Cox model\leanref{coxmodel}]
+\label{def:coxmodel}
+A \emph{Cox model} on a frame $\Omega$ is a plausibility assignment
+$\mathrm{pl} : \Omega \times \Omega \to \mathbb{R}$, written
+$\mathrm{pl}(a, b)$ for the plausibility of $a$ given $b$, together with
+a \emph{conjunction functional} $F : \mathbb{R} \times \mathbb{R} \to
+\mathbb{R}$, such that $\mathrm{pl}(\cdot, c)$ is monotone for every $c$,
+the boundary conditions $\mathrm{pl}(\bot, c) = 0$ and
+$\mathrm{pl}(\top, c) = 1$ hold for every $c$, the product rule
+$\mathrm{pl}(a \sqcap b, c) = F(\mathrm{pl}(a, b \sqcap c),
+\mathrm{pl}(b, c))$ holds, $F$ is associative, and $x \mapsto F(x, y)$ is
+strictly monotone for every $y > 0$.
+\end{definition}
 
-The missing R3 axiom can be observed in the omission of 
+The missing R3 axiom can be observed in the omission of
 any constraint on the relation between
 $\mathrm{pl}(\neg a, b)$ and $\mathrm{pl}(a, b)$.
-The $\mathtt{CoxModel}$ restricts monotonicity of $F$ to
-$0 < y$ to avoid a contradiction with the fact that 
+The definition restricts the monotonicity of $F$ to
+$0 < y$ to avoid a contradiction with the fact that
 the boundary axioms force $F(x, 0) = 0$ for all
-$x$.  \texttt{coxModelENNReal} (explicit model on the
-non-classical chain $\ENNReal$) satisfies 
-this constraint, as $a = \top$ is provably decidable.
+$x$.  An explicit model on the
+non-classical chain $\ENNReal$ satisfies
+this constraint\leanref{coxmodelennreal}, as $a = \top$ is provably decidable.
 
 \subsection{The Sum Rule Is Irreducible}
 
@@ -44,8 +46,7 @@ negated conjunction via De~Morgan, and the product rule does the
 rest.  Constructively that route is closed, since
 $a \vee b \neq \neg(\neg a \wedge \neg b)$ in general:
 
-\begin{theorem}[\texttt{modularity\_\allowbreak irreducible},
-  \texttt{no\_disjunction\_\allowbreak functional}]
+\begin{theorem}[the sum rule is irreducible\leanref{no-disjunction-functional}]
 \label{thm:no-functional}
 Let $\Omega$ be the five-element frame of lower sets of the poset
 $o < a,\, o < b$ with $a, b$ incomparable.  Then there is a
@@ -53,31 +54,37 @@ monotone, normalized assignment $q$ on $\Omega$ that is additive on
 disjoint joins yet not modular, and no binary operation $S$ on
 values satisfies $q(x \sqcup y) = S(q(x), q(y))$ for all $x, y$.
 Moreover, the
-pairs $({\downarrow}a, {\downarrow}a)$ and $({\downarrow}a,
-{\downarrow}b)$ have identical value-pairs $(\tfrac12, \tfrac12)$
+pairs $(\pdown a, \pdown a)$ and $(\pdown a,
+\pdown b)$ have identical value-pairs $(\tfrac12, \tfrac12)$
 but joins valued $\tfrac12$ and $1$.
 \end{theorem}
 
 \noindent
-Unlike for a conjunction, a disjunction's plausibility cannot 
+Unlike for a conjunction, a disjunction's plausibility cannot
 generally be expressed as its disjuncts'
 plausibilities via conditioning.  So, a constructive Cox
-theorem \emph{must} posit the sum-rule half.  Modularity, 
+theorem \emph{must} posit the sum-rule half.  Modularity,
 which says that the calculus is closed
 under mixing certainties, is what
 posits this, justified by Theorem~\ref{thm:mixture}.
+The failure is not repaired by strengthening the logic short of
+Boolean: the counterexample frame satisfies weak excluded
+middle\leanref{isdemorgan-lowersetv}, since every nonempty lower set
+contains the bottom point $o$, so the irreducibility persists under
+that intermediate assumption.
 
 \subsection{Cox Model Theorem}
- 
-Strict
-monotonicity forces $g(-1) < g(0) = 0$, impossible in $\ENNReal$.
-For this reason, it is impossible to define a strictly monotone
-regraduation $g : \mathbb{R} \to \ENNReal$ with $g(0) = 0$.
+\label{sec:cox-theorem}
+
+A regraduation is a map $g : \mathbb{R} \to \ENNReal$ with
+$g(0) = 0$.  No such map is strictly monotone on all of $\mathbb{R}$,
+since strictness would force $g(-1) < g(0) = 0$, impossible in
+$\ENNReal$.
 The repair (strictness only on $[0,1]$, where plausibilities live)
 is exactly the same domain restriction that Halpern's critique of
 the classical theorem turns on.  The corrected statement is:
 
-\begin{theorem}[\texttt{constructive\_cox}]
+\begin{theorem}[the constructive Cox theorem\leanref{constructive-cox}]
 \label{thm:cox}
 For every frame $\Omega$, every Cox model on $\Omega$ whose
 unconditional plausibility is modular
@@ -88,38 +95,22 @@ $a \in \Omega$, $v(a) = g(\mathrm{pl}(a, \top))$ .
 \end{theorem}
 
 The regraduation for the sum-rule half is straightforward
-($g = \texttt{ENNReal.ofReal}$).  The 
-product-rule half, showing $F$ regraduates to multiplication, 
-on the other hand, requires additional machinery. In particular,
-we required a proof of Acz\'el's associativity
-theorem~\cite{aczel1966}, a statement of
-pure analysis whose type never mentions $\Omega$.
-\textsf{mathlib} has no Acz\'el theorem, no H\"older-style
-embedding for ordered semigroups on intervals, and no Cauchy
-functional equation under monotonicity (only under continuity), so
-we build the analytic core from scratch.  A
-H\"older-style embedding needs two structural facts beyond
-associativity and monotonicity.  The first is \emph{divisibility}:
-every element must have a $2^n$-th root for each $n$, since the
-generator is built as the dyadic limit $g(b) = \bigsqcup_n
-(\text{count of } 2^n\text{-th roots under } b)/2^n$, which cannot
-even be written down without these roots existing.  The second is
-the \emph{Archimedean property}~\cite{hoelder1901}, which rules out
-elements too fine for any real number to detect, and is what makes
-an embedding into $\mathbb{R}$ possible at all.  
-Taking these together allowed us to define a normalized, strictly monotone additive
-generator and hence a strictly monotone multiplicative one on the
-positive cone (\texttt{exists\_mul\_generator},
-\texttt{aczelStatement\_cone}).  Our contribution shortens this
-hypothesis list on both counts: the Archimedean property is
-\emph{derived} from continuity and positivity, and the interval 
-form of divisibility needed by the
-dyadic construction is itself a consequence of the intermediate
-value theorem (\texttt{exists\_diag\_eq}) applied to
-\texttt{Scale}'s weaker, plain divisibility hypothesis.  The
+($g = \texttt{ENNReal.ofReal}$).  The product-rule half, showing $F$
+regraduates to multiplication, rests on Acz\'el's associativity
+theorem~\cite{aczel1966}, a statement of pure analysis whose type
+never mentions $\Omega$.  \textsf{mathlib} has no Acz\'el theorem, no
+H\"older-style embedding for ordered semigroups on intervals, and no
+Cauchy functional equation under monotonicity, so we build the
+analytic core from scratch, obtaining a normalized, strictly monotone
+multiplicative generator on the positive
+cone\leanref{exists-mul-generator}.  The construction also weakens
+H\"older's classical hypotheses~\cite{hoelder1901}: the Archimedean
+property is \emph{derived} from continuity and positivity rather than
+assumed, and the interval form of divisibility follows from the
+intermediate value theorem\leanref{exists-diag-eq} applied to a
+plain divisibility hypothesis\leanref{scale}.  The
 constructive/classical divide is therefore \emph{entirely} in the
-sum rule: this whole apparatus is a statement of pure analysis
-whose type never mentions $\Omega$.
+sum rule: nothing in the product-rule apparatus mentions $\Omega$.
 Appendix~\ref{app:aczel} gives the construction.  The residual
 analytic gap is discussed in
 Section~\ref{sec:conclusion}.

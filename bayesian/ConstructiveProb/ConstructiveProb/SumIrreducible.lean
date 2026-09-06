@@ -22,6 +22,7 @@ it is the irreducible constructive content of the sum rule. (Meta-level classica
 used to decide membership in the counterexample; this is reasoning *about* the theory.)
 -/
 import ConstructiveProb.Basic
+import ConstructiveProb.DeMorgan
 
 open scoped ENNReal
 open Classical
@@ -176,6 +177,24 @@ theorem no_disjunction_functional :
   -- h1 : ½ = S ½ ½, h2 : 1 = S ½ ½ ⟹ ½ = 1
   have : (2⁻¹ : ℝ≥0∞) = 1 := h1.trans h2.symm
   exact absurd this (ne_of_lt (ENNReal.inv_lt_one.mpr ENNReal.one_lt_two))
+
+/-- **Weak excluded middle holds on the counterexample frame.** Every nonempty lower set of `V`
+contains the bottom point `o`, so any two nonempty lower sets meet: the pseudocomplement of any
+`x ≠ ⊥` is `⊥`, and the De Morgan law `xᶜᶜ ⊔ xᶜ = ⊤` holds at every element. The sum-rule
+irreducibility above therefore survives global weak excluded middle: the intermediate assumption
+does not restore a disjunction functional. -/
+theorem isDeMorgan_lowerSetV : Order.Frame.IsDeMorgan (LowerSet V) := by
+  intro x
+  by_cases hx : x = ⊥
+  · subst hx
+    simp
+  · have hxc : xᶜ = ⊥ := by
+      by_contra hc
+      have ho : V.o ∈ x ⊓ xᶜ := mem_inf_V.mpr ⟨o_mem_of_ne_bot hx, o_mem_of_ne_bot hc⟩
+      rw [inf_compl_eq_bot] at ho
+      exact not_mem_bot_V V.o ho
+    rw [hxc]
+    simp
 
 /-- **Modularity is irreducible.** There is a monotone, normalized plausibility on a (non-Boolean)
 frame that is additive on disjoint joins yet not modular — so modularity cannot be derived from

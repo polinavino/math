@@ -19,9 +19,11 @@ $x < F\,x\,c$, joint order-preservation, joint continuity, a unit
 $u$, and identity at $-\infty$, meaning
 $F\,x\,z \to x$ as $z \to -\infty$.  Order-preservation was absent
 from our first bundle, and the additivity proof needs it.
-Divisibility is taken as a hypothesis in the bundle, although its
-interval form is a consequence of the intermediate value theorem
-(\texttt{exists\_diag\_eq}).  Non-vacuity: \emph{log-sum-exp},
+Divisibility supplies the $2^{n}$-th roots that the dyadic
+construction below counts, and without it the generator cannot be
+written down.  It is taken as a plain hypothesis in the bundle,
+although its interval form is a consequence of the intermediate value
+theorem (\texttt{exists\_diag\_eq}).  Non-vacuity: \emph{log-sum-exp},
 $F\,x\,y = \log(e^x + e^y)$ with $u = 0$, satisfies every field
 (\texttt{logSumExpScale}), and for it the intended generator is
 globally $\exp$.
@@ -69,11 +71,13 @@ orientation of Section~\ref{sec:cox}.
 The constructed $g$ is discontinuous at the unit (it is $0$ below
 $u$), so matching the classical statement verbatim still needs the
 off-cone extension (a group completion) and continuity of the
-extension.  That is genuine analysis, open here, but
-\emph{witnessed}: for the log-sum-exp example the global
+extension.  That is genuine analysis, open here, but not vacuous:
+for the log-sum-exp example the global
 continuous generator exists
 (\texttt{hasOrderedGenerator\_\allowbreak logSumExp}).  Of H\"older's classical
-hypotheses, the Archimedean property is a theorem in this
+hypotheses, the Archimedean property, which rules out elements too
+fine for any real number to detect and is what makes an embedding
+into $\mathbb{R}$ possible at all, is a theorem in this
 development rather than an assumption, and the interval form of
 divisibility follows from the intermediate value theorem.  Only the
 embedding's global regularity remains.

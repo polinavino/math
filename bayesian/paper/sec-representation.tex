@@ -20,42 +20,43 @@ Let $P$ be the finite poset of
 sup-irreducible elements of a finite frame.
 Then, by Birkhoff duality
 (\texttt{OrderIso.lowerSetSupIrred}),
-every finite frame is the lattice of \emph{lower sets} of $P$: a
-\emph{lower set} $U \subseteq P$ satisfies $p \in U,\, q \le p
-\Rightarrow q \in U$, with $\mathrm{Iic}\,p = \{q : q \le p\}$ and
-$\mathrm{Iio}\,p = \{q : q < p\}$ its principal instances at $p$.
-We prove the finite representation theorem below on
-\texttt{LowerSet P}.
+every finite frame is the lattice of \emph{lower sets} of $P$.
+We fix the following notation, used throughout the rest of the paper.
+A \emph{lower set} $L \subseteq P$ satisfies $p \in L,\, q \le p
+\Rightarrow q \in L$, and an \emph{upper set} is defined dually.
+Lower sets are always denoted $L$, and upper sets $U$ (opens of a
+topological space are still $U, V, W$, as in traditional usage).  The
+\emph{principal lower set} at $p$ is $\pdown p = \{q : q \le p\}$, the
+\emph{strict principal lower set} at $p$ is
+$\pdowns p = \{q : q < p\}$, and the \emph{principal upper set} at
+$p$ is $\pup p = \{q : q \ge p\}$.
+We prove the finite representation theorem below on the lower sets of
+$P$.
 Transporting
 it across the isomorphism above then gives the theorem for every
-finite frame, not just lower sets
-(\texttt{Valuation.\allowbreak exists\_pmf\_presentation}).  Let us define the \emph{mass} of a
-point as the discrete derivative of $v$:
-\begin{lstlisting}
-def Valuation.mass (v : Valuation (LowerSet P)) (p : P) :
-    ℝ≥0∞ := v (LowerSet.Iic p) - v (LowerSet.Iio p)
-\end{lstlisting}
+finite frame, not just lower sets\leanref{valuation-exists-pmf-presentation}.
+Let us define the \emph{mass} of a
+point as the discrete derivative of $v$\leanref{valuation-mass}:
+\[
+  \mathrm{mass}(p) \;=\; v(\pdown p) - v(\pdowns p).
+\]
 
-From the mass at every point, we can fully recover $v$.
-The masses also sum to $1$, forming a
-probability distribution on $P$:
+The masses recover $v$ and sum to $1$:
 
-\begin{theorem}[finite representation,
-  \texttt{Valuation.eq\_\allowbreak sum\_mass}, \texttt{Valuation.sum\_mass}]
+\begin{theorem}[finite representation\leanref{valuation-eq-sum-mass}]
 \label{thm:finite-rep}
 For a finite $P$, any valuation $v$ on $\mathrm{Low}(P)$, and any
-$U \in \mathrm{Low}(P)$,
-$v(U) = \sum_{p \in U} \mathrm{mass}(p)$, and
+$L \in \mathrm{Low}(P)$,
+$v(L) = \sum_{p \in L} \mathrm{mass}(p)$, and
 $\sum_{p} \mathrm{mass}(p) = 1$.
 \end{theorem}
 
-The proof works by induction on $|U|$: repeatedly remove a maximal
-point $p$ from $U$, and use modularity applied to
-$(U \setminus {\uparrow}p,\; {\downarrow}p)$ to show each removal
+The proof works by induction on $|L|$: repeatedly remove a maximal
+point $p$ from $L$, and use modularity applied to
+$(L \setminus \pup p,\; \pdown p)$ to show each removal
 changes $v$ by exactly $\mathrm{mass}(p)$.
-\texttt{Valuation.toPMF} gives
-$\mathrm{mass}$ the type \texttt{PMF} on $P$, i.e. a
-classical probability mass function.  And since lower sets are
+The mass function is a classical probability mass function on
+$P$\leanref{valuation-topmf}.  And since lower sets are
 exactly the opens of the Alexandrov topology, where interior is the
 identity, the theorem also reads $v = \mu \circ \mathrm{int}$, i.e.
 every valuation on a
@@ -63,16 +64,23 @@ finite frame is the classical measure $\mu$ applied after
 taking the interior.
 In the finite case, this is the converse of
 the measure-theoretic bridge of Section~\ref{sec:bridges}.
+The intuitionistic mass also agrees with the classical notion of the
+mass of a point: reading $v = \mu \circ \mathrm{int}$,
+\[
+  \mathrm{mass}(p) \;=\; \mu(\pdown p) - \mu(\pdowns p)
+  \;=\; \mu(\{p\}),
+\]
+since $\pdown p$ is the disjoint union of $\pdowns p$ and $\{p\}$ and
+$\mu$ is defined on all subsets of $P$.
 
-The theorem above represented $v$ as a sum of point masses.
+Theorem~\ref{thm:finite-rep} represented $v$ as a sum of point masses.
 The dual view
 represents $v$ as a mixture of sharp
 \emph{point-valuations}.  For each $p \in P$, let
-$\delta_p$ be the valuation with $\delta_p(U) = 1$ if $p \in U$, and
-$\delta_p(U) = 0$ otherwise:
+$\delta_p$ be the valuation with $\delta_p(L) = 1$ if $p \in L$, and
+$\delta_p(L) = 0$ otherwise:
 
-\begin{theorem}[mixture characterization,
-  \texttt{Valuation.eq\_\allowbreak mix\_\allowbreak deltaPoint}]
+\begin{theorem}[mixture characterization\leanref{valuation-eq-mix-deltapoint}]
 \label{thm:mixture}
 On a finite frame, every valuation $v$ satisfies
 $v = \sum_p \mathrm{mass}(p)\cdot\delta_p$.
@@ -80,7 +88,7 @@ $v = \sum_p \mathrm{mass}(p)\cdot\delta_p$.
 
 \noindent
 Together with the fact that any mixture of valuations is again a
-valuation (\texttt{Valuation.mix}), this theorem characterizes the
+valuation\leanref{valuation-mix}, this theorem characterizes the
 valuations on a finite frame exactly: they are the finite convex
 mixtures of point-valuations, closed under mixing because modularity
 is linear.  Section~\ref{sec:cox} shows modularity cannot instead be
@@ -92,74 +100,69 @@ mixture of sharp, all-or-nothing certainties.
 
 Both halves of the finite theorem fail for infinite frames:
 
-\begin{theorem}[obstruction,
-  \texttt{exists\_valuation\_not\_\allowbreak point\_representable},
-  \texttt{topIndicator\_mass}]
+\begin{example}[obstruction\leanref{exists-valuation-not-point-representable}]
 \label{thm:obstruction}
 On $\mathrm{Low}(\mathbb{N})$, the indicator $v$ of $\top$ is a
 valuation with $\mathrm{mass}(p) = 0$ for every point $p$, and
 $v(\top) = 1$.
-\end{theorem}
+\end{example}
 
 \noindent
 No point carries any of the mass.  The failure is one of
-approximation: $v(\top)$ is not the supremum of $v(\mathrm{Iic}\,n)$
+approximation: $v(\top)$ is not the supremum of $v(\pdown n)$
 over the finite stages. In order to recover the representation,
 we introduce Scott continuity:
 
 \begin{definition}[directed set, Scott continuity]
-A subset $D \subseteq \Omega$ is \emph{directed} if it is nonempty
-and every pair of its elements has an upper bound in $D$.  A
+A subset $D \subseteq \Omega$ is \emph{directed} if, for any finite
+subset $F \subseteq D$, there exists an element $d \in D$ that is an
+upper bound of $F$ (taking $F = \emptyset$ shows a directed set is
+nonempty).  A
 valuation $v$ is \emph{Scott-continuous} if
 $v(\bigsqcup D) = \sup_{a \in D} v(a)$ for every directed $D$.
 \end{definition}
 
-We must require Scott continuity
-explicitly, as the representation result may fail otherwise.
-The $\top$-indicator of Theorem~\ref{thm:obstruction} witnesses this:
-it is not Scott-continuous (\texttt{topIndicator\_not\_scott}).  Scott
+The $\top$-indicator of Example~\ref{thm:obstruction} is not
+Scott-continuous\leanref{topindicator-not-scott}, and Scott
 continuity is exactly what restores the representation:
 
-\begin{theorem}[recovery, \texttt{eq\_tsum\_mass\_of\_scott},
-  generalized by \texttt{Valuation.isPurelyAtomic\_of\_scott}]
+\begin{theorem}[recovery\leanref{eq-tsum-mass-of-scott}]
 \label{thm:recovery}
 Let $v$ be a valuation on $\mathrm{Low}(\mathbb{N})$. If
-$v(\top) = \bigsqcup_n v(\mathrm{Iic}\,n)$
-then $v(\top) = \sum'_n \mathrm{mass}(n)$.
+$v(\top) = \sup_n v(\pdown n)$
+then $v(\top) = \sum_n \mathrm{mass}(n)$.
 \end{theorem}
 
 In general, on
-any poset all of whose principal downsets are finite, Scott
+any poset all of whose principal lower sets are finite, Scott
 continuity implies zero diffuse part without additional preconditions.
 However, subtraction in $\ENNReal$ is truncated at $0$, so if
-$\sum'_p \mathrm{mass}(p)$ were greater than $v(\top)$, the expression
-$v(\top) - \sum'_p \mathrm{mass}(p)$ would still evaluate to $0$.
+$\sum_p \mathrm{mass}(p)$ were greater than $v(\top)$, the expression
+$v(\top) - \sum_p \mathrm{mass}(p)$ would still evaluate to $0$.
 Theorem~\ref{thm:decomposition} rules out
-$\sum'_p \mathrm{mass}(p) > v(\top)$ unconditionally, so this
-subtraction is never actually truncated and its value is 
-the actual result of the subtraction:
+$\sum_p \mathrm{mass}(p) > v(\top)$ unconditionally, so the
+subtraction below is never truncated:
 
-\begin{theorem}[general decomposition, \texttt{tsum\_mass\_le}]
+\begin{theorem}[general decomposition\leanref{tsum-mass-le}]
 \label{thm:decomposition}
 For every valuation $v$ on $\mathrm{Low}(P)$ and an arbitrary poset $P$,
-$\sum'_p \mathrm{mass}(p) \le v(\top)$.
+$\sum_p \mathrm{mass}(p) \le v(\top)$.
 \end{theorem}
 
 \noindent
-Rearranging Theorem~\ref{thm:decomposition},
-licensed by the truncation point above, gives
-$v(\top) - \sum'_p \mathrm{mass}(p) \ge 0$.  Every valuation thus
+By Theorem~\ref{thm:decomposition} the remainder
+$v(\top) - \sum_p \mathrm{mass}(p)$ is a genuine difference.  Every valuation thus
 splits unconditionally into an \emph{atomic} part carried by points
-($\sum'_p \mathrm{mass}(p)$, which is always a sub-probability), and a
+($\sum_p \mathrm{mass}(p)$, which is always a sub-probability), and a
 \emph{diffuse} (nonnegative) remainder
-$v(\top) - \sum'_p \mathrm{mass}(p)$.
+$v(\top) - \sum_p \mathrm{mass}(p)$.
 This is a constructive Lebesgue-style decomposition.  The finite and
 Scott cases are the purely atomic extremes, and the $\top$-indicator
 is the purely diffuse one.  The proof of
 Theorem~\ref{thm:decomposition} re-runs the maximal-point induction on
 each finite subset of $P$, bounding its partial sum by $v(\top)$,
 then takes the supremum over all finite subsets to bound
-$\sum'_p \mathrm{mass}(p)$ itself.  
+$\sum_p \mathrm{mass}(p)$ itself.  
 Its proof does not directly invoke an excluded-middle case split.
 However, it relies on the (classical) decidability of the ordering
 of the reals (a default in \textsf{mathlib}).

@@ -9,185 +9,179 @@ form a Boolean $\sigma$-algebra, closed under complement and
 satisfying excluded middle.  The complement rule,
 $P(A^{c}) = 1 - P(A)$, is where the two layers touch.  It is an
 arithmetical equation about a logical operation, obeyed by
-every assignment of degrees of certainty. In the limiting case 
+every assignment of degrees of certainty. In the limiting case
 of all-or-nothing probabilities, it becomes
 equivalent to the law of excluded middle.
 
-There is no intrinsic reason why probability should be compatible
-with exactly one logic as different situations are described by
-different logics.  Intuitionistic logic describes computation,
-verification, and finite-precision observation, where a proposition
-may be confirmable but not refutable.  Linear logic describes
-resources, where using an assumption consumes
-it~\cite{girard1987}.  Quantum logic describes measurement, where
-propositions fail to distribute.  If probability is, as the
-Cox--Jaynes tradition has it, \emph{extended
-logic}~\cite{cox1946,jaynes2003}, the calculus of degrees of
-certainty over a space of propositions, then the logic of those
-propositions is a \emph{parameter} of the theory, and Kolmogorov's
-calculus is the value of that parameter at Boolean logic.
+That framework commits to logical axioms that computer science cannot
+always commit to.  Many properties of programs (does this computation
+halt, does this process reach a given state) are only
+\emph{semidecidable}: a procedure confirms the property when it
+holds, and no procedure, in general, confirms its failure.  The
+natural event algebra for a semidecidable property is a
+\emph{frame}, the algebra of open sets of a space, and equivalently
+the algebraic semantics of intuitionistic logic.  We show that a
+classical, fully resolved (slack-free) probabilistic reading of a
+semidecidable property is exactly as hard as solving the halting
+problem.  This reading is not exotic: on the space of infinite binary
+tapes, the value of the halting event is Chaitin's
+$\Omega$~\cite{chaitin1975}, and its slack is the mass of the
+topological boundary of the halting event.  Reasoning about the chance that a
+program has some property
+therefore needs an event logic that is not Boolean. We align the
+probability calculus with the logic of the objects it reasons about,
+and mechanize the result.
 
-Physics has already
-introduced a use case for a logic not based in Boolean algebra.  
-Quantum probability lives on orthomodular
-lattices of projections rather than Boolean
-algebras~\cite{birkhoff-vonneumann1936}. Gleason's
-theorem~\cite{gleason1957} does for quantum probability what this
-paper's representation theorems do here: it identifies the states
-compatible with the event logic.
-It seems natural to conclude that the Boolean substrate 
-is a modeling choice.
-In this work, investigate what happens when we change this
-parameter. Specifically, we ask
-"what does probability become when the logic of events is
-\emph{intuitionistic}?".
+Probability is, as the Cox--Jaynes tradition has it, \emph{extended
+logic}~\cite{cox1946,jaynes2003}.  A probability theory has two
+layers.  One layer is the event algebra: the underlying set of 
+events, and how they combine under the algebraic operations 
+of conjunction, disjunction, and negation.
+The other layer is the arithmetic: axioms on maps from the event
+algebra to numbers, saying which assignments of degrees of certainty
+to the events are admissible.  Kolmogorov takes the event algebra to be Boolean, and
+his axioms tie the arithmetic to that choice, most visibly in the
+complement rule.
+The logic of events is in this sense a \emph{parameter} of the
+theory, and Kolmogorov's calculus is its value at Boolean logic.
+Quantum probability, which re-bases the arithmetic on orthomodular
+lattices, is the established precedent for varying
+it~\cite{birkhoff-vonneumann1936,gleason1957}.  We compute the value
+at intuitionistic logic, whose event algebras are frames: complete
+Heyting algebras, the lattices of open sets.  Two facts make the
+result a theory of \emph{probability} rather than an arbitrary
+grading of events.  In the limit of certainty it returns the logic:
+the $\{0,1\}$-valued valuations are exactly the prime-ideal points
+of the frame (Section~\ref{sec:hinge}).  And at Boolean logic it
+returns the classical theory: complete Boolean algebras are exactly
+the frames satisfying excluded middle, and every valuation there
+obeys the classical complement rule.  So, the classical theory
+embeds as a special case.
 
-Intuitionistic logic is the natural first non-Boolean instance to 
-study using the proofs-as-programs paradigm. 
-The choice of (in our case, intuitionistic) 
-logic sits upstream of statistics the
-way a type system sits upstream of programs: the same syntax of
-operations, a different set of valid transformations, and some
-derivations that typecheck classically can either fail or split in two.
-This logic's
-algebraic semantics is mature order theory, well supported by
-\textsf{mathlib}~\cite{mathlib2020}: frames, that is, complete
-Heyting algebras, modelled on the lattices of open sets.  The
-content of the
-original (classical) probability definitions and results is not lost:
-complete Boolean algebras are exactly the frames where excluded
-middle holds,
-so the classical theory embeds as a special case rather than being
-replaced.
+The theory that results fixes the arithmetic on the event algebra
+and imposes no axiom on complements.
+A \emph{valuation} on a
+frame $\Omega$ is a monotone, normalized, modular map
+$v : \Omega \to \ENNReal$, i.e. such that 
+$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$.
+The pseudocomplement $\neg a$ satisfies
+$a \sqcap \neg a = \bot$ but not, in general, $a \sqcup \neg a =
+\top$, so the complement rule degrades to $v(a) + v(\neg a) \le 1$,
+with a gap
 
-The choice of logic fixes the event algebra.  What remains is to
-fix the arithmetic on top of it, keeping only the axioms that can
-be stated without a complement.
-A \emph{valuation} on a frame $\Omega$ is a monotone, normalized,
-modular map $v : \Omega \to \ENNReal$.  For $v$, modularity means
-inclusion--exclusion,
-$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, and no axiom mentions a
-complement.  In a Heyting algebra the pseudocomplement $\neg a$
-satisfies
-$a \sqcap \neg a = \bot$ but not, in general,
-$a \sqcup \neg a = \top$.  The complement rule therefore degrades
-to a derived \emph{inequality} $v(a) + v(\neg a) \le 1$, with a gap
 \[
-  \slack(a) \;=\; 1 - v(a) - v(\neg a)
+  \slack(a) \;=\; 1 - v(a) - v(\neg a).
 \]
-measuring exactly the valuation of the region where excluded middle
-fails for $a$.  The term \emph{slack}, and this logical reading,
-are introduced in this paper.  The quantity itself is not new: it
-is the width of the classical Dempster--Shafer belief/plausibility
-interval~\cite{dempster1967,shafer1976}. The two align 
-on the frame's Boolean core.
-Dempster--Shafer reads that width as an agent's ignorance.  Here it
-needs no agent: in
-the concrete model where $\Omega$ is the opens of
-a space carrying a probability measure $\mu$, the slack of an open
-$U$ is precisely $\mu(\partial U)$, the measure of its topological
-boundary. The slack of an open set is a structural quantity, not a
-measure of ignorance.  The theory that results recognizably has the same
-structure as the Dempster--Shafer belief functions, but derived from
-the underlying logic rather than postulated.
 
-The statistical \emph{operations} are logic-uniform.  The
-conditional is still $v(a \sqcap b)/v(b)$, and the product rule and
-Bayes symmetry hold verbatim.  What varies is the set of
-\emph{identities} those operations satisfy, and with it the licensed
-computations.  The classical case split over $\{A, \neg A\}$, and
-with it the usual denominator of Bayes' theorem
-$P(B) = P(B \mid A)\,P(A) + P(B \mid \neg A)\,P(\neg A)$, degrades to
-a lower bound whose deficit is a conditional slack.  Marginalization
-is exact only over \emph{genuine} partitions, families that
-actually join to $\top$.  The complement trick
-$P(A) = 1 - P(\neg A)$ degrades to the interval
-$[\,v(A),\, 1 - v(\neg A)\,]$ of width $\slack(A)$, so point
-statistics becomes interval statistics exactly on the events the
-logic leaves undecided, and collapses back to points on complemented
-ones.  Updating itself forks: Dempster's rule and Bayesian
-conditioning, classically indistinguishable, give different
-posteriors from the same evidence unless its slack vanishes.
+Classically, this is the width of the Dempster--Shafer
+belief/plausibility interval~\cite{dempster1967,shafer1976}, 
+quantifying ignorance. In our system it instead quantifies the mass of
+the part of $a$ that is neither confirmed nor refuted, the probabilistic
+image of the semidecidable gap above.
+On the opens of a space with measure $\mu$, the slack of an open $U$
+is $\mu(\partial U)$, the mass of its topological boundary.
+For verification this matters concretely: knowing how likely a
+property is to hold no longer tells you how likely it is to fail, and
+the gap between the two, the slack, is now also required to answer
+that question.
 
-The choice of logic changes the
-query being answered: the value of an event $A$ is $P(\mathrm{int}\,A)$, i.e. the
-probability of its verifiable part.
-In the measure model, slack is boundary mass, so a nonatomic
-distribution queried on intervals behaves entirely classically,
-since an interval's boundary is two points, which carry no mass.
-The differences are observable precisely at events with charged
-boundaries and at semidecidable hypotheses.
+Slack is necessarily submodular, a
+consequence of $v$'s own modularity.
+It does not, however, determine $v$: two fully modular valuations on
+the same frame can share one slack function, a fact we exhibit on an
+explicit three-point space.  Weak
+excluded middle, $\neg\neg a \sqcup \neg a = \top$, does not repair
+this.  Imposed on the whole frame it collapses slack to the
+double-negation gap alone, and the fully Boolean case, where even
+that gap vanishes, is the worst case for recovery: slack is
+identically zero there for every valuation.
 
-A theory this close to excluded middle must be developed with
-unusual care, because classicality is easy to smuggle in: a single
-informal case split over $\{A, \neg A\}$ silently decides an
-undecidable event.  The risk is documented even classically, as
+The conditional
+$v(a \sqcap b)/v(b)$, the product rule, and Bayes symmetry
+hold verbatim in the resulting theory, which reduces to
+intuitionistic logic in the limit of certainty.
+Certain identities vary, however.  The
+classical denominator of Bayes' theorem,
+$P(B) = P(B \mid A)P(A) + P(B \mid \neg A)P(\neg A)$, degrades to a
+lower bound whose deficit is a conditional slack.  Marginalization is
+exact only over partitions. 
+The complement trick $P(A) = 1 - P(\neg A)$
+degrades to the interval $[v(A), 1 - v(\neg A)]$ of width
+$\slack(A)$.  Dempster's rule and Bayesian conditioning, classically
+indistinguishable, give different posteriors from the same evidence
+unless its slack vanishes.  The value of an event $A$ itself is read
+as $P(\mathrm{int}\,A)$, so a nonatomic distribution queried on
+intervals still behaves classically: an interval's boundary is two
+points, carrying no mass.  Differences arise only at boundaries
+carrying mass and at semidecidable hypotheses.
+
 Cox's original theorem required repair after Halpern's
-counterexample~\cite{cox1946,halpern1999,vanhorn2003}, and the
-constructive setting multiplies the opportunities.  
-The direct transcription of the classical
-Cox statement within an intuitionistic logic setting 
-is not merely unprovable but
-\emph{unsatisfiable}.  The sum rule is
-irreducible: a disjunction's value is provably not a function of
-the values of its disjuncts, so
-modularity must be posited rather than derived.
-Every appearance of classical logic in this work, including at the
-meta-theory level, is tracked and justified at the point it is
-used, as with the computable \texttt{Decidable} instance behind the
-\texttt{CoxModel} non-vacuity witness of Section~\ref{sec:cox}.
+counterexample~\cite{cox1946,halpern1999,vanhorn2003}.  Even with
+this repair, the direct translation of Cox's theorem to intuitionistic
+logic is \emph{unsatisfiable}.  This is because the sum
+rule is irreducible: a disjunction's value is provably not a
+function of its disjuncts' values, so modularity must be posited
+rather than derived.  Weak excluded middle, an assumption strictly
+between intuitionistic and classical logic, does not restore the
+reducibility of the sum rule: the counterexample frame itself
+satisfies weak excluded middle.
 
-Full excluded middle is not the only stop between plain
-intuitionistic logic and Boolean logic. Asking what changes at
-an intermediate stop is a natural companion question to our main
-inquiry into intuitionistic probability.  Weak excluded middle,
-$\neg\neg a \sqcup \neg a = \top$, is one such case. Using
-our valuation machinery, we can demonstrate that slack collapses
-to the regularity defect alone under exactly this condition, dropping
-the independent De~Morgan gap.
-
-\paragraph{Contributions.} Our contributions are as follows:
+\paragraph{Contributions.}
 
 \begin{enumerate}
-\item \textbf{The two characterizations}
+\item \textbf{Two characterizations}
   (Sections~\ref{sec:hinge} and~\ref{sec:ds}).  The complement rule
-  holds for \emph{every} valuation iff excluded middle holds in the
-  frame, an equivalence isolating the exact content of Van Horn's
-  classical negation axiom R3~\cite{vanhorn2003}.  Dempster and
-  Bayesian conditioning agree iff the evidence has zero slack;
+  holds for \emph{every} valuation iff the frame satisfies excluded
+  middle, the exact content of Van Horn's classical negation axiom
+  R3~\cite{vanhorn2003}.  Dempster and Bayesian conditioning agree
+  iff the evidence has zero slack.
 
 \item \textbf{Structure theorems}
   (Sections~\ref{sec:representation} and~\ref{sec:ds}).  On finite
   frames a valuation is a classical mass function on points.  In
   general it splits into atomic and diffuse parts, and on its
-  Boolean core of regular elements it is a belief function;
+  Boolean core it is a belief function.
 
 \item \textbf{Cox's theorem, dissected} (Section~\ref{sec:cox},
   Appendix~\ref{app:aczel}).  The product-rule half is independent
   of the logic, proved by an Acz\'el/H\"older generator built from
-  scratch.  The sum-rule half (a theorem in classical Cox) admits
-  no such derivation here, as shown by a five-element
-  counterexample, and must therefore be included among the
-  defining axioms of a valuation;
+  scratch.  The sum-rule half, a theorem classically, admits no
+  derivation here (a five-element counterexample) and must be
+  posited.
 
 \item \textbf{Two grounding models} (Section~\ref{sec:bridges}).
-  Any classical probability measure, read on the opens, is a valuation whose
-  slack is boundary mass.  On the Sierpi\'nski frame, a slack-free
-  classical readout of halting is uncomputable;
+  Any classical measure, read on the opens, is a valuation whose
+  slack is boundary mass.  A slack-free readout of halting is
+  uncomputable, and on Cantor space the value of the halting event
+  is Chaitin's $\Omega$.
 
 \item \textbf{The monad dichotomy} (Section~\ref{sec:conclusion}).
   Product valuations are unique on chain products and provably
   non-unique on the powerset frame, where Fubini fails.  The
-  countable fragment composes associatively and commutatively;
+  countable fragment composes associatively and commutatively.
 
-\item \textbf{Weak excluded middle.}
-  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  The global weak
-  excluded middle condition is exactly extremal disconnectedness, the class of
-  Stonean spaces;
+\item \textbf{Weak excluded middle}
+  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  Global weak
+  excluded middle on the opens of $X$ is exactly extremal
+  disconnectedness of $X$, for compact Hausdorff $X$ exactly the
+  Stonean spaces.
 
-\item \textbf{Mechanization}.
-  Everything above is mechanized in Lean~4~\cite{moura-ullrich2021}
-  using \textsf{mathlib}~\cite{mathlib2020}, and is (to our knowledge) the first
-  mechanization of non-additive probability over intuitionistic
-  logic.
+\item \textbf{A first formal treatment.}
+  Everything above is machine-checked in Lean~4 over
+  \textsf{mathlib}, to our knowledge the first mechanization of
+  non-additive probability over intuitionistic logic.
 \end{enumerate}
+
+\paragraph{Mechanization.}
+The development is carried out in Lean~4~\cite{moura-ullrich2021} over
+\textsf{mathlib}~\cite{mathlib2020}, in roughly $5{,}000$ lines with no
+\texttt{sorry}, and is included in full as anonymous supplementary
+material.\footnote{Claude (Anthropic) was used to assist with
+drafting and debugging the Lean formalization.} Two points are specific
+to a proof assistant.  We separate \emph{object-level} classicality,
+excluded middle in the frame $\Omega$, from the \emph{meta-level}
+classicality \textsf{mathlib} inherits through \texttt{Classical.choice},
+track which results use which, and equip the one essential non-Boolean
+model with a computable decidability instance.  And the product-rule half of Cox's theorem needs an
+Acz\'el/H\"older regraduation absent from \textsf{mathlib}, which we
+build from scratch.

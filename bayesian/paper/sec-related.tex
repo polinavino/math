@@ -15,20 +15,21 @@ $\mathrm{deMorganGap}$ and its determinacy from $v$ alone
 Paris gives an informal theorem that any modular assignment of
 non-classical truth values is exactly a Dempster--Shafer belief
 function~\cite{paris1994}.  We mechanize the analogous fact for our
-intuitionistic setting as a one-line corollary of modularity alone
-(\texttt{Valuation.two\_monotone}).  The
+intuitionistic setting: the $2$-monotone case follows directly from
+modularity\leanref{two-monotone}, and the full tower is
+Theorem~\ref{thm:infty}.  The
 identification $\Bel = P(\Box\,\cdot)$ connecting belief
 functions~\cite{dempster1967,shafer1976} to modal logic is
 established~\cite{ruspini1986}.  Section~\ref{sec:bridges} shows this
 identification is not a separate axiom for us but a special case of
 our frame-level slack, recovered automatically once the frame is a
 topology and $\neg$ is read as the interior of the complement
-(\texttt{toValuationOpens\_slack\_eq\_frontier}).  On the localic
+\leanref{tovaluationopens-slack-eq-frontier}.  On the localic
 side, valuations on
 frames are standard objects of constructive measure theory, with
 Vickers's work and the Coquand--Spitters development as canonical
 references~\cite{vickers2008,coquand-spitters2009}.  These normally
-build in Scott continuity and target additive, Riesz-flavored goals.
+build in Scott continuity and target additive, Riesz-style goals.
 Section~\ref{sec:representation} shows Scott continuity to be a
 substantive assumption (it decides point-representability on the
 frames we examine), so our base structure omits it.  Cox, Jaynes,
@@ -55,11 +56,12 @@ event logic in our sense.  Closest is the
 HoTT/Coq line of Faissole and Spitters on \emph{valuations} over
 lower reals~\cite{faissole-spitters2017}, done constructively with
 Scott continuity and aimed at integration (Riesz) and a Giry-style
-valuation \emph{monad}.  Their valuations are the additive,
-continuous cousins of ours, and their monad is the Scott-continuous
+valuation \emph{monad}.  Their valuations differ from ours in
+carrying Scott continuity, and their monad is the Scott-continuous
 instance of the question examined in
-Section~\ref{sec:conclusion}.  We develop and mechanize results 
-on top of their contribution, as well as mechanizing theirs.
+Section~\ref{sec:conclusion}.  Our development drops the continuity
+their base structure builds in, and the two mechanizations do not
+otherwise overlap.
 
 \paragraph{Non-Boolean probability elsewhere.}
 Quantum probability on orthomodular lattices, with Gleason's

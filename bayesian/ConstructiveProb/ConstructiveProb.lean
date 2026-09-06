@@ -15,3 +15,5 @@ import ConstructiveProb.CountableMix
 import ConstructiveProb.ProductFreedom
 import ConstructiveProb.Points
 import ConstructiveProb.DeMorgan
+import ConstructiveProb.Chaitin
+import ConstructiveProb.SlackRecovery

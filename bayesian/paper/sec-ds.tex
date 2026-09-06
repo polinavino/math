@@ -16,18 +16,30 @@ The $\neg\neg$-stable (\emph{regular}) elements of a frame form a
 Boolean algebra with meet $\sqcap$ and join
 $\neg\neg(a \sqcup b)$ (Glivenko).  Let us call the resulting
 algebra the
-\emph{Booleanization} of this set.  
-A DS \emph{belief function} is a capacity on a
-Boolean algebra that is $n$-monotone for every $n$:
-$\Bel(\bigvee_i A_i) \ge \sum_{\emptyset \neq T}
-(-1)^{|T|+1} \Bel(\bigwedge_{i \in T} A_i)$.  We show $v$, restricted
-to its Booleanization, is such a capacity for every $n$.  The
+\emph{Booleanization} of this set.
+
+\begin{definition}[belief function, plausibility function]
+\label{def:belief}
+Let $B$ be a Boolean algebra.  A DS \emph{belief function} on $B$ is a
+monotone map $\Bel : B \to [0,1]$ with $\Bel(\bot) = 0$ and
+$\Bel(\top) = 1$ that is \emph{$n$-monotone} for
+every $n \ge 2$: for all $A_1, \dots, A_n \in B$,
+\[
+  \Bel\Bigl(\bigvee_{i=1}^{n} A_i\Bigr) \;\ge\;
+  \sum_{\emptyset \neq T \subseteq \{1,\dots,n\}} (-1)^{|T|+1}\,
+  \Bel\Bigl(\bigwedge_{i \in T} A_i\Bigr).
+\]
+Its \emph{plausibility function} is the map $\Pl : B \to [0,1]$
+given by $\Pl(A) = 1 - \Bel(\neg A)$.
+\end{definition}
+
+We show $v$, restricted
+to its Booleanization, is such a belief function.  The
 $2$-monotone case is immediate from modularity
-(\texttt{two\_monotone}).  The full tower follows from the following 
+\leanref{two-monotone}.  The full tower follows from the following
 result:
 
-\begin{theorem}[inclusion--exclusion,
-  \texttt{inclusion\_exclusion}]
+\begin{theorem}[inclusion--exclusion\leanref{inclusion-exclusion}]
 \label{thm:incl-excl}
 For every valuation on every frame $\Omega$, every finite family
 $a : \iota \to \Omega$, and every finite $s \subseteq \iota$,
@@ -49,7 +61,7 @@ Replacing the frame join $\bigsqcup_i a_i$ on the equality's other
 side with its double negation $\neg\neg\bigl(\bigsqcup_i a_i\bigr)$, the
 Booleanization's own join, yields the following inequality:
 
-\begin{theorem}[total monotonicity, \texttt{infty\_monotone}]
+\begin{theorem}[total monotonicity\leanref{infty-monotone}]
 \label{thm:infty}
 For every valuation on every frame $\Omega$, every finite family
 $a : \iota \to \Omega$, and every finite $s \subseteq \iota$:
@@ -82,17 +94,23 @@ into the inequality of Theorem~\ref{thm:infty}.  The amount by which
 the right-hand side is enlarged is exactly the double-negation gap of
 Section~\ref{sec:valuation}.
 
-Additive probability does not become a
-belief function by weakening an axiom, since modularity for $v$ is
-never relaxed.  What changes is only the choice of join used to state the
-tower: the frame join $\bigsqcup$ is replaced by its
-double-negation closure $\neg\neg \circ \sqcup$.  A
-belief function is thus the same additive valuation $v$, evaluated
-against that closure rather than against the frame join.  With
-$\Pl(a) = 1 - v(\neg a)$, the belief--plausibility interval
-has width exactly the slack
-(\texttt{plausibility\_sub\_self}).  The DS ``ignorance'' is
-boundary measure, not psychology.
+Definition~\ref{def:belief} is the classical notion, stated on an
+abstract Boolean algebra.  In our setting each of its ingredients is
+already present: the Boolean algebra is the Booleanization, the
+belief function is $v$ itself, restricted to the regular elements and
+evaluated against the Boolean join $\neg\neg \circ \sqcup$, and the
+plausibility function is $\Pl(a) = 1 - v(\neg a)$.  Additive
+probability does not become a belief function by weakening an axiom,
+since modularity for $v$ is never relaxed.  What changes is only the
+join used to state the tower.  The belief--plausibility interval is
+governed by the slack:
+
+\begin{theorem}[interval width\leanref{plausibility-sub-self}]
+\label{thm:interval-width}
+For every valuation $v$ on a frame $\Omega$ and every $a \in \Omega$,
+$\Pl(a) - v(a) = \slack(a)$.
+\end{theorem}
+
 
 \subsection{The Conditioning Characterization}
 
@@ -101,16 +119,19 @@ DS theory carries two update rules that coincide classically.
 dictionary it \emph{is} the localic posterior
 $v(a \sqcap b)/v(b)$ of Section~\ref{sec:valuation}.
 
-\begin{definition}[Dempster's rule of conditioning]
+\begin{definition}[Dempster's rule of conditioning\leanref{dempstercond}]
 \label{def:dempster}
-For a valuation $v$ on a frame $\Omega$ and $a, b \in \Omega$,
-\emph{Dempster's rule of conditioning}~\cite{shafer1976} 
+For a valuation $v$ on a frame $\Omega$, elements $a, b \in \Omega$, and
+evidence of nonzero plausibility, $v(b) \neq 0$,
+\emph{Dempster's rule of conditioning}~\cite{shafer1976}
 states that
 \[
   v(a \,\|\, b) \;=\;
   \frac{v(a \sqcup \neg b) - v(\neg b)}
        {1 - v(\neg b)}.
 \]
+The hypothesis $v(b) \neq 0$ makes the denominator nonzero, since
+$v(b) + v(\neg b) \le 1$ gives $v(b) \le 1 - v(\neg b)$.
 \end{definition}
 
 \noindent
@@ -119,7 +140,7 @@ the mass incompatible with the evidence and renormalizes by its
 plausibility.
 Both the geometric posterior of Section~\ref{sec:valuation} and
 Dempster's rule of Definition~\ref{def:dempster} are again
-valuations (\texttt{dempsterCond}).  Their modularity
+valuations.  Their modularity
 is the frame distributivity
 $(a \sqcup \neg b) \sqcap (a' \sqcup \neg b)
 = (a \sqcap a') \sqcup \neg b$.  Their disagreement is
@@ -128,7 +149,7 @@ gap} $\mathrm{emGap}(a,b) = v(a) - v(a \sqcap (b \sqcup
 \neg b))$, i.e. the mass of $a$ outside $b$'s instance
 of excluded middle:
 
-\begin{lemma}[\texttt{sup\_compl\_decomp}]
+\begin{lemma}[the join--complement identity\leanref{sup-compl-decomp}]
 For every valuation $v$ on every frame $\Omega$ and every
 $a, b \in \Omega$,
 $v(a \sqcup \neg b) = v(\neg b) + v(a \sqcap b) +
@@ -140,8 +161,7 @@ $\mathrm{emGap}(a,b)$.  This gap depends on $a$, but whether it
 vanishes at \emph{every} $a$ depends only on
 the slack at the evidence $b$:
 
-\begin{theorem}[the conditioning characterization,
-  \texttt{dempsterCond\_eq\_\allowbreak condVal\_iff\_slack}]
+\begin{theorem}[the conditioning characterization\leanref{dempstercond-eq-condval-iff-slack}]
 \label{thm:cond-hinge}
 For every valuation $v$ on every frame $\Omega$ and every
 $b \in \Omega$ with $v(b) \neq 0$,
@@ -153,23 +173,18 @@ The hypothesis $\slack(b) = 0$ eliminates the gap
 $\mathrm{emGap}(a,b)$ for every $a$ and makes the two normalizers
 coincide, since $1 - v(\neg b) = v(b)$.
 Conversely, testing at $a := b$, geometric conditioning gives
-certainty $1$, while Dempster gives $v(b)/(1 - v(\neg b))$,
-(which is $1$ only if the slack vanishes).
+certainty $1$, while Dempster gives $v(b)/(1 - v(\neg b))$, which is
+$1$ only if the slack vanishes.
 Theorem~\ref{thm:cond-hinge} is the valuation-relative analogue of
 Theorem~\ref{thm:hinge}: both are iff statements about the same
 proposition, $b \sqcup \neg b = \top$.
 
 We call the frame-level fact \emph{static} and the valuation-level
-fact \emph{dynamic} because the former is a fixed structural property of
-$\Omega$ with no notion of updating, while the latter characterizes
-when a \emph{process} (conditioning $v$ on evidence $b$) behaves
-classically.  The static characterization is an equation in the
-frame itself, between $b \sqcup \neg b$ and $\top$, with no
-valuation involved.  The dynamic characterization tests the same
-proposition through $v$:
-$\slack(b) = 0$ is exactly $v(b \sqcup \neg b) = v(\top)$.
-Dempster and Bayes therefore coincide at $b$ whenever $v$ cannot
-distinguish $b \sqcup \neg b$ from $\top$, even if the two
-differ in the frame itself.  
-In the measure model, Dempster and Bayes disagree precisely when the
-evidence's boundary carries mass.
+fact \emph{dynamic}: the former is an equation in the frame itself,
+between $b \sqcup \neg b$ and $\top$, with no valuation involved,
+while the latter tests the same proposition through $v$, since
+$\slack(b) = 0$ is exactly $v(b \sqcup \neg b) = v(\top)$.  Dempster
+and Bayes therefore coincide at $b$ whenever $v$ cannot distinguish
+$b \sqcup \neg b$ from $\top$, even if the two differ in the frame
+itself.  In the measure model, Dempster and Bayes disagree precisely
+when the evidence's boundary carries mass.

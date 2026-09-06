@@ -70,6 +70,24 @@
     {≡}{{$\equiv$}}{1}
     {∅}{{$\emptyset$}}{1}
     {▷}{{$\triangleright$}}{1}
+    {⊆}{{$\subseteq$}}{1}
+    {≃}{{$\simeq$}}{1}
+    {Σ}{{$\Sigma$}}{1}
+    {⋃}{{$\bigcup$}}{1}
+    {⨅}{{$\bigsqcap$}}{1}
+    {∣}{{$\mid$}}{1}
+    {β}{{$\beta$}}{1}
+    {κ}{{$\kappa$}}{1}
+    {Θ}{{$\Theta$}}{1}
+    {Γ}{{$\Gamma$}}{1}
+    {Δ}{{$\Delta$}}{1}
+    {α}{{$\alpha$}}{1}
+    {₀}{{$_{0}$}}{1}
+    {₁}{{$_{1}$}}{1}
+    {₂}{{$_{2}$}}{1}
+    {ˢ}{{$^{\mathsf{s}}$}}{1}
+    {↑}{{$\uparrow$}}{1}
+    {↓}{{$\downarrow$}}{1}
 }
 
 \lstset{
@@ -117,6 +135,16 @@
 \newcommand{\Bel}{\mathrm{Bel}}
 \newcommand{\Pl}{\mathrm{Pl}}
 
+% Order-theoretic notation (fixed in Section 4.1): principal lower set,
+% strict principal lower set, principal upper set.
+\newcommand{\pdown}{{\downarrow}}
+\newcommand{\pdowns}{\mathop{\downarrow\!\!\downarrow}}
+\newcommand{\pup}{{\uparrow}}
+
+% Link from a main-text result to its Lean statement in the correspondence
+% appendix (app-lean.tex).  Renders as a small clickable superscript marker.
+\newcommand{\leanref}[1]{\hyperref[lean:#1]{\textsuperscript{\textsf{\tiny Lean}}}}
+
 \begin{document}
 
 \title{The Complement Rule Is Excluded Middle:\\
@@ -128,9 +156,10 @@
 \begin{abstract}
 Kolmogorov's probability is defined within a classical logic
 framework, whose complement rule becomes equivalent to the law of
-excluded middle in the limiting case of certainty. Quantum
-mechanics has shown that this logical substrate is just
-one of many possible logical modeling choices.  We mechanize,
+excluded middle in the limiting case of certainty. That framework
+presupposes every event is decidable, which fails for the
+semidecidable properties, termination, reachability, that
+verification cares about.  We mechanize,
 in Lean~4 over \textsf{mathlib}, what probability becomes when the
 event logic is \emph{intuitionistic}: valuations on frames, the
 algebras of verifiable propositions.  Two characterizations anchor the development:
@@ -140,11 +169,11 @@ algebra satisfies excluded middle, and (2) Dempster conditioning agrees
 with Bayesian conditioning at a piece of evidence exactly when that
 evidence carries zero slack.
 On finite frames, every valuation is
-a classical mass function on points. In the general case, valuation splits into
-atomic and diffuse parts. Its Boolean core carries a totally
-monotone Dempster--Shafer belief function.  
-We define slack as the mass that escapes point-valued certainty: it
-is boundary mass in the measure model. On a semidecidable event,
+a classical mass function on points. In the general case, a valuation
+splits into atomic and diffuse parts, and its Boolean core carries a
+totally monotone Dempster--Shafer belief function.
+We define the slack of an event $A$ as $1 - v(A) - v(\neg A)$: in
+the measure model it is the boundary mass. On a semidecidable event,
 forcing it to zero is exactly as hard as solving the halting
 problem.  We further prove that product valuations are unique on chain
 products and provably non-unique on the powerset frame, where
@@ -199,6 +228,7 @@ the Lean formalization.
 \bibliography{refs}
 
 \appendix
+\input{app-lean}
 \input{app-aczel}
 
 \end{document}

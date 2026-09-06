@@ -1,0 +1,537 @@
+\section{Values in the Extended Reals}
+\label{app:ennreal}
+
+Valuations take values in the extended non-negative reals $\ENNReal$,
+following the measure-theoretic convention of \textsf{mathlib}.  Two
+consequences of this choice are used silently in the main text.  First,
+sums indexed by an arbitrary family are unconditionally defined, with no
+summability hypothesis, and they commute over dependent sums: for a
+function $f$ on a sigma type $\Sigma\,a,\,\beta(a)$, one has
+$\sum_{p} f(p) = \sum_{a} \sum_{b} f(a, b)$ with no side condition.  This
+is what lets the countable-mixture results of
+Section~\ref{sec:conclusion} hold as stated.  Second, subtraction is
+truncated at $0$.  This never affects the main text, since every
+subtraction there is applied to a pair already ordered by monotonicity,
+as with the mass of Section~\ref{sec:representation}, so the truncation
+is never triggered.
+
+\section{Lean Statements}
+\label{app:lean}
+
+\subsection{Valuations on Frames}
+
+\phantomsection\label{lean:valuation}
+\begin{lstlisting}
+structure Valuation (Ω : Type*) [Order.Frame Ω] where
+  toFun : Ω → ℝ≥0∞
+  map_bot' : toFun ⊥ = 0
+  map_top' : toFun ⊤ = 1
+  mono' : Monotone toFun
+  modular' : ∀ a b, toFun a + toFun b = toFun (a ⊔ b) + toFun (a ⊓ b)
+\end{lstlisting}
+
+\phantomsection\label{lean:add-compl-le-one}
+\begin{lstlisting}
+theorem Valuation.add_compl_le_one (v : Valuation Ω) (a : Ω) :
+    v a + v aᶜ ≤ 1
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-add-compl-eq-sup}
+\begin{lstlisting}
+theorem Valuation.add_compl_eq_sup (v : Valuation Ω) (a : Ω) :
+    v a + v aᶜ = v (a ⊔ aᶜ)
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-le-one}
+\begin{lstlisting}
+theorem Valuation.le_one (v : Valuation Ω) (a : Ω) : v a ≤ 1
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-slack-eq-dngap-add-demorgangap}
+\begin{lstlisting}
+theorem Valuation.slack_eq_dnGap_add_deMorganGap (v : Valuation Ω) (a : Ω) :
+    v.slack a = v.dnGap a + v.deMorganGap a
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-slack-eq-sub-add-sub}
+\begin{lstlisting}
+theorem Valuation.slack_eq_sub_add_sub (v : Valuation Ω) (a : Ω) :
+    v.slack a = (v aᶜᶜ - v a) + (1 - (v aᶜᶜ + v aᶜ))
+
+theorem Valuation.le_compl_compl (v : Valuation Ω) (a : Ω) : v a ≤ v aᶜᶜ
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-slack-submodular}
+\begin{lstlisting}
+theorem Valuation.slack_submodular (v : Valuation Ω) (a b : Ω) :
+    v.slack (a ⊔ b) + v.slack (a ⊓ b) ≤ v.slack a + v.slack b
+\end{lstlisting}
+
+\phantomsection\label{lean:isdemorgan}
+\begin{lstlisting}
+def Order.Frame.IsDeMorgan (Ω : Type*) [Order.Frame Ω] : Prop :=
+  ∀ a : Ω, aᶜᶜ ⊔ aᶜ = ⊤
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-slack-eq-dngap-of-isdemorgan}
+\begin{lstlisting}
+theorem Valuation.slack_eq_dnGap_of_isDeMorgan
+    (hΩ : Order.Frame.IsDeMorgan Ω) (v : Valuation Ω) (a : Ω) :
+    v.slack a = v.dnGap a
+\end{lstlisting}
+
+\phantomsection\label{lean:condval-mul}
+\begin{lstlisting}
+noncomputable def Valuation.condVal (v : Valuation Ω) (b : Ω) (hb : v b ≠ 0) :
+    Valuation Ω
+
+theorem Valuation.condVal_mul (v : Valuation Ω) (b : Ω) (hb : v b ≠ 0) (a : Ω) :
+    v.condVal b hb a * v b = v (a ⊓ b)
+
+theorem Valuation.condVal_symm (v : Valuation Ω) {a b : Ω}
+    (ha : v a ≠ 0) (hb : v b ≠ 0) :
+    v.condVal b hb a * v b = v.condVal a ha b * v a
+\end{lstlisting}
+
+\phantomsection\label{lean:cond-add-compl-le}
+\begin{lstlisting}
+theorem Valuation.cond_add_compl_le (v : Valuation Ω) (a b : Ω) :
+    v (a ⊓ b) + v (aᶜ ⊓ b) ≤ v b
+\end{lstlisting}
+
+\phantomsection\label{lean:add-compl-eq-one-of-complemented}
+\begin{lstlisting}
+theorem Valuation.add_compl_eq_one_of_complemented (v : Valuation Ω) {a : Ω}
+    (ha : a ⊔ aᶜ = ⊤) : v a + v aᶜ = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:classical-additivity}
+\begin{lstlisting}
+variable [CompleteBooleanAlgebra Ω]
+
+theorem classical_additivity (v : Valuation Ω) (a : Ω) :
+    v a + v aᶜ = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:classical-slack-zero}
+\begin{lstlisting}
+variable [CompleteBooleanAlgebra Ω]
+
+theorem classical_slack_zero (v : Valuation Ω) (a : Ω) :
+    v.slack a = 0
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-mix}
+\begin{lstlisting}
+noncomputable def Valuation.mix (w : ι → ℝ≥0∞) (hw : ∑ i, w i = 1)
+    (v : ι → Valuation Ω) : Valuation Ω
+\end{lstlisting}
+
+\subsection{Where Classicality Lives}
+
+\phantomsection\label{lean:hinge}
+\begin{lstlisting}
+def Valuation.HasClassicalNegation (v : Valuation Ω) : Prop :=
+  ∀ a, v a + v aᶜ = 1
+
+theorem hasClassicalNegation_of_em (hem : ∀ a : Ω, a ⊔ aᶜ = ⊤)
+    (v : Valuation Ω) : v.HasClassicalNegation
+
+theorem em_of_forall_hasClassicalNegation
+    (h : ∀ v : Valuation Ω, v.HasClassicalNegation) : ∀ a : Ω, a ⊔ aᶜ = ⊤
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-iff-point}
+\begin{lstlisting}
+theorem sharp_iff_point (v : Valuation Ω) :
+    v.IsSharp ↔ ∃ (J : Order.Ideal Ω) (hJ : J.IsPrime) (htop : ⊤ ∉ J),
+      v = Ideal.toValuation J hJ htop
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-scott-iff-completelyprimepoint}
+\begin{lstlisting}
+theorem sharp_scott_iff_completelyPrimePoint (v : Valuation Ω) :
+    v.IsSharp ∧ v.ScottContinuous ↔
+      ∃ (J : Order.Ideal Ω) (hJ : Ideal.IsCompletelyPrime J) (htop : ⊤ ∉ J),
+        v = Ideal.toValuation J hJ.1 htop
+\end{lstlisting}
+
+\subsection{Valuation Representation}
+
+\phantomsection\label{lean:valuation-mass}
+\begin{lstlisting}
+noncomputable def Valuation.mass (v : Valuation (LowerSet P)) (p : P) : ℝ≥0∞
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-eq-sum-mass}
+\begin{lstlisting}
+theorem Valuation.eq_sum_mass (v : Valuation (LowerSet P)) (U : LowerSet P) :
+    v U = ∑ p ∈ U.toFinset, v.mass p
+
+theorem Valuation.sum_mass (v : Valuation (LowerSet P)) : ∑ p, v.mass p = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-topmf}
+\begin{lstlisting}
+noncomputable def Valuation.toPMF (v : Valuation (LowerSet P)) : PMF P
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-exists-pmf-presentation}
+\begin{lstlisting}
+theorem Valuation.exists_pmf_presentation {Θ : Type u} [Order.Frame Θ] [Finite Θ]
+    (v : Valuation Θ) :
+    ∃ (P : Type u) (_ : PartialOrder P) (_ : Fintype P) (_ : DecidableEq P)
+      (e : Θ ≃o LowerSet P),
+      (∀ a, v a = ∑ p ∈ (e a).toFinset, (v.mapEquiv e).mass p) ∧
+        ∑ p, (v.mapEquiv e).mass p = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-eq-mix-deltapoint}
+\begin{lstlisting}
+noncomputable def deltaPoint (p : P) : Valuation (LowerSet P)
+
+theorem Valuation.eq_mix_deltaPoint (v : Valuation (LowerSet P)) :
+    v = Valuation.mix v.mass v.sum_mass (fun p => deltaPoint p)
+\end{lstlisting}
+
+\phantomsection\label{lean:exists-valuation-not-point-representable}
+\begin{lstlisting}
+theorem exists_valuation_not_point_representable :
+    ∃ v : Valuation (LowerSet ℕ), ∑' p, v.mass p ≠ v ⊤
+
+theorem topIndicator_mass (n : ℕ) : topIndicator.mass n = 0
+\end{lstlisting}
+
+\phantomsection\label{lean:topindicator-not-scott}
+\begin{lstlisting}
+theorem topIndicator_not_scott :
+    (⨆ n, topIndicator (LowerSet.Iic n)) ≠ topIndicator ⊤
+\end{lstlisting}
+
+\phantomsection\label{lean:eq-tsum-mass-of-scott}
+\begin{lstlisting}
+theorem eq_tsum_mass_of_scott (v : Valuation (LowerSet ℕ))
+    (hsc : v ⊤ = ⨆ n, v (LowerSet.Iic n)) : v ⊤ = ∑' n, v.mass n
+
+variable [∀ p : P, Finite (Set.Iic p)]
+
+theorem Valuation.isPurelyAtomic_of_scott (v : Valuation (LowerSet P))
+    (hsc : v ⊤ = ⨆ (S : Finset P), v (S.sup LowerSet.Iic)) : IsPurelyAtomic v
+\end{lstlisting}
+
+\phantomsection\label{lean:tsum-mass-le}
+\begin{lstlisting}
+theorem tsum_mass_le (v : Valuation (LowerSet P)) : ∑' p, v.mass p ≤ v ⊤
+\end{lstlisting}
+
+\subsection{The Dempster--Shafer Reading}
+
+\phantomsection\label{lean:inclusion-exclusion}
+\begin{lstlisting}
+theorem Valuation.inclusion_exclusion (v : Valuation Ω) (s : Finset ι)
+    (a : ι → Ω) : v (s.sup a) + v.iesEven s a = v.iesOdd s a
+\end{lstlisting}
+
+\phantomsection\label{lean:infty-monotone}
+\begin{lstlisting}
+theorem Valuation.infty_monotone (v : Valuation Ω) (s : Finset ι) (a : ι → Ω) :
+    v.iesOdd s a ≤ v ((s.sup a)ᶜᶜ) + v.iesEven s a
+\end{lstlisting}
+
+\phantomsection\label{lean:two-monotone}
+\begin{lstlisting}
+theorem Valuation.two_monotone (v : Valuation Ω) (a b : Ω) :
+    v a + v b ≤ v (a ⊔ b)ᶜᶜ + v (a ⊓ b)
+\end{lstlisting}
+
+\phantomsection\label{lean:plausibility-sub-self}
+\begin{lstlisting}
+theorem Valuation.plausibility_sub_self (v : Valuation Ω) (a : Ω) :
+    v.plausibility a - v a = v.slack a
+\end{lstlisting}
+
+\phantomsection\label{lean:sup-compl-decomp}
+\begin{lstlisting}
+theorem Valuation.sup_compl_decomp (v : Valuation Ω) (a b : Ω) :
+    v (a ⊔ bᶜ) = v bᶜ + (v (a ⊓ b) + v.emGap a b)
+\end{lstlisting}
+
+\phantomsection\label{lean:dempstercond}
+\begin{lstlisting}
+noncomputable def Valuation.dempsterCond (v : Valuation Ω) (b : Ω)
+    (hb : v b ≠ 0) : Valuation Ω
+
+theorem Valuation.dempsterCond_apply (v : Valuation Ω) (b : Ω) (hb : v b ≠ 0)
+    (a : Ω) : v.dempsterCond b hb a = (v (a ⊔ bᶜ) - v bᶜ) / (1 - v bᶜ)
+\end{lstlisting}
+
+\phantomsection\label{lean:dempstercond-eq-condval-iff-slack}
+\begin{lstlisting}
+theorem Valuation.dempsterCond_eq_condVal_iff_slack (v : Valuation Ω) {b : Ω}
+    (hb : v b ≠ 0) :
+    (∀ a, v.dempsterCond b hb a = v.condVal b hb a) ↔ v.slack b = 0
+\end{lstlisting}
+
+\subsection{Cox's Theorem}
+
+\phantomsection\label{lean:coxmodel}
+\begin{lstlisting}
+structure CoxModel (Ω : Type*) [Order.Frame Ω] where
+  pl : Ω → Ω → ℝ
+  mono_left : ∀ c, Monotone fun a => pl a c
+  pl_bot : ∀ c, pl ⊥ c = 0
+  pl_top : ∀ c, pl ⊤ c = 1
+  F : ℝ → ℝ → ℝ
+  conj : ∀ a b c, pl (a ⊓ b) c = F (pl a (b ⊓ c)) (pl b c)
+  F_assoc : ∀ x y z, F (F x y) z = F x (F y z)
+  F_strictMono_left : ∀ y, 0 < y → StrictMono fun x => F x y
+\end{lstlisting}
+
+\phantomsection\label{lean:isdemorgan-lowersetv}
+\begin{lstlisting}
+theorem isDeMorgan_lowerSetV : Order.Frame.IsDeMorgan (LowerSet V)
+\end{lstlisting}
+
+\phantomsection\label{lean:no-disjunction-functional}
+\begin{lstlisting}
+theorem modularity_irreducible :
+    ∃ (Ω : Type) (_ : Order.Frame Ω) (q : Ω → ℝ≥0∞),
+      Monotone q ∧ q ⊥ = 0 ∧ q ⊤ = 1 ∧
+      (∀ x y : Ω, x ⊓ y = ⊥ → q (x ⊔ y) = q x + q y) ∧
+      ¬ (∀ x y : Ω, q x + q y = q (x ⊔ y) + q (x ⊓ y))
+
+theorem no_disjunction_functional :
+    ¬ ∃ S : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞,
+        ∀ x y : LowerSet V, qV (x ⊔ y) = S (qV x) (qV y)
+\end{lstlisting}
+
+\phantomsection\label{lean:constructive-cox}
+\begin{lstlisting}
+theorem constructive_cox (M : CoxModel Ω)
+    (hmod : ∀ a b : Ω, M.pl a ⊤ + M.pl b ⊤ = M.pl (a ⊔ b) ⊤ + M.pl (a ⊓ b) ⊤) :
+    ∃ (v : Valuation Ω) (g : ℝ → ℝ≥0∞),
+      StrictMonoOn g (Set.Icc 0 1) ∧ g 0 = 0 ∧ g 1 = 1 ∧
+        ∀ a, v a = g (M.pl a ⊤)
+\end{lstlisting}
+
+\phantomsection\label{lean:coxmodelennreal}
+\begin{lstlisting}
+noncomputable def coxModelENNReal : CoxModel ℝ≥0∞
+\end{lstlisting}
+
+\phantomsection\label{lean:exists-mul-generator}
+\begin{lstlisting}
+theorem Scale.exists_mul_generator :
+    ∃ G : ℝ → ℝ,
+      (∀ x y, S.u ≤ x → S.u ≤ y → G (S.F x y) = G x * G y) ∧
+      (∀ x y, S.u ≤ x → x < y → G x < G y)
+
+theorem Scale.aczelStatement_cone :
+    ∃ G : ℝ → ℝ,
+      (∀ x y, S.u ≤ x → S.u ≤ y → G (S.F x y) = G x * G y) ∧
+      StrictMonoOn G (Set.Ici S.u)
+\end{lstlisting}
+
+\phantomsection\label{lean:exists-diag-eq}
+\begin{lstlisting}
+theorem exists_diag_eq {F : ℝ → ℝ → ℝ} {a b c : ℝ} (hab : a ≤ b)
+    (hcont : ContinuousOn (fun x => F x x) (Set.Icc a b))
+    (hc : c ∈ Set.Icc (F a a) (F b b)) : ∃ x ∈ Set.Icc a b, F x x = c
+\end{lstlisting}
+
+\phantomsection\label{lean:scale}
+\begin{lstlisting}
+structure Scale where
+  F : ℝ → ℝ → ℝ
+  hdiv : ∀ c, ∃ x, F x x = c
+  hassoc : ∀ x y z, F (F x y) z = F x (F y z)
+  hpos : ∀ c x, x < F x c
+  hmono : ∀ x₁ x₂ y₁ y₂ : ℝ, x₁ ≤ x₂ → y₁ ≤ y₂ → F x₁ y₁ ≤ F x₂ y₂
+  hcont : Continuous fun p : ℝ × ℝ => F p.1 p.2
+  hbot : ∀ x, Filter.Tendsto (fun z => F x z) Filter.atBot (nhds x)
+  u : ℝ
+\end{lstlisting}
+
+\subsection{Two Grounding Models}
+
+\phantomsection\label{lean:measure-tovaluationopens}
+\begin{lstlisting}
+noncomputable def MeasureTheory.Measure.toValuationOpens
+    (μ : Measure X) [IsProbabilityMeasure μ] : Valuation (Opens X)
+\end{lstlisting}
+
+\phantomsection\label{lean:tovaluationopens-slack-eq-frontier}
+\begin{lstlisting}
+theorem toValuationOpens_slack_eq_frontier (μ : Measure X)
+    [IsProbabilityMeasure μ] (U : Opens X) :
+    μ.toValuationOpens.slack U = μ (frontier (U : Set X))
+\end{lstlisting}
+
+\phantomsection\label{lean:interiormeasure-add-compl-le}
+\begin{lstlisting}
+theorem interiorMeasure_add_compl_le (μ : Measure X) [IsProbabilityMeasure μ]
+    (S : Set X) : μ.interiorMeasure S + μ.interiorMeasure Sᶜ ≤ 1
+\end{lstlisting}
+
+\phantomsection\label{lean:isdemorgan-opens-iff-extremallydisconnected}
+\begin{lstlisting}
+theorem isDeMorgan_opens_iff_extremallyDisconnected :
+    Order.Frame.IsDeMorgan (Opens X) ↔ ExtremallyDisconnected X
+\end{lstlisting}
+
+\phantomsection\label{lean:isdemorgan-opens-iff-stonean}
+\begin{lstlisting}
+theorem isDeMorgan_opens_iff_stonean [CompactSpace X] [T2Space X] :
+    Order.Frame.IsDeMorgan (Opens X) ↔ ExtremallyDisconnected X
+\end{lstlisting}
+
+\phantomsection\label{lean:frontier-subset-ptz}
+\begin{lstlisting}
+inductive ThreePt : Type
+  | ptA : ThreePt
+  | ptB : ThreePt
+  | ptZ : ThreePt
+
+theorem frontier_subset_ptZ {U : Set ThreePt} (hU : IsOpen U) :
+    frontier U ⊆ {ptZ}
+\end{lstlisting}
+
+\phantomsection\label{lean:exists-ne-valuation-same-slack}
+\begin{lstlisting}
+theorem exists_ne_valuation_same_slack :
+    ∃ v v' : Valuation (Opens ThreePt), v.slack = v'.slack ∧ v ≠ v'
+\end{lstlisting}
+
+\phantomsection\label{lean:haltsopen-compl}
+\begin{lstlisting}
+theorem haltsOpen_compl : haltsOpenᶜ = (⊥ : Opens Prop)
+\end{lstlisting}
+
+\phantomsection\label{lean:slack-eq-boundary}
+\begin{lstlisting}
+theorem slack_eq_boundary {p : ℝ≥0∞} (hp1 : p ≤ 1) :
+    (sierpinskiValuation hp1).slack haltsOpen
+      = coinMeasure p (frontier {q : Prop | q})
+\end{lstlisting}
+
+\phantomsection\label{lean:sharpreadout-not-computable}
+\begin{lstlisting}
+theorem sharpReadout_not_computable (n : ℕ) :
+    ¬ComputablePred fun c : Code => sharpReadout n c haltsOpen = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:isopen-wordcylinder}
+\begin{lstlisting}
+theorem isOpen_wordCylinder (w : List Bool) : IsOpen (wordCylinder w)
+
+theorem cantorMeasure_wordCylinder (w : List Bool) :
+    cantorMeasure (wordCylinder w) = (1 / 2) ^ w.length
+\end{lstlisting}
+
+\phantomsection\label{lean:cantormeasure-biunion-wordcylinder}
+\begin{lstlisting}
+theorem disjoint_wordCylinder_of_not_prefix {v w : List Bool}
+    (hv : ¬ v <+: w) (hw : ¬ w <+: v) :
+    Disjoint (wordCylinder v) (wordCylinder w)
+
+theorem cantorMeasure_biUnion_wordCylinder {F : Finset (List Bool)}
+    (hF : PrefixFree F) :
+    cantorMeasure (⋃ w ∈ F, wordCylinder w) = ∑ w ∈ F, (1 / 2 : ℝ≥0∞) ^ w.length
+\end{lstlisting}
+
+\subsection{The Monad Question}
+
+\phantomsection\label{lean:valuation-comap}
+\begin{lstlisting}
+def Valuation.comap (f : FrameHom Γ Ω) (v : Valuation Ω) : Valuation Γ
+
+theorem Valuation.comap_id (v : Valuation Ω) : v.comap (FrameHom.id Ω) = v
+
+theorem Valuation.comap_comp (f : FrameHom Γ Ω) (g : FrameHom Δ Γ)
+    (v : Valuation Ω) : v.comap (f.comp g) = (v.comap f).comap g
+\end{lstlisting}
+
+\phantomsection\label{lean:exists-rect-decomposition}
+\begin{lstlisting}
+theorem exists_rect_decomposition (W : LowerSet (ℕ × ℕ)) :
+    ∃ (N : ℕ) (A B : ℕ → LowerSet ℕ),
+      W = (Finset.range N).sup fun i => A i ×ˢ B i
+\end{lstlisting}
+
+\phantomsection\label{lean:eq-on-finsetsup-of-eq-on}
+\begin{lstlisting}
+theorem Valuation.eq_on_finsetSup_of_eq_on {G : Set Ω}
+    (hG : ∀ g ∈ G, ∀ g' ∈ G, g ⊓ g' ∈ G) (u u' : Valuation Ω)
+    (h : ∀ g ∈ G, u g = u' g) {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (a : ι → Ω) (ha : ∀ i ∈ s, a i ∈ G) :
+    u (s.sup a) = u' (s.sup a)
+\end{lstlisting}
+
+\phantomsection\label{lean:valuation-product-unique}
+\begin{lstlisting}
+theorem Valuation.product_unique (v w : Valuation (LowerSet ℕ))
+    {u u' : Valuation (LowerSet (ℕ × ℕ))}
+    (hu : ∀ A B : LowerSet ℕ, u (A ×ˢ B) = v A * w B)
+    (hu' : ∀ A B : LowerSet ℕ, u' (A ×ˢ B) = v A * w B) : u = u'
+\end{lstlisting}
+
+\phantomsection\label{lean:ultrafiltervaluation}
+\begin{lstlisting}
+noncomputable def ultrafilterValuation (W : Ultrafilter ι) : Valuation (Set ι)
+\end{lstlisting}
+
+\phantomsection\label{lean:rect-mem-iff}
+\begin{lstlisting}
+theorem rect_mem_iff {α β : Type*} {W : Ultrafilter (α × β)}
+    {S : Set α} {T : Set β} :
+    S ×ˢ T ∈ W ↔ S ∈ W.map Prod.fst ∧ T ∈ W.map Prod.snd
+\end{lstlisting}
+
+\phantomsection\label{lean:product-valuation-not-unique}
+\begin{lstlisting}
+theorem product_valuation_not_unique :
+    ∃ u u' : Valuation (Set (ℕ × ℕ)),
+      (∀ S T : Set ℕ, u (S ×ˢ T) = u' (S ×ˢ T)) ∧ u ≠ u'
+\end{lstlisting}
+
+\phantomsection\label{lean:fubini-fails-for-valuations}
+\begin{lstlisting}
+theorem fubini_fails_for_valuations :
+    ∃ (v w : Valuation (Set ℕ)) (u u' : Valuation (Set (ℕ × ℕ))),
+      (∀ S T : Set ℕ, u (S ×ˢ T) = v S * w T) ∧
+      (∀ S T : Set ℕ, u' (S ×ˢ T) = v S * w T) ∧ u ≠ u'
+\end{lstlisting}
+
+\phantomsection\label{lean:mixcountable}
+\begin{lstlisting}
+noncomputable def Valuation.mixCountable {ι : Type*} (w : ι → ℝ≥0∞)
+    (hw : ∑' i, w i = 1) (v : ι → Valuation Ω) : Valuation Ω
+\end{lstlisting}
+
+\phantomsection\label{lean:mixcountable-mixcountable}
+\begin{lstlisting}
+theorem Valuation.mixCountable_mixCountable {ι : Type*} {κ : ι → Type*}
+    (w : ι → ℝ≥0∞) (hw : ∑' i, w i = 1)
+    (u : ∀ i, κ i → ℝ≥0∞) (hu : ∀ i, ∑' j, u i j = 1)
+    (v : ∀ i, κ i → Valuation Ω) :
+    Valuation.mixCountable w hw
+        (fun i => Valuation.mixCountable (u i) (hu i) (v i))
+      = Valuation.mixCountable (fun p : Σ i, κ i => w p.1 * u p.1 p.2)
+          (tsum_sigma_mul_eq_one w hw u hu) (fun p => v p.1 p.2)
+\end{lstlisting}
+
+\phantomsection\label{lean:mixcountable-unique}
+\begin{lstlisting}
+theorem Valuation.mixCountable_unique (v : Valuation Ω) :
+    Valuation.mixCountable (fun _ : PUnit => 1) (by simp) (fun _ => v) = v
+\end{lstlisting}
+
+\phantomsection\label{lean:mixcountable-comm}
+\begin{lstlisting}
+theorem Valuation.mixCountable_comm {ι κ : Type*}
+    (w : ι → ℝ≥0∞) (hw : ∑' i, w i = 1) (u : κ → ℝ≥0∞) (hu : ∑' j, u j = 1)
+    (v : ι → κ → Valuation Ω) :
+    Valuation.mixCountable w hw (fun i => Valuation.mixCountable u hu (v i))
+      = Valuation.mixCountable u hu
+          (fun j => Valuation.mixCountable w hw (fun i => v i j))
+\end{lstlisting}
