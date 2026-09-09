@@ -10,7 +10,7 @@ $P$, they produce a syntactic translation that takes a CIC term
 $M : T$ to a forced term $M^P : T^P$, where the type translation
 $T \mapsto T^P$ corresponds to ``the $P$-forced version of $T$''.  At
 the level of propositions, the forced version of $\mathsf{Prop}$ is
-essentially a downward-closed presheaf on the forcing conditions
+a downward-closed presheaf on the forcing conditions
 \cite{jaber-et-al-2016}, which is the type of our $\mathtt{iProp}$.
 
 The framework of Section~\ref{sec:abstract} is therefore, up to
@@ -21,7 +21,7 @@ machine-checked theorem rather than an observation
 (\texttt{Phase6b\_JTS.v}).  We deep-embed a propositional object
 language \texttt{form} (atoms, $\top$, $\bot$, $\wedge$, $\vee$,
 $\to$, $\triangleright$) and define the forcing translation
-\texttt{jts} exactly as the JTS clauses prescribe --- a standalone
+\texttt{jts} exactly as the JTS clauses prescribe, a standalone
 \texttt{Fixpoint} into \texttt{cond -> Prop} that never mentions
 \texttt{iProp}: implication quantifies over all future conditions,
 $\triangleright$ over all strict predecessors, the other connectives
@@ -41,15 +41,15 @@ Theorem jts_Lob       : (* Löb holds OF the translated formulas *)
 \noindent
 Here \texttt{interp} reads the same syntax through the semantic
 connectives of Section~\ref{sec:abstract}.  \texttt{jts\_mono} is the
-presheaf condition (the translation lands in \texttt{iProp});
+presheaf condition, so the translation lands in \texttt{iProp}.
 \texttt{jts\_is\_interp} is the factorization ``syntactic forcing
-translation $=$ step-indexed semantics''; and \texttt{jts\_Lob} is
-Löb's rule transported to the syntax --- available
-precisely because the forcing structure is well-founded
-(Section~\ref{sec:lob-essential} shows it is otherwise unavailable).
+translation $=$ step-indexed semantics''.  \texttt{jts\_Lob} is
+Löb's rule transported to the syntax, available because the forcing
+structure is well-founded (Section~\ref{sec:lob-essential} shows it
+is otherwise unavailable).
 What remains unmechanized is the \emph{term-level} translation of
 full CIC (universes, dependent products, the definitional side of
-\cite{jaber-et-al-2016}); the propositional claim made above is
+\cite{jaber-et-al-2016}).  The propositional claim made above is
 mechanized in full.
 
 Alongside this, we mechanize the \emph{embedding} of the unforced
@@ -108,7 +108,7 @@ Notation "⌜ P ⌝" := (embed P).
 \noindent
 This is the trivial part of the forcing translation: classical
 propositional reasoning lifts to the forcing framework without
-change.  We will see in a moment that the genuinely new content of
+change.  We will see in a moment that the new content of
 the forcing translation, the $\triangleright$ modality, is
 \emph{not} in the image of $\lceil \cdot \rceil$.
 

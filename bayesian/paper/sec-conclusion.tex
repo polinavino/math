@@ -3,13 +3,13 @@
 
 Many properties of programs are only semidecidable, so the Boolean
 event algebra Kolmogorov's axioms~\cite{kolmogorov1933} presuppose is
-not a good fit for reasoning about them.  The notion of graded 
-belief does not presuppose Boolean logic.
-Classicality is imposed only via the complement rule
+not a good fit for reasoning about them.  The notion of a degree of
+certainty does not presuppose Boolean logic.
+Classicality enters only through the complement rule
 (Theorem~\ref{thm:hinge}).  Its dynamic counterpart is the agreement
 of Dempster and Bayesian conditioning (Theorem~\ref{thm:cond-hinge}).  
 Everything else
-survives the intuitionistic substrate intact: conditioning, Bayes
+holds verbatim on frames: conditioning, Bayes
 symmetry, disjoint additivity, total probability over genuine
 partitions, and inclusion--exclusion itself
 (Theorem~\ref{thm:incl-excl}).  The weaker logic adds the slack
@@ -152,20 +152,24 @@ it is anything else.
 Four problems are open: (1)~representing the diffuse part on
 non-spatial frames, (2)~completing the Acz\'el development
 (continuity of the generator and its extension beyond the cone),
+where the classical analysis is known~\cite{aczel1966},
 (3)~deriving modularity from a criterion more primitive than the
 mixture characterization (Theorem~\ref{thm:mixture}), knowing it
 cannot come from disjunction data alone
 (Theorem~\ref{thm:no-functional}), and (4)~a machine-checked
-Dutch-book theorem in the style of~\cite{weatherson2003}, which to
-our knowledge no proof assistant has for \emph{any} logic.  On the
+Dutch-book theorem in the style of~\cite{weatherson2003}: the
+informal proof exists, and to our knowledge no proof assistant has
+one for \emph{any} logic.  Problems (1) and (3) are open
+mathematically, (2) and (4) mainly as formalizations.  On the
 monad, two continuations are concrete: quotient the countable
 presentations into a Kleisli category of countably-atomic kernels,
 and mechanize the classifying-locale formulation above, which needs
 classifying locales of geometric theories, infrastructure
-\textsf{mathlib} currently lacks.  Both are confined to a fragment,
+\textsf{mathlib} currently lacks.  Both are formalization tasks
+rather than mathematical gaps, and both are confined to a fragment,
 since the unrestricted multiplication is provably not canonical.
 Beyond intuitionistic logic there is no ambient category in which
-``logic $\mapsto$ its probability theory'' is a functor.  What
+``logic $\mapsto$ its probability calculus'' is a functor.  What
 transfers is the method: state the classical desiderata, delete the
 axioms the target logic no longer licenses, and let a proof
 assistant check what survives, what splits, and what becomes

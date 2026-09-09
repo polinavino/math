@@ -6,7 +6,8 @@ for verifying higher-order programming languages with mutable state,
 recursive types, and concurrency.  From Appel and McAllester's
 original step-indexed model of recursive types
 \cite{appel-mcallester2001} to the modern Iris
-ecosystem~\cite{jung-et-al-2018}, the same basic idea recurs: instead
+ecosystem~\cite{jung-et-al-2018}, mechanized in the Coq/Rocq proof
+assistant, the same basic idea recurs: instead
 of asking whether a program satisfies a specification, ask whether it
 satisfies the specification at every finite observation depth $n$,
 then recover the unindexed statement as the limit.  Each level of
@@ -35,9 +36,11 @@ and Löb's rule is well-founded induction on the forcing order,
 internalized into the logic.
 
 \paragraph{Contributions.}
-We give two technical observations about step-indexed Hoare logic,
-together with the forcing-style framework that makes them stateable.
-All claims are mechanized in Rocq.
+We give two technical observations about the mechanized metatheory of
+step-indexed Hoare logic, together with the forcing-style framework
+that makes them stateable. Both bear on soundness proofs as they are
+carried out in a proof assistant, and the entire development is
+mechanized in Rocq with no external dependencies.
 
 \begin{enumerate}
 

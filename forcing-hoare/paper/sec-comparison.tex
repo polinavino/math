@@ -28,7 +28,7 @@ $\top \vdash \triangleright \widehat{\Phi} \to \widehat{\Phi}$
 are equivalent.  The IMP \texttt{wp\_at}-predicate
 $\lambda n.\, \forall s, P\, s \to \mathtt{wp\_at}\, n\, c\, Q\, s$ is
 exactly of this shape, so meta-level induction-on-$n$ and the
-internal-L\"ob route literally close the same goal.
+internal-L\"ob route close the same goal.
 
 The $\lambda$-calculus proof of \texttt{wp\_fix} also goes by some
 form of recursion, since the goal is the soundness of a recursive
@@ -127,7 +127,7 @@ recursion is involved, but conceptually equivalent to ``the
 step-indexed argument''.  Our diagnostic says this is right for
 first-order recursion (the IMP case) but understates what is
 happening in higher-order recursion (the $\lambda$-fix case).  When
-the soundness predicate is genuinely self-referential in the
+the soundness predicate is self-referential in the
 program, an outer induction on $n$ is still possible but no longer
 matches the structure of the predicate.  The internal Löb rule
 matches that structure: it is well-founded induction on the forcing
@@ -135,5 +135,5 @@ order, internalized into the logic so that it acts on the recursive
 proposition directly.
 Section~\ref{sec:abstract} will make precise what
 ``internalized'' means by showing the abstract framework's Löb
-rule is literally an appeal to \texttt{well\_founded\_ind}.
+rule is an appeal to \texttt{well\_founded\_ind}.
 

@@ -78,7 +78,7 @@ Lemma lob_premise_at p :
 \end{lstlisting}
 
 \noindent
-The lemma actually shows something more: at every $p$, the
+The lemma shows something more: at every $p$, the
 implication $\triangleright \bot \to \bot$ is forced.  The reason is
 the same as just above.  The antecedent $\triangleright \bot$ is
 empty, so any implication from it is vacuously forced.  Spelled out:
@@ -89,7 +89,7 @@ is itself false (apply \texttt{Hlater} at $q - 1$, contradiction), so
 the conditional is vacuously satisfied.
 
 The conclusion of Löb's rule says $\bot$ is forced at every
-condition.  This obviously fails:
+condition.  This fails:
 
 \begin{lstlisting}
 Lemma lob_conclusion_fails :
@@ -134,7 +134,7 @@ Theorem lob_iff_wf : lob_holds <-> well_founded lt.
 \noindent
 The forward direction $(\Leftarrow)$ is the abstract \texttt{iLob}
 proof of Section~\ref{sec:abstract}, replayed in the pre-structure.
-The backward direction $(\Rightarrow)$ is genuinely new.  Define the
+The backward direction $(\Rightarrow)$ is the novel one.  Define the
 \emph{forcing-accessibility} predicate
 $\varphi_{\mathrm{acc}}\, p := \mathtt{Acc}\, \mathtt{lt}\, p$. This is
 a valid $\mathtt{iPropPre}$, because $\mathtt{Acc}$ is downward-closed

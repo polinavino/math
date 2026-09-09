@@ -1,68 +1,84 @@
 \section{Introduction}
 \label{sec:intro}
 
-Classical logic underlies Kolmogorov's probability~\cite{kolmogorov1933}.
-The axioms of this probability
-specify an arithmetic of chance (non-negativity, normalization,
-$\sigma$-additivity). Beneath that arithmetic sits a logic: the events
-form a Boolean $\sigma$-algebra, closed under complement and
-satisfying excluded middle.  The complement rule,
-$P(A^{c}) = 1 - P(A)$, is where the two layers touch.  It is an
-arithmetical equation about a logical operation, obeyed by
-every assignment of degrees of certainty. In the limiting case
-of all-or-nothing probabilities, it becomes
-equivalent to the law of excluded middle.
+Kolmogorov's probability~\cite{kolmogorov1933} assigns numerical 
+values representing uncertainty to events. 
+The events to which the probability is assigned
+form a Boolean $\sigma$-algebra, therefore
+satisfying the law of excluded middle.
+The axioms these assignments satisfy make up the arithmetic of 
+chance (non-negativity, normalization,
+$\sigma$-additivity). 
 
-That framework commits to logical axioms that computer science cannot
+This framework commits to logical axioms that computer science cannot
 always commit to.  Many properties of programs (does this computation
 halt, does this process reach a given state) are only
 \emph{semidecidable}: a procedure confirms the property when it
 holds, and no procedure, in general, confirms its failure.  The
 natural event algebra for a semidecidable property is a
 \emph{frame}, the algebra of open sets of a space, and equivalently
-the algebraic semantics of intuitionistic logic.  We show that a
-classical, fully resolved (slack-free) probabilistic reading of a
-semidecidable property is exactly as hard as solving the halting
-problem.  This reading is not exotic: on the space of infinite binary
-tapes, the value of the halting event is Chaitin's
-$\Omega$~\cite{chaitin1975}, and its slack is the mass of the
-topological boundary of the halting event.  Reasoning about the chance that a
+the algebraic semantics of intuitionistic logic.  We show that
+applying Kolmogorov's probability (with its underlying Boolean event
+algebra) to a semidecidable property presupposes a solution to the
+halting problem. This result is the pointwise counterpart of Chaitin's
+$\Omega$~\cite{chaitin1975} example, which we interpret in the framework we
+develop here.  In general, reasoning about the chance that a
 program has some property
-therefore needs an event logic that is not Boolean. We align the
-probability calculus with the logic of the objects it reasons about,
-and mechanize the result.
+therefore needs an event logic that is not Boolean. We develop a
+mechanized framework that allows us to study probability calculi without
+committing to a fixed (classical) logic, and thereby select the
+probability calculus aligned with the logic of the objects it reasons about.
 
 Probability is, as the Cox--Jaynes tradition has it, \emph{extended
-logic}~\cite{cox1946,jaynes2003}.  A probability theory has two
-layers.  One layer is the event algebra: the underlying set of 
-events, and how they combine under the algebraic operations 
-of conjunction, disjunction, and negation.
-The other layer is the arithmetic: axioms on maps from the event
-algebra to numbers, saying which assignments of degrees of certainty
-to the events are admissible.  Kolmogorov takes the event algebra to be Boolean, and
-his axioms tie the arithmetic to that choice, most visibly in the
-complement rule.
-The logic of events is in this sense a \emph{parameter} of the
-theory, and Kolmogorov's calculus is its value at Boolean logic.
-Quantum probability, which re-bases the arithmetic on orthomodular
-lattices, is the established precedent for varying
-it~\cite{birkhoff-vonneumann1936,gleason1957}.  We compute the value
-at intuitionistic logic, whose event algebras are frames: complete
-Heyting algebras, the lattices of open sets.  Two facts make the
-result a theory of \emph{probability} rather than an arbitrary
-grading of events.  In the limit of certainty it returns the logic:
-the $\{0,1\}$-valued valuations are exactly the prime-ideal points
-of the frame (Section~\ref{sec:hinge}).  And at Boolean logic it
-returns the classical theory: complete Boolean algebras are exactly
-the frames satisfying excluded middle, and every valuation there
-obeys the classical complement rule.  So, the classical theory
-embeds as a special case.
+logic}~\cite{cox1946,jaynes2003}.  Different logics 
+can be extended through the same construction. 
+First, fix an event algebra, i.e. the chosen event logic
+in algebraic form. This algebra 
+consists of the underlying set of events, together with the
+operations interpreting the logic's connectives.  For the logics
+compared in this paper these are conjunction, disjunction, and
+negation, with the law of excluded middle holding in the classical
+case. Then let \emph{valuations} be the maps from events to numbers
+that satisfy the axioms of monotonicity, normalization, and
+modularity.
+The resulting
+calculus is a probability calculus (i.e. degrees of certainty
+rather than an arbitrary grading
+of events) when (1) the valuations taking only the values $0$ and
+$1$, the two degrees of complete certainty,
+reconstruct the
+underlying event logic, and (2) the construction, evaluated at
+classical logic, returns the classical theory. This construction
+treats
+the logic of events as a \emph{parameter}: a choice of event
+algebra determines an associated probability calculus. In this work,
+however, we do not treat the general case: there is no guarantee
+that
+\emph{each} event algebra returns a calculus of degrees of
+certainty.
 
-The theory that results fixes the arithmetic on the event algebra
-and imposes no axiom on complements.
-A \emph{valuation} on a
-frame $\Omega$ is a monotone, normalized, modular map
-$v : \Omega \to \ENNReal$, i.e. such that 
+Kolmogorov takes the event algebra to be Boolean,
+and his calculus is the value of the construction at Boolean logic.
+There, the law of excluded middle in the
+underlying logic makes it possible to show that
+every valuation obeys the \emph{complement rule}
+$P(A^{c}) = 1 - P(A)$. A motivating example for varying
+the logic parameter is
+quantum uncertainty calculus, whose event algebras are the
+orthomodular
+lattices~\cite{birkhoff-vonneumann1936,gleason1957}.  
+Here, we study the construction extending 
+intuitionistic logic, whose event algebras are frames:
+complete Heyting algebras, the lattices of open sets.  
+(1)~The all-or-nothing valuations are exactly the two-valued models
+of the logic
+(Section~\ref{sec:hinge}).
+(2)~Complete Boolean algebras are exactly the frames satisfying
+excluded middle, so the classical theory embeds as a special case.
+
+Given a valuation
+$v : \Omega \to \ENNReal$ on a frame $\Omega$,  for all $a, b$, 
+by modularity,
 $v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$.
 The pseudocomplement $\neg a$ satisfies
 $a \sqcap \neg a = \bot$ but not, in general, $a \sqcup \neg a =
@@ -85,22 +101,10 @@ property is to hold no longer tells you how likely it is to fail, and
 the gap between the two, the slack, is now also required to answer
 that question.
 
-Slack is necessarily submodular, a
-consequence of $v$'s own modularity.
-It does not, however, determine $v$: two fully modular valuations on
-the same frame can share one slack function, a fact we exhibit on an
-explicit three-point space.  Weak
-excluded middle, $\neg\neg a \sqcup \neg a = \top$, does not repair
-this.  Imposed on the whole frame it collapses slack to the
-double-negation gap alone, and the fully Boolean case, where even
-that gap vanishes, is the worst case for recovery: slack is
-identically zero there for every valuation.
-
-The conditional
+How the change of logic affects statistical reasoning can be stated
+operation by operation.  The conditional
 $v(a \sqcap b)/v(b)$, the product rule, and Bayes symmetry
-hold verbatim in the resulting theory, which reduces to
-intuitionistic logic in the limit of certainty.
-Certain identities vary, however.  The
+hold verbatim. The
 classical denominator of Bayes' theorem,
 $P(B) = P(B \mid A)P(A) + P(B \mid \neg A)P(\neg A)$, degrades to a
 lower bound whose deficit is a conditional slack.  Marginalization is
@@ -112,8 +116,8 @@ indistinguishable, give different posteriors from the same evidence
 unless its slack vanishes.  The value of an event $A$ itself is read
 as $P(\mathrm{int}\,A)$, so a nonatomic distribution queried on
 intervals still behaves classically: an interval's boundary is two
-points, carrying no mass.  Differences arise only at boundaries
-carrying mass and at semidecidable hypotheses.
+points, carrying no mass.  The two readings differ only at
+boundaries carrying mass and at semidecidable hypotheses.
 
 Cox's original theorem required repair after Halpern's
 counterexample~\cite{cox1946,halpern1999,vanhorn2003}.  Even with
@@ -129,6 +133,12 @@ satisfies weak excluded middle.
 \paragraph{Contributions.}
 
 \begin{enumerate}
+\item \textbf{Weak excluded middle}
+  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  Global weak
+  excluded middle on the opens of $X$ is exactly extremal
+  disconnectedness of $X$, for compact Hausdorff $X$ exactly the
+  Stonean spaces.
+
 \item \textbf{Two characterizations}
   (Sections~\ref{sec:hinge} and~\ref{sec:ds}).  The complement rule
   holds for \emph{every} valuation iff the frame satisfies excluded
@@ -153,18 +163,8 @@ satisfies weak excluded middle.
   Any classical measure, read on the opens, is a valuation whose
   slack is boundary mass.  A slack-free readout of halting is
   uncomputable, and on Cantor space the value of the halting event
-  is Chaitin's $\Omega$.
-
-\item \textbf{The monad dichotomy} (Section~\ref{sec:conclusion}).
-  Product valuations are unique on chain products and provably
-  non-unique on the powerset frame, where Fubini fails.  The
-  countable fragment composes associatively and commutatively.
-
-\item \textbf{Weak excluded middle}
-  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  Global weak
-  excluded middle on the opens of $X$ is exactly extremal
-  disconnectedness of $X$, for compact Hausdorff $X$ exactly the
-  Stonean spaces.
+  is Chaitin's $\Omega$.  Slack is submodular yet does not determine
+  the valuation.
 
 \item \textbf{A first formal treatment.}
   Everything above is machine-checked in Lean~4 over
@@ -182,6 +182,7 @@ to a proof assistant.  We separate \emph{object-level} classicality,
 excluded middle in the frame $\Omega$, from the \emph{meta-level}
 classicality \textsf{mathlib} inherits through \texttt{Classical.choice},
 track which results use which, and equip the one essential non-Boolean
-model with a computable decidability instance.  And the product-rule half of Cox's theorem needs an
+model with a computable decidability instance.  
+The product-rule half of Cox's theorem needs an
 Acz\'el/H\"older regraduation absent from \textsf{mathlib}, which we
 build from scratch.
