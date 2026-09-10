@@ -1,180 +1,115 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Many properties of programs are only semidecidable, so the Boolean
-event algebra Kolmogorov's axioms~\cite{kolmogorov1933} presuppose is
-not a good fit for reasoning about them.  The notion of a degree of
-certainty does not presuppose Boolean logic.
-Classicality enters only through the complement rule
-(Theorem~\ref{thm:hinge}).  Its dynamic counterpart is the agreement
-of Dempster and Bayesian conditioning (Theorem~\ref{thm:cond-hinge}).  
-Everything else
-holds verbatim on frames: conditioning, Bayes
-symmetry, disjoint additivity, total probability over genuine
-partitions, and inclusion--exclusion itself
-(Theorem~\ref{thm:incl-excl}).  The weaker logic adds the slack
-structure, along with its two-gap decomposition, and the
-atomic/diffuse divide. For this new structure,
-we demonstrate a belief-function reading through
-$\neg\neg$, and give a computability-theoretic reason that structure
-cannot be dispensed with: forcing it away on a semidecidable event
-is exactly as hard as solving the halting problem
-(Section~\ref{sec:bridges}).
+In this work, we take seriously the Cox--Jaynes reading of
+probability as \emph{extended logic}, and
+make the extension a construction with the logic of events as a
+parameter.  The construction fixes an event algebra (the chosen
+logic in algebraic form) and takes as its assignments of degrees of
+certainty the valuations: the maps from events to numbers satisfying
+monotonicity, normalization, and modularity.  We specify the 
+two conditions that qualify
+the result as a probability calculus: when events are certain (0 or 1 certainty),
+the valuations must reconstruct
+the underlying event logic, and the value of the construction at
+classical logic must be the classical theory. 
 
-\paragraph{Functoriality and the monad question.}
-For a fixed choice of logic, the
-connection to the categorical picture is concrete.  Pushforward along
-a frame homomorphism $f : \Omega \to \Omega'$ sends a valuation $v$
-on $\Omega'$ to $(f_* v)(a) = v(f(a))$ on $\Omega$, and this
-preserves all four valuation axioms, making $\mathrm{Val}(-)$ a
-functor on locales, the localic counterpart of the functor part of
-the Giry monad~\cite{giry1982}.  This is mechanized end to end, the
-pushforward together with the two functor laws checked against
-identity and composition of frame homomorphisms\leanref{valuation-comap}.  The
-point valuations $\delta_p$ of Section~\ref{sec:representation} are
-the unit, already formalized, and Theorem~\ref{thm:finite-rep} shows
-that on finite frames $\mathrm{Val}$ agrees, on objects, with the
-classical finite-distribution monad on points.  The multiplication
-is where the substance is.  Flattening a valuation of valuations is
-integration, hence product valuations and Fubini, and by Kock's
-identification of commutative monads with Fubini
-theorems~\cite{kock2012}, whether statistics-as-kernel-composition
-transports to a weaker logic is precisely the question whether that
-logic's valuation functor is a commutative monad.  Two
-machine-checked results delimit the multiplication from both sides.
+The motivation for developing this extension comes from the 
+study of program behaviour in terms of outcome probabilities. 
+Many properties of programs are only semidecidable.
+However, the Boolean
+event algebra underlying Kolmogorov's axioms
+imposes the law of excluded middle (and therefore decidability) on the
+structure of logical connectives applied to events. This makes it
+not a good fit for reasoning about events that are not decidable, such
+as, e.g. the termination of the halting program (which, we demonstrate, 
+also becomes decidable when reasoning in classical probability). 
+The extension process 
+we propose, when fixing its logic parameter to be intuitionistic,
+does not conflict with the underlying event logic of computation
+by construction, and is capable of reasoning about the possibility of
+non-termination.
 
-On the chain product, the question of \emph{which} product valuation
-to take does not arise, since the frame
-$\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ is \emph{rigid}: every
-lower set is a \emph{finite} union of rectangles, because beyond a
-stabilization height every occupied column is full, so the full
-columns and finitely many rows account for everything
-\leanref{exists-rect-decomposition}.  The rigidity mechanism is
-general.  By the inclusion--exclusion equality, two valuations
-agreeing on any $\sqcap$-closed family agree on all finite joins of
-its members\leanref{eq-on-finsetsup-of-eq-on}, and the chain
-product is the instance where that family is the rectangles.  The
-product valuation there, whenever it exists, is therefore unique,
-with no continuity assumed\leanref{valuation-product-unique}.
+Substituting the Heyting event algebra (and therefore intuitionistic logic)
+for the Boolean algebra representing the classical logic case
+changes only the consequences that excluded middle supplied.  Both
+qualifying conditions hold at this parameter value
+(Sections~\ref{sec:valuation} and~\ref{sec:hinge}), and classicality
+enters only through the complement rule (Theorem~\ref{thm:hinge})
+and its dynamic counterpart, the agreement of Dempster and Bayesian
+conditioning (Theorem~\ref{thm:cond-hinge}).  The complement rule
+degrades to the inequality $v(a) + v(\neg a) \le 1$.  The deficit in
+this inequality, for which we re-purpose the term slack, is a new
+quantity: the value of the undecided region, given by the boundary
+mass in the measure model.  Slack is submodular yet does not
+determine the valuation.  The weaker logic also adds the two-gap
+decomposition of slack, the atomic/diffuse divide, and a
+belief-function reading through $\neg\neg$.  
 
-On the powerset frame $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$,
-whose elements are far from finite unions of rectangles,
-non-uniqueness is a theorem.  The indicator of an ultrafilter is a
-valuation\leanref{ultrafiltervaluation}, and any ultrafilter on a
-product splits rectangles through its marginal pushforwards
-\leanref{rect-mem-iff}.  Taking a free ultrafilter $\mathcal{U}$
-on $\mathbb{N}$, the two iteration orders of its tensor with itself
-and its diagonal pushforward carry identical values on \emph{every}
-rectangle, yet they differ on the upper triangle
-$\{(m, m') \mid m < m'\}$
-\leanref{product-valuation-not-unique}.  The two
-orders of iterated integration of the same marginal data therefore
-disagree: Fubini fails, concretely
-\leanref{fubini-fails-for-valuations}.  Compare the Fubini
-pathologies of non-additive
-integration~\cite{denneberg1994,ghirardato1997}.  By Kock's
-correspondence, no canonical commutative multiplication exists for
-unrestricted valuations.  On the powerset frame these valuations are
-finitely additive probability charges in the sense
-of~\cite{bhaskara-rao1983}, so this half of the dichotomy is not
-specific to intuitionism: the freedom is already present in the
-classical finitely additive setting, and dropping continuity is what
-admits it.  A monad therefore requires restricting either the
-frames or the valuations.
+Everything else holds
+verbatim on frames: conditioning, the product rule, Bayes symmetry,
+disjoint additivity, total probability over genuine partitions, and
+inclusion--exclusion itself.  On
+finite frames, every valuation is a classical mass function on the
+frame's points.  The product-rule half of Cox's theorem is
+independent of the logic while the sum-rule half must be posited, so 
+the direct transcription of the classical Cox statement is
+unsatisfiable. Every result is machine-checked in
+Lean~4 over \textsf{mathlib}.
 
-\paragraph{The obstruction to a monad.}
-The question upstream of the multiplication is worth stating
-precisely, though what follows is an assessment rather than a
-theorem.  A monad needs a category for $\mathrm{Val}$ to be an
-endofunctor on.  The space of valuations must itself be an object, a
-``space'' whose opens one can speak of.  For Scott-continuous
-valuations that space is a locale and monad structure is available,
-constructively, through the probabilistic powerdomain
-line~\cite{jones-plotkin1989,vickers2008,coquand-spitters2009}.
-Even there, exhibiting a cartesian closed category closed under the
-construction is the Jung--Tix problem, open since 1998 for the
-classical probabilistic powerdomain functor
-itself~\cite{jung-tix1998}, though reframed versions of the category
-have recently been settled.  Dropping continuity makes the
-difficulty prior rather than merely worse, since the standard
-presentations of the valuation space use continuity essentially.
-
-One candidate route to a well-posed question does exist.  The
-localic treatments present the space of continuous valuations as the
-classifying locale of a propositional geometric theory~\cite{vickers2008,
-coquand-spitters2009}, with generators asserting $q < v(a)$ for
-rational $q$ and axioms for monotonicity, normalization, modularity
-(expressible with rational parameters and countable disjunctions),
-and continuity.  Deleting the continuity axiom leaves a geometric
-theory, so a classifying locale still exists on general grounds, and
-classically its points are exactly the valuations of this paper.  We
-have verified none of the structure this candidate would need.  The
-unit looks unproblematic, but the multiplication requires
-integrating the evaluation maps against a merely modular,
-discontinuous valuation, where the sum of two lower-real-valued maps
-is an infinite join, and the diffuse part of
-Example~\ref{thm:obstruction} is precisely what such joins fail to
-capture.  We offer the formulation as a
+\paragraph{Toward a monad.}
+Section~\ref{sec:monad} lays the groundwork for a categorical
+exploration of the construction: $\mathrm{Val}$ is a mechanized
+functor on locales, and its countably-presented fragment composes as
+kernels, though whether that composition is canonical on valuations
+rather than their presentations remains open.
+A commutative monad structure, where it exists, would be the
+intuitionistic counterpart of the Giry monad and a step toward
+compositional semantics for probabilistic programs with
+semidecidable events.  One candidate formulation exists: the space
+of Scott-continuous valuations is the classifying locale of a
+geometric theory~\cite{vickers2008,coquand-spitters2009}.
+Deleting its continuity axiom still leaves a geometric theory, whose
+points, read classically, are exactly our valuations.  Its multiplication,
+however, must integrate against a merely modular valuation, and the
+diffuse part of Example~\ref{thm:obstruction} is exactly what such
+integration fails to capture.  We offer the formulation as a
 target, not a result.
+Beyond intuitionistic logic, no ambient category sending a logic to
+its probability calculus functorially is evident from our
+construction, and this question remains open.
 
-A more modest strategy, with a better track record, is to carve out
-a fragment rather than construct the whole monad.  On the
-measure-theoretic side, the failure of cartesian closure for
-measurable spaces was answered by quasi-Borel
-spaces~\cite{heunen2017qbs}.  On the domain-theoretic side,
-commutativity of the full valuations monad on \textsf{DCPO} is open,
-and the response is a hierarchy of commutative \emph{submonads}
-generated from simple valuations~\cite{jia2021commutative}.  Our
-decomposition theorem names the corresponding fragment here: the
-atomic part.  As a first machine-checked step in that direction, we
-show that the countably-presented fragment composes correctly with
-no space structure needed at all.  A countable mixture of valuations
-is a valuation\leanref{mixcountable}, a mixture of mixtures
-flattens to a mixture with product weights, which is discrete
-Chapman--Kolmogorov\leanref{mixcountable-mixcountable}, the
-one-point mixture is the identity\leanref{mixcountable-unique},
-and iterated countable mixing is order-independent\leanref{mixcountable-comm}, all by the unconditional Fubini of
-$\ENNReal$ sums over sigma types.  This is associative, unital,
-commutative kernel composition for countably-atomic data, in direct
-contrast with the non-uniqueness above.  It is not yet a monad: the
-presentations are not canonical, we do not quotient by ``presents the
-same valuation,'' and the diffuse part is exactly what no countable
-presentation captures.
 
-In summary, the unit, the finite level, and countable kernel
-composition with its commutativity are proved.  Rigidity on chain
-products and non-uniqueness on the powerset frame are proved, so the
-general multiplication is settled: it is not canonically determined.
-What remains is the ambient category, a formulation problem before
-it is anything else.
+\paragraph{Other open problems and future work.}
+A natural extension of our mechanization effort involves
+completing the Acz\'el development, and mechanizing the
+Dutch-book theorem~\cite{weatherson2003}. Both require substantial 
+additional effort and were deemed out of scope for this work. 
+To extend our mechanization effort with preliminary monad 
+results, we would quotient the countable
+presentations (Proposition~\ref{prop:mixcountable}) into a Kleisli
+category of countably-presented kernels, and mechanize the
+classifying-locale formulation (which needs classifying locales of
+geometric theories, infrastructure \textsf{mathlib} currently lacks).
 
-\paragraph{Open problems and future work.}
-Four problems are open: (1)~representing the diffuse part on
-non-spatial frames, (2)~completing the Acz\'el development
-(continuity of the generator and its extension beyond the cone),
-where the classical analysis is known~\cite{aczel1966},
-(3)~deriving modularity from a criterion more primitive than the
+Some related mathematical problems remain open as well.
+The first is developing a representation of the diffuse part on
+non-spatial frames. The second is deriving modularity from a 
+criterion more primitive than the
 mixture characterization (Theorem~\ref{thm:mixture}), knowing it
 cannot come from disjunction data alone
-(Theorem~\ref{thm:no-functional}), and (4)~a machine-checked
-Dutch-book theorem in the style of~\cite{weatherson2003}: the
-informal proof exists, and to our knowledge no proof assistant has
-one for \emph{any} logic.  Problems (1) and (3) are open
-mathematically, (2) and (4) mainly as formalizations.  On the
-monad, two continuations are concrete: quotient the countable
-presentations into a Kleisli category of countably-atomic kernels,
-and mechanize the classifying-locale formulation above, which needs
-classifying locales of geometric theories, infrastructure
-\textsf{mathlib} currently lacks.  Both are formalization tasks
-rather than mathematical gaps, and both are confined to a fragment,
-since the unrestricted multiplication is provably not canonical.
-Beyond intuitionistic logic there is no ambient category in which
-``logic $\mapsto$ its probability calculus'' is a functor.  What
-transfers is the method: state the classical desiderata, delete the
-axioms the target logic no longer licenses, and let a proof
-assistant check what survives, what splits, and what becomes
-unsatisfiable.  Linear logic is the natural next case: its event
-algebras are quantales, a valuation there should grade the
-consumption of evidence, and the analogues of our representation
-theorems and of slack, for the failure of contraction, are
-open~\cite{danos-ehrhard2011}.
+(Theorem~\ref{thm:no-functional}).
+
+The construction method applies beyond intuitionistic logic:
+state the classical desiderata,
+delete the axioms the target logic no longer licenses, and check
+what survives, what splits, and what becomes unsatisfiable.  Linear
+logic is the natural next case: its event algebras are quantales, a
+valuation there should grade the consumption of evidence, and the
+analogues of our representation theorems and of slack, for the
+failure of contraction, remain open~\cite{danos-ehrhard2011}.
+
+
+
+
+

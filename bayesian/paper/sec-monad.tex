@@ -1,0 +1,145 @@
+\section{Product Valuations and Kernel Composition}
+\label{sec:monad}
+
+The structure
+through which classical probability supports sequential statistical
+reasoning is the Giry monad:
+
+\begin{definition}[Giry monad~{\cite{giry1982}}]
+\label{def:giry}
+The \emph{Giry monad} $G$ sends a measurable space $X$ to the space
+$G(X)$ of probability measures on $X$.  Its unit sends a point
+$x \in X$ to the point mass at $x$, and its multiplication sends a
+measure $M$ on $G(X)$ to the measure
+$A \mapsto \int m(A) \,\mathrm{d}M(m)$.
+\end{definition}
+
+\noindent
+Probabilistic reasoning then composes in stages, and, when the monad
+is commutative, independent stages compose in either order.  The
+question is whether the intuitionistic calculus supports the same
+structure.
+
+A \emph{frame
+homomorphism} is a map preserving finite meets and arbitrary joins.
+Pushforward along
+a frame homomorphism $f : \Omega \to \Omega'$ sends a valuation $v$
+on $\Omega'$ to $a \mapsto v(f(a))$ on $\Omega$, and this preserves
+the valuation axioms, making $\mathrm{Val}(-)$ a functor on
+locales, the localic counterpart of the functor part of the Giry
+monad~\cite{giry1982}.  A frame homomorphism is the opposite of a 
+locale map, so the functor laws are checked against
+identity and composition of frame
+homomorphisms\leanref{valuation-comap}.  The point valuations
+$\delta_p$ (Section~\ref{sec:representation}) provide the candidate
+(monad) unit.
+Theorem~\ref{thm:finite-rep} shows that, on finite frames,
+$\mathrm{Val}$ agrees (on objects) with the classical
+finite-distribution monad on points.  
+Flattening a valuation of valuations is
+integration, and integration in two variables requires product
+valuations.  A \emph{kernel} is a map assigning a valuation to each point
+of a locale, giving a conditional distribution.  By Kock's
+identification of commutative monads with Fubini
+theorems~\cite{kock2012}, kernels compose independently of order
+exactly when $\mathrm{Val}$ is a commutative monad.  
+
+A valuation $u$ on a product frame is a \emph{product} of
+valuations $v$ and $w$ when $u(A \times B) = v(A) \cdot w(B)$ for
+all rectangles $A \times B$.  Let
+$\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ be the frame of lower
+sets of the grid $\mathbb{N} \times \mathbb{N}$, ordered
+component-wise.  On this frame, products are unique:
+
+\begin{theorem}[product uniqueness\leanref{valuation-product-unique}]
+\label{thm:product-unique}
+Let $v, w$ be valuations on $\mathrm{Low}(\mathbb{N})$.  Any two
+valuations on $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ that are
+products of $v$ and $w$ are equal.
+\end{theorem}
+
+\noindent
+By the inclusion--exclusion equality, two valuations agreeing on a
+$\sqcap$-closed family agree on all finite joins of its
+members\leanref{eq-on-finsetsup-of-eq-on}.  The rectangles are
+closed under $\sqcap$, and in
+$\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ every lower set is a
+\emph{finite} union of
+rectangles\leanref{exists-rect-decomposition}, so agreement on
+rectangles is agreement everywhere.  Valuations carry no continuity
+axiom (Section~\ref{sec:representation}), 
+so the $\sigma$-additivity driving the
+classical uniqueness argument for product measures has no analogue
+here.  The order structure of the frame does that work instead.
+
+\begin{theorem}[product non-uniqueness\leanref{fubini-fails-for-valuations}]
+\label{thm:product-not-unique}
+On the powerset frame $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$
+there exist valuations $v, w$ and two \emph{distinct} products of
+$v$ and $w$.
+\end{theorem}
+
+\noindent
+An \emph{ultrafilter} on $\mathbb{N}$ is a collection of subsets,
+closed under intersection and superset, containing exactly one of
+$S$ and its complement for every $S \subseteq \mathbb{N}$.  It is
+\emph{free} when it contains no finite set.  The map assigning $1$
+to the members of an ultrafilter and $0$ to every other subset is a
+valuation\leanref{ultrafiltervaluation}.  A rectangle $S \times T$
+belongs to an ultrafilter on the product exactly when $S$ and $T$
+belong to its images under the two coordinate
+projections\leanref{rect-mem-iff}.  A free ultrafilter
+$\mathcal{U}$ on $\mathbb{N}$ yields two ultrafilters on
+$\mathbb{N} \times \mathbb{N}$.  A set belongs to the former when,
+for $\mathcal{U}$-most first coordinates, its slice contains
+$\mathcal{U}$-most second coordinates.  A set belongs to the latter
+under the same test with the coordinates in the opposite order.
+
+The two ultrafilters' valuations agree on
+\emph{every} rectangle yet differ on the upper triangle
+$\{(m, m') \mid m < m'\}$\leanref{product-valuation-not-unique}.
+Integrating the same marginal data in the two orders thus
+disagrees.  Fubini fails for valuations, as it does for non-additive
+integration~\cite{denneberg1994,ghirardato1997}.  By Kock's
+correspondence, no canonical commutative
+multiplication exists for unrestricted valuations.  This half of the
+dichotomy is not specific to intuitionism, since powerset-frame
+valuations are exactly the classical finitely additive probability
+measures~\cite{bhaskara-rao1983}. Dropping continuity is what admits
+the non-uniqueness.  A monad therefore requires restricting either
+the frames or the valuations.
+
+A first step in the second direction is to restrict $\mathrm{Val}$
+to the valuations given as countable mixtures.  For these, we 
+can demonstrate that the kernels
+compose independently of order, the property that
+Theorem~\ref{thm:product-not-unique} refutes for unrestricted
+valuations:
+
+\begin{proposition}[countable kernel composition]
+\label{prop:mixcountable}
+\begin{enumerate}
+\item A countable mixture of valuations is a
+  valuation\leanref{mixcountable}.
+\item A mixture of mixtures flattens to a mixture with product
+  weights, which is discrete
+  Chapman--Kolmogorov\leanref{mixcountable-mixcountable}.
+\item The one-point mixture is the
+  identity\leanref{mixcountable-unique}.
+\item Iterated countable mixing is
+  order-independent\leanref{mixcountable-comm}.
+\end{enumerate}
+\end{proposition}
+
+\noindent
+Restricted to countable-mixture presentations, the data of a monad are
+all in place: the category of locales, $\mathrm{Val}$ restricted to
+countable mixtures as the functor, the point valuations as the unit,
+and countable mixing as the multiplication.
+Proposition~\ref{prop:mixcountable} verifies exactly the laws this
+needs: item~1 keeps the multiplication inside the fragment, item~2 is
+its associativity, item~3 its unit law, and item~4 its commutativity.
+What is not yet settled is whether this descends to valuations
+themselves, since a valuation can admit more than one countable-mixture
+presentation, and the diffuse part of Section~\ref{sec:representation}
+is not captured by any countable presentation at all.

@@ -154,32 +154,29 @@
 \affiliation{\institution{Anonymous Institution}\city{}\country{}}
 
 \begin{abstract}
-Kolmogorov's probability is defined within a classical logic
-framework, whose complement rule becomes equivalent to the law of
-excluded middle in the limiting case of certainty. That framework
-presupposes every event is decidable, which fails for the
-semidecidable properties, termination, reachability, that
-verification cares about.  We mechanize,
-in Lean~4 over \textsf{mathlib}, what probability becomes when the
-event logic is \emph{intuitionistic}: valuations on frames, the
-algebras of verifiable propositions.  Two characterizations anchor the development:
-(1) the complement rule
-$v(\neg A) = 1 - v(A)$\footnote{By $\neg a$ we mean the pseudocomplement of $a$ in a frame.} holds for every valuation exactly when the
-algebra satisfies excluded middle, and (2) Dempster conditioning agrees
-with Bayesian conditioning at a piece of evidence exactly when that
-evidence carries zero slack.
-On finite frames, every valuation is
-a classical mass function on points. In the general case, a valuation
-splits into atomic and diffuse parts, and its Boolean core carries a
-totally monotone Dempster--Shafer belief function.
-We define the slack of an event $A$ as $1 - v(A) - v(\neg A)$: in
-the measure model it is the boundary mass. On a semidecidable event,
-forcing it to zero is exactly as hard as solving the halting
-problem.  We further prove that product valuations are unique on chain
-products and provably non-unique on the powerset frame, where
-Fubini fails, show that the naive transcription of Cox's theorem is
-unsatisfiable, and build the Acz\'el/H\"older analytic core from
-scratch.
+Kolmogorov's probability fixes the event algebra to be Boolean, so
+every event is decidable.
+This is a poor fit for the semidecidable properties, termination,
+reachability, that verification cares about. 
+Following the Cox--Jaynes interpretation of probability as extended logic,
+we define a construct for extending a logic (treated as a parameter in 
+our approach) to a calculus of probability, 
+and specify criteria for when this works: (1) when the resulting calculus 
+can reconstruct the original logic in the limiting case of certain 
+($0-$ or $1-$ probability) events, and (2) when the construction, evaluated 
+at classical logic, agrees with classical probability theory.
+Instantiating the construction at intuitionistic logic gives valuations
+on frames, complete Heyting algebras of open sets, the algebras of
+verifiable propositions. In this setting,
+we define slack, $1 - v(A) - v(\neg A)$, the classical complement
+rule's deficit and boundary mass in the measure model.  Slack
+pinpoints exactly when Dempster and Bayesian conditioning disagree.
+A separate obstruction, a five-element counterexample, is why Cox's
+sum rule cannot be derived and must instead be posited.
+We show that applying classical probability to semidecidable properties is
+equivalent to solving the halting problem.
+The whole development is machine-checked in Lean~4 over \textsf{mathlib},
+in roughly $5{,}000$ lines with no \texttt{sorry}.
 \end{abstract}
 
 \begin{CCSXML}
@@ -216,6 +213,7 @@ functions, locales, Lean, mathlib, formalized mathematics}
 \input{sec-ds}
 \input{sec-cox}
 \input{sec-bridges}
+\input{sec-monad}
 \input{sec-related}
 \input{sec-conclusion}
 

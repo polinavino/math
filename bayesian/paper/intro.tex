@@ -11,7 +11,7 @@ chance (non-negativity, normalization,
 $\sigma$-additivity). 
 
 This framework commits to logical axioms that computer science cannot
-always commit to.  Many properties of programs (does this computation
+commit to.  Many properties of programs (does this computation
 halt, does this process reach a given state) are only
 \emph{semidecidable}: a procedure confirms the property when it
 holds, and no procedure, in general, confirms its failure.  The
@@ -19,7 +19,7 @@ natural event algebra for a semidecidable property is a
 \emph{frame}, the algebra of open sets of a space, and equivalently
 the algebraic semantics of intuitionistic logic.  We show that
 applying Kolmogorov's probability (with its underlying Boolean event
-algebra) to a semidecidable property presupposes a solution to the
+algebra) to a semidecidable property is equivalent to solving the
 halting problem. This result is the pointwise counterpart of Chaitin's
 $\Omega$~\cite{chaitin1975} example, which we interpret in the framework we
 develop here.  In general, reasoning about the chance that a
@@ -41,21 +41,21 @@ negation, with the law of excluded middle holding in the classical
 case. Then let \emph{valuations} be the maps from events to numbers
 that satisfy the axioms of monotonicity, normalization, and
 modularity.
-The resulting
-calculus is a probability calculus (i.e. degrees of certainty
+We specify the two sufficient and necessary conditions for 
+when the extension construct we propose defines
+a probability calculus (i.e. degrees of certainty
 rather than an arbitrary grading
-of events) when (1) the valuations taking only the values $0$ and
+of events). The first (1) is that the valuations taking 
+only the values $0$ and
 $1$, the two degrees of complete certainty,
 reconstruct the
-underlying event logic, and (2) the construction, evaluated at
-classical logic, returns the classical theory. This construction
-treats
-the logic of events as a \emph{parameter}: a choice of event
-algebra determines an associated probability calculus. In this work,
-however, we do not treat the general case: there is no guarantee
-that
-\emph{each} event algebra returns a calculus of degrees of
-certainty.
+underlying event logic (this is what we take "extended logic" to mean). 
+The second (2) requires that the construction, evaluated at
+classical logic, returns the classical theory (this ensures that the new 
+construction is a "generalization of classical probability"). 
+This construction treats
+the logic of events as a \emph{parameter}: the choice of event
+algebra determines an associated probability calculus. 
 
 Kolmogorov takes the event algebra to be Boolean,
 and his calculus is the value of the construction at Boolean logic.
@@ -165,6 +165,14 @@ satisfies weak excluded middle.
   uncomputable, and on Cantor space the value of the halting event
   is Chaitin's $\Omega$.  Slack is submodular yet does not determine
   the valuation.
+
+\item \textbf{The monad dichotomy} (Section~\ref{sec:monad}).
+  Product valuations are unique on
+  $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ and provably
+  non-unique on $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$, where
+  Fubini fails.  The
+  countably-presented fragment composes associatively and
+  commutatively.
 
 \item \textbf{A first formal treatment.}
   Everything above is machine-checked in Lean~4 over
