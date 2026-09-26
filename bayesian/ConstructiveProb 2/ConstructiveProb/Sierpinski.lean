@@ -31,7 +31,6 @@
    collapse (`slack ≡ 0`) demands of its models an uncomputable readout.
 -/
 import ConstructiveProb.Basic
-import ConstructiveProb.Incompleteness
 import Mathlib.MeasureTheory.Measure.Dirac
 import Mathlib.Computability.Halting
 
@@ -202,26 +201,5 @@ theorem sharpReadout_not_computable (n : ℕ) :
   rw [sharpReadout, sierpinskiValuation_haltsOpen]
   unfold haltingWeight
   split <;> rename_i hdom <;> simp [hdom]
-
-/-- **A stronger, pointwise version of `sharpReadout_not_computable`.** Theorem 44 above says no
-single algorithm decides the sharp readout *uniformly*, across all codes at once — a single
-instance is trivially decidable (it is a fixed proposition, true or false), so uniformity is
-essential to that statement. This is a genuinely different, instance-level failure: for any
-sound, recursively-axiomatized attempt `Provable` at proving non-halting, there is one *specific*
-code `d` — the diagonal witness of `exists_not_decided` — at which the correct sharp value
-`sharpReadout 0 d haltsOpen = 0` is real, yet classically inaccessible: `d` is neither observed to
-halt nor certified not to halt by the theory (`¬Decided Provable d`). Reading "`x` holds in
-classical probability" as `Decided Provable x` (a sharp value backed by an actual witness, the
-confirm-or-refute dichotomy the paper's classical treatment presupposes), the contrapositive of
-`hsound` says `Decided Provable c → (c.eval 0).Dom` is decided one way or the other; at `d` that
-dichotomy itself is unavailable, not merely the algorithm computing it. -/
-theorem sharpReadout_not_decided_pointwise {Provable : Code → Prop} (hre : REPred Provable)
-    (hsound : ∀ c, Provable c → ¬(c.eval 0).Dom) :
-    ∃ d : Code, ¬Decided Provable d ∧ sharpReadout 0 d haltsOpen = 0 := by
-  obtain ⟨d, hnd, hnh⟩ := exists_not_decided hre hsound
-  refine ⟨d, hnd, ?_⟩
-  rw [sharpReadout, sierpinskiValuation_haltsOpen]
-  unfold haltingWeight
-  rw [if_neg hnh]
 
 end ConstructiveProb

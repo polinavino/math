@@ -1,0 +1,22 @@
+name = "ConstructiveProb"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["ConstructiveProb"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+weak.linter.style.header = false # not a mathlib PR — skip copyright-header nagging
+weak.linter.style.openClassical = false # `open scoped Classical` is fine in a research repo
+weak.linter.unusedDecidableInType = false # we keep explicit `DecidableEq` rather than use classical
+weak.linter.unusedSimpArgs = false # house-style linter, noise for iterative research code
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.31.0"
+
+[[lean_lib]]
+name = "ConstructiveProb"

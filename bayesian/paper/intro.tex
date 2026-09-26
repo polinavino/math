@@ -17,12 +17,14 @@ halt, does this process reach a given state) are only
 holds, and no procedure, in general, confirms its failure.  The
 natural event algebra for a semidecidable property is a
 \emph{frame}, the algebra of open sets of a space, and equivalently
-the algebraic semantics of intuitionistic logic.  We show that
-applying Kolmogorov's probability (with its underlying Boolean event
-algebra) to a semidecidable property is equivalent to solving the
-halting problem. This result is the pointwise counterpart of Chaitin's
-$\Omega$~\cite{chaitin1975} example, which we interpret in the framework we
-develop here.  In general, reasoning about the chance that a
+the algebraic semantics of intuitionistic logic.  We show that a classical, slack-free readout of a semidecidable
+property (Kolmogorov's probability, with its underlying Boolean event
+algebra, applied to such a property) is uncomputable: computing it
+uniformly is exactly as hard as deciding the halting problem. This is
+the pointwise form of the obstruction. Chaitin's
+$\Omega$~\cite{chaitin1975}, independently uncomputable by a classical
+argument, is its aggregate form, and we interpret both within the
+framework we develop here.  In general, reasoning about the chance that a
 program has some property
 therefore needs an event logic that is not Boolean. We develop a
 mechanized framework that allows us to study probability calculi without

@@ -19,8 +19,8 @@ through the arithmetic it borrows from the library.  We track
 this separately from object-level classicality throughout the paper.
 Theorem~\ref{thm:decomposition} of Section~\ref{sec:representation}
 rests only on this ambient baseline and contains no explicit case
-split. The Scott-continuity recovery theorem
-(Theorem~\ref{thm:recovery})
+split. The Scott-continuity recovery result
+(Example~\ref{thm:recovery})
 invokes Lean's \texttt{classical} tactic directly, and the
 explicit Cox model of Section~\ref{sec:cox} goes the other
 way, replacing the default with an explicit computable
@@ -46,7 +46,7 @@ classical negation if $v(a) + v(\neg a) = 1$ for every $a \in \Omega$.
 
 \begin{theorem}[the R3 characterization\leanref{hinge}]
 \label{thm:hinge}
-For every frame $\Omega$, every valuation on $\Omega$ has classical
+For every frame $\Omega$, every valuation on $\Omega$ has a classical
 negation \emph{iff} $a \sqcup \neg a = \top$ for every
 $a \in \Omega$.
 \end{theorem}
@@ -57,9 +57,7 @@ middle fails, a valuation with genuine slack must be
 \emph{constructed}.  Suppose $a \sqcup \neg a \neq \top$.
 
 \begin{definition}[ideal, prime ideal]
-An \emph{ideal} $J \subseteq \Omega$ is downward closed and closed
-under finite joins.  $J$ is \emph{prime} if $\top \notin J$ and
-$a \sqcap b \in J$ implies $a \in J$ or $b \in J$.
+An \emph{ideal} $J \subseteq \Omega$ is a downward closed set which is also closed under finite joins. An ideal $J$ is \emph{prime} if $\top \notin J$ and $a \sqcap b \in J$ implies $a \in J$ or $b \in J$.
 \end{definition}
 
 The prime ideal separation theorem
@@ -102,7 +100,16 @@ The finitely prime points
 of Theorem~\ref{thm:sharp-iff-point} sharpen to
 the completely prime points exactly where Scott continuity is added,
 recovering points of the locale in the sense used
-by~\cite{vickers2008,coquand-spitters2009}:
+by~\cite{vickers2008,coquand-spitters2009}.
+
+\begin{definition}[directed set, Scott continuity]
+A subset $D \subseteq \Omega$ is \emph{directed} if, for any finite
+subset $F \subseteq D$, there exists an element $d \in D$ that is an
+upper bound of $F$ (taking $F = \emptyset$ shows a directed set is
+nonempty).  A
+valuation $v$ is \emph{Scott-continuous} if
+$v(\bigsqcup D) = \sup_{a \in D} v(a)$ for every directed $D$.
+\end{definition}
 
 \begin{theorem}[Scott-continuous sharp valuations\leanref{sharp-scott-iff-completelyprimepoint}]
 For every valuation $v$ on a frame $\Omega$, $v$ is sharp and

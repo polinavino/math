@@ -1,0 +1,185 @@
+\section{Valuations Beyond Frames}
+\label{sec:lattice}
+
+Definition~\ref{def:frame} fixes the event algebra to be a frame: a
+complete lattice in which finite meets distribute over arbitrary
+joins. Definition~\ref{def:valuation}'s four axioms, normalization
+at $\bot$ and $\top$, monotonicity, and modularity, never mention
+$\bigsqcup$; completeness is used only where the later sections
+evaluate a valuation on an infinite join, as in the
+Scott-continuity results of Section~\ref{sec:representation}.
+Section~\ref{sec:conclusion} leaves open how much of the
+construction is tied to frames specifically, and whether some
+ambient category sends an event algebra to a probability calculus
+in general. This section settles both questions for one fragment of
+the construction, the sharp/point correspondence of
+Section~\ref{sec:hinge}: it isolates the exact algebraic hypothesis
+that correspondence needs and shows the hypothesis cannot be
+dropped.
+
+\paragraph{The functor without completeness.}
+A \emph{bounded lattice} is a lattice with a least element $\bot$
+and a greatest element $\top$; a \emph{bounded lattice homomorphism}
+preserves $\bot$, $\top$, $\sqcup$, and $\sqcap$.
+Definition~\ref{def:valuation}'s axioms make sense over any bounded
+lattice $\Omega$, complete or not:
+
+\begin{definition}[lattice valuation]
+\label{def:lvaluation}
+A \emph{lattice valuation} on a bounded lattice $\Omega$ is a
+monotone function $v : \Omega \to \ENNReal$ with $v(\bot) = 0$,
+$v(\top) = 1$, and, for all $a, b \in \Omega$,
+$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$.
+\end{definition}
+
+\begin{lstlisting}
+structure LValuation (Ω : Type*) [Lattice Ω] [BoundedOrder Ω] where
+  toFun : Ω → ℝ≥0∞
+  map_bot' : toFun ⊥ = 0
+  map_top' : toFun ⊤ = 1
+  mono'    : Monotone toFun
+  modular' : ∀ a b, toFun a + toFun b
+             = toFun (a ⊔ b) + toFun (a ⊓ b)
+\end{lstlisting}
+
+\noindent
+A lattice valuation on a frame is exactly a valuation in the sense
+of Definition~\ref{def:valuation}; the two notions differ only in
+how much structure the ambient $\Omega$ carries.
+
+Section~\ref{sec:monad} pulls a valuation back along a frame
+homomorphism and checks the assignment is functorial (identity,
+composition). That argument pattern-matches on $\sqcup$, $\sqcap$,
+$\bot$, $\top$ alone and never touches $\bigsqcup$:
+
+\begin{proposition}[pullback without completeness]
+\label{prop:lvaluation-comap}
+For bounded lattices $\Gamma, \Omega$, a bounded lattice
+homomorphism $f : \Gamma \to \Omega$, and a lattice valuation $v$ on
+$\Omega$, $v \circ f$ is a lattice valuation on $\Gamma$. This
+assignment sends the identity homomorphism to the identity and
+composition of homomorphisms to composition of the induced maps.
+\end{proposition}
+
+\noindent
+(Mechanized as \texttt{LValuation.comap}, \texttt{comap\_id}, and
+\texttt{comap\_comp} in \texttt{GeneralValuation.\allowbreak lean}.)
+$\mathrm{Val}(-)$ is therefore a functor on bounded lattices with
+bounded lattice homomorphisms, of which the frame-level functor of
+Section~\ref{sec:monad} is the restriction to the subcategory of
+frames and frame homomorphisms. Completeness contributes nothing to
+functoriality.
+
+\paragraph{Separation needs only distributivity.}
+Theorem~\ref{thm:sharp-iff-point} characterizes what a sharp
+valuation \emph{is}, a complement-indicator of a prime ideal, but
+not whether there are enough of them to distinguish elements of
+$\Omega$. That is a separate fact:
+
+\begin{theorem}[sharp valuations separate points]
+\label{thm:sharp-separating}
+For every frame $\Omega$ and $a, b \in \Omega$ with $a \not\le b$,
+there is a sharp valuation $v$ with $v(a) = 1$ and $v(b) = 0$.
+\end{theorem}
+
+\noindent
+(Mechanized as \texttt{exists\_sharp\_separating} in
+\texttt{Points.lean}.) The proof runs the same prime-ideal
+separation theorem that built the counterexample of
+Theorem~\ref{thm:hinge}
+(\texttt{DistribLattice.prime\_ideal\_of\_disjoint\_filter\_ideal}),
+on the principal filter of $a$ and the principal ideal of $b$
+rather than on $a \sqcup \neg a$ and $\top$. As a corollary, any two
+distinct $a, b \in \Omega$ are distinguished by some sharp
+valuation: $\Omega$ need not be linear, so $a \ne b$ alone does not
+hand back $a \le b$ or $b \le a$, but it forces at least one failure
+of $\le$, and Theorem~\ref{thm:sharp-separating} applies in whichever
+direction fails. This is the cash-out of the first qualifying
+condition of Section~\ref{sec:conclusion}: the certain valuations do
+not merely characterize a single point of the locale in isolation,
+together they reconstruct the order on $\Omega$, and so the event
+logic itself.
+
+Tracing the proof of Theorem~\ref{thm:sharp-separating} shows it
+never invokes $\bigsqcup$; the only place frame structure enters is
+\texttt{DistribLattice.prime\_ideal\_of\_disjoint\_filter\_ideal}
+itself, which needs distributivity and nothing beyond it:
+
+\begin{theorem}[separation over distributive lattices]
+\label{thm:lvaluation-separating}
+For every distributive bounded lattice $\Omega$ and $a, b \in
+\Omega$ with $a \not\le b$, there is a sharp lattice valuation $v$
+on $\Omega$ with $v(a) = 1$ and $v(b) = 0$.
+\end{theorem}
+
+\noindent
+(Mechanized as \texttt{LValuation.exists\_sharp\_separating} in
+\texttt{GeneralValuation.lean}.) Theorem~\ref{thm:lvaluation-separating}
+reproves Theorem~\ref{thm:sharp-separating} with the hypothesis
+\texttt{Order.Frame} weakened to \texttt{DistribLattice}, and
+nothing else about the argument changes. The condition doing the
+work in the sharp/point correspondence is distributivity;
+completeness is not load-bearing for either half of it.
+
+\paragraph{Distributivity is not a proof artifact.}
+The natural question is whether
+Theorem~\ref{thm:lvaluation-separating}'s hypothesis is a genuine
+dividing line or an artifact of routing the argument through a
+mathlib lemma named for distributive lattices. It is genuine, and
+the failure it guards against is total, not merely a failure of
+separation:
+
+\begin{definition}[the diamond]
+\label{def:m3}
+$M_3$ is the five-element lattice with a bottom $z$, a top $o$, and
+three pairwise-incomparable atoms $a, b, c$, with $x \sqcup y = o$
+and $x \sqcap y = z$ for every two distinct atoms $x, y$.
+\end{definition}
+
+\noindent
+$M_3$ is the smallest lattice that is not distributive:
+$a \sqcap (b \sqcup c) = a \sqcap o = a$, while
+$(a \sqcap b) \sqcup (a \sqcap c) = z \sqcup z = z$. It is modular,
+so this failure is specific to distributivity rather than some
+coarser defect of the order.
+
+\begin{theorem}[no sharp valuation on the diamond]
+\label{thm:m3-no-sharp}
+No lattice valuation on $M_3$ is sharp.
+\end{theorem}
+
+\noindent
+(Mechanized as \texttt{M3.no\_sharp\_\allowbreak valuation} in
+\texttt{NonDistributive.\allowbreak lean}, together with
+\texttt{M3.not\_\allowbreak distributive} for the displayed failure of
+distributivity above.) Modularity applied to each of the three
+pairs of distinct atoms forces $v(x) + v(y) = 1$, since
+$x \sqcup y = \top$ and $x \sqcap y = \bot$. If $v$ were sharp,
+$v(a), v(b), v(c) \in \{0, 1\}$ would have to satisfy all three
+pairwise sum-to-one equations at once, and a two-element codomain
+cannot support that: fixing any one value propagates through the
+other two equations to a contradiction with the third. The collapse
+on $M_3$ is therefore not a failure of separation, points that
+happen to coincide, but a failure of existence: there is no
+all-or-nothing valuation on $M_3$ to separate anything with, and the
+first qualifying condition of Section~\ref{sec:conclusion} is
+unsatisfiable outright.
+
+\paragraph{Where this leaves the boundary.}
+Frames are complete distributive lattices.
+Theorem~\ref{thm:lvaluation-separating} shows completeness is not
+needed for the sharp/point correspondence's separation half, and
+Theorem~\ref{thm:m3-no-sharp} shows distributivity cannot be given
+up in exchange. The event algebras this construction extends to a
+probability calculus, in the sense of Section~\ref{sec:conclusion}'s
+two qualifying conditions, are exactly the distributive bounded
+lattices, no more and no less. This bears on the orthomodular event
+lattices of quantum probability discussed in
+Section~\ref{sec:related}: giving up distributivity, as those
+lattices do, does not merely change which valuations exist, it can
+remove sharp valuations altogether, so the construction of this
+paper does not, without further modification, have anything to say
+about that setting. Whether some weaker notion of certainty
+survives on non-distributive lattices, in place of the
+$\{0,1\}$-valued sharp valuations examined here, is not addressed by
+this section.

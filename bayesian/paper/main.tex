@@ -172,8 +172,9 @@ rule's deficit and boundary mass in the measure model.  Slack
 pinpoints exactly when Dempster and Bayesian conditioning disagree.
 A separate obstruction, a five-element counterexample, is why Cox's
 sum rule cannot be derived and must instead be posited.
-We show that applying classical probability to semidecidable properties is
-equivalent to solving the halting problem.
+We show that a classical, slack-free readout of a semidecidable property
+is uncomputable: computing it uniformly is exactly as hard as deciding
+the halting problem.
 The whole development is machine-checked in Lean~4 over \textsf{mathlib},
 in roughly $5{,}000$ lines with no \texttt{sorry}.
 \end{abstract}
@@ -213,6 +214,7 @@ functions, locales, Lean, mathlib, formalized mathematics}
 \input{sec-cox}
 \input{sec-bridges}
 \input{sec-monad}
+\input{sec-lattice}
 \input{sec-related}
 \input{sec-conclusion}
 

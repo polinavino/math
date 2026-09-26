@@ -44,9 +44,9 @@ this constraint\leanref{coxmodelennreal}, as $a = \top$ is provably decidable.
 Classically, additivity is \emph{derived}: R3 turns disjunction into
 negated conjunction via De~Morgan, and the product rule does the
 rest.  Constructively that route is closed, since
-$a \vee b \neq \neg(\neg a \wedge \neg b)$ in general:
+$a \sqcup b \neq \neg(\neg a \sqcap \neg b)$ in general:
 
-\begin{theorem}[the sum rule is irreducible\leanref{no-disjunction-functional}]
+\begin{example}[the sum rule is irreducible\leanref{no-disjunction-functional}]
 \label{thm:no-functional}
 Let $\Omega$ be the five-element frame of lower sets of the poset
 $o < a,\, o < b$ with $a, b$ incomparable.  Then there is a
@@ -57,7 +57,7 @@ Moreover, the
 pairs $(\pdown a, \pdown a)$ and $(\pdown a,
 \pdown b)$ have identical value-pairs $(\tfrac12, \tfrac12)$
 but joins valued $\tfrac12$ and $1$.
-\end{theorem}
+\end{example}
 
 \noindent
 Unlike for a conjunction, a disjunction's plausibility cannot
@@ -88,10 +88,9 @@ the classical theorem turns on.  The corrected statement is:
 \label{thm:cox}
 For every frame $\Omega$, every Cox model on $\Omega$ whose
 unconditional plausibility is modular
-regraduates to a valuation: there exist $v : \mathrm{Valuation}\;
-\Omega$ and $g$ strictly monotone on $[0,1]$ with $g(0)=0$,
+regraduates to a valuation: there exist a valuation $v$ on $\Omega$ and a strictly monotone function $g$ on $[0,1]$ with $g(0)=0$,
 $g(1)=1$, and for all
-$a \in \Omega$, $v(a) = g(\mathrm{pl}(a, \top))$ .
+$a \in \Omega$, $v(a) = g(\mathrm{pl}(a, \top))$.
 \end{theorem}
 
 The regraduation for the sum-rule half is straightforward

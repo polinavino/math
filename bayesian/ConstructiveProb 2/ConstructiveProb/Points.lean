@@ -164,53 +164,6 @@ theorem sharp_scott_iff_completelyPrimePoint (v : Valuation Ω) :
   · rintro ⟨J, hJ, htop, rfl⟩
     exact ⟨Ideal.toValuation_isSharp J hJ.1 htop, Ideal.toValuation_scottContinuous J hJ htop⟩
 
-/-! ### Sharp valuations separate points
-
-`sharp_iff_point` characterizes what a sharp valuation *is*; it does not say there are enough
-of them to tell elements of `Ω` apart. That separation content — the actual cash-out of "the
-all-or-nothing valuations reconstruct the underlying event logic" — is proved here by the same
-prime-ideal-separation argument `em_of_forall_hasClassicalNegation` runs on `⊤` and `a ⊔ aᶜ`,
-run instead on the principal filter of `a` and the principal ideal of `b`. -/
-
-/-- **Sharp valuations separate points.** If `a ≰ b`, some sharp valuation gives `a` full
-certainty and `b` none. -/
-theorem exists_sharp_separating {a b : Ω} (hab : ¬ a ≤ b) :
-    ∃ v : Valuation Ω, v.IsSharp ∧ v a = 1 ∧ v b = 0 := by
-  classical
-  have hdisj : Disjoint (↑(Order.PFilter.principal a) : Set Ω)
-      (↑(Order.Ideal.principal b) : Set Ω) := by
-    rw [Set.disjoint_left]
-    intro x hx hx2
-    rw [SetLike.mem_coe, Order.PFilter.mem_principal] at hx
-    rw [SetLike.mem_coe, Order.Ideal.mem_principal] at hx2
-    exact hab (hx.trans hx2)
-  obtain ⟨J, hJprime, hIJ, hJF⟩ := DistribLattice.prime_ideal_of_disjoint_filter_ideal hdisj
-  have hbJ : b ∈ J := SetLike.le_def.mp hIJ Order.Ideal.mem_principal_self
-  have haF : a ∈ (↑(Order.PFilter.principal a) : Set Ω) :=
-    SetLike.mem_coe.mpr (Order.PFilter.mem_principal.mpr le_rfl)
-  have haJ : a ∉ J := by
-    have hnot := Set.disjoint_left.mp hJF haF
-    rwa [SetLike.mem_coe] at hnot
-  have htop : (⊤ : Ω) ∉ J := by
-    have hTF : (⊤ : Ω) ∈ (↑(Order.PFilter.principal a) : Set Ω) :=
-      SetLike.mem_coe.mpr (Order.PFilter.mem_principal.mpr le_top)
-    have hnot := Set.disjoint_left.mp hJF hTF
-    rwa [SetLike.mem_coe] at hnot
-  exact ⟨Ideal.toValuation J hJprime htop, Ideal.toValuation_isSharp J hJprime htop,
-    by rw [Ideal.toValuation_apply, if_neg haJ], by rw [Ideal.toValuation_apply, if_pos hbJ]⟩
-
-/-- **Corollary: distinct elements are separated by some sharp valuation.** `Ω` need not be
-linear, so `a ≠ b` alone does not hand you `a ≰ b` or `b ≰ a` — but it forces at least one,
-and either direction yields a witness via `exists_sharp_separating`. -/
-theorem exists_sharp_ne_of_ne {a b : Ω} (hab : a ≠ b) :
-    ∃ v : Valuation Ω, v.IsSharp ∧ v a ≠ v b := by
-  by_cases hle : a ≤ b
-  · have hba : ¬ b ≤ a := fun h => hab (le_antisymm hle h)
-    obtain ⟨v, hv, hvb, hva⟩ := exists_sharp_separating hba
-    exact ⟨v, hv, by rw [hva, hvb]; exact zero_ne_one⟩
-  · obtain ⟨v, hv, hva, hvb⟩ := exists_sharp_separating hle
-    exact ⟨v, hv, by rw [hva, hvb]; exact one_ne_zero⟩
-
 /-! ### The functor part of `Val` -/
 
 namespace Valuation

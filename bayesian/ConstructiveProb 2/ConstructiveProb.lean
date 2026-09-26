@@ -17,5 +17,3 @@ import ConstructiveProb.Points
 import ConstructiveProb.DeMorgan
 import ConstructiveProb.Chaitin
 import ConstructiveProb.SlackRecovery
-import ConstructiveProb.GeneralValuation
-import ConstructiveProb.NonDistributive

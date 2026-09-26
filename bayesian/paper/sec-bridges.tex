@@ -62,8 +62,7 @@ closure of every open set is again open.
 
 \begin{definition}[Stone space, Stonean space]
 The \emph{Stone space} of a Boolean algebra $B$ is the space of
-ultrafilters on $B$ (equivalently, the $2$-valued homomorphisms
-$B \to \{0,1\}$), topologized by the clopen basis $\{U : b \in U\}$
+ultrafilters on $B$, topologized by the clopen basis $\{U : b \in U\}$
 for $b \in B$. \emph{Stone duality}~\cite{johnstone1982} identifies
 Boolean algebras with exactly the compact, Hausdorff, totally
 disconnected spaces arising this way.  A \emph{Stonean space} is a compact Hausdorff space that
@@ -106,11 +105,10 @@ This is a fact about the topology alone, independent of any measure:
 $p_Z$ has no proper open neighbourhood, so it is the only point any
 open's frontier can contain.
 
-\begin{theorem}[non-recovery\leanref{exists-ne-valuation-same-slack}]
+\begin{example}[non-recovery\leanref{exists-ne-valuation-same-slack}]
 \label{thm:no-recovery}
-There exist valuations $v \ne v'$ on $\mathcal{O}(\mathrm{ThreePt})$
-with $\slack(v) = \slack(v')$ as functions.
-\end{theorem}
+There exist valuations $v \ne v'$ on $\mathcal{O}(\mathrm{ThreePt})$ whose slack functions are identical: $\slack_v = \slack_{v'}$ as functions.
+\end{example}
 
 \noindent
 For weights $a, b, c \ge 0$ with $a + b + c = 1$, the point measure
@@ -246,6 +244,7 @@ holds, and $\rho_n(c)(\mathit{halts}) = 0$ otherwise.
 However, this family is provably not computable:
 
 \begin{theorem}[the sharp readout is uncomputable\leanref{sharpreadout-not-computable}]
+\label{thm:sharp-uncomputable}
 For every $n$, the predicate $c \mapsto \bigl(\rho_n(c)(\mathit{halts}) = 1\bigr)$
 is not computable.
 \end{theorem}
@@ -254,6 +253,22 @@ is not computable.
 The proof identifies the predicate with $H(\cdot, n)$ and applies the
 undecidability of the halting problem
 (\texttt{ComputablePred.\allowbreak halting\_problem}).
+
+\noindent
+No route back to a classical, decidable treatment survives contact
+with computability. Excluded middle guarantees that $H(c,n)$ is true
+or false for any fixed $c$, but that guarantee is free: it names no
+algorithm and exhibits no witness for which disjunct holds. Demanding
+an actual witness, uniformly in $c$, is exactly $\rho_n$'s sharp
+readout, and Theorem~\ref{thm:sharp-uncomputable} shows no algorithm
+computes it. Aggregating over the whole family of halting programs,
+rather than reading off one instance, does not help either:
+$\Omega$ is a perfectly well-defined classical probability, yet
+Chaitin showed it uncomputable by an independent argument turning on
+algorithmic randomness~\cite{chaitin1975}. Neither the pointwise nor
+the aggregate route gives classical probability a way to compute a
+solution to the halting problem, and each is blocked by its own
+uncomputability result.
 
 \noindent
 We can conclude that slack is not a defect of

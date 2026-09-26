@@ -110,28 +110,16 @@ $v(\top) = 1$.
 \noindent
 No point carries any of the mass.  The failure is one of
 approximation: $v(\top)$ is not the supremum of $v(\pdown n)$
-over the finite stages. In order to recover the representation,
-we introduce Scott continuity:
-
-\begin{definition}[directed set, Scott continuity]
-A subset $D \subseteq \Omega$ is \emph{directed} if, for any finite
-subset $F \subseteq D$, there exists an element $d \in D$ that is an
-upper bound of $F$ (taking $F = \emptyset$ shows a directed set is
-nonempty).  A
-valuation $v$ is \emph{Scott-continuous} if
-$v(\bigsqcup D) = \sup_{a \in D} v(a)$ for every directed $D$.
-\end{definition}
-
-The $\top$-indicator of Example~\ref{thm:obstruction} is not
+over the finite stages. The $\top$-indicator of Example~\ref{thm:obstruction} is not
 Scott-continuous\leanref{topindicator-not-scott}, and Scott
 continuity is exactly what restores the representation:
 
-\begin{theorem}[recovery\leanref{eq-tsum-mass-of-scott}]
+\begin{example}[recovery\leanref{eq-tsum-mass-of-scott}]
 \label{thm:recovery}
 Let $v$ be a valuation on $\mathrm{Low}(\mathbb{N})$. If
 $v(\top) = \sup_n v(\pdown n)$
 then $v(\top) = \sum_n \mathrm{mass}(n)$.
-\end{theorem}
+\end{example}
 
 In general, on
 any poset all of whose principal lower sets are finite, Scott
