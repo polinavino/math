@@ -3,11 +3,17 @@
 
 Definition~\ref{def:frame} fixes the event algebra to be a frame: a
 complete lattice in which finite meets distribute over arbitrary
-joins. Definition~\ref{def:valuation}'s four axioms, normalization
-at $\bot$ and $\top$, monotonicity, and modularity, never mention
-$\bigsqcup$; completeness is used only where the later sections
-evaluate a valuation on an infinite join, as in the
-Scott-continuity results of Section~\ref{sec:representation}.
+joins $\bigsqcup_{i \in I} a_i$, the operation Heyting implication
+$\Rightarrow$ (the right adjoint to $a \sqcap (-)$) is built from.
+Definition~\ref{def:valuation}'s four axioms, normalization at
+$\bot$ and $\top$, monotonicity, and modularity
+$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, use only the
+\emph{binary} join $\sqcup$; none of the four mentions the
+\emph{arbitrary} join $\bigsqcup_{i \in I}$. Completeness is used
+only where later sections evaluate a valuation on an infinite join,
+as in the Scott-continuity results of
+Section~\ref{sec:representation}, or build $\Rightarrow$ and $\neg$
+from it, as in Section~\ref{sec:hinge}'s slack.
 Section~\ref{sec:conclusion} leaves open how much of the
 construction is tied to frames specifically, and whether some
 ambient category sends an event algebra to a probability calculus
@@ -15,7 +21,12 @@ in general. This section settles both questions for one fragment of
 the construction, the sharp/point correspondence of
 Section~\ref{sec:hinge}: it isolates the exact algebraic hypothesis
 that correspondence needs and shows the hypothesis cannot be
-dropped.
+dropped. It does not recover $\Rightarrow$ or $\neg$ without
+completeness: the adjoint defining $\Rightarrow$ is built from an
+arbitrary join of witnesses, so it is unavailable once completeness
+goes, even if only finite joins are missing. The valuations studied
+below are negation-free by construction, not frame valuations with
+completeness quietly removed.
 
 \paragraph{The functor without completeness.}
 A \emph{bounded lattice} is a lattice with a least element $\bot$
@@ -97,8 +108,13 @@ of $\le$, and Theorem~\ref{thm:sharp-separating} applies in whichever
 direction fails. This is the cash-out of the first qualifying
 condition of Section~\ref{sec:conclusion}: the certain valuations do
 not merely characterize a single point of the locale in isolation,
-together they reconstruct the order on $\Omega$, and so the event
-logic itself.
+together they reconstruct the order on $\Omega$. Reconstructing the
+order is not the same as reconstructing the full Heyting structure:
+$\neg$ and $\Rightarrow$, as just noted, are adjoints built from an
+arbitrary join and carry no meaning over a plain distributive
+lattice. What this theorem recovers is the order-theoretic core of
+the first qualifying condition, not the negation fragment of
+intuitionistic logic, which stays frame-specific.
 
 Tracing the proof of Theorem~\ref{thm:sharp-separating} shows it
 never invokes $\bigsqcup$; the only place frame structure enters is
@@ -170,16 +186,21 @@ Frames are complete distributive lattices.
 Theorem~\ref{thm:lvaluation-separating} shows completeness is not
 needed for the sharp/point correspondence's separation half, and
 Theorem~\ref{thm:m3-no-sharp} shows distributivity cannot be given
-up in exchange. The event algebras this construction extends to a
-probability calculus, in the sense of Section~\ref{sec:conclusion}'s
-two qualifying conditions, are exactly the distributive bounded
-lattices, no more and no less. This bears on the orthomodular event
-lattices of quantum probability discussed in
+up in exchange. The event algebras on which sharp valuations reconstruct the order,
+the order-theoretic core of the first qualifying condition of
+Section~\ref{sec:conclusion}, are exactly the distributive bounded
+lattices, no more and no less. The second qualifying condition and
+the negation-dependent machinery of
+Sections~\ref{sec:hinge}--\ref{sec:bridges}, slack, the complement
+bound, the De Morgan gap, are untouched by this section and remain
+tied to frames: nothing here shows, or claims, that $\neg$ or
+$\Rightarrow$ survives dropping completeness. This bears on the
+orthomodular event lattices of quantum probability discussed in
 Section~\ref{sec:related}: giving up distributivity, as those
 lattices do, does not merely change which valuations exist, it can
 remove sharp valuations altogether, so the construction of this
 paper does not, without further modification, have anything to say
-about that setting. Whether some weaker notion of certainty
-survives on non-distributive lattices, in place of the
-$\{0,1\}$-valued sharp valuations examined here, is not addressed by
-this section.
+about that setting even at the order-theoretic level examined here.
+Whether some weaker notion of certainty survives on non-distributive
+lattices, in place of the $\{0,1\}$-valued sharp valuations examined
+here, is not addressed by this section.
