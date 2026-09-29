@@ -80,7 +80,28 @@ long-standing precedent for re-basing probability on a non-Boolean
 event logic.  Orthomodular lattices give up distributivity itself,
 while our frames stay distributive by definition
 (Definition~\ref{def:frame}), locating all the non-classical
-behavior in the failure of excluded middle alone.  Free probability,
+behavior in the failure of excluded middle alone.  
+
+
+
+Linear logic
+marks a different kind of departure.  Its event algebras are
+quantales, complete lattices equipped with an associative tensor
+$\otimes$ that need not be idempotent~\cite{girard1987}.  The
+lattice reduct of a quantale is already an instance of
+Section~\ref{sec:lattice}'s generalization, but $\otimes$ itself is
+not $\sqcap$, and a valuation grading it cannot be phrased in
+Definition~\ref{def:lvaluation}'s vocabulary without first deciding
+what modularity even means for a non-idempotent operation.  The
+probabilistic semantics that does exist for linear logic, Girard's
+probabilistic coherence spaces as developed by Danos and
+Ehrhard~\cite{danos-ehrhard2011}, grades the multiplicative
+structure directly rather than valuing a lattice, and is not a
+special case of the construction studied here.  
+
+
+
+Free probability,
 fuzzy measures, and imprecise
 probability~\cite{walley1991} vary other parameters (independence,
 additivity, single-valuedness).  Where Walley's coherent lower

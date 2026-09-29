@@ -35,7 +35,7 @@ preserves $\bot$, $\top$, $\sqcup$, and $\sqcap$.
 Definition~\ref{def:valuation}'s axioms make sense over any bounded
 lattice $\Omega$, complete or not:
 
-\begin{definition}[lattice valuation]
+\begin{definition}[lattice valuation\leanref{lvaluation}]
 \label{def:lvaluation}
 A \emph{lattice valuation} on a bounded lattice $\Omega$ is a
 monotone function $v : \Omega \to \ENNReal$ with $v(\bot) = 0$,
@@ -63,7 +63,7 @@ homomorphism and checks the assignment is functorial (identity,
 composition). That argument pattern-matches on $\sqcup$, $\sqcap$,
 $\bot$, $\top$ alone and never touches $\bigsqcup$:
 
-\begin{proposition}[pullback without completeness]
+\begin{proposition}[pullback without completeness\leanref{lvaluation-comap}]
 \label{prop:lvaluation-comap}
 For bounded lattices $\Gamma, \Omega$, a bounded lattice
 homomorphism $f : \Gamma \to \Omega$, and a lattice valuation $v$ on
@@ -73,8 +73,6 @@ composition of homomorphisms to composition of the induced maps.
 \end{proposition}
 
 \noindent
-(Mechanized as \texttt{LValuation.comap}, \texttt{comap\_id}, and
-\texttt{comap\_comp} in \texttt{GeneralValuation.\allowbreak lean}.)
 $\mathrm{Val}(-)$ is therefore a functor on bounded lattices with
 bounded lattice homomorphisms, of which the frame-level functor of
 Section~\ref{sec:monad} is the restriction to the subcategory of
@@ -87,15 +85,14 @@ valuation \emph{is}, a complement-indicator of a prime ideal, but
 not whether there are enough of them to distinguish elements of
 $\Omega$. That is a separate fact:
 
-\begin{theorem}[sharp valuations separate points]
+\begin{theorem}[sharp valuations separate points\leanref{sharp-separating}]
 \label{thm:sharp-separating}
 For every frame $\Omega$ and $a, b \in \Omega$ with $a \not\le b$,
 there is a sharp valuation $v$ with $v(a) = 1$ and $v(b) = 0$.
 \end{theorem}
 
 \noindent
-(Mechanized as \texttt{exists\_sharp\_separating} in
-\texttt{Points.lean}.) The proof runs the same prime-ideal
+The proof runs the same prime-ideal
 separation theorem that built the counterexample of
 Theorem~\ref{thm:hinge}
 (\texttt{DistribLattice.prime\_ideal\_of\_disjoint\_filter\_ideal}),
@@ -121,7 +118,7 @@ never invokes $\bigsqcup$; the only place frame structure enters is
 \texttt{DistribLattice.prime\_ideal\_of\_disjoint\_filter\_ideal}
 itself, which needs distributivity and nothing beyond it:
 
-\begin{theorem}[separation over distributive lattices]
+\begin{theorem}[separation over distributive lattices\leanref{lvaluation-separating}]
 \label{thm:lvaluation-separating}
 For every distributive bounded lattice $\Omega$ and $a, b \in
 \Omega$ with $a \not\le b$, there is a sharp lattice valuation $v$
@@ -129,8 +126,7 @@ on $\Omega$ with $v(a) = 1$ and $v(b) = 0$.
 \end{theorem}
 
 \noindent
-(Mechanized as \texttt{LValuation.exists\_sharp\_separating} in
-\texttt{GeneralValuation.lean}.) Theorem~\ref{thm:lvaluation-separating}
+Theorem~\ref{thm:lvaluation-separating}
 reproves Theorem~\ref{thm:sharp-separating} with the hypothesis
 \texttt{Order.Frame} weakened to \texttt{DistribLattice}, and
 nothing else about the argument changes. The condition doing the
@@ -145,7 +141,7 @@ mathlib lemma named for distributive lattices. It is genuine, and
 the failure it guards against is total, not merely a failure of
 separation:
 
-\begin{definition}[the diamond]
+\begin{definition}[the diamond\leanref{m3}]
 \label{def:m3}
 $M_3$ is the five-element lattice with a bottom $z$, a top $o$, and
 three pairwise-incomparable atoms $a, b, c$, with $x \sqcup y = o$
@@ -159,16 +155,13 @@ $(a \sqcap b) \sqcup (a \sqcap c) = z \sqcup z = z$. It is modular,
 so this failure is specific to distributivity rather than some
 coarser defect of the order.
 
-\begin{theorem}[no sharp valuation on the diamond]
+\begin{theorem}[no sharp valuation on the diamond\leanref{m3-no-sharp}]
 \label{thm:m3-no-sharp}
 No lattice valuation on $M_3$ is sharp.
 \end{theorem}
 
 \noindent
-(Mechanized as \texttt{M3.no\_sharp\_\allowbreak valuation} in
-\texttt{NonDistributive.\allowbreak lean}, together with
-\texttt{M3.not\_\allowbreak distributive} for the displayed failure of
-distributivity above.) Modularity applied to each of the three
+Modularity applied to each of the three
 pairs of distinct atoms forces $v(x) + v(y) = 1$, since
 $x \sqcup y = \top$ and $x \sqcap y = \bot$. If $v$ were sharp,
 $v(a), v(b), v(c) \in \{0, 1\}$ would have to satisfy all three
@@ -204,3 +197,95 @@ about that setting even at the order-theoretic level examined here.
 Whether some weaker notion of certainty survives on non-distributive
 lattices, in place of the $\{0,1\}$-valued sharp valuations examined
 here, is not addressed by this section.
+
+\paragraph{A second boundary: grading a non-idempotent tensor.}
+Section~\ref{sec:related} notes that linear logic's quantale tensor
+$\otimes$ is not the lattice meet $\sqcap$ this section's valuations
+are built from, so Definition~\ref{def:lvaluation}'s modularity
+axiom does not even parse for $\otimes$ without first deciding what
+to write in $\sqcap$'s place. Granting the substitution
+provisionally, to see what it costs, shows the obstruction runs
+deeper than a notational mismatch:
+
+\begin{definition}[tensor valuation\leanref{tensor-valuation}]
+\label{def:tensor-valuation}
+Fix a join-semilattice $\Omega$ and a binary operation $\otimes$ on
+$\Omega$. A \emph{tensor valuation} for $\otimes$ is a function
+$v : \Omega \to \ENNReal$ such that, for all $a, b \in \Omega$,
+$v(a) + v(b) = v(a \sqcup b) + v(a \otimes b)$.
+\end{definition}
+
+\begin{theorem}[the transplant collapses\leanref{tensor-collapse}]
+\label{thm:tensor-collapse}
+For every join-semilattice $\Omega$, binary operation $\otimes$ on
+$\Omega$, and tensor valuation $v$ for $\otimes$, if $v(a) < \infty$
+then $v(a \otimes a) = v(a)$.
+\end{theorem}
+
+\noindent
+Setting $b := a$ in the defining identity and using only
+$a \sqcup a = a$, join-idempotence, already gives
+$v(a) + v(a) = v(a) + v(a \otimes a)$, hence the claim by
+cancellation. No property of $\otimes$ is used: not associativity,
+not a unit, not distributivity over $\sqcup$. This is a sharper
+failure than Theorem~\ref{thm:m3-no-sharp}'s: $M_3$ shows meet-based
+modularity can fail to admit a sharp valuation on one uncooperative
+lattice, while Theorem~\ref{thm:tensor-collapse} shows the
+$\otimes$-based transplant admits no valuation separating $a$ from
+$a \otimes a$ on \emph{any} $\Omega$ and for \emph{any} $\otimes$,
+idempotent or not. A non-idempotent $\otimes$, linear logic's whole
+point, is exactly what such a valuation could never distinguish from
+$\sqcap$'s behavior.
+
+\begin{example}[a concrete witness\leanref{tensor-witness}]
+\label{ex:tensor-witness}
+Take $\Omega = \mathbb{N}$ with $\sqcup = \max$ and $\otimes = {+}$:
+addition is associative and commutative but not idempotent
+($1 + 1 = 2 \ne 1$), so the hypothesis of
+Theorem~\ref{thm:tensor-collapse} is not vacuous. Substituting
+$a = 0$, where the join's unit and the tensor's unit coincide,
+forces $v(n) = v(0)$ for every $n$: every tensor valuation for $+$
+is constant.
+\end{example}
+
+\noindent
+This is not a toy chosen merely by analogy with linear logic.
+Every quantale, the event algebra Section~\ref{sec:related} attaches
+to linear logic, is by definition a complete lattice equipped with
+an associative $\otimes$ that need not be idempotent, exactly the
+data $(\Omega, \sqcup, \otimes)$ Theorem~\ref{thm:tensor-collapse}
+quantifies over, with the quantale's own join playing the role of
+$\sqcup$. Example~\ref{ex:tensor-witness} is a quantale itself
+($+$ distributes over $\max$), kept only because it is small enough
+to check by hand: it fails idempotence for the same reason
+$\otimes$ does, no algebraic law identifies two copies of a resource
+with one.
+
+\begin{corollary}[grading and discrimination are exclusive\leanref{tensor-dichotomy}]
+\label{cor:tensor-dichotomy}
+For every join-semilattice $\Omega$, binary operation $\otimes$ on
+$\Omega$, and $a \in \Omega$ with $v(a) < \infty$: no $v$ is both a
+tensor valuation for $\otimes$ and satisfies
+$v(a \otimes a) \ne v(a)$.
+\end{corollary}
+
+\noindent
+This restates Theorem~\ref{thm:tensor-collapse} as the dichotomy it
+really is. A candidate probabilistic semantics for a non-idempotent
+$\otimes$ must choose between being graded by
+Definition~\ref{def:lvaluation}'s compositional law and
+discriminating the one thing a non-idempotent $\otimes$ exists to
+discriminate, $a$ from $a \otimes a$; it cannot keep both. The
+probabilistic semantics that does exist for linear logic,
+probabilistic coherence spaces~\cite{danos-ehrhard2011}, keeps
+discrimination: two independent copies of a resource are not scored
+as interchangeable with one. Corollary~\ref{cor:tensor-dichotomy}
+shows the price of that choice is forced, not chosen: probabilistic
+coherence spaces cannot also be graded by this paper's modularity
+law, on pain of losing exactly the discrimination they exist to
+keep, so they instead evaluate proofs with a classical,
+Kolmogorov-style structure over $\otimes$'s type-level behavior,
+never a valuation of propositions in Definition~\ref{def:lvaluation}'s
+sense. Nothing here is a missed opportunity on either side; the
+dichotomy forecloses the combination before any further axiom of
+Definition~\ref{def:lvaluation} is even reached.

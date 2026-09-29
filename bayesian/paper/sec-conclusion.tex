@@ -58,6 +58,29 @@ the direct transcription of the classical Cox statement is
 unsatisfiable. Every result is machine-checked in
 Lean~4 over \textsf{mathlib}.
 
+\paragraph{A recurring shape.}
+Three of this paper's negative results share a form worth naming: two
+individually reasonable demands on a valuation, jointly unsatisfiable,
+with the proof identifying which demand is forced to give rather than
+merely asserting that some construction fails. On $M_3$
+(Theorem~\ref{thm:m3-no-sharp}), sharpness and modularity together are
+unsatisfiable: a $2$-valued readout cannot satisfy all three pairwise
+sum-to-one equations at once, and distributivity is the hypothesis that
+has to give. Grading a non-idempotent tensor
+(Corollary~\ref{cor:tensor-dichotomy}) is the same shape one level up,
+at the axiom itself: being graded by modularity's compositional law
+and discriminating $a$ from $a \otimes a$ cannot both hold, for any
+$\Omega$ and any $\otimes$, and probabilistic coherence
+spaces~\cite{danos-ehrhard2011} are the witness that keeps
+discrimination and gives up gradability. Demanding a sharp, uniform,
+\emph{computable} readout of a semidecidable event
+(Theorem~\ref{thm:sharp-uncomputable}) is the same trade-off again, one
+level further out: bivalence and computability cannot both hold, and
+the classical route keeps bivalence by fiat and gives up an algorithm.
+None of the three results says only that a construction fails; each
+names the exact pair of demands responsible and shows the failure is
+forced, not an artifact of how the construction happened to be set up.
+
 \paragraph{Toward a monad.}
 Section~\ref{sec:monad} lays the groundwork for a categorical
 exploration of the construction: $\mathrm{Val}$ is a mechanized
@@ -103,12 +126,20 @@ cannot come from disjunction data alone
 
 The construction method applies beyond intuitionistic logic:
 state the classical desiderata,
-delete the axioms the target logic no longer licenses, and check
-what survives, what splits, and what becomes unsatisfiable.  Linear
-logic is the natural next case: its event algebras are quantales, a
-valuation there should grade the consumption of evidence, and the
-analogues of our representation theorems and of slack, for the
-failure of contraction, remain open~\cite{danos-ehrhard2011}.
+delete or substitute the axioms the target logic no longer licenses,
+and check what survives, what splits, and what becomes unsatisfiable.
+Linear logic was the first case tried, and Section~\ref{sec:lattice}
+closes it in the negative rather than leaving it open: substituting
+the quantale tensor $\otimes$ for $\sqcap$ in modularity is not
+merely difficult but unsatisfiable
+(Corollary~\ref{cor:tensor-dichotomy}), so no valuation in this
+paper's sense can grade $\otimes$'s consumption of evidence without
+losing the very discrimination $\otimes$ exists to
+carry~\cite{danos-ehrhard2011}. What remains open is the next
+question this raises, not this instance of it: whether some
+compositional law other than modularity transplanted verbatim could
+play our construction's role for logics whose primitive connectives
+are not idempotent.
 
 
 

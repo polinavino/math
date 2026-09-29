@@ -18,6 +18,8 @@ is never triggered.
 \section{Lean Statements}
 \label{app:lean}
 
+\subsection{Introduction}
+
 \subsection{Valuations on Frames}
 
 \phantomsection\label{lean:valuation}
@@ -534,4 +536,102 @@ theorem Valuation.mixCountable_comm {ι κ : Type*}
     Valuation.mixCountable w hw (fun i => Valuation.mixCountable u hu (v i))
       = Valuation.mixCountable u hu
           (fun j => Valuation.mixCountable w hw (fun i => v i j))
+\end{lstlisting}
+
+\subsection{Valuations Beyond Frames}
+
+\noindent Theorem~\ref{thm:sharp-separating}.
+\phantomsection\label{lean:sharp-separating}
+\begin{lstlisting}
+theorem exists_sharp_separating {a b : Ω} (hab : ¬ a ≤ b) :
+    ∃ v : Valuation Ω, v.IsSharp ∧ v a = 1 ∧ v b = 0
+\end{lstlisting}
+
+\noindent Definition~\ref{def:lvaluation}.
+\phantomsection\label{lean:lvaluation}
+\begin{lstlisting}
+structure LValuation (Ω : Type*) [Lattice Ω] [BoundedOrder Ω] where
+  toFun : Ω → ℝ≥0∞
+  map_bot' : toFun ⊥ = 0
+  map_top' : toFun ⊤ = 1
+  mono'    : Monotone toFun
+  modular' : ∀ a b, toFun a + toFun b
+             = toFun (a ⊔ b) + toFun (a ⊓ b)
+\end{lstlisting}
+
+\noindent Proposition~\ref{prop:lvaluation-comap}.
+\phantomsection\label{lean:lvaluation-comap}
+\begin{lstlisting}
+def LValuation.comap (f : BoundedLatticeHom Γ Ω) (v : LValuation Ω) :
+    LValuation Γ
+
+theorem LValuation.comap_id (v : LValuation Ω) :
+    v.comap (BoundedLatticeHom.id Ω) = v
+
+theorem LValuation.comap_comp (f : BoundedLatticeHom Γ Ω)
+    (g : BoundedLatticeHom Δ Γ) (v : LValuation Ω) :
+    v.comap (f.comp g) = (v.comap f).comap g
+\end{lstlisting}
+
+\noindent Theorem~\ref{thm:lvaluation-separating}.
+\phantomsection\label{lean:lvaluation-separating}
+\begin{lstlisting}
+theorem LValuation.exists_sharp_separating [DistribLattice Ω]
+    {a b : Ω} (hab : ¬ a ≤ b) :
+    ∃ v : LValuation Ω, v.IsSharp ∧ v a = 1 ∧ v b = 0
+\end{lstlisting}
+
+\noindent Definition~\ref{def:m3}.
+\phantomsection\label{lean:m3}
+\begin{lstlisting}
+inductive M3 : Type
+  | z | a | b | c | o
+
+instance : Lattice M3 where
+  -- z bottom, o top, a b c pairwise-incomparable atoms;
+  -- any two distinct atoms join to o and meet to z
+
+instance : BoundedOrder M3 where
+  top := o
+  bot := z
+
+theorem M3.not_distributive :
+    ¬ ∀ x y w : M3, x ⊓ (y ⊔ w) = (x ⊓ y) ⊔ (x ⊓ w)
+\end{lstlisting}
+
+\noindent Theorem~\ref{thm:m3-no-sharp}.
+\phantomsection\label{lean:m3-no-sharp}
+\begin{lstlisting}
+theorem M3.no_sharp_valuation (v : LValuation M3) : ¬ v.IsSharp
+\end{lstlisting}
+
+\noindent Definition~\ref{def:tensor-valuation}.
+\phantomsection\label{lean:tensor-valuation}
+\begin{lstlisting}
+def IsTensorValuation (v : Ω → ℝ≥0∞) (t : Ω → Ω → Ω) : Prop :=
+  ∀ a b, v a + v b = v (a ⊔ b) + v (t a b)
+\end{lstlisting}
+
+\noindent Theorem~\ref{thm:tensor-collapse}.
+\phantomsection\label{lean:tensor-collapse}
+\begin{lstlisting}
+theorem IsTensorValuation.collapse {v : Ω → ℝ≥0∞} {t : Ω → Ω → Ω}
+    (h : IsTensorValuation v t) {a : Ω} (ha : v a ≠ ⊤) :
+    v (t a a) = v a
+\end{lstlisting}
+
+\noindent Example~\ref{ex:tensor-witness}.
+\phantomsection\label{lean:tensor-witness}
+\begin{lstlisting}
+theorem forced_constant_of_add_valuation {v : ℕ → ℝ≥0∞}
+    (h : IsTensorValuation v (· + ·)) (hfin : ∀ n, v n ≠ ⊤) (n : ℕ) :
+    v n = v 0
+\end{lstlisting}
+
+\noindent Corollary~\ref{cor:tensor-dichotomy}.
+\phantomsection\label{lean:tensor-dichotomy}
+\begin{lstlisting}
+theorem not_isTensorValuation_of_discriminates {v : Ω → ℝ≥0∞}
+    {t : Ω → Ω → Ω} {a : Ω} (ha : v a ≠ ⊤) (hne : v (t a a) ≠ v a) :
+    ¬ IsTensorValuation v t
 \end{lstlisting}

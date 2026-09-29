@@ -169,12 +169,15 @@ on frames, complete Heyting algebras of open sets, the algebras of
 verifiable propositions. In this setting,
 we define slack, $1 - v(A) - v(\neg A)$, the classical complement
 rule's deficit and boundary mass in the measure model.  Slack
-pinpoints exactly when Dempster and Bayesian conditioning disagree.
+pinpoints exactly when Bayesian conditioning, which treats the
+evidence as fully decided, gives an incorrect update, disagreeing
+with Dempster's rule.
 A separate obstruction, a five-element counterexample, is why Cox's
 sum rule cannot be derived and must instead be posited.
-We show that a classical, slack-free readout of a semidecidable property
-is uncomputable: computing it uniformly is exactly as hard as deciding
-the halting problem.
+We demonstrate how applying a classical probability measure directly
+to a semidecidable property, rather than to the decidable properties
+that generate its measure, fails to yield an algorithm that decides
+it.
 The whole development is machine-checked in Lean~4 over \textsf{mathlib},
 in roughly $5{,}000$ lines with no \texttt{sorry}.
 \end{abstract}
