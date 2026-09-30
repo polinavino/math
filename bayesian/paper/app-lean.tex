@@ -369,6 +369,16 @@ theorem toValuationOpens_slack_eq_frontier (μ : Measure X)
     μ.toValuationOpens.slack U = μ (frontier (U : Set X))
 \end{lstlisting}
 
+\phantomsection\label{lean:classical-posterior-compl-eq}
+\begin{lstlisting}
+theorem classical_posterior_compl_eq (μ : Measure X)
+    [IsProbabilityMeasure μ] (a b : Opens X)
+    (hb : μ.toValuationOpens b ≠ 0) :
+    μ ((a : Set X)ᶜ ∩ b) / μ b
+      = μ.toValuationOpens.condVal b hb aᶜ
+        + μ (frontier (a : Set X) ∩ b) / μ b
+\end{lstlisting}
+
 \phantomsection\label{lean:interiormeasure-add-compl-le}
 \begin{lstlisting}
 theorem interiorMeasure_add_compl_le (μ : Measure X) [IsProbabilityMeasure μ]

@@ -184,15 +184,16 @@ theorem haltingWeight_le_one (n : ℕ) (c : Code) : haltingWeight n c ≤ 1 := b
   unfold haltingWeight
   split <;> simp
 
-/-- The **sharp classical readout**: the family of slack-free Sierpiński valuations answering the
-halting question with certainty, one per code. -/
+/-- The **sharp classical readout**: the family of `{0,1}`-valued Sierpiński valuations answering
+the halting question with certainty, one per code. Sharp but *not* slack-free: since
+`haltsOpenᶜ = ⊥`, a non-halting code gets slack `1 − 0 = 1` (`sierpinskiValuation_slack`). -/
 noncomputable def sharpReadout (n : ℕ) (c : Code) : Valuation (Opens Prop) :=
   sierpinskiValuation (haltingWeight_le_one n c)
 
 /-- **The computability guard, no longer "morally"**: deciding whether the sharp classical
 readout assigns belief `1` to the halting event is exactly the halting problem, hence not
-computable. A slack-free (classical) valuation family over the codes cannot be computably
-realized; the slack of the constructive theory is the price of a computable epistemic state. -/
+computable. A sharp valuation family over the codes cannot be computably realized. This restates
+the halting problem and is not specific to probability. -/
 theorem sharpReadout_not_computable (n : ℕ) :
     ¬ComputablePred fun c : Code => sharpReadout n c haltsOpen = 1 := by
   intro h

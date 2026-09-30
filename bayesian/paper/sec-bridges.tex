@@ -52,6 +52,36 @@ Theorem~\ref{thm:finite-rep} is the
 converse in the finite case (in the general case, the converse is the open
 problem, see Section~\ref{sec:representation}).
 
+The same decomposition locates a failure of classical probability calculus
+in conditioning, that is, in updating a belief about an open $A$ on
+evidence given by an open $B$. The Boolean complement of $A$ splits into its
+Heyting complement and its boundary,
+$A^{c} = \mathrm{int}\,A^{c} \sqcup \partial A$, so a classical
+posterior that treats $A$ as confirmed-or-refuted overstates the
+refutation by the boundary mass the evidence retains:
+
+\begin{theorem}[classical overconfidence in refutation\leanref{classical-posterior-compl-eq}]
+\label{thm:classical-overconfidence}
+Let $\mu$ be a probability measure on a topological space $X$, let
+$v$ be its restriction to $\mathcal{O}(X)$, and let $A, B$ be opens
+with $\mu(B) \neq 0$. Then
+\[
+  \frac{\mu(A \cap B)}{\mu(B)} = v(A \mid B)
+  \qquad\text{and}\qquad
+  \frac{\mu(A^{c} \cap B)}{\mu(B)}
+  = v(\neg A \mid B) + \frac{\mu(\partial A \cap B)}{\mu(B)}.
+\]
+\end{theorem}
+
+\noindent
+The excess term is the conditional slack of $A$ given $B$, the mass
+that the evidence leaves neither confirmed nor refuted. The classical
+posterior does not discard this mass. It credits all of it to $A^{c}$,
+an event no finite observation confirms. For the halting event of
+Section~\ref{sec:computability-guard} with $B = \top$, the classical
+credence in non-termination is $1 - p$ while the constructive one is
+$0$, and the difference $1 - p$ is exactly the slack.
+
 To characterize weak excluded middle spaces, we give the 
 (standard) definitions required: 
 
@@ -235,10 +265,17 @@ defined below attempts to do this:
 
 \begin{definition}[sharp classical readout]
 For a given $n$, the \emph{sharp classical readout} is the family
-of slack-free valuations $\rho_n(c) \in \mathrm{Valuation}(\mathcal{O}(\mathbb{S}))$,
+of $\{0,1\}$-valued valuations $\rho_n(c) \in \mathrm{Valuation}(\mathcal{O}(\mathbb{S}))$,
 with $\rho_n(c)(\mathit{halts}) = 1$ if $H(c,n)$
 holds, and $\rho_n(c)(\mathit{halts}) = 0$ otherwise.
 \end{definition}
+
+\noindent
+The readout is sharp but not slack-free. Since
+$\neg\mathit{halts} = \bot$ (Theorem~\ref{thm:sigma1-asymmetry}), a
+code that does not halt receives slack $1 - 0 = 1$, the maximum. Sharp
+here means that the classical answer is known, not that the
+complement rule holds on $\mathcal{O}(\mathbb{S})$.
 
 \noindent
 However, this family is provably not computable:
@@ -272,8 +309,14 @@ uncomputability result.
 
 \noindent
 We can conclude that slack is not a defect of
-the constructive theory: any axiom strong enough to force classical
-collapse demands that its models compute the uncomputable.
+the constructive theory. On $\mathcal{O}(\mathbb{S})$, forcing the
+complement rule at $\mathit{halts}$ leaves the single value
+$v(\mathit{halts}) = 1$, so every code is assigned certain
+termination. That assignment is computable but false of every
+non-halting code. Any assignment that avoids this error, giving
+$v(\mathit{halts}) < 1$ to each non-halting code, has positive slack
+at every such code, and the one that is moreover sharp is the
+uncomputable readout of Theorem~\ref{thm:sharp-uncomputable}.
 For the sum rule, this guard plays the role the
 explicit Cox-model instance plays for the product rule
 (Section~\ref{sec:cox}): each axiom set in the paper comes with 

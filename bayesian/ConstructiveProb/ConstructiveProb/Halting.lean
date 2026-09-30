@@ -18,7 +18,9 @@ Why this matters for the axioms. The whole design constraint on a constructive C
 that the axioms *guarantee* the representation result without *collapsing* to classical logic
 (which would force `v a + v aᶜ = 1`, i.e. slack `≡ 0`). This model is a witness that the theory
 stays constructive: any axiom set strong enough to force classical collapse is **refuted** by
-the halting valuation, because computability theory forbids `p ∈ {0,1}`. It plays the role for
+the halting valuation, which satisfies every valuation axiom with `p = 1/2`. (Computability does
+not forbid `p ∈ {0,1}` for a single proposition. It forbids only a *uniform* sharp readout over
+all codes, see `sharpReadout_not_computable`.) It plays the role for
 the sum rule that `nonempty_coxModel` plays for the product rule — a vacuity/collapse guard.
 
 We realize the Sierpiński frame concretely as the sub-chain `{⊥, h, ⊤} ⊆ ℝ≥0∞` (taking
@@ -118,7 +120,7 @@ theorem haltingValuation_slack {p : ℝ≥0∞} (hp1 : p ≤ 1) :
 /-- **Non-collapse guard.** There is a valuation and a proposition `h` (the semi-decidable
 "halts") with probability strictly in `(0,1)` and positive slack — the signature of genuinely
 constructive, non-classical probability. Any axiom set forcing classical collapse (`slack ≡ 0`,
-equivalently `v h + v hᶜ = 1`) is refuted by this model, since computability forbids `p ∈ {0,1}`.
+equivalently `v h + v hᶜ = 1`) is refuted by this model, which satisfies every valuation axiom.
 -/
 theorem exists_halting_slack :
     ∃ (v : Valuation ℝ≥0∞) (h : ℝ≥0∞), 0 < v h ∧ v h < 1 ∧ 0 < v.slack h := by
