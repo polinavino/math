@@ -1,0 +1,82 @@
+\section{Quantum Event Logic}
+\label{sec:quantum}
+
+In quantum logic the events are the closed subspaces of a Hilbert
+space~\cite{birkhoff-vonneumann1936}. We restrict to rays, the
+one-dimensional subspaces, of $\mathbb{R}^d$. A \emph{context} is an
+orthogonal basis, a maximal set of pairwise orthogonal rays, whose events
+can be observed jointly. A \emph{quantum state} assigns to each ray a
+number in $\ENNReal$ such that the numbers on every context sum to $1$.
+For a unit vector $\psi$, the \emph{Born rule}
+$x_v = (\psi \cdot v)^2 / (v \cdot v)$ gives such an assignment. For
+$d \ge 3$, Gleason's theorem~\cite{gleason1957} states that every quantum
+state on all rays comes from a density matrix, a mixture of Born-rule
+assignments.
+
+The presentation of Definition~\ref{def:mix} takes the rays as events
+and, as certain states, the $\{0,1\}$-valued quantum states, which give
+exactly one ray of every context the value $1$. By the Kochen--Specker
+theorem~\cite{kochen-specker1967}, for $d \ge 3$ there are none. We
+formalize a finite instance.
+
+\begin{definition}[Cabello's set\leanref{cabello-set}]
+\label{def:cabello}
+Cabello, Estebaranz, and Garc\'ia-Alcaine~\cite{cabello1996} give $18$
+vectors of $\mathbb{R}^4$ with coordinates in $\{0, \pm 1\}$, and $9$ sets
+of $4$ of them:
+\[
+\begin{array}{l}
+\{0001, 0010, 1100, 1\bar{1}00\},\ \{0001, 0100, 1010, 10\bar{1}0\},\
+\{1\bar{1}1\bar{1}, 1\bar{1}\bar{1}1, 1100, 0011\},\\
+\{1\bar{1}1\bar{1}, 1111, 10\bar{1}0, 010\bar{1}\},\
+\{0010, 0100, 1001, 100\bar{1}\},\ \{1\bar{1}\bar{1}1, 1111, 100\bar{1}, 01\bar{1}0\},\\
+\{11\bar{1}1, 111\bar{1}, 1\bar{1}00, 0011\},\
+\{11\bar{1}1, \bar{1}111, 1010, 010\bar{1}\},\
+\{111\bar{1}, \bar{1}111, 1001, 01\bar{1}0\},
+\end{array}
+\]
+where $\bar{1}$ stands for $-1$.
+\end{definition}
+
+\begin{theorem}[Kochen--Specker for Cabello's set\leanref{basis-orth}\leanref{no-ks}]
+\label{thm:ks}
+Each of the $9$ sets is an orthogonal basis of $\mathbb{R}^4$, and each of
+the $18$ vectors lies in exactly two of them. No function from the $18$
+vectors to $\{0,1\}$ takes the value $1$ at exactly one vector of every
+basis.
+\end{theorem}
+
+\noindent
+The first two statements are checked by evaluation. The third is a
+parity count. Summing such a function over the $9$ bases gives $9$, and
+counts every vector twice, so the sum is even.
+
+\begin{theorem}[no certain states\leanref{no-certain-state}\leanref{born-not-mix}]
+\label{thm:quantum}
+For the presentation whose events are the $18$ vectors and whose certain
+states are the $\{0,1\}$-valued functions summing to $1$ on every basis,
+the set of certain states and $\mathrm{Mix}$ of it are empty. For every
+$\psi \in \mathbb{R}^4$ with $\psi \cdot \psi = 1$, the Born-rule
+assignment sums to $1$ on every basis, so it is a quantum state that is
+not in $\mathrm{Mix}$ of the certain states.
+\end{theorem}
+
+\noindent
+The Born-rule statement is Parseval's identity
+$\sum_{v \in B} (\psi \cdot v)^2 / (v \cdot v) = \psi \cdot \psi$ for
+each orthogonal basis $B$, checked basis by basis\leanref{parseval}.
+
+Quantum probability therefore fails criterion (1) of
+Section~\ref{sec:intro}: the calculus has no $\{0,1\}$-valued elements,
+so they cannot reconstruct the event logic. Theorem~\ref{thm:quantum}
+proves this for Cabello's set. For all rays of $\mathbb{R}^d$ with
+$d \ge 3$ it follows from the Kochen--Specker theorem, which is not
+formalized. The construction of Section~\ref{sec:recipe} produces
+nothing at this event logic: with no certain states, every affine law is
+valid on the certain states, including $1 \le 0$, and
+Theorem~\ref{thm:mix-eq-laws} returns the empty set. The mixtures of
+certain states are the noncontextual hidden-variable models of the event
+logic, and Theorem~\ref{thm:ks} is the statement that this event logic
+has none~\cite{kochen-specker1967}. For lattice valuations,
+Theorem~\ref{thm:m3-no-sharp} shows the corresponding absence on the
+non-distributive lattice $M_3$, which has no sharp valuation.

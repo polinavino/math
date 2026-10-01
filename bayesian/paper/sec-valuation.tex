@@ -45,7 +45,7 @@ middle.
 The central object assigns a degree of certainty to each element of
 the frame, with inclusion--exclusion as the only interaction axiom:
 
-\begin{definition}[valuation]
+\begin{definition}[valuation\leanref{valuation}]
 \label{def:valuation}
 A \emph{valuation} on a frame $\Omega$ is a \emph{monotone} function
 $v : \Omega \to \ENNReal$ with
@@ -85,7 +85,7 @@ collapses to
 $v(a) + v(\neg a) = v(a \sqcup \neg a)$\leanref{valuation-add-compl-eq-sup}.
 So, the join need not be $\top$:
 
-\begin{theorem}[the complement bound]
+\begin{theorem}[the complement bound\leanref{add-compl-le-one}]
 \label{thm:add-compl-le-one}
 For every valuation $v$ on a frame $\Omega$ and every $a \in \Omega$,
 $v(a) + v(\neg a) \le 1$.

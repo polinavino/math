@@ -1,0 +1,171 @@
+\section{Second-Order Linear Types}
+\label{sec:second}
+
+This section uses the construction of Section~\ref{sec:recipe} at the
+second-order type of a program with two functional arguments, where it
+returns a strict subset of the probabilistic coherence space. By
+computation, not formalized, the construction and the probabilistic
+coherence space agree on $(\mathrm{Bool} \multimap \mathrm{Bool})
+\multimap \mathrm{Bool}$ and $((\mathrm{Bool} \multimap \mathrm{Bool})
+\multimap \mathrm{Bool}) \multimap \mathrm{Bool}$, the two iterated
+implications into $\mathrm{Bool}$ we checked. The type $T$ below is the
+smallest we found where they differ without exponentials.
+
+\subsection{Randomized Sequential Programs}
+\label{sec:second-seq}
+
+At second order, let
+$T = ((X \multimap Y) \otimes (X' \multimap Y'))^{\perp}$, the type of a
+program that receives $f : X \multimap Y$ and $g : X' \multimap Y'$,
+uses each once, and halts or diverges. We take $T$ to be the set of
+$t : (X \times Y) \times (X' \times Y') \to \ENNReal$ with
+$\sum_{p,q} y_p\, t(p,q)\, z_q \le 1$ for all $y$ in $X \multimap Y$ and
+$z$ in $X' \multimap Y'$, the orthogonal of the products $y \otimes z$.
+For $X = Y = X' = Y' = \mathrm{Bool}$, Lean checks that $T$ satisfies
+the three PCS conditions\leanref{ispcs-lin}. A \emph{randomized sequential program} queries
+one argument first. Querying $f$ first, it chooses the input $a$ with
+probability $\mu(a)$, after the answer $b$ chooses the input $c$ to $g$
+with probability $\kappa(a,b,c)$, and after the answer $d$ halts with
+probability $\rho(a,b,c,d)$. Its value at $((a,b),(c,d))$ is
+$\mu(a)\kappa(a,b,c)\rho(a,b,c,d)$ plus the analogous term for
+programs that query $g$ first, with $\sum \mu \le 1$ over both orders,
+$\sum_c \kappa(a,b,c) \le 1$, and $\rho \le 1$. It is
+\emph{deterministic} if its values are in $\{0,1\}$.
+
+\begin{theorem}[second order\leanref{sharp-td-iff}\leanref{recipe-eq-sequentialg}]
+\label{thm:second-order}
+For nonempty finite $X, X'$ and finite $Y, Y'$:
+(i) a $\{0,1\}$-valued $z$ lies in $T$ iff its support lies in a tree
+$\{((a, b), (c(b), d)) \mid b \in Y, d \in Y'\}$ for some $a \in X$ and
+$c : Y \to X'$, or in a tree $\{((a(d), b), (c, d))\}$ that queries $g$
+first, and these are exactly the deterministic sequential
+programs\leanref{sharp-mem-sequentialg};
+(ii) $\mathrm{Mix}$ of the $\{0,1\}$-valued elements of $T$ is exactly the
+set of randomized sequential programs.
+\end{theorem}
+
+\noindent
+Part (ii) contains both directions of Kuhn's theorem for this
+type~\cite{kuhn1953}: every randomized sequential program is a mixture of
+deterministic ones\leanref{sequentialg-subset-mix}, and every mixture of
+randomized sequential programs is a randomized sequential
+program\leanref{mix-sequentialg}. The second direction conditions the
+choices at each node on the history, and nodes reached with probability
+$0$ are given weight $0$.
+
+The calculus is strictly smaller than the PCS. Call two distinct web
+points of $T$ \emph{exclusive} if a single pair of deterministic partial
+programs $(f, g)$ produces both, that is, if their first components
+cohere in $X \multimap Y$ and their second components cohere in
+$X' \multimap Y'$. The \emph{exclusivity graph} of $T$ has the web points
+as vertices and the exclusive pairs as edges.
+
+\begin{theorem}[strict inclusion\leanref{pente-not-mix}\leanref{pent-bounds}]
+\label{thm:pentagon}
+Let $X, Y, X', Y'$ have at least two elements each. There are five web
+points of $T$ such that the function with value $\tfrac12$ on them and
+$0$ elsewhere lies in $T$ and is not in $\mathrm{Mix}$ of the
+$\{0,1\}$-valued elements of $T$. For $X = Y = X' = Y' = \mathrm{Bool}$, the total weight on the five
+points is at most $2$ for every randomized sequential program, $2$ is
+attained, and it is at most $\tfrac52$ on $T$, attained by the function
+above.
+\end{theorem}
+
+\noindent
+Over $\mathrm{Bool}$, writing $(a,b)$ for the observation $f(a) = b$, the
+five points are $((t,t),(t,t))$, $((t,f),(f,f))$, $((f,t),(t,f))$,
+$((f,t),(f,t))$, and $((f,f),(f,f))$. They induce a $5$-cycle in the
+exclusivity graph. Lean checks the two facts the proof uses, that the
+induced subgraph has no triangle and no three pairwise non-adjacent
+vertices\leanref{pent-cycle}, and
+embeds the five points into larger types by injections from
+$\mathrm{Bool}$.
+
+The semantics of Definition~\ref{def:mall} computes $T$:
+$P(((\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'} \multimap
+\mathbf{m'}))^{\perp})$ is $T$ for $X = \{1,\dots,n\}$, $Y =
+\{1,\dots,m\}$, $X' = \{1,\dots,n'\}$, $Y' = \{1,\dots,m'\}$\leanref{p-second}.
+So Theorem~\ref{thm:second-order}(ii) and the strict inclusion of
+Theorem~\ref{thm:pentagon} are statements about these
+formulas\leanref{recipe-formula}.
+
+\subsection{A Clique Outside the PCS}
+\label{sec:second-shannon}
+
+The converse of Theorem~\ref{thm:mall}(iii) fails. Let
+$T = ((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2} \multimap
+\mathbf{2}))^{\perp}$. On the five points of Theorem~\ref{thm:pentagon},
+two distinct points cohere in $T$ iff they are not exclusive. Order them
+as $c_0, \dots, c_4$ along the $5$-cycle of the exclusivity graph. The
+coherence graph on them is the complement of this cycle, again a
+$5$-cycle. Two distinct points of $T \otimes T$ are incoherent iff they
+are incoherent in one component. A clique of $(T \otimes T)^{\perp}$
+contained in $\{c_0, \dots, c_4\}^2$ is therefore a stable set of the
+strong product of the two coherence graphs, a copy of
+$C_5 \boxtimes C_5$. The set $\{(c_i, c_{2i}) \mid i \in \mathbb{Z}/5\}$
+is such a stable set, of size $5$. It is Shannon's stable set, which
+shows that the Shannon capacity of $C_5$ is at least
+$\sqrt5$~\cite{lovasz1979}.
+
+\begin{theorem}[a clique outside the PCS\leanref{shannon-clique}\leanref{shannon-not-mem}]
+\label{thm:shannon}
+Shannon's set is a clique of the coherence space $(T \otimes T)^{\perp}$,
+and its indicator is not an element of $P((T \otimes T)^{\perp})$.
+\end{theorem}
+
+\noindent
+The function $z$ of Theorem~\ref{thm:pentagon}, with value $\tfrac12$ on
+the five points, lies in $P(T)$, so $z \otimes z$ lies in
+$P(T \otimes T)$. Its pairing with the indicator of Shannon's set is
+$5 \cdot \tfrac14 = \tfrac54 > 1$. Two choices of certain states for a
+formula are therefore different from $(T \otimes T)^{\perp}$ on: the
+$\{0,1\}$-valued elements of the PCS, for which the calculus is contained
+in the PCS at every formula (Theorem~\ref{thm:mall}(iv)), and the cliques
+of the coherence space, for which it is not.
+
+\subsection{When the Calculus Equals the PCS}
+\label{sec:second-perfect}
+
+For a finite graph $G$, a \emph{clique} is a set of pairwise adjacent
+vertices and a \emph{stable set} a set of pairwise non-adjacent
+vertices. Let $\mathrm{STAB}(G)$ be $\mathrm{Mix}$ of the indicator
+functions of stable sets, and $\mathrm{QSTAB}(G)$ the set of
+$x : V \to \ENNReal$ with $\sum_{v \in C} x_v \le 1$ for every clique
+$C$~\cite{gls1988}.
+
+\begin{theorem}[graph polytopes\leanref{td-eq-qstab}\leanref{recipe-eq-stab}]
+\label{thm:qstab}
+$T = \mathrm{QSTAB}(G)$ and $\mathrm{Mix}$ of the $\{0,1\}$-valued
+elements of $T$ is $\mathrm{STAB}(G)$, for $G$ the exclusivity graph of
+$T$.
+\end{theorem}
+
+\begin{theorem}[odd holes and antiholes\leanref{berge-of-stab-eq-qstab}\leanref{berge-of-recipe-eq-pcs}]
+\label{thm:berge}
+If $\mathrm{STAB}(G) = \mathrm{QSTAB}(G)$, then $G$ contains no induced
+cycle of odd length $2k+1 \ge 5$ and no induced complement of one. In
+particular, if $\mathrm{Mix}$ of the $\{0,1\}$-valued elements of $T$
+equals $T$, the exclusivity graph of $T$ has neither.
+\end{theorem}
+
+\noindent
+A graph with neither is \emph{Berge}. A graph is \emph{perfect} if every
+induced subgraph has chromatic number equal to its largest clique size.
+The converse of Theorem~\ref{thm:berge} holds: $\mathrm{STAB}(G) =
+\mathrm{QSTAB}(G)$ iff $G$ is perfect~\cite{chvatal1975,lovasz1972}, and
+$G$ is perfect iff it is Berge, by the strong perfect graph
+theorem~\cite{chudnovsky2006}. The converse is not formalized.
+
+The \emph{independence number} $\alpha(G)$ is the largest size of a
+stable set, and the \emph{fractional packing number} $\alpha^{*}(G)$ is
+the largest value of $\sum_v x_v$ over $\mathrm{QSTAB}(G)$. The bounds
+$2$ and $\tfrac52$ of Theorem~\ref{thm:pentagon} are $\alpha(C_5)$ and
+$\alpha^{*}(C_5)$. Cabello, Severini and Winter~\cite{cabello2014} show
+that in a contextuality scenario with exclusivity graph $G$ the
+noncontextual bound is $\alpha(G)$, the quantum bound is the Lov\'asz
+number $\vartheta(G)$~\cite{lovasz1979}, and the bound for theories
+satisfying only exclusivity is $\alpha^{*}(G)$. For $C_5$ this is the
+KCBS inequality~\cite{klyachko2008}, with $\vartheta(C_5) = \sqrt5$. A
+calculus for $T$ corresponding to the theta body of the exclusivity
+graph~\cite{gls1988}, which lies between $\mathrm{STAB}$ and
+$\mathrm{QSTAB}$, is not constructed here.

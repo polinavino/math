@@ -1,173 +1,137 @@
 \section{Introduction}
 \label{sec:intro}
 
-Kolmogorov's probability~\cite{kolmogorov1933} assigns numerical 
-values representing uncertainty to events. 
-The events to which the probability is assigned
-form a Boolean $\sigma$-algebra, therefore
-satisfying the law of excluded middle.
-The axioms these assignments satisfy make up the arithmetic of 
-chance (non-negativity, normalization,
-$\sigma$-additivity). 
 
-This framework commits to logical axioms that computer science cannot
-commit to.  Many properties of programs (does this computation
-halt, does this process reach a given state) are only
-\emph{semidecidable}: a procedure confirms the property when it
-holds, and no procedure, in general, confirms its failure.  The
-natural event algebra for a semidecidable property is a
-\emph{frame}, the algebra of open sets of a space, and equivalently
-the algebraic semantics of intuitionistic logic.  We show that a
-sharp classical readout of a semidecidable property, one assigning
-each program probability $1$ if it has the property and $0$
-otherwise, is uncomputable: computing it uniformly is exactly as hard
-as deciding the halting problem. This is the pointwise form of the
-obstruction. Chaitin's $\Omega$~\cite{chaitin1975}, independently
-uncomputable by a classical argument, is its aggregate form, and we
-interpret both within the framework we develop here.  The obstruction
-is not specific to probability, since it restates the halting
-problem. What it fixes is the shape of a computable credence about
-halting, which cannot be sharp. Classically, the remainder
-$1 - P(\mathit{halts})$ is credited to the event that the program
-never halts, which no finite observation confirms. On the frame of
-observable events, the same remainder is instead slack.  In general,
-reasoning about the chance that a program has some property therefore
-calls for an event logic in which mass sits only on events that can
-be observed, and that logic is not Boolean. We develop a
-mechanized framework that allows us to study probability calculi without
-committing to a fixed (classical) logic, and thereby select the
-probability calculus aligned with the logic of the objects it reasons about.
+Kolmogorov's probability~\cite{kolmogorov1933} assigns numerical values representing 
+uncertainty to events. The event logic is classical, forming a Boolean $\sigma$-algebra.
+The assignments satisfy non-negativity, normalization, and $\sigma$-additivity. This commits 
+the framework to the axioms of classical logic, including the law of excluded middle. Many 
+properties of programs (e.g. "does this computation halt?", "does this process reach a given 
+state?") are only \emph{semidecidable}: a procedure confirms the property when it holds, and 
+no procedure, in general, confirms its failure.
+The mismatch that results is not a contradiction. It is a failure of discrimination. 
+A probability calculus built on a particular logic inherits that logic's identifications, so it 
+cannot discriminate events the logic proves equal. 
 
-Applying classical probability theory to non-classical logics does not 
-always lead to the kinds of contradictions that result in fully degenerate 
-conclusions. In this work, we make precise what the failure modes of this 
-probability-logic mismatch are. Classical probability
-is not misapplied to semidecidable or resource-sensitive events, only
-to the wrong carrier for them. It is exact on decidable events, such
-as sets of bit strings fixed by finitely many bits, and on
-independent occurrences of a resource, and it goes wrong when applied
-directly to the semidecidable property or to the resource itself.
-For the halting problem, the law is closure under complement. Feed a
-program random bits. It halts exactly when some finite string of bits
-makes it halt, so halting is a countable union of the events ``the input begins with this string'', hence
-measurable, which is why $\Omega$ above is classically well-defined.
-But then ``never halts'' is measurable too, although no finite string
-confirms it, and additivity credits it the whole remainder
-$1 - P(\mathit{halts})$. Updating on evidence $B$ keeps the error:
-the classical posterior of the Boolean complement of $A$ exceeds that
-of $\neg A$ by exactly $\mu(\partial A \cap B)/\mu(B)$
-(Theorem~\ref{thm:classical-overconfidence}), mass that a frame
-instead leaves as slack. For linear logic, the law is idempotence of
-disjunction, $a \sqcup a = a$. Grading $\otimes$ by modularity then
-forces $v(a \otimes a) = v(a)$ (Theorem~\ref{thm:tensor-collapse}), so
-the assignment can no longer count uses. Since frames satisfy this
-law too, the fix is not a change of logic. Probabilistic coherence
-spaces~\cite{danos-ehrhard2011} change the carrier, grading
-independent occurrences of a resource by the product $p \cdot p =
-p^2$ of independent trials. Classical probability is not wrong in
-either case. It is asked the wrong question, on an event space whose
-laws answer it in advance.
+In the case of classical logic, this identification is the \emph{law of excluded middle}:
+$\mathit{halts} \sqcup \neg\mathit{halts} = \top$, so the Boolean event algebra contains 
+$\neg\mathit{halts}$. The complement rule $P(A^{c}) = 1 - P(A)$ then forces 
+the remainder $1 - P(\mathit{halts})$ onto $\neg\mathit{halts}$, an event no finite 
+observation can confirm. The events ``not yet confirmed'' and ``refuted'' are identified.
+For a program whose non-termination is independent of ZFC~\cite{yedidia-aaronson2016},
+the classical value $P(\mathit{halts}) = 0$ is correct, yet neither running the program
+nor any ZFC proof ever establishes it. Uniformly over programs, computing these sharp
+values is exactly as hard as the halting problem. 
 
-Probability is, as the Cox--Jaynes tradition has it, \emph{extended
-logic}~\cite{cox1946,jaynes2003}.  Different logics 
-can be extended through the same construction. 
-First, fix an event algebra, i.e. the chosen event logic
-in algebraic form. This algebra 
-consists of the underlying set of events, together with the
-operations interpreting the logic's connectives.  For the logics
-compared in this paper these are conjunction, disjunction, and
-negation, with the law of excluded middle holding in the classical
-case. Then let \emph{valuations} be the maps from events to numbers
-that satisfy the axioms of monotonicity, normalization, and
-modularity.
-We specify the two sufficient and necessary conditions for 
-when the extension construct we propose defines
-a probability calculus (i.e. degrees of certainty
-rather than an arbitrary grading
-of events). The first (1) is that the valuations taking 
-only the values $0$ and
-$1$, the two degrees of complete certainty,
-reconstruct the
-underlying event logic (this is what we take "extended logic" to mean). 
-The second (2) requires that the construction, evaluated at
-classical logic, returns the classical theory (this ensures that the new 
-construction is a "generalization of classical probability"). 
-This construction treats
-the logic of events as a \emph{parameter}: the choice of event
-algebra determines an associated probability calculus. 
+Another failure of discrimination appears in \emph{linear logic}, whose
+tensor $\otimes$ distinguishes $a$ from $a \otimes a$, one use of a
+resource from two. Modularity with $\otimes$ in place of $\sqcap$,
+$v(a) + v(b) = v(a \sqcup b) + v(a \otimes b)$, inherits idempotence of
+disjunction, $a \sqcup a = a$, and at $b = a$ forces
+$v(a \otimes a) = v(a)$. So, no
+assignment satisfying this axiom distinguishes one use of $a$ from two.
 
-Kolmogorov takes the event algebra to be Boolean,
-and his calculus is the value of the construction at Boolean logic.
-There, the law of excluded middle in the
-underlying logic makes it possible to show that
-every valuation obeys the \emph{complement rule}
-$P(A^{c}) = 1 - P(A)$. A motivating example for varying
-the logic parameter is
-quantum uncertainty calculus, whose event algebras are the
-orthomodular
-lattices~\cite{birkhoff-vonneumann1936,gleason1957}.  
-Here, we study the construction extending 
-intuitionistic logic, whose event algebras are frames:
-complete Heyting algebras, the lattices of open sets.  
-(1)~The all-or-nothing valuations are exactly the two-valued models
-of the logic
-(Section~\ref{sec:hinge}).
-(2)~Complete Boolean algebras are exactly the frames satisfying
-excluded middle, so the classical theory embeds as a special case.
+Probability is, as the Cox--Jaynes tradition has it, 
+\emph{extended logic}~\cite{cox1946,jaynes2003}, and different logics can be extended 
+through the same construction. The logic of events, in its algebraic
+form the event algebra, is a \emph{parameter} of the construction, and
+the choice of event algebra determines the probability calculus.
+An event algebra consists of a set of events together with operations 
+interpreting the logic's connectives and structural rules, while a probability 
+calculus is differentiated from an arbitrary grading of events by satisfying 
+certain axioms. We specify how to construct such extensions, and
+propose two criteria for when the extension of a logic is a probability
+calculus:
 
-Given a valuation
-$v : \Omega \to \ENNReal$ on a frame $\Omega$,  for all $a, b$, 
-by modularity,
-$v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$.
-The pseudocomplement $\neg a$ satisfies
-$a \sqcap \neg a = \bot$ but not, in general, $a \sqcup \neg a =
-\top$, so the complement rule degrades to $v(a) + v(\neg a) \le 1$,
-with a gap
+\begin{itemize}
+  \item[(1)] the valuations taking only the values $0$ and 
+$1$ (the two degrees of complete certainty) must reconstruct the underlying event logic.
+This is what we take ``extended logic'' to mean.
+  \item[(2)] the construction evaluated at 
+classical logic must return the classical theory, ensuring it is a genuine generalization 
+of classical probability.
+\end{itemize}
 
-\[
-  \slack(a) \;=\; 1 - v(a) - v(\neg a).
-\]
+We propose two fixes for the identifications above. Both extend a logic
+to a probability calculus, and on finite frames the second reduces to
+the first. 
+The first fix we propose is one that accepts the standard axioms imposed on a grading 
+to make it a probability calculus, while choosing an event algebra that 
+makes the required distinctions. 
+The extension of the event algebra to a probability calculus is then given by 
+the \emph{valuations}, i.e. the maps from events to numbers satisfying monotonicity, 
+normalization, and modularity. The resulting extension does not guarantee
+defining a probability calculus, and we specify the conditions under which it
+does: the $\{0,1\}$-valued valuations are the points of the event algebra,
+and they reconstruct its order when it is distributive. 
+Intuitionistic logic, in
+particular, is a case for which this approach yields an extension, and we
+work it out in detail. Its event algebras are the Heyting algebras, and we 
+work with frames (the complete Heyting algebras). The open sets of any topological space
+form a frame. On a frame the pseudocomplement $\neg a$ need not satisfy
+$a \sqcup \neg a = \top$, so the complement rule weakens to
+$v(a) + v(\neg a) \le 1$. The gap
+$\slack(a) = 1 - v(a) - v(\neg a)$ is the mass of the part of $a$
+neither confirmed nor refuted. For the valuation that a measure $\mu$
+induces on the open sets of a space, the slack of an open set is the
+$\mu$-measure of its boundary.
 
-Classically, this is the width of the Dempster--Shafer
-belief/plausibility interval~\cite{dempster1967,shafer1976}, 
-quantifying ignorance. In our system it instead quantifies the mass of
-the part of $a$ that is neither confirmed nor refuted, the probabilistic
-image of the semidecidable gap above.
-On the opens of a space with measure $\mu$, the slack of an open $U$
-is $\mu(\partial U)$, the mass of its topological boundary.
-For verification this matters concretely: knowing how likely a
-property is to hold no longer tells you how likely it is to fail, and
-the gap between the two, the slack, is now also required to answer
-that question.
+The second fix also applies to logics whose connectives are not lattice
+operations, such as linear logic. It generalizes the axioms of the
+probability calculus in addition to varying the event algebra. It
+applies to any logic presented by a set of \emph{certain states}, its
+$\{0,1\}$-valued assignments. The calculus is the set of finite mixtures
+of certain states. A mixture that takes only the values $0$ and $1$ is
+one of the certain states it mixes, because every certain state with
+positive weight must agree with it at every event. So the
+$\{0,1\}$-valued elements of the calculus are exactly the certain
+states, which present the logic, and criterion (1) holds. 
+For finitely many events, the axioms of
+the calculus are exactly the affine laws that hold on every certain
+state. On finite frames and finite Boolean algebras these laws coincide with
+monotonicity, normalization, and modularity, and the calculus is the set
+of valuations. 
 
-How the change of logic affects statistical reasoning can be stated
-operation by operation.  The conditional
-$v(a \sqcap b)/v(b)$, the product rule, and Bayes symmetry
-hold verbatim. The
-classical denominator of Bayes' theorem,
-$P(B) = P(B \mid A)P(A) + P(B \mid \neg A)P(\neg A)$, degrades to a
-lower bound whose deficit is a conditional slack.  Marginalization is
-exact only over partitions. 
-The complement trick $P(A) = 1 - P(\neg A)$
-degrades to the interval $[v(A), 1 - v(\neg A)]$ of width
-$\slack(A)$.  Dempster's rule and Bayesian conditioning, classically
-indistinguishable, give different posteriors from the same evidence
-unless its slack vanishes.  The value of an event $A$ itself is read
-as $P(\mathrm{int}\,A)$, so a nonatomic distribution queried on
-intervals still behaves classically: an interval's boundary is two
-points, carrying no mass.  The two readings differ only at
-boundaries carrying mass and at semidecidable hypotheses.
+For linear logic, the event algebra is a quantale, a complete lattice
+with an associative tensor $\otimes$ that need not be idempotent. The
+first fix fails there because of the probability axioms, not the event
+algebra: the modularity axiom identifies $a$ with $a \otimes a$.
+Probabilistic coherence spaces~\cite{danos-ehrhard2011} avoid this by
+assigning weights to the points of each formula's web instead of to
+formulas, with $a \otimes a$ interpreted on a product web. Their
+elements are not valuations in the sense of the modularity axiom. For
+every multiplicative--additive formula over finite data types, the
+calculus of the second fix is contained in the probabilistic coherence
+space of the formula, and the certain elements of that space are cliques
+of Girard's coherence space~\cite{girard1987}. 
 
-Cox's original theorem required repair after Halpern's
-counterexample~\cite{cox1946,halpern1999,vanhorn2003}.  Even with
-this repair, the direct translation of Cox's theorem to intuitionistic
-logic is \emph{unsatisfiable}.  This is because the sum
-rule is irreducible: a disjunction's value is provably not a
-function of its disjuncts' values, so modularity must be posited
-rather than derived.  Weak excluded middle, an assumption strictly
-between intuitionistic and classical logic, does not restore the
-reducibility of the sum rule: the counterexample frame itself
-satisfies weak excluded middle.
+Our extension and coherence spaced coincide at first-order
+linear logic. At higher order they can
+differ: for a program with two functional arguments the calculus is the
+set of randomized sequential programs, a strict subset of the
+probabilistic coherence space (Section~\ref{sec:second}). The probabilistic
+coherence space, the standard model of probabilistic programs at this
+type, therefore admits behaviours that no sequential program flipping coins can
+produce, if programs are modelled as behavioural strategies. Reasoning in
+it can certify only weaker guarantees than the programs satisfy. The gap
+has the same numerical form as the gap between classical and
+non-classical correlations in quantum foundations~\cite{cabello2014}. At
+$!\mathrm{Bool}$ the calculus is also a strict subset.
+
+Quantum logic, whose event algebras are orthomodular
+lattices~\cite{birkhoff-vonneumann1936}, is a logic to which neither fix
+applies. Both rely on $\{0,1\}$-valued assignments: the first on
+$\{0,1\}$-valued valuations, which do not exist on non-distributive
+lattices, and the second relies on having certain states. A certain
+state of quantum logic would assign $1$ to exactly one ray of every
+orthogonal basis, and by the Kochen--Specker
+theorem~\cite{kochen-specker1967} there is none in dimension at least
+$3$. We prove this for an $18$-ray configuration in
+$\mathbb{R}^4$~\cite{cabello1996}, so the calculus of the second fix is
+empty there. Quantum states, which by Gleason's
+theorem~\cite{gleason1957} are given by density matrices, nevertheless
+exist, and they fail criterion (1).
+
 
 \paragraph{Contributions.}
 
@@ -179,11 +143,16 @@ satisfies weak excluded middle.
   Stonean spaces.
 
 \item \textbf{Two characterizations}
-  (Sections~\ref{sec:hinge} and~\ref{sec:ds}).  The complement rule
-  holds for \emph{every} valuation iff the frame satisfies excluded
-  middle, the exact content of Van Horn's classical negation axiom
-  R3~\cite{vanhorn2003}.  Dempster and Bayesian conditioning agree
-  iff the evidence has zero slack.
+  (Sections~\ref{sec:valuation}, \ref{sec:hinge} and~\ref{sec:ds}).
+  The complement rule holds for \emph{every} valuation iff the frame
+  satisfies excluded middle, the exact content of Van Horn's classical
+  negation axiom R3~\cite{vanhorn2003}.  Dempster's rule and Bayesian
+  conditioning, classically identical, agree iff the evidence has zero
+  slack.  The conditional $v(a \sqcap b)/v(b)$, the product rule, and
+  Bayes symmetry hold unchanged.  The complement rule weakens to the
+  interval $[v(A), 1 - v(\neg A)]$ of width $\slack(A)$, and the law of
+  total probability to a lower bound whose deficit is a conditional
+  slack.
 
 \item \textbf{Structure theorems}
   (Sections~\ref{sec:representation} and~\ref{sec:ds}).  On finite
@@ -192,18 +161,26 @@ satisfies weak excluded middle.
   Boolean core it is a belief function.
 
 \item \textbf{Cox's theorem, dissected} (Section~\ref{sec:cox},
-  Appendix~\ref{app:aczel}).  The product-rule half is independent
-  of the logic, proved by an Acz\'el/H\"older generator built from
-  scratch.  The sum-rule half, a theorem classically, admits no
-  derivation here (a five-element counterexample) and must be
-  posited.
+  Appendix~\ref{app:aczel}).  Cox's theorem and its
+  repairs~\cite{cox1946,halpern1999,vanhorn2003} derive classical
+  probability from qualitative requirements on plausibility.  The
+  product-rule half is independent of the logic, proved by an
+  Acz\'el/H\"older generator built from scratch.  The sum-rule half, a
+  theorem classically, admits no derivation here: on a five-element
+  frame a disjunction's value is not a function of its disjuncts'
+  values, so modularity must be posited.  Weak excluded middle does
+  not restore it, since the counterexample frame satisfies weak
+  excluded middle.
 
 \item \textbf{Two grounding models} (Section~\ref{sec:bridges}).
   Any classical measure, read on the opens, is a valuation whose
   slack is boundary mass.  A sharp readout of halting is
   uncomputable, and on Cantor space the value of the halting event
-  is Chaitin's $\Omega$.  Slack is submodular yet does not determine
-  the valuation.
+  is Chaitin's $\Omega$.  A classical posterior overstates refutation
+  by exactly the conditional boundary mass $\mu(\partial A \cap B)/\mu(B)$
+  (Theorem~\ref{thm:classical-overconfidence}), so the classical and
+  intuitionistic readings differ only where boundary mass is positive.
+  Slack is submodular yet does not determine the valuation.
 
 \item \textbf{The monad dichotomy} (Section~\ref{sec:monad}).
   Product valuations are unique on
@@ -212,6 +189,54 @@ satisfies weak excluded middle.
   Fubini fails.  The
   countably-presented fragment composes associatively and
   commutatively.
+
+\item \textbf{Beyond frames} (Section~\ref{sec:lattice}).  The
+  certain valuations reconstruct the event order exactly on
+  distributive lattices, and completeness is not needed.  On the
+  non-distributive diamond $M_3$ no certain valuation exists, so the
+  construction does not extend to quantum event lattices unchanged.
+  Grading linear logic's $\otimes$ by modularity forces
+  $v(a \otimes a) = v(a)$, so such a grading cannot count resources.
+
+\item \textbf{Probability calculi from certain states}
+  (Section~\ref{sec:recipe}).  The calculus of a logic presented by
+  its $\{0,1\}$-valued certain states is the set of their finite
+  mixtures.  Its certain elements are exactly the certain states, and
+  its axioms are exactly the affine laws valid on the certain states.
+  On finite frames this returns the valuations, and on finite Boolean
+  algebras Kolmogorov's calculus.  For arbitrary sets of events, the
+  functions satisfying every finitely supported law valid on the
+  certain states are exactly the barycenters of probability measures
+  concentrated on the certain states.
+
+\item \textbf{Linear logic} (Sections~\ref{sec:recipe-linear}
+  and~\ref{sec:recipe-mall}).  Every multiplicative--additive formula
+  over finite data types denotes a probabilistic coherence space, whose
+  certain elements are cliques of Girard's coherence space, and the
+  calculus of the formula is contained in it.  At implications between
+  data types the two coincide.  At $!\mathrm{Bool}$ the calculus is a
+  strict subset.
+
+\item \textbf{Second-order linear types} (Section~\ref{sec:second}).
+  For a program with two functional arguments over finite data types,
+  the certain elements of the probabilistic coherence space are the
+  deterministic sequential programs, and the calculus is exactly the set
+  of randomized sequential programs, by both directions of Kuhn's
+  theorem~\cite{kuhn1953}.  The calculus is a strict subset of the
+  probabilistic coherence space.  The space is the clique-constrained
+  polytope of an exclusivity graph whose stable-set polytope is the
+  calculus, so the two can agree only if the graph has no odd hole or
+  antihole.  One tensor further, a clique of Girard's coherence space,
+  Shannon's stable set of $C_5 \boxtimes C_5$, is not an element of the
+  probabilistic coherence space.
+
+\item \textbf{Quantum event logic} (Section~\ref{sec:quantum}).  For
+  the $18$ rays and $9$ orthogonal bases of Cabello's Kochen--Specker
+  set in $\mathbb{R}^4$~\cite{cabello1996}, no $\{0,1\}$-valued
+  assignment gives exactly one ray of every basis the value $1$, so the
+  calculus is empty, while every Born-rule assignment of a unit vector
+  sums to $1$ on every basis.  Quantum probability on this event logic
+  fails criterion (1).
 
 \item \textbf{A first formal treatment.}
   Everything above is machine-checked in Lean~4 over

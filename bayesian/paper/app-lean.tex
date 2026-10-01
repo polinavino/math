@@ -248,6 +248,8 @@ theorem Valuation.two_monotone (v : Valuation Ω) (a b : Ω) :
 
 \phantomsection\label{lean:plausibility-sub-self}
 \begin{lstlisting}
+noncomputable def Valuation.plausibility (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - v aᶜ
+
 theorem Valuation.plausibility_sub_self (v : Valuation Ω) (a : Ω) :
     v.plausibility a - v a = v.slack a
 \end{lstlisting}
@@ -428,6 +430,12 @@ theorem slack_eq_boundary {p : ℝ≥0∞} (hp1 : p ≤ 1) :
 
 \phantomsection\label{lean:sharpreadout-not-computable}
 \begin{lstlisting}
+noncomputable def haltingWeight (n : ℕ) (c : Code) : ℝ≥0∞ :=
+  if (c.eval n).Dom then 1 else 0
+
+noncomputable def sharpReadout (n : ℕ) (c : Code) : Valuation (Opens Prop) :=
+  sierpinskiValuation (haltingWeight_le_one n c)
+
 theorem sharpReadout_not_computable (n : ℕ) :
     ¬ComputablePred fun c : Code => sharpReadout n c haltsOpen = 1
 \end{lstlisting}
@@ -644,4 +652,459 @@ theorem forced_constant_of_add_valuation {v : ℕ → ℝ≥0∞}
 theorem not_isTensorValuation_of_discriminates {v : Ω → ℝ≥0∞}
     {t : Ω → Ω → Ω} {a : Ω} (ha : v a ≠ ⊤) (hne : v (t a a) ≠ v a) :
     ¬ IsTensorValuation v t
+\end{lstlisting}
+\subsection{Probability Calculi from Certain States}
+
+\phantomsection\label{lean:mix}
+\begin{lstlisting}
+def IsSharpVec (x : E → ℝ≥0∞) : Prop := ∀ e, x e = 0 ∨ x e = 1
+
+def Mix (S : Set (E → ℝ≥0∞)) : Set (E → ℝ≥0∞) :=
+  {x | ∃ (n : ℕ) (w : Fin n → ℝ≥0∞) (s : Fin n → E → ℝ≥0∞),
+    (∀ i, s i ∈ S) ∧ ∑ i, w i = 1 ∧ x = ∑ i, w i • s i}
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-mem-mix-iff}
+\begin{lstlisting}
+theorem sharp_mem_Mix_iff {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s)
+    {x : E → ℝ≥0∞} (hx : IsSharpVec x) : x ∈ Mix S ↔ x ∈ S
+\end{lstlisting}
+
+\phantomsection\label{lean:mix-mix}
+\begin{lstlisting}
+theorem Mix_Mix (S : Set (E → ℝ≥0∞)) : Mix (Mix S) = Mix S
+\end{lstlisting}
+
+\phantomsection\label{lean:affinelaw}
+\begin{lstlisting}
+
+
+structure AffineLaw (E : Type*) [Fintype E] where
+  a : E → ℝ≥0∞
+  b : E → ℝ≥0∞
+  k : ℝ≥0∞
+  k' : ℝ≥0∞
+
+def AffineLaw.Holds [Fintype E] (L : AffineLaw E) (x : E → ℝ≥0∞) : Prop :=
+  ∑ e, L.a e * x e + L.k ≤ ∑ e, L.b e * x e + L.k'
+\end{lstlisting}
+
+\phantomsection\label{lean:affinelaw-holds-of-mix}
+\begin{lstlisting}
+theorem AffineLaw.holds_of_Mix [Fintype E] (L : AffineLaw E) {S : Set (E → ℝ≥0∞)}
+    (hL : ∀ s ∈ S, L.Holds s) {x : E → ℝ≥0∞} (hx : x ∈ Mix S) : L.Holds x
+\end{lstlisting}
+
+\phantomsection\label{lean:mix-eq-laws}
+\begin{lstlisting}
+theorem Mix_eq_laws' {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s) :
+    Mix S = {x | ∀ L : AffineLaw E, (∀ s ∈ S, L.Holds s) → L.Holds x}
+\end{lstlisting}
+
+\phantomsection\label{lean:frame-recipe}
+\begin{lstlisting}
+theorem frame_recipe :
+    Set.range (fun v : Valuation (LowerSet P) => v.toFun)
+      = Mix {f | ∃ v : Valuation (LowerSet P), v.IsSharp ∧ f = v.toFun}
+\end{lstlisting}
+
+\phantomsection\label{lean:eq-deltapoint-of-issharp}
+\begin{lstlisting}
+theorem Valuation.eq_deltaPoint_of_isSharp {v : Valuation (LowerSet P)} (hv : v.IsSharp) :
+    ∃ p, v = deltaPoint p
+\end{lstlisting}
+
+\phantomsection\label{lean:laws-iff-local-mix}
+\begin{lstlisting}
+structure FinLaw (E : Type*) where
+  F : Finset E
+  a : E → ℝ≥0∞
+  b : E → ℝ≥0∞
+  k : ℝ≥0∞
+  k' : ℝ≥0∞
+
+def FinLaw.Holds (L : FinLaw E) (x : E → ℝ≥0∞) : Prop :=
+  ∑ e ∈ L.F, L.a e * x e + L.k ≤ ∑ e ∈ L.F, L.b e * x e + L.k'
+
+def restr (F : Finset E) (x : E → ℝ≥0∞) : F → ℝ≥0∞ := fun e => x e
+
+theorem laws_iff_local_Mix {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s)
+    (x : E → ℝ≥0∞) :
+    (∀ L : FinLaw E, (∀ s ∈ S, L.Holds s) → L.Holds x) ↔
+      ∀ F : Finset E, restr F x ∈ Mix (restr F '' S)
+\end{lstlisting}
+
+\phantomsection\label{lean:laws-iff-barycenter}
+\begin{lstlisting}
+def Cfg (Ev : Type) := Ev → Bool
+
+def Good (S : Set (Ev → ℝ≥0∞)) (F : Finset Ev) (σ : Cfg Ev) : Prop :=
+  ∃ s ∈ S, ∀ e : F, s e.1 = vec σ e.1
+
+def atom (e : Ev) : Set (Cfg Ev) := {σ | σ e = true}
+
+def bad (S : Set (Ev → ℝ≥0∞)) (F : Finset Ev) : Set (Cfg Ev) := {σ | ¬ Good S F σ}
+
+theorem laws_iff_barycenter {S : Set (Ev → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s)
+    (x : Ev → ℝ≥0∞) :
+    (∀ L : FinLaw Ev, (∀ s ∈ S, L.Holds s) → L.Holds x) ↔
+      ∃ μ : ProbabilityMeasure (Cfg Ev), (∀ F, (μ : Measure (Cfg Ev)) (bad S F) = 0) ∧
+        ∀ e, x e = (μ : Measure (Cfg Ev)) (atom e)
+\end{lstlisting}
+
+\phantomsection\label{lean:mem-lin-iff}
+\begin{lstlisting}
+def flat (X : Type*) [Fintype X] : Set (X → ℝ≥0∞) := {x | ∑ a, x a ≤ 1}
+
+noncomputable def app (t : X × Y → ℝ≥0∞) (x : X → ℝ≥0∞) : Y → ℝ≥0∞ :=
+  fun b => ∑ a, x a * t (a, b)
+
+def lin (X Y : Type*) [Fintype X] [Fintype Y] : Set (X × Y → ℝ≥0∞) :=
+  {t | ∀ x ∈ flat X, app t x ∈ flat Y}
+
+theorem mem_lin_iff [DecidableEq X] (t : X × Y → ℝ≥0∞) :
+    t ∈ lin X Y ↔ ∀ a, ∑ b, t (a, b) ≤ 1
+\end{lstlisting}
+
+\phantomsection\label{lean:ispcs-lin}
+\begin{lstlisting}
+def orth (S : Set (E → ℝ≥0∞)) : Set (E → ℝ≥0∞) := {y | ∀ x ∈ S, pairing x y ≤ 1}
+
+structure IsPCS (P : Set (E → ℝ≥0∞)) : Prop where
+  closed : orth (orth P) = P
+  total : ∀ e, ∃ x ∈ P, x e ≠ 0
+  bounded : ∀ e, ∃ M ≠ ⊤, ∀ x ∈ P, x e ≤ M
+
+theorem isPCS_lin : IsPCS (lin X Y)
+
+theorem isPCS_flat : IsPCS (flat X)
+
+theorem isPCS_tensDual : IsPCS tensDual
+\end{lstlisting}
+
+\phantomsection\label{lean:pcs-recipe}
+\begin{lstlisting}
+theorem pcs_recipe {X Y : Type} [Fintype X] [Fintype Y] [DecidableEq X] :
+    lin X Y = Mix (Set.range (det : (X → Option Y) → X × Y → ℝ≥0∞))
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-lin-iff-clique}
+\begin{lstlisting}
+theorem sharp_lin_iff_clique {X Y : Type*} [Fintype X] [Fintype Y] [DecidableEq X] [DecidableEq Y]
+    {t : X × Y → ℝ≥0∞} (h01 : ∀ p, t p = 0 ∨ t p = 1) :
+    t ∈ lin X Y ↔ IsClique (arrowC (flatC X) (flatC Y)) (t · = 1)
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-td-iff}
+\begin{lstlisting}
+def tD (X Y X' Y' : Type) [Fintype X] [Fintype Y] [Fintype X'] [Fintype Y'] :
+    Set ((X × Y) × (X' × Y') → ℝ≥0∞) :=
+  {t | ∀ y ∈ lin X Y, ∀ z ∈ lin X' Y', ∑ p, ∑ q, y p * t (p, q) * z q ≤ 1}
+
+def FTree (a : X) (cf : Y → X') (pq : (X × Y) × (X' × Y')) : Prop :=
+  pq.1.1 = a ∧ pq.2.1 = cf pq.1.2
+
+theorem sharp_tD_iff [Nonempty X] [Nonempty X'] {z : (X × Y) × (X' × Y') → ℝ≥0∞}
+    (h01 : ∀ pq, z pq = 0 ∨ z pq = 1) :
+    z ∈ tD X Y X' Y' ↔
+      (∃ a cf, ∀ pq, z pq = 1 → FTree a cf pq) ∨ (∃ c af, ∀ pq, z pq = 1 → GTree c af pq)
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-mem-sequentialg}
+\begin{lstlisting}
+theorem sharp_mem_sequentialG [Nonempty X] [Nonempty X'] {z : (X × Y) × (X' × Y') → ℝ≥0∞}
+    (hz : z ∈ tD X Y X' Y') (h01 : ∀ u, z u = 0 ∨ z u = 1) : z ∈ sequentialG X Y X' Y'
+\end{lstlisting}
+
+\phantomsection\label{lean:recipe-eq-sequentialg}
+\begin{lstlisting}
+structure Core (A B C D : Type) [Fintype A] [Fintype C] where
+  μ : A → ℝ≥0∞
+  κ : A → B → C → ℝ≥0∞
+  ρ : A → B → C → D → ℝ≥0∞
+  hκ : ∀ a b, ∑ c, κ a b c ≤ 1
+  hρ : ∀ a b c d, ρ a b c d ≤ 1
+
+def sequentialG (X Y X' Y' : Type) [Fintype X] [Fintype X'] : Set ((X × Y) × (X' × Y') → ℝ≥0∞) :=
+  {t | ∃ (F : Core X Y X' Y') (G : Core X' Y' X Y), F.mass + G.mass ≤ 1 ∧
+    t = fun pq => F.val pq.1.1 pq.1.2 pq.2.1 pq.2.2 + G.val pq.2.1 pq.2.2 pq.1.1 pq.1.2}
+
+theorem recipe_eq_sequentialG [Nonempty X] [Nonempty X'] :
+    Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1} = sequentialG X Y X' Y'
+\end{lstlisting}
+
+\phantomsection\label{lean:sequentialg-subset-mix}
+\begin{lstlisting}
+theorem sequentialG_subset_Mix : sequentialG X Y X' Y' ⊆ Mix (sharpSeqG X Y X' Y')
+\end{lstlisting}
+
+\phantomsection\label{lean:mix-sequentialg}
+\begin{lstlisting}
+theorem Mix_sequentialG : Mix (sequentialG X Y X' Y') = sequentialG X Y X' Y'
+\end{lstlisting}
+
+\phantomsection\label{lean:pente-not-mix}
+\begin{lstlisting}
+theorem pentE_not_mix (hx : Function.Injective ex) (hy : Function.Injective ey)
+    (hx' : Function.Injective ex') (hy' : Function.Injective ey')
+    {n : ℕ} (w : Fin n → ℝ≥0∞) (hw : ∑ i, w i = 1) (z : Fin n → (X × Y) × (X' × Y') → ℝ≥0∞)
+    (hz : ∀ i, z i ∈ tD X Y X' Y') (h01 : ∀ i u, z i u = 0 ∨ z i u = 1) :
+    pentE ex ey ex' ey' ≠ ∑ i, w i • z i
+
+theorem pentE_mem (hx : Function.Injective ex) (hy : Function.Injective ey)
+    (hx' : Function.Injective ex') (hy' : Function.Injective ey') :
+    pentE ex ey ex' ey' ∈ tD X Y X' Y'
+\end{lstlisting}
+
+\phantomsection\label{lean:pent-cycle}
+\begin{lstlisting}
+theorem pent_clique_le_two : ∀ B ∈ pent.powerset,
+    (∀ s ∈ B, ∀ t ∈ B, compat2 s t) → B.card ≤ 2
+
+theorem pent_indep_le_two : ∀ B ∈ pent.powerset,
+    (∀ s ∈ B, ∀ t ∈ B, compat2 s t → s = t) → B.card ≤ 2
+\end{lstlisting}
+
+\phantomsection\label{lean:pent-bounds}
+\begin{lstlisting}
+def tensDual : Set (W × W → ℝ≥0∞) :=
+  {t | ∀ y ∈ lin Bool Bool, ∀ z ∈ lin Bool Bool, ∑ p, ∑ q, y p * t (p, q) * z q ≤ 1}
+
+def sequential : Set (W × W → ℝ≥0∞) :=
+  {t | ∃ (α β : ℝ≥0∞) (F : FFirst) (G : GFirst), α + β ≤ 1 ∧ t = α • F.den + β • G.den}
+
+theorem seq_pent_le_two {t : W × W → ℝ≥0∞} (ht : t ∈ sequential) : ∑ pq ∈ pent, t pq ≤ 2
+
+theorem seq_pent_tight : ∃ t ∈ sequential, ∑ pq ∈ pent, t pq = 2
+
+theorem pentElt_pent_sum : ∑ pq ∈ pent, pentElt pq = 5 * 2⁻¹
+
+theorem tensDual_pent_le {t : W × W → ℝ≥0∞} (ht : t ∈ tensDual) :
+    2 * ∑ pq ∈ pent, t pq ≤ 5
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-bang-mixed-zero}
+\begin{lstlisting}
+theorem sharp_bang_mixed_zero {z : ℕ × ℕ → ℝ≥0∞} (hz : z ∈ bang) (h01 : ∀ m, z m = 0 ∨ z m = 1)
+    {i j : ℕ} (hi : 1 ≤ i) (hj : 1 ≤ j) : z (i, j) = 0
+\end{lstlisting}
+
+\phantomsection\label{lean:prom-half-not-mix}
+\begin{lstlisting}
+noncomputable def prom (x : Bool → ℝ≥0∞) : ℕ × ℕ → ℝ≥0∞ := fun m => x true ^ m.1 * x false ^ m.2
+
+def bang : Set (ℕ × ℕ → ℝ≥0∞) := orthI (orthI gens)
+
+theorem prom_half_not_mix : prom half ∈ bang ∧
+    prom half ∉ Mix {z | z ∈ bang ∧ ∀ m, z m = 0 ∨ z m = 1}
+\end{lstlisting}
+
+\phantomsection\label{lean:td-eq-qstab}
+\begin{lstlisting}
+def excl (s t : (X × Y) × (X' × Y')) : Prop := s ≠ t ∧ cp2 s t
+
+theorem tD_eq_QSTAB : tD X Y X' Y' = QSTAB (excl (X := X) (Y := Y) (X' := X') (Y' := Y'))
+\end{lstlisting}
+
+\phantomsection\label{lean:recipe-eq-stab}
+\begin{lstlisting}
+theorem recipe_eq_STAB :
+    Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1}
+      = STAB (excl (X := X) (Y := Y) (X' := X') (Y' := Y'))
+\end{lstlisting}
+
+\phantomsection\label{lean:berge-of-stab-eq-qstab}
+\begin{lstlisting}
+def QSTAB : Set (V → ℝ≥0∞) := {x | ∀ C, IsCliqueG adj C → ∑ v ∈ C, x v ≤ 1}
+
+def STAB : Set (V → ℝ≥0∞) := Mix {x | ∃ I, IsStableG adj I ∧ x = ind I}
+
+structure Hole (adj : V → V → Prop) (n : ℕ) where
+  h : ZMod n → V
+  inj : Function.Injective h
+  adj_iff : ∀ i j, i ≠ j → (adj (h i) (h j) ↔ cyc i j)
+
+theorem berge_of_stab_eq_qstab (heq : STAB adj = QSTAB adj) (k : ℕ) (hk : 2 ≤ k)
+    [NeZero (2 * k + 1)] : IsEmpty (Hole adj (2 * k + 1)) ∧ IsEmpty (Antihole adj (2 * k + 1))
+\end{lstlisting}
+
+\phantomsection\label{lean:berge-of-recipe-eq-pcs}
+\begin{lstlisting}
+theorem berge_of_recipe_eq_pcs
+    (heq : Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1} = tD X Y X' Y')
+    (k : ℕ) (hk : 2 ≤ k) [NeZero (2 * k + 1)] :
+    IsEmpty (Hole (excl (X := X) (Y := Y) (X' := X') (Y' := Y')) (2 * k + 1)) ∧
+      IsEmpty (Antihole (excl (X := X) (Y := Y) (X' := X') (Y' := Y')) (2 * k + 1))
+\end{lstlisting}
+
+\subsection{Multiplicative--Additive Formulas}
+
+\phantomsection\label{lean:linear-fm}
+\begin{lstlisting}
+inductive Fm where
+  | base (n : ℕ)
+  | neg (A : Fm)
+  | tens (A B : Fm)
+  | wth (A B : Fm)
+
+def web : Fm → Type
+  | base n => Fin n
+  | neg A => web A
+  | tens A B => web A × web B
+  | wth A B => web A ⊕ web B
+
+def P : (A : Fm) → Set (web A → ℝ≥0∞)
+  | base n => flat (Fin n)
+  | neg A => orth (P A)
+  | tens A B => orth (orth {z | ∃ x ∈ P A, ∃ y ∈ P B, z = tvec x y})
+  | wth A B => {z | (fun a => z (Sum.inl a)) ∈ P A ∧ (fun b => z (Sum.inr b)) ∈ P B}
+
+def coh : (A : Fm) → web A → web A → Prop
+  | base _ => fun x y => x = y
+  | neg A => fun x y => x = y ∨ ¬ coh A x y
+  | tens A B => fun s t => coh A s.1 t.1 ∧ coh B s.2 t.2
+  | wth A B => fun s t => match s, t with
+    | Sum.inl a, Sum.inl a' => coh A a a'
+    | Sum.inr b, Sum.inr b' => coh B b b'
+    | _, _ => True
+\end{lstlisting}
+
+\phantomsection\label{lean:ispcs-p}
+\begin{lstlisting}
+theorem isPCS_P : ∀ A : Fm, IsPCS (P A)
+\end{lstlisting}
+
+\phantomsection\label{lean:linear-invariants}
+\begin{lstlisting}
+theorem invariants : ∀ A : Fm,
+    (∀ s : web A, Pi.single s 1 ∈ P A ∧ ∀ x ∈ P A, x s ≤ 1) ∧
+    (∀ s t : web A, s ≠ t → coh A s t → pr s t ∈ P A) ∧
+    (∀ s t : web A, s ≠ t → ¬ coh A s t → ∀ x ∈ P A, x s + x t ≤ 1)
+
+theorem single_mem_P (A : Fm) (s : web A) : Pi.single s 1 ∈ P A
+
+theorem pair_mem_P (A : Fm) {s t : web A} (hst : s ≠ t) (h : coh A s t) : pr s t ∈ P A
+\end{lstlisting}
+
+\phantomsection\label{lean:sharp-isclique}
+\begin{lstlisting}
+theorem sharp_isClique (A : Fm) {z : web A → ℝ≥0∞} (hz : z ∈ P A)
+    (h01 : ∀ s, z s = 0 ∨ z s = 1) : ∀ s t, z s = 1 → z t = 1 → coh A s t
+\end{lstlisting}
+
+\phantomsection\label{lean:recipe-subset-p}
+\begin{lstlisting}
+theorem recipe_subset_P (A : Fm) :
+    Mix {z | z ∈ P A ∧ ∀ s, z s = 0 ∨ z s = 1} ⊆ P A
+
+theorem recipe_sharp_iff (A : Fm) {x : web A → ℝ≥0∞} (hx : ∀ s, x s = 0 ∨ x s = 1) :
+    x ∈ Mix {z | z ∈ P A ∧ ∀ s, z s = 0 ∨ z s = 1} ↔ x ∈ P A
+\end{lstlisting}
+
+\phantomsection\label{lean:mix-subset-orth}
+\begin{lstlisting}
+theorem Mix_subset_orth {S T : Set (E → ℝ≥0∞)} (h : S ⊆ orth T) : Mix S ⊆ orth T
+\end{lstlisting}
+
+\phantomsection\label{lean:p-lolli-base}
+\begin{lstlisting}
+theorem P_lolli_base (n m : ℕ) : P (lolli (base n) (base m)) = lin (Fin n) (Fin m)
+\end{lstlisting}
+
+\phantomsection\label{lean:p-second}
+\begin{lstlisting}
+def second (n m n' m' : ℕ) : Fm := neg (tens (lolli (base n) (base m)) (lolli (base n') (base m')))
+
+theorem P_second (n m n' m' : ℕ) :
+    P (second n m n' m') = tD (Fin n) (Fin m) (Fin n') (Fin m')
+\end{lstlisting}
+
+\phantomsection\label{lean:recipe-formula}
+\begin{lstlisting}
+theorem recipe_first_order (n m : ℕ) :
+    P (lolli (base n) (base m)) = ConstructiveProb.Mix (Set.range
+      (det : (Fin n → Option (Fin m)) → Fin n × Fin m → ℝ≥0∞))
+
+theorem recipe_second_order {n m n' m' : ℕ} (hn : 0 < n) (hn' : 0 < n') :
+    ConstructiveProb.Mix {z | z ∈ P (second n m n' m') ∧ ∀ u, z u = 0 ∨ z u = 1}
+      = sequentialG (Fin n) (Fin m) (Fin n') (Fin m')
+
+theorem recipe_second_order_ssubset {n m n' m' : ℕ} (hn : 2 ≤ n) (hm : 2 ≤ m) (hn' : 2 ≤ n')
+    (hm' : 2 ≤ m') :
+    ConstructiveProb.Mix {z | z ∈ P (second n m n' m') ∧ ∀ u, z u = 0 ∨ z u = 1}
+      ⊂ P (second n m n' m')
+\end{lstlisting}
+
+\phantomsection\label{lean:shannon-clique}
+\begin{lstlisting}
+abbrev S2 : Fm := second 2 2 2 2
+
+abbrev TT : Fm := neg (tens S2 S2)
+
+noncomputable def shannonF : Finset (web (tens S2 S2)) := shannon.image fun u => (φ u.1, φ u.2)
+
+theorem shannonF_clique : ∀ u ∈ shannonF, ∀ v ∈ shannonF, coh TT u v
+\end{lstlisting}
+
+\phantomsection\label{lean:shannon-not-mem}
+\begin{lstlisting}
+theorem shannonF_not_mem : (fun u => if u ∈ shannonF then (1 : ℝ≥0∞) else 0) ∉ P TT
+\end{lstlisting}
+
+\subsection{Quantum Event Logic}
+
+\phantomsection\label{lean:cabello-set}
+\begin{lstlisting}
+def vec : Fin 18 → Fin 4 → ℤ := ![
+  ![-1, 1, 1, 1], ![0, 0, 0, 1], ![0, 0, 1, 0], ![0, 0, 1, 1], ![0, 1, -1, 0], ![0, 1, 0, -1],
+  ![0, 1, 0, 0], ![1, -1, -1, 1], ![1, -1, 0, 0], ![1, -1, 1, -1], ![1, 0, -1, 0], ![1, 0, 0, -1],
+  ![1, 0, 0, 1], ![1, 0, 1, 0], ![1, 1, -1, 1], ![1, 1, 0, 0], ![1, 1, 1, -1], ![1, 1, 1, 1]]
+
+def bas : Fin 9 → Fin 4 → Fin 18 := ![
+  ![1, 2, 15, 8], ![1, 6, 13, 10], ![9, 7, 15, 3], ![9, 17, 10, 5], ![2, 6, 12, 11],
+  ![7, 17, 11, 4], ![14, 16, 8, 3], ![14, 0, 13, 5], ![16, 0, 12, 4]]
+
+def dot (u v : Fin 4 → ℤ) : ℤ := ∑ k, u k * v k
+\end{lstlisting}
+
+\phantomsection\label{lean:basis-orth}
+\begin{lstlisting}
+theorem basis_orth : ∀ b : Fin 9, ∀ i j : Fin 4, i ≠ j → dot (vec (bas b i)) (vec (bas b j)) = 0
+
+theorem occ_two : ∀ v : Fin 18,
+    (univ.filter (fun p : Fin 9 × Fin 4 => bas p.1 p.2 = v)).card = 2
+\end{lstlisting}
+
+\phantomsection\label{lean:no-ks}
+\begin{lstlisting}
+theorem no_ks : ¬ ∃ f : Fin 18 → Bool, ∀ b, (univ.filter (fun i => f (bas b i))).card = 1
+\end{lstlisting}
+
+\phantomsection\label{lean:no-certain-state}
+\begin{lstlisting}
+def certain : Set (Fin 18 → ℝ≥0∞) :=
+  {s | IsSharpVec s ∧ ∀ b, ∑ i, s (bas b i) = 1}
+
+theorem no_certain_state : certain = ∅
+
+theorem Mix_certain_empty : Mix certain = ∅
+\end{lstlisting}
+
+\phantomsection\label{lean:parseval}
+\begin{lstlisting}
+theorem parseval (ψ : Fin 4 → ℝ) (b : Fin 9) :
+    ∑ i, (∑ k, ψ k * vec (bas b i) k) ^ 2 / ∑ k, ((vec (bas b i) k : ℝ)) ^ 2 = ∑ k, ψ k ^ 2
+\end{lstlisting}
+
+\phantomsection\label{lean:born-not-mix}
+\begin{lstlisting}
+def states : Set (Fin 18 → ℝ≥0∞) := {x | ∀ b, ∑ i, x (bas b i) = 1}
+
+noncomputable def born (ψ : Fin 4 → ℝ) : Fin 18 → ℝ≥0∞ := fun v =>
+  ENNReal.ofReal ((∑ k, ψ k * vec v k) ^ 2 / ∑ k, ((vec v k : ℝ)) ^ 2)
+
+theorem born_mem {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) : born ψ ∈ states
+
+theorem born_not_mix {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) :
+    born ψ ∈ states ∧ born ψ ∉ Mix certain
 \end{lstlisting}

@@ -1,0 +1,292 @@
+\section{Probability Calculi from Certain States}
+\label{sec:recipe}
+
+Corollary~\ref{cor:tensor-dichotomy} shows that linear logic admits no
+grading by Definition~\ref{def:lvaluation}'s axioms that distinguishes
+$a$ from $a \otimes a$. The obstruction is in the modularity axiom, which
+uses the lattice operations of the event algebra. This section replaces
+the three axioms of Definition~\ref{def:valuation} by a construction that
+uses no lattice operations. It applies to any logic presented by a set of
+certain states. On finite frames, and in particular on finite Boolean
+algebras, it returns exactly the valuations of
+Definition~\ref{def:valuation}. For every formula of
+multiplicative--additive linear logic over finite data types, its
+output is contained in the probabilistic coherence space
+(Definition~\ref{def:pcs}) of the formula,
+and the certain elements of that space are cliques of Girard's coherence
+space. At implications between data types it returns the probabilistic
+coherence space. At the exponential $!\mathrm{Bool}$ it returns a strict
+subset.
+
+\subsection{The Construction}
+
+\begin{definition}[presentation by certain states, mixtures\leanref{mix}]
+\label{def:mix}
+A \emph{presentation} is a set $E$ of events together with a set $S$ of
+$\{0,1\}$-valued functions $E \to \ENNReal$, the \emph{certain states}.
+Its \emph{calculus} $\mathrm{Mix}(S)$ is the set of finite convex
+combinations $\sum_{i} w_i\, s_i$ with $s_i \in S$, $w_i \in \ENNReal$,
+and $\sum_i w_i = 1$.
+\end{definition}
+
+\noindent
+For classical logic the certain states are the two-valued models, for
+intuitionistic logic on a frame they are the sharp valuations
+(Theorem~\ref{thm:sharp-iff-point}), and for a type of linear logic they
+are the deterministic programs of that type
+(Section~\ref{sec:recipe-linear}). Two properties hold for every
+presentation.
+
+\begin{theorem}[certain elements and mixing\leanref{sharp-mem-mix-iff}\leanref{mix-mix}]
+\label{thm:mix-basic}
+For every presentation $(E, S)$:
+(i) a $\{0,1\}$-valued $x$ lies in $\mathrm{Mix}(S)$ iff $x \in S$, and
+(ii) $\mathrm{Mix}(\mathrm{Mix}(S)) = \mathrm{Mix}(S)$.
+\end{theorem}
+
+\noindent
+Part (i) is the first condition of Section~\ref{sec:intro}, that the
+$\{0,1\}$-valued elements of the calculus reconstruct the logic. In a
+presentation the logic is given by $S$, so the condition says that mixing
+creates no new $\{0,1\}$-valued elements. The proof: if
+$x = \sum_i w_i s_i$ is $\{0,1\}$-valued and $w_j \ne 0$, then at each
+$e$ with $x_e = 0$ every $s_i$ with $w_i \ne 0$ has $s_i(e) = 0$, and at
+each $e$ with $x_e = 1$ every such $s_i$ has $s_i(e) = 1$, since
+$\sum_i w_i = 1$ and $s_i(e) \le 1$. So $s_j = x$, and $x \in S$.
+Part (ii) states that a convex combination of elements of
+$\mathrm{Mix}(S)$ is again in $\mathrm{Mix}(S)$. For valuations on a
+frame this is the closure of valuations under mixing of
+Section~\ref{sec:representation}\leanref{valuation-mix}.
+The second condition of Section~\ref{sec:intro}, that the classical
+case returns the classical theory, is Theorem~\ref{thm:frame-recipe}
+below.
+
+The three axioms of Definition~\ref{def:valuation} are instances of one
+form:
+
+\begin{definition}[affine law\leanref{affinelaw}]
+\label{def:affine-law}
+For finite $E$, an \emph{affine law} is given by $a, b : E \to \ENNReal$
+and $k, k' \in \ENNReal$. A function $x : E \to \ENNReal$ \emph{satisfies}
+it if $\sum_e a_e x_e + k \le \sum_e b_e x_e + k'$.
+\end{definition}
+
+\noindent
+Monotonicity $x_a \le x_b$, normalization ($x_\top \le 1$ and
+$1 \le x_\top$, $x_\bot \le 0$), and modularity (two opposite
+inequalities) are affine laws.
+
+\begin{theorem}[completeness\leanref{mix-eq-laws}]
+\label{thm:mix-eq-laws}
+For finite $E$ and every set $S$ of $\{0,1\}$-valued functions on $E$,
+$\mathrm{Mix}(S)$ is the set of functions satisfying every affine law
+that every $s \in S$ satisfies.
+\end{theorem}
+
+\noindent
+The inclusion from left to right holds because affine laws are preserved
+by convex combinations\leanref{affinelaw-holds-of-mix}. The converse
+separates a point outside the convex hull of $S$ by a hyperplane, using
+\textsf{mathlib}'s geometric Hahn--Banach theorem, and reads the
+hyperplane off as an affine law.
+Theorem~\ref{thm:mix-eq-laws} is the generalization of the three axioms:
+the axioms of the calculus of a presentation are the affine laws valid
+on its certain states, and nothing else. On frames these are the three
+axioms of Definition~\ref{def:valuation}:
+
+\begin{theorem}[frames\leanref{frame-recipe}]
+\label{thm:frame-recipe}
+For a finite poset $P$, the valuations on the frame
+$\mathrm{Low}(P)$ of lower sets of $P$ are exactly $\mathrm{Mix}$ of its
+sharp valuations.
+\end{theorem}
+
+\noindent
+The proof combines Theorem~\ref{thm:mixture} with the fact that a sharp
+valuation on $\mathrm{Low}(P)$ is a point valuation
+$\delta_p$\leanref{eq-deltapoint-of-issharp}. Every finite frame is of
+the form $\mathrm{Low}(P)$ (Section~\ref{sec:representation}), and finite
+Boolean algebras are the case of a discrete $P$, where the valuations are the probability mass functions
+on $P$. So the construction reduces to the valuation calculus on finite
+intuitionistic event algebras and to Kolmogorov's calculus on finite
+classical ones.
+
+For infinite $E$ the laws are taken with finite support. A
+\emph{window} is a finite set $F \subseteq E$ of events, and a
+\emph{finite law} is an affine law on some window, applied to the
+restrictions of functions to $F$.
+
+\begin{theorem}[barycenters\leanref{laws-iff-local-mix}\leanref{laws-iff-barycenter}]
+\label{thm:barycenter}
+Let $S$ be a set of $\{0,1\}$-valued functions on an arbitrary set $E$.
+For $x : E \to \ENNReal$ the following are equivalent:
+(i) $x$ satisfies every finite law valid on $S$;
+(ii) for every window $F$, the restriction of $x$ to $F$ lies
+in $\mathrm{Mix}$ of the restrictions of $S$ to $F$;
+(iii) there is a Borel probability measure $\mu$ on $\{0,1\}^E$, with
+the product topology, such that
+$x_e = \mu\{\sigma \mid \sigma_e = 1\}$ for every $e \in E$, and
+$\mu(\mathrm{bad}_F) = 0$ for every window $F$, where $\mathrm{bad}_F$ is
+the set of $\sigma$ whose restriction to $F$ is the restriction of no
+$s \in S$.
+\end{theorem}
+
+\noindent
+The equivalence of (i) and (ii) applies Theorem~\ref{thm:mix-eq-laws} to
+each window. For (ii)~$\Rightarrow$~(iii), the mixture on a window $F$
+gives a probability measure $\mu_F$ on $\{0,1\}^E$, a finite convex
+combination of point masses at certain states. The windows are directed
+by inclusion. The probability measures on the compact space
+$\{0,1\}^E$ form a compact space in the weak
+topology\footnote{In \textsf{mathlib} this is an instance proved from
+Prokhorov's theorem.}, so the family $(\mu_F)_F$ has a cluster point
+$\mu$. A \emph{cylinder set} is a set of $\sigma$ determined by the
+values of $\sigma$ on a window. Cylinder sets are clopen, so
+$\nu \mapsto \nu(C)$ is continuous in the weak topology for every
+cylinder set $C$. The sets $\{\sigma \mid \sigma_e = 1\}$ and
+$\mathrm{bad}_F$ are cylinder sets, and $\mu_F$ has the required values
+on them once $e \in F$, so $\mu$ has them. For (iii)~$\Rightarrow$~(i),
+a finite law valid on $S$ holds at $\mu$-almost every $\sigma$, and
+integrating it against $\mu$ gives the law at $x$.
+
+$\mathrm{Mix}(S)$ is the least convex set containing $S$. Criteria
+(1) and (2) of Section~\ref{sec:intro} do not single it out: the
+probabilistic coherence space $!\mathrm{Bool}$ satisfies (1) and strictly
+contains the calculus (Theorem~\ref{thm:bang}). Whether a further
+criterion selects $\mathrm{Mix}(S)$, and how the criteria should treat
+logics without certain states (Section~\ref{sec:quantum}), is open.
+
+\subsection{Linear Logic}
+\label{sec:recipe-linear}
+
+\begin{definition}[probabilistic coherence space~\cite{danos-ehrhard2011}\leanref{ispcs-lin}]
+\label{def:pcs}
+For a set $W$ and a set $Q$ of functions $W \to \ENNReal$, let
+$Q^{\perp} = \{y : W \to \ENNReal \mid \sum_{w} x_w y_w \le 1 \text{ for all }
+x \in Q\}$. A \emph{probabilistic coherence space} (PCS) with \emph{web}
+$W$ is a set $P$ of functions $W \to \ENNReal$ such that
+$P = P^{\perp\perp}$, every $w \in W$ has some $x \in P$ with $x_w \ne 0$
+(totality), and $\sup_{x \in P} x_w < \infty$ for every $w \in W$
+(boundedness).
+\end{definition}
+
+\noindent
+We use finite webs. For a finite set $X$, the \emph{data type} $X$ is the
+PCS of $x : X \to \ENNReal$ with $\sum_a x_a \le 1$. The PCS
+$X \multimap Y$ on $X \times Y$ is the set of $t$ with
+$\sum_b \sum_a x_a\, t(a,b) \le 1$ for every $x$ in $X$, equivalently
+$\sum_b t(a,b) \le 1$ for every $a$\leanref{mem-lin-iff}. Both satisfy
+the three conditions\leanref{ispcs-lin}. A \emph{coherence
+space}~\cite{girard1987} is a set with a reflexive symmetric relation,
+its coherence, and a \emph{clique} is a set of pairwise coherent
+elements. In the coherence space $X \multimap Y$ of two data types, two
+points $(a,b)$ and $(a',b')$ cohere iff they are equal or $a \ne a'$.
+
+Probabilistic coherence spaces interpret every formula of linear logic,
+including the exponentials, and model probabilistic
+PCF~\cite{danos-ehrhard2011}. The construction of
+Definition~\ref{def:mix} applies to every such type, with the
+$\{0,1\}$-valued elements of its probabilistic coherence space as
+certain states. We compare the two at the types where we have results.
+At first order they agree. The exponential $!\mathrm{Bool}$ separates
+them already at first order.
+Section~\ref{sec:recipe-mall} proves the facts that hold at every
+multiplicative--additive formula. Whether the construction agrees
+with the probabilistic coherence space at other types is open.
+
+\begin{theorem}[first order\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
+\label{thm:pcs-recipe}
+$X \multimap Y = \mathrm{Mix}\{\det f \mid f : X \to Y_\bot\}$, where
+$\det f(a,b) = 1$ if $f(a) = b$ and $0$ otherwise, and $Y_\bot$ adds a
+divergent value. A $\{0,1\}$-valued $t$ lies in $X \multimap Y$ iff its
+support is a clique of the coherence space $X \multimap Y$.
+\end{theorem}
+
+\noindent
+At first order the certain states are the deterministic partial
+programs, they are the cliques of the coherence-space model, and the
+calculus is the PCS.
+
+The exponential separates the two at first order. The PCS $!\mathrm{Bool}$ has web the finite
+multisets over $\{t, f\}$, and is the biorthogonal closure of the
+promotions $x^{!}(i,j) = x_t^{\,i} x_f^{\,j}$ of the elements $x$ of
+$\mathrm{Bool}$, where $(i,j)$ is the multiset with $i$ copies of $t$ and
+$j$ copies of $f$.
+
+\begin{theorem}[exponential\leanref{sharp-bang-mixed-zero}\leanref{prom-half-not-mix}]
+\label{thm:bang}
+Every $\{0,1\}$-valued element of $!\mathrm{Bool}$ vanishes at every
+$(i,j)$ with $i, j \ge 1$. The promotion of $x = (\tfrac12, \tfrac12)$
+takes the value $\tfrac14$ at $(1,1)$, so it lies in $!\mathrm{Bool}$ and
+not in $\mathrm{Mix}$ of the $\{0,1\}$-valued elements.
+\end{theorem}
+
+\noindent
+The first statement uses the dual element $4\,\delta_{(i,j)}$, which is
+admissible because $x_t + x_f \le 1$ implies $4 x_t x_f \le 1$. The
+$\{0,1\}$-valued elements are therefore supported on the multisets whose
+underlying set is a clique of $\mathrm{Bool}$. These underlying sets are
+the points of the web of $!\mathrm{Bool}$ in Girard's coherence spaces.
+Danos and Ehrhard~\cite{danos-ehrhard2011} observe that elements of the
+PCS $!\mathrm{Bool}$ are nonzero on multisets whose underlying set is not
+a clique. Theorem~\ref{thm:bang} shows that such elements are not
+mixtures of certain elements.
+
+\subsection{All Multiplicative--Additive Formulas}
+\label{sec:recipe-mall}
+
+\begin{definition}[formulas and their semantics\leanref{linear-fm}]
+\label{def:mall}
+The formulas are generated from the data types $\mathbf{n}$, for
+$n \in \mathbb{N}$, by linear negation $A^{\perp}$, $A \otimes B$, and
+$A \mathbin{\&} B$. Write $A \parr B = (A^{\perp} \otimes B^{\perp})^{\perp}$,
+$A \oplus B = (A^{\perp} \mathbin{\&} B^{\perp})^{\perp}$, and
+$A \multimap B = (A \otimes B^{\perp})^{\perp}$. The web $|A|$ is
+$\{1, \dots, n\}$ for $\mathbf{n}$, $|A|$ for $A^{\perp}$, $|A| \times |B|$
+for $A \otimes B$, and $|A| \sqcup |B|$ for $A \mathbin{\&} B$. The PCS
+$P(A)$ is the data type for $\mathbf{n}$, $P(A)^{\perp}$ for $A^{\perp}$,
+$\{x \otimes y \mid x \in P(A),\ y \in P(B)\}^{\perp\perp}$ for
+$A \otimes B$, where $(x \otimes y)(a,b) = x_a y_b$, and the set of $z$
+whose restrictions to $|A|$ and $|B|$ lie in $P(A)$ and $P(B)$ for
+$A \mathbin{\&} B$~\cite{danos-ehrhard2011}. The coherence $\coh_A$ is
+equality on $\mathbf{n}$, and $s \coh_{A^{\perp}} t$ iff $s = t$ or not
+$s \coh_A t$. On $A \otimes B$ it is componentwise. On $A \mathbin{\&} B$
+it is $\coh_A$ and $\coh_B$ on the two components, and any two points from
+different components cohere~\cite{girard1987}.
+\end{definition}
+
+\begin{theorem}[every formula\leanref{ispcs-p}\leanref{linear-invariants}\leanref{sharp-isclique}\leanref{recipe-subset-p}]
+\label{thm:mall}
+For every formula $A$:
+(i) $P(A)$ is a PCS;
+(ii) the indicator of every point and of every pair of distinct coherent
+points lies in $P(A)$, and $x_s + x_t \le 1$ for every $x \in P(A)$ and
+every pair of distinct incoherent points $s, t$;
+(iii) every $\{0,1\}$-valued element of $P(A)$ is the indicator of a
+clique of the coherence space $A$;
+(iv) $\mathrm{Mix}$ of the $\{0,1\}$-valued elements of $P(A)$ is
+contained in $P(A)$, and its $\{0,1\}$-valued elements are exactly those
+of $P(A)$.
+\end{theorem}
+
+\noindent
+Part (ii) is proved by simultaneous induction on $A$. Negation exchanges
+the statement about coherent pairs with the statement about incoherent
+pairs. For $A \otimes B$, the indicator of a coherent pair is bounded by
+the tensor of indicators of its projections, and a pair incoherent in
+$A \otimes B$ is incoherent in one component, where the bound of $A$ or
+$B$ applies. Part (iii) follows from (ii): two incoherent points in the
+support of a $\{0,1\}$-valued element would give it total $2$ on a pair
+bounded by $1$. Part (iv) is Theorem~\ref{thm:mix-basic} together with
+the closure of an orthogonal under mixing\leanref{mix-subset-orth}.
+
+The semantics of Definition~\ref{def:mall} computes the spaces of
+Section~\ref{sec:recipe-linear}: $P(\mathbf{n} \multimap \mathbf{m})$ is
+the PCS $X \multimap Y$ of that section for $X = \{1,\dots,n\}$ and
+$Y = \{1,\dots,m\}$\leanref{p-lolli-base}. So
+Theorem~\ref{thm:pcs-recipe} is a statement about these
+formulas\leanref{recipe-formula}.
+
+The exponentials, whose
+webs are infinite, are not covered by Definition~\ref{def:mall}.
+Theorem~\ref{thm:bang} treats $!\mathrm{Bool}$ separately.
