@@ -253,8 +253,9 @@ drafting and debugging the Lean formalization.} Two points are specific
 to a proof assistant.  We separate \emph{object-level} classicality,
 excluded middle in the frame $\Omega$, from the \emph{meta-level}
 classicality \textsf{mathlib} inherits through \texttt{Classical.choice},
-track which results use which, and equip the one essential non-Boolean
-model with a computable decidability instance.  
+identify the four places where the meta-level dependence is essential
+(Section~\ref{sec:hinge}), and give choice-free proofs of the finite
+separation results.  
 The product-rule half of Cox's theorem needs an
 Acz\'el/H\"older regraduation absent from \textsf{mathlib}, which we
 build from scratch.

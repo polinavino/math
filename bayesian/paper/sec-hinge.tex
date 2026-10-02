@@ -5,27 +5,91 @@ Classicality enters this work twice: in the metatheory, the logic
 of the proof assistant itself, and in the object theory, the frame's
 own logic.
 
-\paragraph{Lean's meta-theory.}
-Lean's foundations include
-\texttt{Classical.choice}, and \textsf{mathlib} is built on it
-throughout.  For example, the order relation on 
-$\mathbb{R}$ and $\ENNReal$ has no
-computable \texttt{Decidable} instance in general, so any library
-lemma that case-splits on $x \le y$ for reals resolves that split via
-\texttt{Classical.propDecidable}. A
-formalization that never invokes excluded middle at the level of
-frame elements $a \in \Omega$ can therefore still be classical 
-through the arithmetic it borrows from the library.  We track
-this separately from object-level classicality throughout the paper.
-Theorem~\ref{thm:decomposition} of Section~\ref{sec:representation}
-rests only on this ambient baseline and contains no explicit case
-split. The Scott-continuity recovery result
-(Example~\ref{thm:recovery})
-invokes Lean's \texttt{classical} tactic directly, and the
-explicit Cox model of Section~\ref{sec:cox} goes the other
-way, replacing the default with an explicit computable
-\texttt{Decidable} instance to keep that one instance genuinely
-non-classical.
+\paragraph{The metatheory.}
+Lean's kernel is constructive, and its core library declares
+\texttt{Classical.choice} as an axiom, from which excluded middle
+follows. A theorem is constructive when its proof does not use this
+axiom, which \texttt{\#print axioms} reports. \textsf{mathlib} uses the
+axiom throughout. The order on $\mathbb{R}$ and $\ENNReal$ has no
+computable \texttt{Decidable} instance, so every library lemma that
+case-splits on $x \le y$ for such numbers uses
+\texttt{Classical.propDecidable}, and so do the library's finite sums
+and finite sets. A theorem that never invokes excluded middle for frame
+elements $a \in \Omega$ can therefore still depend on the axiom through
+the library. Almost every theorem of this development does. This
+dependence is incidental: it comes from the library, not from the
+argument. Table~\ref{tab:classical} lists the classical principles the
+arguments themselves use, and what a constructive version would
+require.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{p{0.3\linewidth}p{0.27\linewidth}p{0.35\linewidth}}
+\toprule
+Result & Classical principle & Constructive version \\
+\midrule
+Converse of Theorem~\ref{thm:hinge}, separation (Sec.~\ref{sec:lattice}) &
+  prime ideal theorem &
+  finite lattices: proved without
+  choice\leanref{exists-sharp-separating-fin}; infinite frames: only for
+  frames with enough points \\
+Completeness (Thm.~\ref{thm:mix-eq-laws}) &
+  Hahn--Banach over $\mathbb{R}$ &
+  for rational points and integer certain states, proved without choice
+  by Fourier--Motzkin elimination over
+  $\mathbb{Z}$\leanref{constr-farkas} \\
+Barycenters (Thm.~\ref{thm:barycenter}) &
+  compactness of probability measures &
+  finite $E$: the completeness row; in general the fan theorem is
+  needed \\
+Sharp readout (Sec.~\ref{sec:computability-guard}) &
+  excluded middle for halting &
+  not definable; replaced by a synthetic undecidability
+  statement~\cite{forster2019} \\
+Non-uniqueness of products (Thm.~\ref{thm:product-not-unique}) &
+  free ultrafilter on $\mathbb{N}$ &
+  not on $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$; proved without
+  choice on the algebra of sets eventually determined by the order of the
+  coordinates\leanref{constr-fubini} \\
+Sierpi\'nski model (Sec.~\ref{sec:computability-guard}) &
+  bivalence of propositions &
+  an explicit two-point space, proved without
+  choice\leanref{constr-sierpinski} \\
+Slack is boundary mass (Thm.~\ref{thm:slack-frontier}) &
+  classical measures and set complements &
+  finite spaces, proved without choice\leanref{constr-boundary}; in
+  general constructive valuations~\cite{coquand-spitters2009} \\
+Kraft bound for $\Omega$ (Sec.~\ref{sec:computability-guard}) &
+  product measure on Cantor space &
+  finite Kraft inequality, proved without choice\leanref{constr-kraft};
+  $\Omega$ is the supremum of its partial sums, a lower real \\
+Stonean characterization (Sec.~\ref{sec:interior-bridge}) &
+  Stone duality for spaces &
+  none; the localic statement is the definition \\
+Values in $\ENNReal$, infinite sums &
+  classical extended reals &
+  rationals for finite results; lower reals in general, in which slack is
+  an upper real \\
+Acz\'el regraduation (Sec.~\ref{sec:cox}) &
+  classical real analysis &
+  not attempted \\
+\bottomrule
+\end{tabular}
+\caption{Classical principles used by the arguments. ``Proved without
+choice'' means that \texttt{\#print axioms} lists at most
+\texttt{propext} and \texttt{Quot.sound}. These proofs use core Lean
+and, for the Fourier--Motzkin proof, \textsf{mathlib}'s \texttt{ring}
+tactic on $\mathbb{Z}$, and avoid \textsf{mathlib}'s $\mathbb{Q}$ and
+finite sums, which depend on \texttt{Classical.choice}.}
+\label{tab:classical}
+\end{table}
+
+\noindent
+The finite combinatorial results ($M_3$, the pentagon, the perfect-graph
+criterion, the Kochen--Specker set, and the multiplicative--additive
+formulas) need none of these principles. The Cox model of
+Section~\ref{sec:cox} is given an explicit computable \texttt{Decidable}
+instance.
 
 \paragraph{Object-level classicality: the R3 axiom.}
 Van Horn's repaired Cox theorem~\cite{vanhorn2003} axiomatizes
@@ -122,3 +186,61 @@ correspondences together locate the object-level classicality
 precisely: whenever
 excluded middle fails at some $a$, the failure occurs at a
 point of the locale.
+
+\paragraph{Finite frames without choice.}
+The prime ideal theorem is a choice principle. Without it, a frame can
+have no points at all~\cite{johnstone1982}, and then it has no sharp
+valuations, so the converse of Theorem~\ref{thm:hinge} and the
+statement that sharp valuations reconstruct the logic (the first
+criterion of Section~\ref{sec:intro}) hold only in a classical
+metatheory. On a finite distributive lattice with decidable order the
+needed prime filter is found by search: an element below $a$ and not
+below $b$ that is minimal for the size of its downset is join-prime, and
+the indicator of its principal filter is a sharp valuation. This proves
+the finite separation theorem and the finite form of the converse of
+Theorem~\ref{thm:hinge} without
+\texttt{Classical.choice}\leanref{exists-sharp-separating-fin}\leanref{em-of-sharp-complement-fin},
+for $\mathbb{N}$-valued valuations. In a constructive metatheory the
+first criterion therefore holds for finite event algebras and for frames
+with enough points, and not in general.
+
+\paragraph{A development in Rocq.}
+Rocq's kernel, like Lean's, does not assume excluded middle or choice,
+so the two differ in their libraries more than in their logic. The
+differences would be the following.
+\begin{itemize}
+\item \emph{Finite results.} The Mathematical Components
+  library~\cite{mathcomp} works with types with decidable equality and
+  finite types, and avoids classical axioms in its algebraic core.
+  The finite theorems of this paper (the finite representation, the
+  frame recipe, $M_3$, the pentagon, the perfect-graph criterion, and
+  the Kochen--Specker set) would be proved there without classical
+  axioms and could be extracted to programs.
+\item \emph{Values.} $\ENNReal$ is a classical object. A constructive
+  development would use rational values for finite results and lower
+  reals, approximable from below, for valuations in
+  general~\cite{vickers2008,coquand-spitters2009}. The value of the
+  halting event, Chaitin's $\Omega$, is a lower real of this kind: it is
+  approximated from below by the halting programs found so far, and no
+  better.
+\item \emph{Analysis.} MathComp-Analysis~\cite{mathcomp-analysis}
+  assumes classical axioms, as \textsf{mathlib} does. The completeness
+  theorem for rational points is the Fourier--Motzkin argument above,
+  which carries over directly. Completeness over real points would
+  require the constructive analysis of Bishop's school, with
+  locatedness hypotheses for hyperplane separation. The barycenter
+  theorem for infinitely many events requires compactness of
+  $\{0,1\}^{\mathbb{N}}$, which constructively is the fan theorem and is
+  not provable in Rocq's logic without an additional axiom.
+\item \emph{Computability.} Without excluded middle the sharp classical
+  readout cannot be defined. The uncomputability statement would be
+  phrased synthetically~\cite{forster2019}: no function from codes to
+  Booleans decides halting, which requires an axiom such as Church's
+  thesis to state as a negative result about all functions.
+\item \emph{Points.} The separation results would be stated for frames
+  with enough points, or for finite lattices as above.
+\end{itemize}
+Lean was chosen for \textsf{mathlib}'s measure theory, order theory and
+topology, which the infinite results use. The cost is that constructive
+content is a property to be checked theorem by theorem with
+\texttt{\#print axioms}, rather than a default.

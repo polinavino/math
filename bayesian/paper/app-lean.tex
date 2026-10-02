@@ -1108,3 +1108,123 @@ theorem born_mem {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) : born ψ ∈ 
 theorem born_not_mix {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) :
     born ψ ∈ states ∧ born ψ ∉ Mix certain
 \end{lstlisting}
+
+\subsection{Finite Frames without Choice}
+
+\phantomsection\label{lean:exists-sharp-separating-fin}
+\begin{lstlisting}
+def JoinPrime (j : α) : Prop := ∀ x y : α, j ≤ x ⊔ y → j ≤ x ∨ j ≤ y
+
+theorem exists_joinPrime_aux : ∀ (n : ℕ) (a b : α), (below a).card = n → ¬ a ≤ b →
+    ∃ j, j ≤ a ∧ ¬ j ≤ b ∧ JoinPrime j
+
+theorem exists_sharp_separating_fin [BoundedOrder α] {a b : α} (hab : ¬ a ≤ b) :
+    ∃ v : α → ℕ, (∀ x, v x = 0 ∨ v x = 1) ∧ Monotone v ∧ v ⊥ = 0 ∧ v ⊤ = 1 ∧
+      (∀ x y, v x + v y = v (x ⊔ y) + v (x ⊓ y)) ∧ v a = 1 ∧ v b = 0
+\end{lstlisting}
+
+\phantomsection\label{lean:em-of-sharp-complement-fin}
+\begin{lstlisting}
+theorem em_of_sharp_complement_fin [BoundedOrder α] (a c : α)
+    (h : ∀ v : α → ℕ, (∀ x, v x = 0 ∨ v x = 1) → Monotone v → v ⊥ = 0 → v ⊤ = 1 →
+      (∀ x y, v x + v y = v (x ⊔ y) + v (x ⊓ y)) → v a + v c = 1) :
+    a ⊔ c = ⊤
+\end{lstlisting}
+
+\subsection{Choice-Free Finite Results}
+
+\phantomsection\label{lean:constr-sierpinski}
+\begin{lstlisting}
+inductive Op | bot | halts | top
+  deriving DecidableEq
+
+def neg : Op → Op
+  | bot => top
+  | halts => bot
+  | top => bot
+
+theorem neg_spec : ∀ o o' : Op, (inf o' o = bot) ↔ le o' (neg o) = true
+
+theorem neg_halts : neg halts = bot
+
+theorem frontier_iff : ∀ x : Bool, frontier x = true ↔ x = false
+
+theorem slack_eq (wT wF : Nat) :
+    val wT wF top = val wT wF halts + val wT wF (neg halts) + wt (frontier false) wF
+\end{lstlisting}
+
+\phantomsection\label{lean:constr-boundary}
+\begin{lstlisting}
+def ext (ops : List (Fin n → Bool)) (U : Fin n → Bool) (x : Fin n) : Bool :=
+  ops.any fun O => O x && allFin n (fun y => !(O y && U y))
+
+def bd (ops : List (Fin n → Bool)) (U : Fin n → Bool) (x : Fin n) : Bool :=
+  !U x && !ext ops U x
+
+theorem sub_ext {ops : List (Fin n → Bool)} {U : Fin n → Bool} {O : Fin n → Bool}
+    (hO : O ∈ ops) (hd : ∀ y, (!(O y && U y)) = true) {x : Fin n} (hx : O x = true) :
+    ext ops U x = true
+
+theorem slack_eq_boundary_fin (ops : List (Fin n → Bool)) (U : Fin n → Bool) (μ : Fin n → Nat) :
+    fs n μ = fs n (fun x => wt (U x) (μ x)) + fs n (fun x => wt (ext ops U x) (μ x)) +
+      fs n (fun x => wt (bd ops U x) (μ x))
+\end{lstlisting}
+
+\phantomsection\label{lean:constr-kraft}
+\begin{lstlisting}
+def ksum (L : Nat) : List (List Bool) → Nat
+  | [] => 0
+  | w :: S => 2 ^ (L - w.length) + ksum L S
+
+theorem kraft : ∀ (L : Nat) (S : List (List Bool)), PF S → (∀ w ∈ S, w.length ≤ L) →
+    ksum L S ≤ 2 ^ L
+\end{lstlisting}
+
+\phantomsection\label{lean:constr-farkas}
+\begin{lstlisting}
+structure Row (n : Nat) where
+  c : Fin n → Int
+  s : Bool
+
+inductive Der {n : Nat} (rows : List (Row n)) : Row n → Prop
+  | base {r : Row n} : r ∈ rows → Der rows r
+  | comb {r₁ r₂ : Row n} (p q : Int) : 0 ≤ p → 0 ≤ q → Der rows r₁ → Der rows r₂ →
+      Der rows (comb p q r₁ r₂)
+
+theorem fm : ∀ (n : Nat) (rows : List (Row n)), (∃ w, ∀ r ∈ rows, Sat r w) ∨ Der rows (zeroS n)
+
+theorem complete (hd : 0 < d)
+    (hlaw : ∀ (c : Fin m → Int) (k : Int), (∀ j, k ≤ dot m c (S j)) → k * d ≤ dot m c y) :
+    ∃ (lam : Fin N → Int) (t : Int), 0 < t ∧ (∀ j, 0 ≤ lam j) ∧
+      dot N (fun _ => 1) lam = t ∧ ∀ e, d * dot N lam (fun j => S j e) = t * y e
+
+theorem sound (hd : 0 < d) (lam : Fin N → Int) (t : Int) (ht : 0 < t) (hl : ∀ j, 0 ≤ lam j)
+    (hsum : dot N (fun _ => 1) lam = t) (hx : ∀ e, d * dot N lam (fun j => S j e) = t * y e)
+    (c : Fin m → Int) (k : Int) (hc : ∀ j, k ≤ dot m c (S j)) : k * d ≤ dot m c y
+\end{lstlisting}
+
+\phantomsection\label{lean:constr-fubini}
+\begin{lstlisting}
+structure EOD (A : Nat → Nat → Bool) where
+  N : Nat
+  lt : Bool
+  eq : Bool
+  gt : Bool
+  spec : ∀ m m', N ≤ m → N ≤ m' →
+    A m m' = if m < m' then lt else if m = m' then eq else gt
+
+def L {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.lt
+/-- The iterated limit with `m → ∞` first. -/
+def R {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.gt
+
+def R {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.gt
+
+theorem L_modular {A B} (a : EOD A) (b : EOD B) :
+    val (L a) + val (L b) = val (L (union a b)) + val (L (inter a b))
+
+theorem rect_L {S T} (s : EC S) (t : EC T) : L (rect s t) = (s.v && t.v)
+
+theorem rect_R {S T} (s : EC S) (t : EC T) : R (rect s t) = (s.v && t.v)
+
+theorem products_differ : L tri ≠ R tri
+\end{lstlisting}

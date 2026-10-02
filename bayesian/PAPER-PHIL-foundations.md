@@ -329,3 +329,45 @@ bib key `wolpert-kinney2024` (needs the DBLP verification pass like the rest).
 **Adjacent literature for Paper 2:** Garrabrant et al., *Logical Induction* (credences on
 sentences of arithmetic including undecidables) — natural comparison; our framework gives the
 logic-level explanation of why such credences must be non-classical.
+
+---
+
+## 15. New points from the FM paper's later results (2026-10), ordered by interest
+
+Results referred to are in the FM paper: Section 3 (metatheory), Section 10 (probability calculi from certain states), Section 11 (second-order linear types), Section 12 (quantum event logic), and `FiniteConstructive.lean`.
+
+**1. Probability from points needs choice; probability from structure does not.**
+The construction "probability = mixtures of certain states" is a points-first account: certain states are points (sharp valuations = points of the locale). Whether a logic's certain states reconstruct it (criterion (1)) is, for infinite frames, the prime ideal theorem, a choice principle. Without it a locale can have no points and the points-first account produces nothing, while valuations on the locale still exist. On finite lattices the points are found by search, with no choice (proved choice-free). So the points-first picture of probability is a classical (choice-dependent) commitment, and the structure-first picture (valuations on the frame) is the constructively available one. This is a precise sense in which the Humean structural realist ontology ("points derived, structure primary") is the constructively honest one. Strongest point; ties the formal results to the ontology.
+- Prediction (conjecture, not proved): in a constructive metatheory the mixture calculus and the valuation calculus should come apart on infinite frames, not only on quantum logic.
+
+**2. Quantum probability is probability without points.**
+Quantum logic has states (Gleason) and no certain states (Kochen–Specker; proved for Cabello's 18-ray set). Every points-first account of probability fails exactly there. So point 1 is not an artifact of constructive mathematics: physics already supplies a logic whose probabilities are not ignorance over any point. Sharper than the QBism row of §8: quantum credences are not ignorance over anything, and no agent is needed to say so.
+
+**3. Probability is extended semantics, not extended syntax (a second dial).**
+For one logic (linear logic at a second-order type) two semantics disagree: mixtures of deterministic sequential programs, and the probabilistic coherence space, which is strictly larger. One tensor further they disagree about what is certain (a Girard clique is not a PCS element). So the logic dial does not determine the calculus; a second dial, what counts as a deterministic process, is needed. Refines the thesis of §0.
+
+**4. Humeanism needs mixtures of mosaics.**
+A Humean mosaic is a certain state; Humean chance on a logic must be a mixture of mosaics. Kochen–Specker blocks this for quantum observables (known; hence primitive-ontology Humeanism), and the PCS result exhibits a standard semantics with probabilities over no mosaic. Gives a criterion for which logics a Humean about chance can accept. Directly relevant to the user's own Humean commitment. (Framing is new; physics is known.)
+
+**5. The axioms are the logic's linear shadow (generalized probabilism).**
+The calculus's axioms are exactly the affine laws valid on certain states; monotonicity, normalization, modularity are what they are on frames. Generalizes the hinge of §4 from one axiom to all. Prior art to engage: de Finetti (classical), Paris 2001 (non-classical Dutch book), J. R. G. Williams, "Generalized probabilism" (J. Phil. Logic 2012) and accuracy papers. New: Cox framing, completeness as "axioms = affine laws", linear and quantum cases, mechanization.
+
+**6. Slack is not ignorance, even given full information.**
+On a finite frame a single point can leave a undecided (δ_p(a) + δ_p(¬a) = 0 when p is on the boundary). Slack is present inside a certain state, not only in uncertainty about which state obtains. Strengthens "belief without believer" (§6).
+
+**7. Classical metatheory, intuitionistic object: coherent, and auditable.**
+Studying intuitionistic event logics with classical tools is not self-undermining: the thesis concerns the event logic of semidecidable properties, not the logic of mathematicians (as for Kripke semantics). What matters is where the metatheory's classicality is essential: four places (prime ideal theorem, Hahn–Banach, compactness of probability measures, the sharp readout's definition), checkable with `#print axioms`. Methodological point: mechanization turns debates about classical commitments into audits.
+
+**8. What a Rocq development would change.**
+The kernels agree (neither assumes choice); the libraries differ. MathComp would give constructive, extractable proofs of all finite results. Values would become lower reals (approximable from below) instead of [0,∞]; Chaitin's Ω is exactly such a lower real, so the constructive value type matches semidecidability. The barycenter theorem needs compactness of Cantor space, i.e. the fan theorem, not provable in Rocq's logic without an axiom. The sharp classical readout cannot be defined; the uncomputability result becomes a synthetic statement (Forster–Kirst–Smolka), needing Church's thesis to state negatively. Philosophical upshot: in a constructive metatheory the claim "the sharp classical credence exists but cannot be computed" becomes "there is no sharp classical credence", which is closer to the paper's thesis that slack is forced.
+
+**9. De Finetti survives the change of logic; Cox does not.**
+Cox's functional-equation route to the sum rule fails intuitionistically (a disjunction's value is not a function of its disjuncts'), while the representational route (mixtures of certain states) still derives modularity. A comparative claim about which foundation of probability is robust under change of logic.
+
+**10. Classical updating on undecidable hypotheses credits all undecided mass to refutation.**
+The classical posterior of the complement exceeds the intuitionistic one by exactly μ(∂A ∩ B)/μ(B). Normative point for computational epistemology; contrast with logical-uncertainty frameworks that treat sentences classically (Garrabrant et al.). Modest, but has a theorem behind it.
+
+**11. (Speculative) Link to the law-likeness fork.**
+Chaitin's Ω and the universal semimeasure are mixtures over programs with total mass below 1, the same deficit as slack and as PCS subnormalization. If branch (b) of the law-likeness fork (simplicity-weighted ensemble) is taken, its measure is a mixture of certain states with structural slack. Flag as speculative.
+
+**Honest assessment.** 1, 2, 3 are the most original. 4 is a new framing of known physics. 5 is largely known (Paris, Williams) and must be cited. 7–8 are methodological. 10 is modest. 11 is speculative.
