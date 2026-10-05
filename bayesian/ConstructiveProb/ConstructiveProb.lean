@@ -53,3 +53,7 @@ import ConstructiveProb.Constructive
 import ConstructiveProb.Farkas
 
 import ConstructiveProb.FubiniConstructive
+
+import ConstructiveProb.ValMonoid
+
+import ConstructiveProb.ProgLang

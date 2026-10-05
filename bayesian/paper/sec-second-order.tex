@@ -51,7 +51,36 @@ deterministic ones\leanref{sequentialg-subset-mix}, and every mixture of
 randomized sequential programs is a randomized sequential
 program\leanref{mix-sequentialg}. The second direction conditions the
 choices at each node on the history, and nodes reached with probability
-$0$ are given weight $0$.
+$0$ are given weight $0$. For $X = Y = X' = Y' = \mathrm{Bool}$ the same statements are also
+proved directly\leanref{kuhn-bool}.
+
+\paragraph{A language for $T$.}
+Randomized sequential programs are the denotations of a small
+language\leanref{proglang}. It has four syntactic stages: no function
+called, $f$ called, $g$ called, and both called. Each stage has
+divergence and a finite probabilistic choice
+$\mathsf{choose}(w_1 P_1, \dots, w_k P_k)$ with $\sum_i w_i \le 1$, the
+missing mass diverging. The first stage has $\mathsf{call}_f\,a\,k$ and
+$\mathsf{call}_g\,c\,k$ with a continuation $k$ for each answer, the
+middle stages call the remaining function, and the last stage halts. The
+stages make each function called exactly once. A choice denotes the
+weighted sum of the denotations of its branches, and $\mathsf{call}_f\,a\,k$
+denotes $((a',b),(c,d)) \mapsto [a' = a]\,\llbracket k\,b\rrbracket(c,d)$.
+
+\begin{theorem}[soundness and definability\leanref{proglang-sound}\leanref{proglang-definable}]
+\label{thm:proglang}
+For nonempty finite $X, X'$ and finite $Y, Y'$, every program denotes a
+randomized sequential program, hence an element of $\mathrm{Mix}$ of the
+$\{0,1\}$-valued elements of $T$. Every $\{0,1\}$-valued element of $T$
+is the denotation of a program without choice. So $\mathrm{Mix}$ of the
+$\{0,1\}$-valued elements of $T$ is exactly the set of denotations of
+programs\leanref{proglang-eq}.
+\end{theorem}
+
+\noindent The
+language is not a full programming language: it has no recursion and no
+higher-order arguments beyond $f$ and $g$. Relating it to probabilistic
+PCF at this type is not done here.
 
 The calculus is strictly smaller than the PCS. Call two distinct web
 points of $T$ \emph{exclusive} if a single pair of deterministic partial
@@ -89,6 +118,23 @@ So Theorem~\ref{thm:second-order}(ii) and the strict inclusion of
 Theorem~\ref{thm:pentagon} are statements about these
 formulas\leanref{recipe-formula}.
 
+\paragraph{Related work.}
+Full abstraction of probabilistic coherence spaces for probabilistic
+PCF~\cite{ehrhard-pagani-tasson2018} is proved from the analyticity of
+the morphisms, not from definability of every point, and in the
+concurrent game model of
+Castellan, Clairambault, Paquet and Winskel~\cite{castellan2018}
+definability fails until strategies are restricted to sequential
+probabilistic innocent ones. Kuhn's theorem~\cite{kuhn1953} is the
+classical form of Theorem~\ref{thm:second-order}(ii) for games with
+perfect recall. The tensor of probabilistic coherence spaces has been
+related to no-signalling composition~\cite{simmons-kissinger2022},
+which is the setting of the KCBS comparison below. What is added here is
+an explicit point outside the calculus at a type without exponentials,
+the exact description of the calculus and of the space as $\mathrm{STAB}$
+and $\mathrm{QSTAB}$ of one graph (Theorem~\ref{thm:qstab}), and the
+mechanization.
+
 \subsection{A Clique Outside the PCS}
 \label{sec:second-shannon}
 
@@ -112,6 +158,10 @@ $\sqrt5$~\cite{lovasz1979}.
 Shannon's set is a clique of the coherence space $(T \otimes T)^{\perp}$,
 and its indicator is not an element of $P((T \otimes T)^{\perp})$.
 \end{theorem}
+
+\noindent
+The theorem is also proved for the web of $T$ given directly by
+$\mathrm{Bool}$\leanref{tensorgap-bool}.
 
 \noindent
 The function $z$ of Theorem~\ref{thm:pentagon}, with value $\tfrac12$ on

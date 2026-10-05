@@ -736,6 +736,10 @@ theorem laws_iff_local_Mix {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSha
 
 \phantomsection\label{lean:laws-iff-barycenter}
 \begin{lstlisting}
+noncomputable def ofVec (s : Ev → ℝ≥0∞) : Cfg Ev := fun e => decide (s e = 1)
+
+noncomputable def testFn {U : Set (Cfg Ev)} (hU : IsClopen U) : Cfg Ev →ᵇ ℝ≥0
+
 def Cfg (Ev : Type) := Ev → Bool
 
 def Good (S : Set (Ev → ℝ≥0∞)) (F : Finset Ev) (σ : Cfg Ev) : Prop :=
@@ -768,6 +772,10 @@ theorem mem_lin_iff [DecidableEq X] (t : X × Y → ℝ≥0∞) :
 
 \phantomsection\label{lean:ispcs-lin}
 \begin{lstlisting}
+noncomputable def pairing (x y : E → ℝ≥0∞) : ℝ≥0∞ := ∑ e, x e * y e
+
+def row (a : X) : X × Y → ℝ≥0∞ := fun ab => if ab.1 = a then 1 else 0
+
 def orth (S : Set (E → ℝ≥0∞)) : Set (E → ℝ≥0∞) := {y | ∀ x ∈ S, pairing x y ≤ 1}
 
 structure IsPCS (P : Set (E → ℝ≥0∞)) : Prop where
@@ -790,6 +798,24 @@ theorem pcs_recipe {X Y : Type} [Fintype X] [Fintype Y] [DecidableEq X] :
 
 \phantomsection\label{lean:sharp-lin-iff-clique}
 \begin{lstlisting}
+def flatC (X : Type*) : X → X → Prop := fun x y => x = y
+
+def dualC {X : Type*} (c : X → X → Prop) : X → X → Prop := fun x y => x = y ∨ ¬ c x y
+
+def tensC {X Y : Type*} (c : X → X → Prop) (d : Y → Y → Prop) : X × Y → X × Y → Prop :=
+  fun p q => c p.1 q.1 ∧ d p.2 q.2
+
+def arrowC {X Y : Type*} (c : X → X → Prop) (d : Y → Y → Prop) : X × Y → X × Y → Prop :=
+  dualC (tensC c (dualC d))
+
+def IsClique {X : Type*} (c : X → X → Prop) (B : X → Prop) : Prop := ∀ x y, B x → B y → c x y
+
+def secondC : W × W → W × W → Prop :=
+  dualC (tensC (arrowC (flatC Bool) (flatC Bool)) (arrowC (flatC Bool) (flatC Bool)))
+
+noncomputable def throughAll (C : Finset W) : Bool → Option Bool := fun a =>
+  if h : ∃ p ∈ C, p.1 = a then some (Classical.choose h).2 else none
+
 theorem sharp_lin_iff_clique {X Y : Type*} [Fintype X] [Fintype Y] [DecidableEq X] [DecidableEq Y]
     {t : X × Y → ℝ≥0∞} (h01 : ∀ p, t p = 0 ∨ t p = 1) :
     t ∈ lin X Y ↔ IsClique (arrowC (flatC X) (flatC Y)) (t · = 1)
@@ -797,6 +823,19 @@ theorem sharp_lin_iff_clique {X Y : Type*} [Fintype X] [Fintype Y] [DecidableEq 
 
 \phantomsection\label{lean:sharp-td-iff}
 \begin{lstlisting}
+def cov (f : X → Option Y) (g : X' → Option Y') (pq : (X × Y) × (X' × Y')) : Prop :=
+  f pq.1.1 = some pq.1.2 ∧ g pq.2.1 = some pq.2.2
+
+def cp {X Y : Type} (p q : X × Y) : Prop := p = q ∨ p.1 ≠ q.1
+
+def cp2 (s t : (X × Y) × (X' × Y')) : Prop := cp s.1 t.1 ∧ cp s.2 t.2
+
+noncomputable def thru {X Y : Type} [DecidableEq X] (C : Finset (X × Y)) : X → Option Y :=
+  fun a => if h : ∃ p ∈ C, p.1 = a then some (Classical.choose h).2 else none
+
+def GTree (c : X') (af : Y' → X) (pq : (X × Y) × (X' × Y')) : Prop :=
+  pq.2.1 = c ∧ pq.1.1 = af pq.2.2
+
 def tD (X Y X' Y' : Type) [Fintype X] [Fintype Y] [Fintype X'] [Fintype Y'] :
     Set ((X × Y) × (X' × Y') → ℝ≥0∞) :=
   {t | ∀ y ∈ lin X Y, ∀ z ∈ lin X' Y', ∑ p, ∑ q, y p * t (p, q) * z q ≤ 1}
@@ -812,6 +851,11 @@ theorem sharp_tD_iff [Nonempty X] [Nonempty X'] {z : (X × Y) × (X' × Y') → 
 
 \phantomsection\label{lean:sharp-mem-sequentialg}
 \begin{lstlisting}
+noncomputable def Core.val (K : Core A B C D) (a : A) (b : B) (c : C) (d : D) : ℝ≥0∞ :=
+  K.μ a * K.κ a b c * K.ρ a b c d
+
+noncomputable def Core.mass (K : Core A B C D) : ℝ≥0∞ := ∑ a, K.μ a
+
 theorem sharp_mem_sequentialG [Nonempty X] [Nonempty X'] {z : (X × Y) × (X' × Y') → ℝ≥0∞}
     (hz : z ∈ tD X Y X' Y') (h01 : ∀ u, z u = 0 ∨ z u = 1) : z ∈ sequentialG X Y X' Y'
 \end{lstlisting}
@@ -835,16 +879,34 @@ theorem recipe_eq_sequentialG [Nonempty X] [Nonempty X'] :
 
 \phantomsection\label{lean:sequentialg-subset-mix}
 \begin{lstlisting}
+def sharpSeqG (X Y X' Y' : Type) [Fintype X] [Fintype X'] : Set ((X × Y) × (X' × Y') → ℝ≥0∞) :=
+  {z | z ∈ sequentialG X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1}
+
 theorem sequentialG_subset_Mix : sequentialG X Y X' Y' ⊆ Mix (sharpSeqG X Y X' Y')
 \end{lstlisting}
 
 \phantomsection\label{lean:mix-sequentialg}
 \begin{lstlisting}
+noncomputable def compl' (m : A → ℝ≥0∞) : Option A → ℝ≥0∞
+  | none => 1 - ∑ a, m a
+  | some a => m a
+
+abbrev ChoiceG (A B C D : Type) := (Unit → Option A) × (A × B → Option C) × (A × B × C × D → Bool)
+
+noncomputable def detCoreG [DecidableEq A] [DecidableEq C] (σ : ChoiceG A B C D) : Core A B C D
+
 theorem Mix_sequentialG : Mix (sequentialG X Y X' Y') = sequentialG X Y X' Y'
 \end{lstlisting}
 
 \phantomsection\label{lean:pente-not-mix}
 \begin{lstlisting}
+def emb (s : W × W) : (X × Y) × (X' × Y') :=
+  ((ex s.1.1, ey s.1.2), (ex' s.2.1, ey' s.2.2))
+
+noncomputable def pentE (ex : Bool → X) (ey : Bool → Y) (ex' : Bool → X') (ey' : Bool → Y') :
+    (X × Y) × (X' × Y') → ℝ≥0∞ :=
+  fun u => if u ∈ pent.image (emb ex ey ex' ey') then 2⁻¹ else 0
+
 theorem pentE_not_mix (hx : Function.Injective ex) (hy : Function.Injective ey)
     (hx' : Function.Injective ex') (hy' : Function.Injective ey')
     {n : ℕ} (w : Fin n → ℝ≥0∞) (hw : ∑ i, w i = 1) (z : Fin n → (X × Y) × (X' × Y') → ℝ≥0∞)
@@ -858,6 +920,34 @@ theorem pentE_mem (hx : Function.Injective ex) (hy : Function.Injective ey)
 
 \phantomsection\label{lean:pent-cycle}
 \begin{lstlisting}
+noncomputable def idBool : Bool × Bool → ℝ≥0∞ := fun ab => if ab.1 = ab.2 then 1 else 0
+
+noncomputable def det (f : X → Option Y) : X × Y → ℝ≥0∞
+
+noncomputable def rowDist (t : X × Y → ℝ≥0∞) (a : X) : Option Y → ℝ≥0∞
+  | none => 1 - ∑ b, t (a, b)
+  | some b => t (a, b)
+
+noncomputable def tens (x : X → ℝ≥0∞) (y : Y → ℝ≥0∞) : X × Y → ℝ≥0∞ := fun ab => x ab.1 * y ab.2
+
+abbrev W := Bool × Bool
+
+def pent : Finset (W × W) :=
+  {((true, true), (true, true)), ((true, false), (false, false)),
+   ((false, true), (true, false)), ((false, true), (false, true)),
+   ((false, false), (false, false))}
+
+noncomputable def pentElt : W × W → ℝ≥0∞ := fun pq => if pq ∈ pent then 2⁻¹ else 0
+
+def covers (f g : Bool → Option Bool) (pq : W × W) : Prop :=
+  f pq.1.1 = some pq.1.2 ∧ g pq.2.1 = some pq.2.2
+
+def compat (p q : W) : Prop := p = q ∨ p.1 ≠ q.1
+
+def compat2 (s t : W × W) : Prop := compat s.1 t.1 ∧ compat s.2 t.2
+
+def through (p q : W) : Bool → Option Bool := fun b => if b = p.1 then some p.2 else some q.2
+
 theorem pent_clique_le_two : ∀ B ∈ pent.powerset,
     (∀ s ∈ B, ∀ t ∈ B, compat2 s t) → B.card ≤ 2
 
@@ -867,6 +957,37 @@ theorem pent_indep_le_two : ∀ B ∈ pent.powerset,
 
 \phantomsection\label{lean:pent-bounds}
 \begin{lstlisting}
+structure FFirst where
+  μ : Bool → ℝ≥0∞
+  κ : Bool → Bool → Bool → ℝ≥0∞
+  ρ : Bool → Bool → Bool → Bool → ℝ≥0∞
+  hμ : μ true + μ false ≤ 1
+  hκ : ∀ a b, κ a b true + κ a b false ≤ 1
+  hρ : ∀ a b c d, ρ a b c d ≤ 1
+
+structure GFirst where
+  μ : Bool → ℝ≥0∞
+  κ : Bool → Bool → Bool → ℝ≥0∞
+  ρ : Bool → Bool → Bool → Bool → ℝ≥0∞
+  hμ : μ true + μ false ≤ 1
+  hκ : ∀ c d, κ c d true + κ c d false ≤ 1
+  hρ : ∀ c d a b, ρ c d a b ≤ 1
+
+noncomputable def FFirst.den (S : FFirst) : W × W → ℝ≥0∞ := fun pq =>
+  S.μ pq.1.1 * S.κ pq.1.1 pq.1.2 pq.2.1 * S.ρ pq.1.1 pq.1.2 pq.2.1 pq.2.2
+
+noncomputable def GFirst.den (S : GFirst) : W × W → ℝ≥0∞ := fun pq =>
+  S.μ pq.2.1 * S.κ pq.2.1 pq.2.2 pq.1.1 * S.ρ pq.2.1 pq.2.2 pq.1.1 pq.1.2
+
+noncomputable def copyStrategy : FFirst where
+  μ a
+
+def idleG : GFirst where
+  μ _
+
+def idleF : FFirst where
+  μ _
+
 def tensDual : Set (W × W → ℝ≥0∞) :=
   {t | ∀ y ∈ lin Bool Bool, ∀ z ∈ lin Bool Bool, ∑ p, ∑ q, y p * t (p, q) * z q ≤ 1}
 
@@ -891,6 +1012,12 @@ theorem sharp_bang_mixed_zero {z : ℕ × ℕ → ℝ≥0∞} (hz : z ∈ bang) 
 
 \phantomsection\label{lean:prom-half-not-mix}
 \begin{lstlisting}
+def orthI {E : Type*} (S : Set (E → ℝ≥0∞)) : Set (E → ℝ≥0∞) := {y | ∀ x ∈ S, ∑' e, x e * y e ≤ 1}
+
+def gens : Set (ℕ × ℕ → ℝ≥0∞) := {u | ∃ x ∈ flat Bool, u = prom x}
+
+noncomputable def half : Bool → ℝ≥0∞ := fun _ => 2⁻¹
+
 noncomputable def prom (x : Bool → ℝ≥0∞) : ℕ × ℕ → ℝ≥0∞ := fun m => x true ^ m.1 * x false ^ m.2
 
 def bang : Set (ℕ × ℕ → ℝ≥0∞) := orthI (orthI gens)
@@ -915,6 +1042,19 @@ theorem recipe_eq_STAB :
 
 \phantomsection\label{lean:berge-of-stab-eq-qstab}
 \begin{lstlisting}
+def cyc {n : ℕ} (i j : ZMod n) : Prop := j = i + 1 ∨ i = j + 1
+
+def IsCliqueG (C : Finset V) : Prop := ∀ u ∈ C, ∀ v ∈ C, u ≠ v → adj u v
+
+def IsStableG (I : Finset V) : Prop := ∀ u ∈ I, ∀ v ∈ I, ¬ adj u v
+
+noncomputable def ind (I : Finset V) : V → ℝ≥0∞ := fun v => if v ∈ I then 1 else 0
+
+structure Antihole (adj : V → V → Prop) (n : ℕ) where
+  h : ZMod n → V
+  inj : Function.Injective h
+  adj_iff : ∀ i j, i ≠ j → (adj (h i) (h j) ↔ ¬ cyc i j)
+
 def QSTAB : Set (V → ℝ≥0∞) := {x | ∀ C, IsCliqueG adj C → ∑ v ∈ C, x v ≤ 1}
 
 def STAB : Set (V → ℝ≥0∞) := Mix {x | ∃ I, IsStableG adj I ∧ x = ind I}
@@ -976,6 +1116,24 @@ theorem isPCS_P : ∀ A : Fm, IsPCS (P A)
 
 \phantomsection\label{lean:linear-invariants}
 \begin{lstlisting}
+def par (A B : Fm) : Fm := neg (tens (neg A) (neg B))
+def plus (A B : Fm) : Fm := neg (wth (neg A) (neg B))
+def lolli (A B : Fm) : Fm := neg (tens A (neg B))
+
+def plus (A B : Fm) : Fm := neg (wth (neg A) (neg B))
+def lolli (A B : Fm) : Fm := neg (tens A (neg B))
+
+def lolli (A B : Fm) : Fm := neg (tens A (neg B))
+
+noncomputable def tvec {X Y : Type} (x : X → ℝ≥0∞) (y : Y → ℝ≥0∞) : X × Y → ℝ≥0∞ :=
+  fun ab => x ab.1 * y ab.2
+
+noncomputable def svec {X Y : Type} (x : X → ℝ≥0∞) (y : Y → ℝ≥0∞) : X ⊕ Y → ℝ≥0∞
+  | Sum.inl a => x a
+  | Sum.inr b => y b
+
+noncomputable def pr (s t : E) : E → ℝ≥0∞ := Pi.single s 1 + Pi.single t 1
+
 theorem invariants : ∀ A : Fm,
     (∀ s : web A, Pi.single s 1 ∈ P A ∧ ∀ x ∈ P A, x s ≤ 1) ∧
     (∀ s t : web A, s ≠ t → coh A s t → pr s t ∈ P A) ∧
@@ -1021,6 +1179,8 @@ theorem P_second (n m n' m' : ℕ) :
 
 \phantomsection\label{lean:recipe-formula}
 \begin{lstlisting}
+def boolFin {k : ℕ} (hk : 2 ≤ k) : Bool → Fin k
+
 theorem recipe_first_order (n m : ℕ) :
     P (lolli (base n) (base m)) = ConstructiveProb.Mix (Set.range
       (det : (Fin n → Option (Fin m)) → Fin n × Fin m → ℝ≥0∞))
@@ -1037,6 +1197,8 @@ theorem recipe_second_order_ssubset {n m n' m' : ℕ} (hn : 2 ≤ n) (hm : 2 ≤
 
 \phantomsection\label{lean:shannon-clique}
 \begin{lstlisting}
+def φ : W × W → web S2 := emb (boolFin le_rfl) (boolFin le_rfl) (boolFin le_rfl) (boolFin le_rfl)
+
 abbrev S2 : Fm := second 2 2 2 2
 
 abbrev TT : Fm := neg (tens S2 S2)
@@ -1048,6 +1210,9 @@ theorem shannonF_clique : ∀ u ∈ shannonF, ∀ v ∈ shannonF, coh TT u v
 
 \phantomsection\label{lean:shannon-not-mem}
 \begin{lstlisting}
+noncomputable def pentS2 : web S2 → ℝ≥0∞ :=
+  pentE (boolFin le_rfl) (boolFin le_rfl) (boolFin le_rfl) (boolFin le_rfl)
+
 theorem shannonF_not_mem : (fun u => if u ∈ shannonF then (1 : ℝ≥0∞) else 0) ∉ P TT
 \end{lstlisting}
 
@@ -1113,6 +1278,10 @@ theorem born_not_mix {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) :
 
 \phantomsection\label{lean:exists-sharp-separating-fin}
 \begin{lstlisting}
+def below (a : α) : Finset α := Finset.univ.filter (· ≤ a)
+
+def ind (j x : α) : ℕ := if j ≤ x then 1 else 0
+
 def JoinPrime (j : α) : Prop := ∀ x y : α, j ≤ x ⊔ y → j ≤ x ∨ j ≤ y
 
 theorem exists_joinPrime_aux : ∀ (n : ℕ) (a b : α), (below a).card = n → ¬ a ≤ b →
@@ -1135,6 +1304,27 @@ theorem em_of_sharp_complement_fin [BoundedOrder α] (a c : α)
 
 \phantomsection\label{lean:constr-sierpinski}
 \begin{lstlisting}
+def wt (b : Bool) (m : Nat) : Nat := if b then m else 0
+
+def mem : Op → Bool → Bool
+  | bot, _ => false
+  | halts, b => b
+  | top, _ => true
+
+def le (o o' : Op) : Bool := mem o true ≤ mem o' true && mem o false ≤ mem o' false
+
+def inf : Op → Op → Op
+  | bot, _ => bot
+  | _, bot => bot
+  | halts, _ => halts
+  | top, o => o
+
+def val (wT wF : Nat) (o : Op) : Nat := wt (mem o true) wT + wt (mem o false) wF
+
+def inClosure (x : Bool) : Bool := [bot, halts, top].all fun o => !mem o x || mem o true
+
+def frontier (x : Bool) : Bool := inClosure x && !mem halts x
+
 inductive Op | bot | halts | top
   deriving DecidableEq
 
@@ -1155,6 +1345,14 @@ theorem slack_eq (wT wF : Nat) :
 
 \phantomsection\label{lean:constr-boundary}
 \begin{lstlisting}
+def fs : (n : Nat) → (Fin n → Nat) → Nat
+  | 0, _ => 0
+  | n + 1, f => f ⟨0, by omega⟩ + fs n (fun i => f ⟨i.val + 1, by omega⟩)
+
+def allFin : (n : Nat) → (Fin n → Bool) → Bool
+  | 0, _ => true
+  | n + 1, p => p ⟨0, by omega⟩ && allFin n (fun i => p ⟨i.val + 1, by omega⟩)
+
 def ext (ops : List (Fin n → Bool)) (U : Fin n → Bool) (x : Fin n) : Bool :=
   ops.any fun O => O x && allFin n (fun y => !(O y && U y))
 
@@ -1172,6 +1370,22 @@ theorem slack_eq_boundary_fin (ops : List (Fin n → Bool)) (U : Fin n → Bool)
 
 \phantomsection\label{lean:constr-kraft}
 \begin{lstlisting}
+def isPre : List Bool → List Bool → Bool
+  | [], _ => true
+  | _ :: _, [] => false
+  | a :: u, b :: v => a == b && isPre u v
+
+def Incomp (u v : List Bool) : Prop := isPre u v = false ∧ isPre v u = false
+
+def PF : List (List Bool) → Prop
+  | [] => True
+  | w :: S => (∀ v ∈ S, Incomp w v) ∧ PF S
+
+def tails (b : Bool) : List (List Bool) → List (List Bool)
+  | [] => []
+  | [] :: S => tails b S
+  | (a :: t) :: S => if a = b then t :: tails b S else tails b S
+
 def ksum (L : Nat) : List (List Bool) → Nat
   | [] => 0
   | w :: S => 2 ^ (L - w.length) + ksum L S
@@ -1182,6 +1396,48 @@ theorem kraft : ∀ (L : Nat) (S : List (List Bool)), PF S → (∀ w ∈ S, w.l
 
 \phantomsection\label{lean:constr-farkas}
 \begin{lstlisting}
+def Sat {n : Nat} (r : Row n) (w : Fin n → Int) : Prop :=
+  0 ≤ dot n r.c w ∧ (r.s = true → 0 < dot n r.c w)
+
+def comb {n : Nat} (p q : Int) (r₁ r₂ : Row n) : Row n :=
+  ⟨fun i => p * r₁.c i + q * r₂.c i, (decide (0 < p) && r₁.s) || (decide (0 < q) && r₂.s)⟩
+
+def zeroS (n : Nat) : Row n := ⟨fun _ => 0, true⟩
+
+def lastc (r : Row (n + 1)) : Int := r.c (Fin.last n)
+
+def proj (r : Row (n + 1)) : Row n := ⟨fun i => r.c i.castSucc, r.s⟩
+
+def posR (rows : List (Row (n + 1))) := rows.filter fun r => decide (0 < lastc r)
+def negR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r < 0)
+def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
+
+def negR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r < 0)
+def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
+
+def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
+
+def pair (p q : Row (n + 1)) : Row n := proj (comb (-lastc q) (lastc p) p q)
+
+def step (rows : List (Row (n + 1))) : List (Row n) :=
+  (zerR rows).map proj ++ (posR rows).flatMap fun p => (negR rows).map fun q => pair p q
+
+def extd (D W : Int) (w' : Fin n → Int) : Fin (n + 1) → Int :=
+  fun i => if h : i.val < n then D * w' ⟨i.val, h⟩ else W
+
+def hrow (μ : Fin N → Int) (ν α : Int) (β : Fin m → Int) : Fin (N + 1) → Int :=
+  fun i => if h : i.val < N then μ ⟨i.val, h⟩ + α + d * dot m β (S ⟨i.val, h⟩)
+    else ν - α - dot m β y
+
+def hullRows : List (Row (N + 1)) :=
+  (List.finRange N).map (fun j => ⟨hrow S y d (fun k => if k = j then 1 else 0) 0 0 (fun _ => 0), false⟩) ++
+  [⟨hrow S y d (fun _ => 0) 1 0 (fun _ => 0), true⟩,
+   ⟨hrow S y d (fun _ => 0) 0 1 (fun _ => 0), false⟩,
+   ⟨hrow S y d (fun _ => 0) 0 (-1) (fun _ => 0), false⟩] ++
+  (List.finRange m).flatMap (fun e =>
+    [⟨hrow S y d (fun _ => 0) 0 0 (fun k => if k = e then 1 else 0), false⟩,
+     ⟨hrow S y d (fun _ => 0) 0 0 (fun k => if k = e then -1 else 0), false⟩])
+
 structure Row (n : Nat) where
   c : Fin n → Int
   s : Bool
@@ -1205,6 +1461,28 @@ theorem sound (hd : 0 < d) (lam : Fin N → Int) (t : Int) (ht : 0 < t) (hl : �
 
 \phantomsection\label{lean:constr-fubini}
 \begin{lstlisting}
+def union {A B : Nat → Nat → Bool} (a : EOD A) (b : EOD B) : EOD (fun m m' => A m m' || B m m') where
+  N
+
+def inter {A B : Nat → Nat → Bool} (a : EOD A) (b : EOD B) : EOD (fun m m' => A m m' && B m m') where
+  N
+
+def compl {A : Nat → Nat → Bool} (a : EOD A) : EOD (fun m m' => !A m m') where
+  N
+
+def val (b : Bool) : Nat := if b then 1 else 0
+
+structure EC (S : Nat → Bool) where
+  N : Nat
+  v : Bool
+  spec : ∀ m, N ≤ m → S m = v
+
+def rect {S T : Nat → Bool} (s : EC S) (t : EC T) : EOD (fun m m' => S m && T m') where
+  N
+
+def tri : EOD (fun m m' => decide (m < m')) where
+  N
+
 structure EOD (A : Nat → Nat → Bool) where
   N : Nat
   lt : Bool
@@ -1227,4 +1505,192 @@ theorem rect_L {S T} (s : EC S) (t : EC T) : L (rect s t) = (s.v && t.v)
 theorem rect_R {S T} (s : EC S) (t : EC T) : R (rect s t) = (s.v && t.v)
 
 theorem products_differ : L tri ≠ R tri
+\end{lstlisting}
+
+\subsection{Valued Frames and the Valuation Monoid}
+
+\phantomsection\label{lean:valf}
+\begin{lstlisting}
+noncomputable def ValF : Frmᵒᵖ ⥤ Type _
+
+abbrev SpVal := ValF.Elements
+\end{lstlisting}
+
+\phantomsection\label{lean:vmonoid}
+\begin{lstlisting}
+inductive Gen : Multiset P → Multiset P → Prop
+  | modular (a b : P) : Gen ({a} + {b}) ({a ⊔ b} + {a ⊓ b})
+  | bot : Gen {⊥} 0
+
+def con : AddCon (Multiset P) := addConGen (Gen P)
+
+abbrev V := (con P).Quotient
+
+def ι (a : P) : V P := (con P).mk' {a}
+\end{lstlisting}
+
+\phantomsection\label{lean:vmonoid-lift}
+\begin{lstlisting}
+structure Modular (f : P → M) : Prop where
+  bot : f ⊥ = 0
+  modular : ∀ a b, f a + f b = f (a ⊔ b) + f (a ⊓ b)
+
+def lift (f : P → M) (hf : Modular f) : V P →+ M
+
+theorem lift_ι (f : P → M) (hf : Modular f) (a : P) : lift f hf (ι a) = f a
+
+theorem hom_ext {h h' : V P →+ M} (H : ∀ a, h (ι a) = h' (ι a)) : h = h'
+
+theorem modular_of_hom (h : V P →+ M) : Modular (fun a => h (ι a))
+
+noncomputable def lvaluation_equiv {P : Type*} [Lattice P] [BoundedOrder P] :
+    LValuation P ≃
+      {h : V P →+ ℝ≥0∞ // h (ι ⊤) = 1 ∧ Monotone fun a => h (ι a)}
+\end{lstlisting}
+
+\phantomsection\label{lean:vmonoid-flag}
+\begin{lstlisting}
+theorem exists_flag (x : V P) : ∃ l : List P, l.Pairwise (· ≤ ·) ∧ x = (l.map ι).sum
+\end{lstlisting}
+
+\subsection{A Language for the Second-Order Type}
+
+\phantomsection\label{lean:proglang}
+\begin{lstlisting}
+inductive PEnd
+  | halt
+  | diverge
+  | choose (k : Nat) (w : Fin k → ℝ≥0∞) (hw : ∑ i, w i ≤ 1) (p : Fin k → PEnd)
+
+inductive POne (C D : Type)
+  | diverge
+  | choose (k : Nat) (w : Fin k → ℝ≥0∞) (hw : ∑ i, w i ≤ 1) (p : Fin k → POne C D)
+  | call (c : C) (k : D → PEnd)
+
+inductive P0 (X Y X' Y' : Type)
+  | diverge
+  | choose (k : Nat) (w : Fin k → ℝ≥0∞) (hw : ∑ i, w i ≤ 1) (p : Fin k → P0 X Y X' Y')
+  | callF (a : X) (k : Y → POne X' Y')
+  | callG (c : X') (k : Y' → POne X Y)
+
+noncomputable def PEnd.den : PEnd → ℝ≥0∞
+  | .halt => 1
+  | .diverge => 0
+  | .choose _ w _ p => ∑ i, w i * (p i).den
+
+noncomputable def POne.den {C D : Type} [DecidableEq C] : POne C D → C × D → ℝ≥0∞
+  | .diverge => fun _ => 0
+  | .choose _ w _ p => fun cd => ∑ i, w i * (p i).den cd
+  | .call c k => fun cd => if cd.1 = c then (k cd.2).den else 0
+
+noncomputable def P0.den : P0 X Y X' Y' → (X × Y) × (X' × Y') → ℝ≥0∞
+  | .diverge => fun _ => 0
+  | .choose _ w _ p => fun u => ∑ i, w i * (p i).den u
+  | .callF a k => fun u => if u.1.1 = a then (k u.1.2).den u.2 else 0
+  | .callG c k => fun u => if u.2.1 = c then (k u.2.2).den u.1 else 0
+\end{lstlisting}
+
+\phantomsection\label{lean:proglang-sound}
+\begin{lstlisting}
+theorem P0.sound : ∀ p : P0 X Y X' Y', p.den ∈ sequentialG X Y X' Y'
+
+theorem P0.den_mem_recipe [Nonempty X] [Nonempty X'] (p : P0 X Y X' Y') :
+    p.den ∈ Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1}
+\end{lstlisting}
+
+\phantomsection\label{lean:proglang-definable}
+\begin{lstlisting}
+def PEnd.ofBool (b : Bool) : PEnd := if b then .halt else .diverge
+
+theorem P0.sharp_definable [Nonempty X] [Nonempty X'] {z : (X × Y) × (X' × Y') → ℝ≥0∞}
+    (hz : z ∈ tD X Y X' Y') (h01 : ∀ u, z u = 0 ∨ z u = 1) : ∃ p : P0 X Y X' Y', p.den = z
+\end{lstlisting}
+
+\subsection{The Boolean Case}
+
+\phantomsection\label{lean:kuhn-bool}
+\begin{lstlisting}
+noncomputable def comp (m : Bool → ℝ≥0∞) : Option Bool → ℝ≥0∞
+  | none => 1 - (m true + m false)
+  | some b => m b
+
+noncomputable def bern (r : ℝ≥0∞) : Bool → ℝ≥0∞
+  | true => r
+  | false => 1 - r
+
+abbrev Choice := (Unit → Option Bool) × (Bool × Bool → Option Bool) × (Bool × Bool × Bool × Bool → Bool)
+
+noncomputable def detCore (σ : Choice) (a b c d : Bool) : ℝ≥0∞ :=
+  (if σ.1 () = some a then 1 else 0) * (if σ.2.1 (a, b) = some c then 1 else 0) *
+    (if σ.2.2 (a, b, c, d) = true then 1 else 0)
+
+noncomputable def detF (σ : Choice) : FFirst where
+  μ a
+
+noncomputable def detG (σ : Choice) : GFirst where
+  μ c
+
+def sharpSeq : Set (W × W → ℝ≥0∞) := {z | z ∈ sequential ∧ ∀ pq, z pq = 0 ∨ z pq = 1}
+
+structure Beh where
+  μ : Bool → ℝ≥0∞
+  κ : Bool → Bool → Bool → ℝ≥0∞
+  ρ : Bool → Bool → Bool → Bool → ℝ≥0∞
+  hκ : ∀ a b, κ a b true + κ a b false ≤ 1
+  hρ : ∀ a b c d, ρ a b c d ≤ 1
+
+noncomputable def Beh.val (B : Beh) (a b c d : Bool) : ℝ≥0∞ := B.μ a * B.κ a b c * B.ρ a b c d
+
+noncomputable def Beh.mass (B : Beh) : ℝ≥0∞ := B.μ true + B.μ false
+
+def seqU : Set (W × W → ℝ≥0∞) :=
+  {t | ∃ BF BG : Beh, BF.mass + BG.mass ≤ 1 ∧
+    t = fun pq => BF.val pq.1.1 pq.1.2 pq.2.1 pq.2.2 + BG.val pq.2.1 pq.2.2 pq.1.1 pq.1.2}
+
+theorem FFirst.den_mem_Mix (F : FFirst) : F.den ∈ Mix sharpSeq
+
+theorem sequential_subset_Mix : sequential ⊆ Mix sharpSeq
+
+theorem Mix_sequential : Mix sequential = sequential
+
+theorem recipe_second_order_eq_sequential' :
+    Mix {z | z ∈ tensDual ∧ ∀ pq, z pq = 0 ∨ z pq = 1} = sequential
+\end{lstlisting}
+
+\phantomsection\label{lean:tensorgap-bool}
+\begin{lstlisting}
+abbrev W2 := (W × W) × (W × W)
+
+noncomputable def tens2 (t t' : W × W → ℝ≥0∞) : W2 → ℝ≥0∞ := fun u => t u.1 * t' u.2
+
+def gensTT : Set (W2 → ℝ≥0∞) := {u | ∃ t ∈ tensDual, ∃ t' ∈ tensDual, u = tens2 t t'}
+
+def PTT : Set (W2 → ℝ≥0∞) := orth (orth gensTT)
+def PTTdual : Set (W2 → ℝ≥0∞) := orth gensTT
+
+def PTTdual : Set (W2 → ℝ≥0∞) := orth gensTT
+
+def cohTT : W2 → W2 → Prop := tensC secondC secondC
+def cohTTdual : W2 → W2 → Prop := dualC cohTT
+
+def cohTTdual : W2 → W2 → Prop := dualC cohTT
+
+def shannon : Finset W2 :=
+  {(((true, true), (true, true)), ((true, true), (true, true))),
+   (((false, true), (false, true)), ((false, true), (true, false))),
+   (((false, true), (true, false)), ((false, false), (false, false))),
+   (((true, false), (false, false)), ((false, true), (false, true))),
+   (((false, false), (false, false)), ((true, false), (false, false)))}
+
+theorem shannon_clique : IsClique cohTTdual (· ∈ shannon)
+
+theorem shannon_not_mem :
+    (fun u => if u ∈ shannon then (1 : ℝ≥0∞) else 0) ∉ PTTdual
+\end{lstlisting}
+
+\phantomsection\label{lean:proglang-eq}
+\begin{lstlisting}
+theorem recipe_eq_denotations [Nonempty X] [Nonempty X'] :
+    Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1} = Set.range (P0.den (X := X) (Y := Y)
+      (X' := X') (Y' := Y'))
 \end{lstlisting}

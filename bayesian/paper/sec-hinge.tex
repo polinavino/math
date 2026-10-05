@@ -40,15 +40,15 @@ Completeness (Thm.~\ref{thm:mix-eq-laws}) &
   $\mathbb{Z}$\leanref{constr-farkas} \\
 Barycenters (Thm.~\ref{thm:barycenter}) &
   compactness of probability measures &
-  finite $E$: the completeness row; in general the fan theorem is
-  needed \\
+  finite $E$ and rational values: the completeness row; in general the
+  fan theorem is needed \\
 Sharp readout (Sec.~\ref{sec:computability-guard}) &
   excluded middle for halting &
   not definable; replaced by a synthetic undecidability
   statement~\cite{forster2019} \\
 Non-uniqueness of products (Thm.~\ref{thm:product-not-unique}) &
   free ultrafilter on $\mathbb{N}$ &
-  not on $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$; proved without
+  not shown on $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$; proved without
   choice on the algebra of sets eventually determined by the order of the
   coordinates\leanref{constr-fubini} \\
 Sierpi\'nski model (Sec.~\ref{sec:computability-guard}) &
@@ -77,8 +77,8 @@ Acz\'el regraduation (Sec.~\ref{sec:cox}) &
 \end{tabular}
 \caption{Classical principles used by the arguments. ``Proved without
 choice'' means that \texttt{\#print axioms} lists at most
-\texttt{propext} and \texttt{Quot.sound}. These proofs use core Lean
-and, for the Fourier--Motzkin proof, \textsf{mathlib}'s \texttt{ring}
+\texttt{propext} and \texttt{Quot.sound}. These proofs use core Lean,
+basic \textsf{mathlib} order files, and \textsf{mathlib}'s \texttt{ring}
 tactic on $\mathbb{Z}$, and avoid \textsf{mathlib}'s $\mathbb{Q}$ and
 finite sums, which depend on \texttt{Classical.choice}.}
 \label{tab:classical}
@@ -187,6 +187,27 @@ precisely: whenever
 excluded middle fails at some $a$, the failure occurs at a
 point of the locale.
 
+\paragraph{Points and the adjunction with spaces.}
+Write $[1] = \{0 < 1\}$, the initial frame. For a lattice $P$, monotone maps
+$P \to [1]$ correspond to upper sets (the preimage of $1$), bounded
+lattice homomorphisms to prime filters, and frame homomorphisms to
+completely prime filters, those $F$ with $\bigsqcup S \in F$ only if
+$S \cap F \neq \emptyset$. The complements are the lower sets, prime
+ideals, and completely prime ideals of Theorem~\ref{thm:sharp-iff-point}
+and the Scott-continuous characterization above. The points of a frame $P$, $\mathrm{pt}(P) =
+\mathrm{Frm}(P, [1])$, carry the topology of the sets $\Sigma_a =
+\{f \mid f(a) = 1\}$, and $\Sigma$ preserves finite meets and arbitrary
+joins. With $\mathcal{O}$ sending a space to its frame of opens, this gives
+the adjunction $\mathcal{O} \dashv \mathrm{pt}$ between spaces and
+locales~\cite{johnstone1982}, in \textsf{mathlib} as
+\texttt{Locale.adjunctionTopToLocalePT}. Its units send a point $x$ to
+$U \mapsto [x \in U]$ and an element $a$ to $\Sigma_a$. A prime filter
+need not be completely prime: in $[0,\infty]$, the filter $\{\infty\}$ is
+prime but contains $\bigsqcup_n n = \infty$ and no $n$. The
+corresponding sharp valuation is not Scott-continuous, as for the
+$\top$-indicator on $\mathrm{Low}(\mathbb{N})$ of
+Section~\ref{sec:representation}\leanref{topindicator-not-scott}.
+
 \paragraph{Finite frames without choice.}
 The prime ideal theorem is a choice principle. Without it, a frame can
 have no points at all~\cite{johnstone1982}, and then it has no sharp
@@ -230,8 +251,8 @@ differences would be the following.
   require the constructive analysis of Bishop's school, with
   locatedness hypotheses for hyperplane separation. The barycenter
   theorem for infinitely many events requires compactness of
-  $\{0,1\}^{\mathbb{N}}$, which constructively is the fan theorem and is
-  not provable in Rocq's logic without an additional axiom.
+  $\{0,1\}^{\mathbb{N}}$, which constructively is the fan theorem, a
+  principle that would have to be added as an axiom.
 \item \emph{Computability.} Without excluded middle the sharp classical
   readout cannot be defined. The uncomputability statement would be
   phrased synthetically~\cite{forster2019}: no function from codes to

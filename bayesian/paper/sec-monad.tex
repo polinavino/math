@@ -30,7 +30,22 @@ locales, the localic counterpart of the functor part of the Giry
 monad~\cite{giry1982}.  A frame homomorphism is the opposite of a 
 locale map, so the functor laws are checked against
 identity and composition of frame
-homomorphisms\leanref{valuation-comap}.  The point valuations
+homomorphisms\leanref{valuation-comap}.
+
+\begin{definition}[valued frames\leanref{valf}]
+\label{def:spval}
+The \emph{valuation functor} $\mathrm{Val} : \mathrm{Frm}^{\mathrm{op}} \to
+\mathrm{Set}$ sends a frame to its set of valuations and a frame
+homomorphism $\varphi : P \to Q$ to $w \mapsto w \circ \varphi$. The
+category $\mathrm{SpVal}$ of \emph{valued frames} is its category of
+elements: objects are pairs $(P, v)$ with $v$ a valuation on $P$, and a
+morphism $(P, v) \to (Q, w)$ is a frame homomorphism $\varphi : P \to Q$
+with $w \circ \varphi = v$.
+\end{definition}
+
+\noindent
+A morphism of valued frames is a measure-preserving map of locales in
+the opposite direction.  The point valuations
 $\delta_p$ (Section~\ref{sec:representation}) provide the candidate
 (monad) unit.
 Theorem~\ref{thm:finite-rep} shows that, on finite frames,
