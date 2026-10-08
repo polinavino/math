@@ -4,12 +4,18 @@
 Corollary~\ref{cor:tensor-dichotomy} shows that linear logic admits no
 grading by Definition~\ref{def:lvaluation}'s axioms that distinguishes
 $a$ from $a \otimes a$. The obstruction is in the modularity axiom, which
-uses the lattice operations of the event algebra. This section replaces
-the three axioms of Definition~\ref{def:valuation} by a construction that
-uses no lattice operations. It applies to any logic presented by a set of
-certain states. On finite frames, and in particular on finite Boolean
-algebras, it returns exactly the valuations of
-Definition~\ref{def:valuation}. For every formula of
+uses the lattice operations of the event algebra. This section uses
+instead a construction that needs no lattice operations: the calculus of
+a logic is the set of mixtures of its certain states, its
+$\{0,1\}$-valued assignments. For classical logic this is de Finetti's
+characterization of coherent probability
+assignments~\cite{definetti1974}, and Paris~\cite{paris2001} and
+Williams~\cite{williams2012} use it for non-classical logics, where it is
+known as generalized probabilism. On finite frames, and in particular on
+finite Boolean algebras, it returns exactly the valuations of
+Definition~\ref{def:valuation}, an instance of Paris's theorem for logics
+whose certain states respect $\wedge$ and $\vee$~\cite{paris2001}.
+Linear logic is not such a logic. For every formula of
 multiplicative--additive linear logic over finite data types, its
 output is contained in the probabilistic coherence space
 (Definition~\ref{def:pcs}) of the formula,
@@ -88,7 +94,9 @@ The inclusion from left to right holds because affine laws are preserved
 by convex combinations\leanref{affinelaw-holds-of-mix}. The converse
 separates a point outside the convex hull of $S$ by a hyperplane, using
 \textsf{mathlib}'s geometric Hahn--Banach theorem, and reads the
-hyperplane off as an affine law.
+hyperplane off as an affine law. For rational points and integer certain
+states, Section~\ref{sec:hinge} gives a proof without choice by
+Fourier--Motzkin elimination\leanref{constr-farkas}.
 Theorem~\ref{thm:mix-eq-laws} is the generalization of the three axioms:
 the axioms of the calculus of a presentation are the affine laws valid
 on its certain states, and nothing else. On frames these are the three
@@ -120,10 +128,10 @@ restrictions of functions to $F$.
 \label{thm:barycenter}
 Let $S$ be a set of $\{0,1\}$-valued functions on an arbitrary set $E$.
 For $x : E \to \ENNReal$ the following are equivalent:
-(i) $x$ satisfies every finite law valid on $S$;
-(ii) for every window $F$, the restriction of $x$ to $F$ lies
-in $\mathrm{Mix}$ of the restrictions of $S$ to $F$;
-(iii) there is a Borel probability measure $\mu$ on $\{0,1\}^E$, with
+(i) $x$ satisfies every finite law valid on $S$.
+(ii) For every window $F$, the restriction of $x$ to $F$ lies
+in $\mathrm{Mix}$ of the restrictions of $S$ to $F$.
+(iii) There is a Borel probability measure $\mu$ on $\{0,1\}^E$, with
 the product topology, such that
 $x_e = \mu\{\sigma \mid \sigma_e = 1\}$ for every $e \in E$, and
 $\mu(\mathrm{bad}_F) = 0$ for every window $F$, where $\mathrm{bad}_F$ is
@@ -132,7 +140,8 @@ $s \in S$.
 \end{theorem}
 
 \noindent
-The equivalence of (i) and (ii) applies Theorem~\ref{thm:mix-eq-laws} to
+The equivalence of (i) and (ii), which Paris states for infinite
+languages~\cite{paris2001}, applies Theorem~\ref{thm:mix-eq-laws} to
 each window. For (ii)~$\Rightarrow$~(iii), the mixture on a window $F$
 gives a probability measure $\mu_F$ on $\{0,1\}^E$, a finite convex
 combination of point masses at certain states. The windows are directed
@@ -148,6 +157,29 @@ $\mathrm{bad}_F$ are cylinder sets, and $\mu_F$ has the required values
 on them once $e \in F$, so $\mu$ has them. For (iii)~$\Rightarrow$~(i),
 a finite law valid on $S$ holds at $\mu$-almost every $\sigma$, and
 integrating it against $\mu$ gives the law at $x$.
+
+\paragraph{Relation to generalized probabilism.}
+Theorem~\ref{thm:mix-eq-laws} is de Finetti's theorem in the form used
+for non-classical logics~\cite{paris2001,williams2012}. An affine law
+valid on every certain state and violated at $x$ is a finite system of
+bets priced by $x$ with a net loss in every certain state, a Dutch book,
+so the theorem says that $x$ admits no Dutch book iff it is a mixture of
+certain states. Paris proves it with a separating hyperplane, as the Lean
+proof does, and Williams derives from the same fact that these are the
+assignments not dominated in accuracy~\cite{williams2012}. Paris also
+shows that when every certain state respects $\wedge$ and $\vee$ the
+affine laws reduce to normalization, monotonicity, and
+modularity~\cite{paris2001}, which gives Theorem~\ref{thm:frame-recipe}.
+Theorem~\ref{thm:barycenter}(iii) is the counterpart, for
+$\{0,1\}$-valued certain states, of the representation of the states of
+an MV-algebra as integrals over its
+valuations~\cite{kroupa2006,panti2008,kuhr-mundici2007}. This section
+adds their mechanization, a proof of Theorem~\ref{thm:mix-eq-laws}
+without choice for rational data, and their use for logics that
+Paris's axiomatization does not cover: for linear logic, where modularity is not available
+(Corollary~\ref{cor:tensor-dichotomy}), in Sections~\ref{sec:recipe-linear}
+and~\ref{sec:second}, and for quantum event logic in
+Section~\ref{sec:quantum}.
 
 $\mathrm{Mix}(S)$ is the least convex set containing $S$. Criteria
 (1) and (2) of Section~\ref{sec:intro} do not single it out: the
@@ -171,6 +203,13 @@ $P = P^{\perp\perp}$, every $w \in W$ has some $x \in P$ with $x_w \ne 0$
 \end{definition}
 
 \noindent
+On a finite web, $P = P^{\perp\perp}$ holds iff $P$ contains $0$ and is
+closed, convex, and downward closed, by Girard's bipolar
+theorem~\cite{girard2004}. The map $Q \mapsto Q^{\perp}$ is the
+antiblocking duality of polyhedral combinatorics~\cite{fulkerson1971},
+which Section~\ref{sec:second-perfect} uses.
+
+\noindent
 We use finite webs. For a finite set $X$, the \emph{data type} $X$ is the
 PCS of $x : X \to \ENNReal$ with $\sum_a x_a \le 1$. The PCS
 $X \multimap Y$ on $X \times Y$ is the set of $t$ with
@@ -187,12 +226,13 @@ including the exponentials, and model probabilistic
 PCF~\cite{danos-ehrhard2011}. The construction of
 Definition~\ref{def:mix} applies to every such type, with the
 $\{0,1\}$-valued elements of its probabilistic coherence space as
-certain states. We compare the two at the types where we have results.
-At first order they agree. The exponential $!\mathrm{Bool}$ separates
-them already at first order.
+certain states. At first order the two agree
+(Theorem~\ref{thm:pcs-recipe}), and the exponential $!\mathrm{Bool}$
+separates them (Theorem~\ref{thm:bang}).
 Section~\ref{sec:recipe-mall} proves the facts that hold at every
-multiplicative--additive formula. Whether the construction agrees
-with the probabilistic coherence space at other types is open.
+multiplicative--additive formula, and Section~\ref{sec:second-other}
+shows that the two differ at every formula with a negative occurrence of
+a second-order core. Whether they agree at the remaining types is open.
 
 \begin{theorem}[first order\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
 \label{thm:pcs-recipe}
@@ -207,7 +247,7 @@ At first order the certain states are the deterministic partial
 programs, they are the cliques of the coherence-space model, and the
 calculus is the PCS.
 
-The exponential separates the two at first order. The PCS $!\mathrm{Bool}$ has web the finite
+The PCS $!\mathrm{Bool}$ has web the finite
 multisets over $\{t, f\}$, and is the biorthogonal closure of the
 promotions $x^{!}(i,j) = x_t^{\,i} x_f^{\,j}$ of the elements $x$ of
 $\mathrm{Bool}$, where $(i,j)$ is the multiset with $i$ copies of $t$ and
@@ -258,12 +298,12 @@ different components cohere~\cite{girard1987}.
 \begin{theorem}[every formula\leanref{ispcs-p}\leanref{linear-invariants}\leanref{sharp-isclique}\leanref{recipe-subset-p}]
 \label{thm:mall}
 For every formula $A$:
-(i) $P(A)$ is a PCS;
-(ii) the indicator of every point and of every pair of distinct coherent
+(i) $P(A)$ is a PCS.
+(ii) The indicator of every point and of every pair of distinct coherent
 points lies in $P(A)$, and $x_s + x_t \le 1$ for every $x \in P(A)$ and
-every pair of distinct incoherent points $s, t$;
-(iii) every $\{0,1\}$-valued element of $P(A)$ is the indicator of a
-clique of the coherence space $A$;
+every pair of distinct incoherent points $s, t$.
+(iii) Every $\{0,1\}$-valued element of $P(A)$ is the indicator of a
+clique of the coherence space $A$.
 (iv) $\mathrm{Mix}$ of the $\{0,1\}$-valued elements of $P(A)$ is
 contained in $P(A)$, and its $\{0,1\}$-valued elements are exactly those
 of $P(A)$.
@@ -279,6 +319,11 @@ $B$ applies. Part (iii) follows from (ii): two incoherent points in the
 support of a $\{0,1\}$-valued element would give it total $2$ on a pair
 bounded by $1$. Part (iv) is Theorem~\ref{thm:mix-basic} together with
 the closure of an orthogonal under mixing\leanref{mix-subset-orth}.
+Girard introduces probabilistic coherence spaces with the intuition that
+two incoherent atoms have weights summing to at most $1$, and then sets
+coherence aside~\cite{girard2004}. Part (ii) shows that the intuition
+holds at every multiplicative--additive formula over data types. The
+converse of (iii) fails (Section~\ref{sec:second-shannon}).
 
 The semantics of Definition~\ref{def:mall} computes the spaces of
 Section~\ref{sec:recipe-linear}: $P(\mathbf{n} \multimap \mathbf{m})$ is

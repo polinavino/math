@@ -33,7 +33,7 @@ assignment satisfying this axiom distinguishes one use of $a$ from two.
 
 Probability is, as the Cox--Jaynes tradition has it, 
 \emph{extended logic}~\cite{cox1946,jaynes2003}, and different logics can be extended 
-through the same construction. The logic of events, in its algebraic
+through the same construction~\cite{paris2001,williams2012}. The logic of events, in its algebraic
 form the event algebra, is a \emph{parameter} of the construction, and
 the choice of event algebra determines the probability calculus.
 An event algebra consists of a set of events together with operations 
@@ -60,7 +60,7 @@ to make it a probability calculus, while choosing an event algebra that
 makes the required distinctions. 
 The extension of the event algebra to a probability calculus is then given by 
 the \emph{valuations}, i.e. the maps from events to numbers satisfying monotonicity, 
-normalization, and modularity. The resulting extension does not guarantee
+normalization, and modularity~\cite{weatherson2003,paris2001}. The resulting extension does not guarantee
 defining a probability calculus, and we specify the conditions under which it
 does: the $\{0,1\}$-valued valuations are the points of the event algebra,
 and they reconstruct its order when it is distributive. 
@@ -81,16 +81,19 @@ operations, such as linear logic. It generalizes the axioms of the
 probability calculus in addition to varying the event algebra. It
 applies to any logic presented by a set of \emph{certain states}, its
 $\{0,1\}$-valued assignments. The calculus is the set of finite mixtures
-of certain states. A mixture that takes only the values $0$ and $1$ is
+of certain states, the construction of de Finetti that generalized
+probabilism applies to non-classical logics~\cite{paris2001,williams2012}.
+A mixture that takes only the values $0$ and $1$ is
 one of the certain states it mixes, because every certain state with
 positive weight must agree with it at every event. So the
 $\{0,1\}$-valued elements of the calculus are exactly the certain
 states, which present the logic, and criterion (1) holds. 
 For finitely many events, the axioms of
 the calculus are exactly the affine laws that hold on every certain
-state. On finite frames and finite Boolean algebras these laws coincide with
-monotonicity, normalization, and modularity, and the calculus is the set
-of valuations. 
+state. When the certain states respect $\wedge$ and $\vee$, Paris shows that these
+laws are monotonicity, normalization, and modularity~\cite{paris2001}, so
+on finite frames and finite Boolean algebras the calculus is the set of
+valuations. 
 
 For linear logic, the event algebra is a quantale, a complete lattice
 with an associative tensor $\otimes$ that need not be idempotent. The
@@ -105,8 +108,8 @@ calculus of the second fix is contained in the probabilistic coherence
 space of the formula, and the certain elements of that space are cliques
 of Girard's coherence space~\cite{girard1987}. 
 
-Our extension and coherence spaced coincide at first-order
-linear logic. At higher order they can
+The calculus and the probabilistic coherence space coincide at
+first-order linear logic. At higher order they can
 differ: for a program with two functional arguments the calculus is the
 set of randomized sequential programs, a strict subset of the
 probabilistic coherence space (Section~\ref{sec:second}). The probabilistic
@@ -121,8 +124,8 @@ $!\mathrm{Bool}$ the calculus is also a strict subset.
 Quantum logic, whose event algebras are orthomodular
 lattices~\cite{birkhoff-vonneumann1936}, is a logic to which neither fix
 applies. Both rely on $\{0,1\}$-valued assignments: the first on
-$\{0,1\}$-valued valuations, which do not exist on non-distributive
-lattices, and the second relies on having certain states. A certain
+$\{0,1\}$-valued valuations, which need not exist on non-distributive
+lattices and do not exist on $M_3$, and the second relies on having certain states. A certain
 state of quantum logic would assign $1$ to exactly one ray of every
 orthogonal basis, and by the Kochen--Specker
 theorem~\cite{kochen-specker1967} there is none in dimension at least
@@ -136,126 +139,82 @@ exist, and they fail criterion (1).
 \paragraph{Contributions.}
 
 \begin{enumerate}
-\item \textbf{Weak excluded middle}
-  (Sections~\ref{sec:valuation} and~\ref{sec:bridges}).  Global weak
-  excluded middle on the opens of $X$ is exactly extremal
-  disconnectedness of $X$, for compact Hausdorff $X$ exactly the
-  Stonean spaces.
+\item \textbf{Characterizations} (Sections~\ref{sec:valuation},
+  \ref{sec:hinge} and~\ref{sec:ds}).  The complement rule holds for
+  every valuation iff the frame satisfies excluded middle, Dempster's
+  rule agrees with Bayesian conditioning iff the evidence has zero
+  slack, and slack splits exactly into a double-negation part and a
+  De Morgan part.
 
-\item \textbf{Two characterizations}
-  (Sections~\ref{sec:valuation}, \ref{sec:hinge} and~\ref{sec:ds}).
-  The complement rule holds for \emph{every} valuation iff the frame
-  satisfies excluded middle, the exact content of Van Horn's classical
-  negation axiom R3~\cite{vanhorn2003}.  Dempster's rule and Bayesian
-  conditioning, classically identical, agree iff the evidence has zero
-  slack.  The conditional $v(a \sqcap b)/v(b)$, the product rule, and
-  Bayes symmetry hold unchanged.  The complement rule weakens to the
-  interval $[v(A), 1 - v(\neg A)]$ of width $\slack(A)$, and the law of
-  total probability to a lower bound whose deficit is a conditional
-  slack.
+\item \textbf{Structure theorems} (Sections~\ref{sec:representation}
+  and~\ref{sec:ds}).  Every valuation on the lower sets of a poset
+  splits into an atomic part carried by points and a diffuse remainder, and on its Boolean core it
+  is a belief function.
 
-\item \textbf{Structure theorems}
-  (Sections~\ref{sec:representation} and~\ref{sec:ds}).  On finite
-  frames a valuation is a classical mass function on points.  In
-  general it splits into atomic and diffuse parts, and on its
-  Boolean core it is a belief function.
+\item \textbf{Cox's theorem} (Section~\ref{sec:cox}).  The sum-rule
+  half admits no derivation over a frame, even with weak excluded
+  middle, since on a five-element frame a disjunction's value is not a
+  function of its disjuncts' values.
 
-\item \textbf{Cox's theorem, dissected} (Section~\ref{sec:cox},
-  Appendix~\ref{app:aczel}).  Cox's theorem and its
-  repairs~\cite{cox1946,halpern1999,vanhorn2003} derive classical
-  probability from qualitative requirements on plausibility.  The
-  product-rule half is independent of the logic, proved by an
-  Acz\'el/H\"older generator built from scratch.  The sum-rule half, a
-  theorem classically, admits no derivation here: on a five-element
-  frame a disjunction's value is not a function of its disjuncts'
-  values, so modularity must be posited.  Weak excluded middle does
-  not restore it, since the counterexample frame satisfies weak
-  excluded middle.
+\item \textbf{Grounding models} (Section~\ref{sec:bridges}).  For a
+  classical measure read on the opens, slack is boundary mass, and a
+  classical posterior overstates refutation by exactly the conditional
+  boundary mass $\mu(\partial A \cap B)/\mu(B)$.
 
-\item \textbf{Two grounding models} (Section~\ref{sec:bridges}).
-  Any classical measure, read on the opens, is a valuation whose
-  slack is boundary mass.  A sharp readout of halting is
-  uncomputable, and on Cantor space the value of the halting event
-  is Chaitin's $\Omega$.  A classical posterior overstates refutation
-  by exactly the conditional boundary mass $\mu(\partial A \cap B)/\mu(B)$
-  (Theorem~\ref{thm:classical-overconfidence}), so the classical and
-  intuitionistic readings differ only where boundary mass is positive.
-  Slack is submodular yet does not determine the valuation.
-
-\item \textbf{The monad dichotomy} (Section~\ref{sec:monad}).
-  Product valuations are unique on
-  $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$ and provably
-  non-unique on $\mathrm{Set}(\mathbb{N} \times \mathbb{N})$, where
-  Fubini fails.  The
-  countably-presented fragment composes associatively and
+\item \textbf{Products} (Section~\ref{sec:monad}).  Product valuations
+  are unique on $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$, and the
+  countably-presented valuations compose associatively and
   commutatively.
 
-\item \textbf{Beyond frames} (Section~\ref{sec:lattice}).  The
-  certain valuations reconstruct the event order exactly on
-  distributive lattices, and completeness is not needed.  On the
-  non-distributive diamond $M_3$ no certain valuation exists, so the
-  construction does not extend to quantum event lattices unchanged.
-  Grading linear logic's $\otimes$ by modularity forces
-  $v(a \otimes a) = v(a)$, so such a grading cannot count resources.
+\item \textbf{Beyond frames} (Section~\ref{sec:lattice}).  Lattice
+  valuations are the normalized monotone homomorphisms out of a
+  valuation monoid in which every element is a sum over a chain, and
+  no modular grading of linear logic's $\otimes$ distinguishes $a$
+  from $a \otimes a$.
 
-\item \textbf{Probability calculi from certain states}
-  (Section~\ref{sec:recipe}).  The calculus of a logic presented by
-  its $\{0,1\}$-valued certain states is the set of their finite
-  mixtures.  Its certain elements are exactly the certain states, and
-  its axioms are exactly the affine laws valid on the certain states.
-  On finite frames this returns the valuations, and on finite Boolean
-  algebras Kolmogorov's calculus.  For arbitrary sets of events, the
-  functions satisfying every finitely supported law valid on the
-  certain states are exactly the barycenters of probability measures
+\item \textbf{Calculi from certain states} (Section~\ref{sec:recipe}).
+  The completeness theorem of generalized probabilism has a proof
+  without choice for rational points, and on arbitrary sets of events
+  the functions satisfying its laws are the barycenters of measures
   concentrated on the certain states.
 
 \item \textbf{Linear logic} (Sections~\ref{sec:recipe-linear}
-  and~\ref{sec:recipe-mall}).  Every multiplicative--additive formula
-  over finite data types denotes a probabilistic coherence space, whose
-  certain elements are cliques of Girard's coherence space, and the
-  calculus of the formula is contained in it.  At implications between
-  data types the two coincide.  At $!\mathrm{Bool}$ the calculus is a
-  strict subset.
+  and~\ref{sec:recipe-mall}).  The calculus of a
+  multiplicative--additive formula is contained in its probabilistic
+  coherence space, whose certain elements are cliques, with equality
+  at implications between data types and strict inclusion at
+  $!\mathrm{Bool}$.
 
 \item \textbf{Second-order linear types} (Section~\ref{sec:second}).
-  For a program with two functional arguments over finite data types,
-  the certain elements of the probabilistic coherence space are the
-  deterministic sequential programs, and the calculus is exactly the set
-  of randomized sequential programs, by both directions of Kuhn's
-  theorem~\cite{kuhn1953}.  The calculus is a strict subset of the
-  probabilistic coherence space.  The space is the clique-constrained
-  polytope of an exclusivity graph whose stable-set polytope is the
-  calculus, so the two can agree only if the graph has no odd hole or
-  antihole.  One tensor further, a clique of Girard's coherence space,
-  Shannon's stable set of $C_5 \boxtimes C_5$, is not an element of the
-  probabilistic coherence space.
+  For a program with two functional arguments over data types with
+  at least two elements, the calculus is the
+  stable-set polytope of a graph whose clique-constrained polytope is
+  the probabilistic coherence space, and the resulting strict inclusion
+  transfers to every formula in which this type occurs positively.
 
-\item \textbf{Quantum event logic} (Section~\ref{sec:quantum}).  For
-  the $18$ rays and $9$ orthogonal bases of Cabello's Kochen--Specker
-  set in $\mathbb{R}^4$~\cite{cabello1996}, no $\{0,1\}$-valued
-  assignment gives exactly one ray of every basis the value $1$, so the
-  calculus is empty, while every Born-rule assignment of a unit vector
-  sums to $1$ on every basis.  Quantum probability on this event logic
-  fails criterion (1).
+\item \textbf{Quantum event logic} (Section~\ref{sec:quantum}).  On
+  Cabello's Kochen--Specker set the calculus is empty, and with
+  divergence allowed every mixture of certain states has total weight
+  at most $4$, against $\tfrac92$ for every quantum state.
 
-\item \textbf{A first formal treatment.}
-  Everything above is machine-checked in Lean~4 over
-  \textsf{mathlib}, to our knowledge the first mechanization of
+\item \textbf{A first formal treatment.}  Every result above is machine-checked in
+  Lean~4 over \textsf{mathlib}, except cited theorems the text marks as
+  not formalized, which to our knowledge is the first mechanization of
   non-additive probability over intuitionistic logic.
 \end{enumerate}
 
 \paragraph{Mechanization.}
 The development is carried out in Lean~4~\cite{moura-ullrich2021} over
-\textsf{mathlib}~\cite{mathlib2020}, in roughly $5{,}000$ lines with no
+\textsf{mathlib}~\cite{mathlib2020}, in roughly $12{,}000$ lines with no
 \texttt{sorry}, and is included in full as anonymous supplementary
 material.\footnote{Claude (Anthropic) was used to assist with
 drafting and debugging the Lean formalization.} Two points are specific
 to a proof assistant.  We separate \emph{object-level} classicality,
 excluded middle in the frame $\Omega$, from the \emph{meta-level}
 classicality \textsf{mathlib} inherits through \texttt{Classical.choice},
-identify the four places where the meta-level dependence is essential
-(Section~\ref{sec:hinge}), and give choice-free proofs of the finite
-separation results.  
+identify where the meta-level dependence is essential
+(Table~\ref{tab:classical}), and give proofs without choice of the
+finite results that admit them.  
 The product-rule half of Cox's theorem needs an
 Acz\'el/H\"older regraduation absent from \textsf{mathlib}, which we
 build from scratch.

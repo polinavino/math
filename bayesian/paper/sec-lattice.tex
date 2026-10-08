@@ -8,7 +8,7 @@ $\Rightarrow$ (the right adjoint to $a \sqcap (-)$) is built from.
 Definition~\ref{def:valuation}'s four axioms, normalization at
 $\bot$ and $\top$, monotonicity, and modularity
 $v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, use only the
-\emph{binary} join $\sqcup$; none of the four mentions the
+\emph{binary} join $\sqcup$. None of the four mentions the
 \emph{arbitrary} join $\bigsqcup_{i \in I}$. Completeness is used
 only where later sections evaluate a valuation on an infinite join,
 as in the Scott-continuity results of
@@ -30,7 +30,7 @@ completeness quietly removed.
 
 \paragraph{The functor without completeness.}
 A \emph{bounded lattice} is a lattice with a least element $\bot$
-and a greatest element $\top$; a \emph{bounded lattice homomorphism}
+and a greatest element $\top$. A \emph{bounded lattice homomorphism}
 preserves $\bot$, $\top$, $\sqcup$, and $\sqcap$.
 Definition~\ref{def:valuation}'s axioms make sense over any bounded
 lattice $\Omega$, complete or not:
@@ -55,7 +55,7 @@ structure LValuation (Ω : Type*) [Lattice Ω] [BoundedOrder Ω] where
 
 \noindent
 A lattice valuation on a frame is exactly a valuation in the sense
-of Definition~\ref{def:valuation}; the two notions differ only in
+of Definition~\ref{def:valuation}. The two notions differ only in
 how much structure the ambient $\Omega$ carries.
 
 Section~\ref{sec:monad} pulls a valuation back along a frame
@@ -102,9 +102,8 @@ monotone.
 \end{theorem}
 
 \noindent
-So $\mathrm{Val}$ factors through commutative monoids, and the remaining
-conditions, normalization and monotonicity, are conditions on the
-homomorphism.
+So modularity becomes a property of the domain $V(P)$, and normalization
+and monotonicity are conditions on the homomorphism.
 
 \begin{theorem}[flags\leanref{vmonoid-flag}]
 \label{thm:flag}
@@ -124,8 +123,22 @@ of $\bot$, and $V(P)$ is cancellative: evaluating against the point
 valuations $\delta_q$ gives the number $k(q)$ of elements of the chain
 containing $q$, the $j$-th largest element of the chain is
 $\{q \mid k(q) \ge j\}$, and $x \mapsto k$ is an injective homomorphism
-into $\mathbb{N}^{Q}$. This argument is not formalized. For general
-lattices both questions are open.
+into $\mathbb{N}^{Q}$. This argument is not formalized. Without
+distributivity both can fail.
+
+\begin{proposition}[flags at $M_3$\leanref{vmonoid-m3}]
+\label{prop:vmonoid-m3}
+In $V(M_3)$, for the lattice of Definition~\ref{def:m3},
+$[a] + [o] = [c] + [o]$, and $[a] + [b] = [a] + [c]$ while
+$[b] \ne [c]$. So the chain of Theorem~\ref{thm:flag} is not unique, and
+$V(M_3)$ is not cancellative.
+\end{proposition}
+
+\noindent
+Both equations follow from $[x] + [y] = [o]$ for distinct atoms $x, y$.
+The map sending $z$ and $c$ to $0$ and $a$, $b$, $o$ to $\infty$ satisfies
+the hypotheses of Theorem~\ref{thm:vmonoid} and separates $[b]$ from
+$[c]$.
 
 \paragraph{Separation needs only distributivity.}
 Theorem~\ref{thm:sharp-iff-point} characterizes what a sharp
@@ -162,7 +175,7 @@ the first qualifying condition, not the negation fragment of
 intuitionistic logic, which stays frame-specific.
 
 Tracing the proof of Theorem~\ref{thm:sharp-separating} shows it
-never invokes $\bigsqcup$; the only place frame structure enters is
+never invokes $\bigsqcup$. The only place frame structure enters is
 \texttt{DistribLattice.prime\_ideal\_of\_disjoint\_filter\_ideal}
 itself, which needs distributivity and nothing beyond it:
 
@@ -178,7 +191,7 @@ Theorem~\ref{thm:lvaluation-separating}
 reproves Theorem~\ref{thm:sharp-separating} with the hypothesis
 \texttt{Order.Frame} weakened to \texttt{DistribLattice}, and
 nothing else about the argument changes. The condition doing the
-work in the sharp/point correspondence is distributivity;
+work in the sharp/point correspondence is distributivity, and
 completeness is not load-bearing for either half of it.
 
 \paragraph{Distributivity is not a proof artifact.}
@@ -323,7 +336,7 @@ really is. A candidate probabilistic semantics for a non-idempotent
 $\otimes$ must choose between being graded by
 Definition~\ref{def:lvaluation}'s compositional law and
 discriminating the one thing a non-idempotent $\otimes$ exists to
-discriminate, $a$ from $a \otimes a$; it cannot keep both. The
+discriminate, $a$ from $a \otimes a$. It cannot keep both. The
 probabilistic semantics that does exist for linear logic,
 probabilistic coherence spaces~\cite{danos-ehrhard2011}, keeps
 discrimination: two independent copies of a resource are not scored
@@ -334,7 +347,7 @@ law, on pain of losing exactly the discrimination they exist to
 keep, so they instead evaluate proofs with a classical,
 Kolmogorov-style structure over $\otimes$'s type-level behavior,
 never a valuation of propositions in Definition~\ref{def:lvaluation}'s
-sense. Nothing here is a missed opportunity on either side; the
+sense. Nothing here is a missed opportunity on either side. The
 dichotomy forecloses the combination before any further axiom of
 Definition~\ref{def:lvaluation} is even reached. Section~\ref{sec:recipe} replaces these axioms by a construction
 that applies to linear logic.

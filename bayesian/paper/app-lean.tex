@@ -51,6 +51,12 @@ theorem Valuation.le_one (v : Valuation Ω) (a : Ω) : v a ≤ 1
 
 \phantomsection\label{lean:valuation-slack-eq-dngap-add-demorgangap}
 \begin{lstlisting}
+noncomputable def slack (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - (v a + v aᶜ)
+
+noncomputable def dnGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := v aᶜᶜ - v a
+
+noncomputable def deMorganGap (v : Valuation Ω) (a : Ω) : ℝ≥0∞ := 1 - (v aᶜᶜ + v aᶜ)
+
 theorem Valuation.slack_eq_dnGap_add_deMorganGap (v : Valuation Ω) (a : Ω) :
     v.slack a = v.dnGap a + v.deMorganGap a
 \end{lstlisting}
@@ -145,6 +151,12 @@ theorem em_of_forall_hasClassicalNegation
 
 \phantomsection\label{lean:sharp-iff-point}
 \begin{lstlisting}
+def Valuation.IsSharp (v : Valuation Ω) : Prop := ∀ a, v a = 0 ∨ v a = 1
+
+noncomputable def Ideal.toValuation (J : Order.Ideal Ω) (hJ : J.IsPrime) (htop : ⊤ ∉ J) :
+    Valuation Ω where
+  toFun x := if x ∈ J then 0 else 1
+
 theorem sharp_iff_point (v : Valuation Ω) :
     v.IsSharp ↔ ∃ (J : Order.Ideal Ω) (hJ : J.IsPrime) (htop : ⊤ ∉ J),
       v = Ideal.toValuation J hJ htop
@@ -152,6 +164,12 @@ theorem sharp_iff_point (v : Valuation Ω) :
 
 \phantomsection\label{lean:sharp-scott-iff-completelyprimepoint}
 \begin{lstlisting}
+def ScottContinuous (v : Valuation Ω) : Prop :=
+  ∀ S : Set Ω, S.Nonempty → DirectedOn (· ≤ ·) S → v (sSup S) = ⨆ a ∈ S, v a
+
+def Ideal.IsCompletelyPrime (J : Order.Ideal Ω) : Prop :=
+  J.IsPrime ∧ ∀ S : Set Ω, (∀ x ∈ S, x ∈ J) → sSup S ∈ J
+
 theorem sharp_scott_iff_completelyPrimePoint (v : Valuation Ω) :
     v.IsSharp ∧ v.ScottContinuous ↔
       ∃ (J : Order.Ideal Ω) (hJ : Ideal.IsCompletelyPrime J) (htop : ⊤ ∉ J),
@@ -167,6 +185,9 @@ noncomputable def Valuation.mass (v : Valuation (LowerSet P)) (p : P) : ℝ≥0�
 
 \phantomsection\label{lean:valuation-eq-sum-mass}
 \begin{lstlisting}
+noncomputable def LowerSet.toFinset (U : LowerSet P) : Finset P :=
+  (Set.toFinite (U : Set P)).toFinset
+
 theorem Valuation.eq_sum_mass (v : Valuation (LowerSet P)) (U : LowerSet P) :
     v U = ∑ p ∈ U.toFinset, v.mass p
 
@@ -180,6 +201,9 @@ noncomputable def Valuation.toPMF (v : Valuation (LowerSet P)) : PMF P
 
 \phantomsection\label{lean:valuation-exists-pmf-presentation}
 \begin{lstlisting}
+def Valuation.mapEquiv (e : Ω ≃o Γ) (v : Valuation Ω) : Valuation Γ where
+  toFun b := v (e.symm b)
+
 theorem Valuation.exists_pmf_presentation {Θ : Type u} [Order.Frame Θ] [Finite Θ]
     (v : Valuation Θ) :
     ∃ (P : Type u) (_ : PartialOrder P) (_ : Fintype P) (_ : DecidableEq P)
@@ -198,6 +222,9 @@ theorem Valuation.eq_mix_deltaPoint (v : Valuation (LowerSet P)) :
 
 \phantomsection\label{lean:exists-valuation-not-point-representable}
 \begin{lstlisting}
+noncomputable def topIndicator : Valuation (LowerSet ℕ) where
+  toFun U := if U = ⊤ then 1 else 0
+
 theorem exists_valuation_not_point_representable :
     ∃ v : Valuation (LowerSet ℕ), ∑' p, v.mass p ≠ v ⊤
 
@@ -212,6 +239,8 @@ theorem topIndicator_not_scott :
 
 \phantomsection\label{lean:eq-tsum-mass-of-scott}
 \begin{lstlisting}
+def IsPurelyAtomic (v : Valuation (LowerSet P)) : Prop := ∑' p, v.mass p = v ⊤
+
 theorem eq_tsum_mass_of_scott (v : Valuation (LowerSet ℕ))
     (hsc : v ⊤ = ⨆ n, v (LowerSet.Iic n)) : v ⊤ = ∑' n, v.mass n
 
@@ -230,6 +259,12 @@ theorem tsum_mass_le (v : Valuation (LowerSet P)) : ∑' p, v.mass p ≤ v ⊤
 
 \phantomsection\label{lean:inclusion-exclusion}
 \begin{lstlisting}
+noncomputable def iesOdd (v : Valuation Ω) (s : Finset ι) (a : ι → Ω) : ℝ≥0∞ :=
+  ∑ T ∈ s.powerset, if Odd T.card then v (T.inf a) else 0
+
+noncomputable def iesEven (v : Valuation Ω) (s : Finset ι) (a : ι → Ω) : ℝ≥0∞ :=
+  ∑ T ∈ s.powerset, if T.Nonempty ∧ Even T.card then v (T.inf a) else 0
+
 theorem Valuation.inclusion_exclusion (v : Valuation Ω) (s : Finset ι)
     (a : ι → Ω) : v (s.sup a) + v.iesEven s a = v.iesOdd s a
 \end{lstlisting}
@@ -256,6 +291,9 @@ theorem Valuation.plausibility_sub_self (v : Valuation Ω) (a : Ω) :
 
 \phantomsection\label{lean:sup-compl-decomp}
 \begin{lstlisting}
+noncomputable def emGap (v : Valuation Ω) (a b : Ω) : ℝ≥0∞ :=
+  v a - v (a ⊓ (b ⊔ bᶜ))
+
 theorem Valuation.sup_compl_decomp (v : Valuation Ω) (a b : Ω) :
     v (a ⊔ bᶜ) = v bᶜ + (v (a ⊓ b) + v.emGap a b)
 \end{lstlisting}
@@ -298,6 +336,13 @@ theorem isDeMorgan_lowerSetV : Order.Frame.IsDeMorgan (LowerSet V)
 
 \phantomsection\label{lean:no-disjunction-functional}
 \begin{lstlisting}
+/-- `o` below the incomparable `a` and `b`. -/
+inductive V : Type
+  | o | a | b
+
+noncomputable def qV (S : LowerSet V) : ℝ≥0∞ :=
+  if V.o ∈ S then (if V.a ∈ S ∧ V.b ∈ S then 1 else 2⁻¹) else 0
+
 theorem modularity_irreducible :
     ∃ (Ω : Type) (_ : Order.Frame Ω) (q : Ω → ℝ≥0∞),
       Monotone q ∧ q ⊥ = 0 ∧ q ⊤ = 1 ∧
@@ -383,6 +428,9 @@ theorem classical_posterior_compl_eq (μ : Measure X)
 
 \phantomsection\label{lean:interiormeasure-add-compl-le}
 \begin{lstlisting}
+noncomputable def MeasureTheory.Measure.interiorMeasure (μ : Measure X) (S : Set X) :
+    ℝ≥0∞ := μ (interior S)
+
 theorem interiorMeasure_add_compl_le (μ : Measure X) [IsProbabilityMeasure μ]
     (S : Set X) : μ.interiorMeasure S + μ.interiorMeasure Sᶜ ≤ 1
 \end{lstlisting}
@@ -423,6 +471,14 @@ theorem haltsOpen_compl : haltsOpenᶜ = (⊥ : Opens Prop)
 
 \phantomsection\label{lean:slack-eq-boundary}
 \begin{lstlisting}
+def haltsOpen : Opens Prop := ⟨{q | q}, isOpen_setOf_self⟩
+
+noncomputable def coinMeasure (p : ℝ≥0∞) : Measure Prop :=
+  p • Measure.dirac True + (1 - p) • Measure.dirac False
+
+noncomputable def sierpinskiValuation {p : ℝ≥0∞} (hp1 : p ≤ 1) : Valuation (Opens Prop) :=
+  (coinMeasure p).toValuationOpens
+
 theorem slack_eq_boundary {p : ℝ≥0∞} (hp1 : p ≤ 1) :
     (sierpinskiValuation hp1).slack haltsOpen
       = coinMeasure p (frontier {q : Prop | q})
@@ -442,6 +498,21 @@ theorem sharpReadout_not_computable (n : ℕ) :
 
 \phantomsection\label{lean:isopen-wordcylinder}
 \begin{lstlisting}
+/-- One fair coin flip, `Ber(true, false, 1/2)`. -/
+noncomputable def fairCoin : Measure Bool := Ber(true, false, halfI)
+
+noncomputable def cantorMeasure : Measure (ℕ → Bool) :=
+  Measure.infinitePi (fun _ : ℕ => fairCoin)
+
+noncomputable def wordRestriction (w : List Bool) : ℕ → Set Bool :=
+  fun i => if h : i < w.length then {w[i]} else Set.univ
+
+def wordCylinder (w : List Bool) : Set (ℕ → Bool) :=
+  Set.pi (Finset.range w.length : Set ℕ) (wordRestriction w)
+
+def PrefixFree (F : Finset (List Bool)) : Prop :=
+  ∀ v ∈ F, ∀ w ∈ F, v ≠ w → ¬ v <+: w
+
 theorem isOpen_wordCylinder (w : List Bool) : IsOpen (wordCylinder w)
 
 theorem cantorMeasure_wordCylinder (w : List Bool) :
@@ -594,6 +665,8 @@ theorem LValuation.comap_comp (f : BoundedLatticeHom Γ Ω)
 \noindent Theorem~\ref{thm:lvaluation-separating}.
 \phantomsection\label{lean:lvaluation-separating}
 \begin{lstlisting}
+def LValuation.IsSharp (v : LValuation Ω) : Prop := ∀ a, v a = 0 ∨ v a = 1
+
 theorem LValuation.exists_sharp_separating [DistribLattice Ω]
     {a b : Ω} (hab : ¬ a ≤ b) :
     ∃ v : LValuation Ω, v.IsSharp ∧ v a = 1 ∧ v b = 0
@@ -1120,11 +1193,6 @@ def par (A B : Fm) : Fm := neg (tens (neg A) (neg B))
 def plus (A B : Fm) : Fm := neg (wth (neg A) (neg B))
 def lolli (A B : Fm) : Fm := neg (tens A (neg B))
 
-def plus (A B : Fm) : Fm := neg (wth (neg A) (neg B))
-def lolli (A B : Fm) : Fm := neg (tens A (neg B))
-
-def lolli (A B : Fm) : Fm := neg (tens A (neg B))
-
 noncomputable def tvec {X Y : Type} (x : X → ℝ≥0∞) (y : Y → ℝ≥0∞) : X × Y → ℝ≥0∞ :=
   fun ab => x ab.1 * y ab.2
 
@@ -1412,11 +1480,6 @@ def posR (rows : List (Row (n + 1))) := rows.filter fun r => decide (0 < lastc r
 def negR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r < 0)
 def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
 
-def negR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r < 0)
-def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
-
-def zerR (rows : List (Row (n + 1))) := rows.filter fun r => decide (lastc r = 0)
-
 def pair (p q : Row (n + 1)) : Row n := proj (comb (-lastc q) (lastc p) p q)
 
 def step (rows : List (Row (n + 1))) : List (Row n) :=
@@ -1495,8 +1558,6 @@ def L {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.lt
 /-- The iterated limit with `m → ∞` first. -/
 def R {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.gt
 
-def R {A : Nat → Nat → Bool} (w : EOD A) : Bool := w.gt
-
 theorem L_modular {A B} (a : EOD A) (b : EOD B) :
     val (L a) + val (L b) = val (L (union a b)) + val (L (inter a b))
 
@@ -1551,6 +1612,20 @@ noncomputable def lvaluation_equiv {P : Type*} [Lattice P] [BoundedOrder P] :
 \phantomsection\label{lean:vmonoid-flag}
 \begin{lstlisting}
 theorem exists_flag (x : V P) : ∃ l : List P, l.Pairwise (· ≤ ·) ∧ x = (l.map ι).sum
+\end{lstlisting}
+
+\phantomsection\label{lean:vmonoid-m3}
+\begin{lstlisting}
+theorem M3_flag_not_unique : ι M3.a + ι M3.o = ι M3.c + ι M3.o
+
+def m3sep : M3 → ℝ≥0∞
+  | .z => 0
+  | .c => 0
+  | _ => ⊤
+
+theorem m3sep_modular : Modular m3sep
+
+theorem M3_not_cancel : ι M3.a + ι M3.b = ι M3.a + ι M3.c ∧ ι M3.b ≠ ι M3.c
 \end{lstlisting}
 
 \subsection{A Language for the Second-Order Type}
@@ -1668,11 +1743,7 @@ def gensTT : Set (W2 → ℝ≥0∞) := {u | ∃ t ∈ tensDual, ∃ t' ∈ tens
 def PTT : Set (W2 → ℝ≥0∞) := orth (orth gensTT)
 def PTTdual : Set (W2 → ℝ≥0∞) := orth gensTT
 
-def PTTdual : Set (W2 → ℝ≥0∞) := orth gensTT
-
 def cohTT : W2 → W2 → Prop := tensC secondC secondC
-def cohTTdual : W2 → W2 → Prop := dualC cohTT
-
 def cohTTdual : W2 → W2 → Prop := dualC cohTT
 
 def shannon : Finset W2 :=
@@ -1694,3 +1765,156 @@ theorem recipe_eq_denotations [Nonempty X] [Nonempty X'] :
     Mix {z | z ∈ tD X Y X' Y' ∧ ∀ u, z u = 0 ∨ z u = 1} = Set.range (P0.den (X := X) (Y := Y)
       (X' := X') (Y' := Y'))
 \end{lstlisting}
+
+\subsection{Coordinate Retracts}
+
+\phantomsection\label{lean:retract}
+\begin{lstlisting}
+noncomputable def push (j : E → F) (x : E → ℝ≥0∞) : F → ℝ≥0∞ :=
+  fun a => ∑ d, if j d = a then x d else 0
+
+structure Retract (D A : Fm) where
+  j : web D → web A
+  inj : Function.Injective j
+  push_mem : ∀ x ∈ P D, push j x ∈ P A
+  pull_mem : ∀ z ∈ P A, (fun d => z (j d)) ∈ P D
+
+def recipe (A : Fm) : Set (web A → ℝ≥0∞) :=
+  ConstructiveProb.Mix {z | z ∈ P A ∧ ∀ s, z s = 0 ∨ z s = 1}
+\end{lstlisting}
+
+\phantomsection\label{lean:retract-gap}
+\begin{lstlisting}
+theorem Retract.recipe_ne {D A : Fm} (R : Retract D A) (h : recipe D ≠ P D) :
+    recipe A ≠ P A
+
+theorem pull_push {j : E → F} (hj : Function.Injective j) (x : E → ℝ≥0∞) :
+    (fun d => push j x (j d)) = x
+
+theorem pairing_push (j : E → F) (u : E → ℝ≥0∞) (z : F → ℝ≥0∞) :
+    pairing (push j u) z = pairing u (fun d => z (j d))
+\end{lstlisting}
+
+\phantomsection\label{lean:retract-ops}
+\begin{lstlisting}
+def Retract.refl (D : Fm) : Retract D D
+
+def Retract.trans {D A C : Fm} (R : Retract D A) (S : Retract A C) : Retract D C
+
+def Retract.neg {D A : Fm} (R : Retract D A) : Retract (Fm.neg D) (Fm.neg A)
+
+def Retract.negneg (D : Fm) : Retract D (Fm.neg (Fm.neg D))
+
+def Retract.tensL (D B : Fm) (b : web B) : Retract D (Fm.tens D B)
+
+def Retract.tensR (D B : Fm) (b : web B) : Retract D (Fm.tens B D)
+
+def Retract.wthL (D B : Fm) : Retract D (Fm.wth D B)
+
+def Retract.wthR (D B : Fm) : Retract D (Fm.wth B D)
+
+theorem push_tensL {X Y : Type} [Fintype X] [DecidableEq X] [DecidableEq Y] (b : Y)
+    (x : X → ℝ≥0∞) : push (fun d => (d, b)) x = tvec x (Pi.single b 1)
+
+theorem push_tensR {X Y : Type} [Fintype X] [DecidableEq X] [DecidableEq Y] (b : Y)
+    (x : X → ℝ≥0∞) : push (fun d => (b, d)) x = tvec (Pi.single b 1) x
+
+theorem push_comp [Fintype F] (j1 : E → F) (j2 : F → G) (x : E → ℝ≥0∞) :
+    push (fun d => j2 (j1 d)) x = push j2 (push j1 x)
+
+theorem push_id [DecidableEq E] (x : E → ℝ≥0∞) : push (fun d : E => d) x = x
+\end{lstlisting}
+
+\phantomsection\label{lean:gap-of-occ}
+\begin{lstlisting}
+def NE : Fm → Prop
+  | base n => 0 < n
+  | Fm.neg A => NE A
+  | tens A B => NE A ∧ NE B
+  | wth A B => NE A ∧ NE B
+
+theorem NE.point : ∀ A : Fm, NE A → Nonempty (web A)
+  | base _, h => ⟨⟨0, h⟩⟩
+  | Fm.neg A, h => NE.point A h
+  | tens A B, h => by
+    obtain ⟨a⟩ := NE.point A h.1
+    obtain ⟨b⟩ := NE.point B h.2
+    exact ⟨(a, b)⟩
+  | wth A _, h => by
+    obtain ⟨a⟩ := NE.point A h.1
+    exact ⟨Sum.inl a⟩
+
+/-- `Occ D p A`: `D` occurs in `A`, positively if `p` and negatively otherwise. -/
+inductive Occ (D : Fm) : Bool → Fm → Prop
+  | self : Occ D true D
+  | neg {p : Bool} {A : Fm} : Occ D p A → Occ D (!p) (Fm.neg A)
+  | tensL {p : Bool} {A : Fm} (B : Fm) : Occ D p A → Occ D p (tens A B)
+  | tensR {p : Bool} {A : Fm} (B : Fm) : Occ D p A → Occ D p (tens B A)
+  | wthL {p : Bool} {A : Fm} (B : Fm) : Occ D p A → Occ D p (wth A B)
+  | wthR {p : Bool} {A : Fm} (B : Fm) : Occ D p A → Occ D p (wth B A)
+
+/-- `D` or `D^⊥`, according to polarity. -/
+def pol : Bool → Fm → Fm
+  | true, D => D
+  | false, D => Fm.neg D
+
+/-- **Occurrences give retracts.** -/
+theorem occ_retract {D : Fm} : ∀ {p : Bool} {A : Fm}, Occ D p A → NE A →
+    Nonempty (Retract (pol p D) A)
+  | _, _, Occ.self, _ => ⟨Retract.refl D⟩
+  | _, _, Occ.neg (p := p) h, hA => by
+    obtain ⟨R⟩ := occ_retract h hA
+    cases p
+    · exact ⟨(Retract.negneg D).trans R.neg⟩
+    · exact ⟨R.neg⟩
+  | _, _, Occ.tensL B h, hA => by
+    obtain ⟨R⟩ := occ_retract h hA.1
+    obtain ⟨b⟩ := NE.point B hA.2
+    exact ⟨R.trans (Retract.tensL _ B b)⟩
+  | _, _, Occ.tensR B h, hA => by
+    obtain ⟨R⟩ := occ_retract h hA.2
+    obtain ⟨b⟩ := NE.point B hA.1
+    exact ⟨R.trans (Retract.tensR _ B b)⟩
+  | _, _, Occ.wthL B h, hA => by
+    obtain ⟨R⟩ := occ_retract h hA.1
+    exact ⟨R.trans (Retract.wthL _ B)⟩
+  | _, _, Occ.wthR B h, hA => by
+    obtain ⟨R⟩ := occ_retract h hA.2
+    exact ⟨R.trans (Retract.wthR _ B)⟩
+
+/-- The second-order core `(n ⊸ m) ⊗ (n' ⊸ m')`. -/
+abbrev core (n m n' m' : ℕ) : Fm := tens (lolli (base n) (base m)) (lolli (base n') (base m'))
+
+/-- **The gap at every formula with a negative occurrence of the core.** -/
+theorem gap_of_occ {n m n' m' : ℕ} (hn : 2 ≤ n) (hm : 2 ≤ m) (hn' : 2 ≤ n') (hm' : 2 ≤ m')
+    {A : Fm} (hocc : Occ (core n m n' m') false A) (hA : NE A) : recipe A ⊂ P A
+
+example : recipe (lolli (core 2 2 2 2) (base 2)) ⊂ P (lolli (core 2 2 2 2) (base 2))
+\end{lstlisting}
+
+\phantomsection\label{lean:quantum-partial}
+\begin{lstlisting}
+def partialCertain : Set (Fin 18 → ℝ≥0∞) :=
+  {s | IsSharpVec s ∧ ∀ b, ∑ i, s (bas b i) ≤ 1}
+
+theorem sum_bases (f : Fin 18 → ℝ≥0∞) :
+    ∑ b : Fin 9, ∑ i : Fin 4, f (bas b i) = 2 * ∑ v, f v
+
+theorem partial_sum_le_four {s : Fin 18 → ℝ≥0∞} (hs : s ∈ partialCertain) : ∑ v, s v ≤ 4
+
+theorem mix_sum_le_four {x : Fin 18 → ℝ≥0∞} (hx : x ∈ Mix partialCertain) : ∑ v, x v ≤ 4
+
+theorem born_total {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) : 2 * ∑ v, born ψ v = 9
+
+theorem born_not_mix_partial {ψ : Fin 4 → ℝ} (hψ : ∑ k, ψ k ^ 2 = 1) :
+    born ψ ∉ Mix partialCertain
+
+def S4 : Finset (Fin 18) := {0, 1, 3, 11}
+
+theorem S4_stable : ∀ b : Fin 9, (Finset.univ.filter (fun i : Fin 4 => bas b i ∈ S4)).card ≤ 1
+
+noncomputable def ind4 : Fin 18 → ℝ≥0∞ := fun v => if v ∈ S4 then 1 else 0
+
+theorem ind4_mem : ind4 ∈ partialCertain ∧ ∑ v, ind4 v = 4
+\end{lstlisting}
+

@@ -14,6 +14,7 @@
 -/
 import ConstructiveProb.Points
 import ConstructiveProb.GeneralValuation
+import ConstructiveProb.NonDistributive
 import Mathlib.Order.Category.Frm
 import Mathlib.CategoryTheory.Elements
 
@@ -157,6 +158,48 @@ theorem exists_flag (x : V P) : ∃ l : List P, l.Pairwise (· ≤ ·) ∧ x = (
       obtain ⟨l, hl, hs⟩ := ih
       obtain ⟨l', hl', -, hsum⟩ := insert_chain a l hl
       exact ⟨l', hl', by rw [Multiset.map_cons, Multiset.sum_cons, hs, hsum]⟩
+
+/-! ### Failure at `M3` -/
+
+theorem M3_atoms (x y : M3) (hx : x = .a ∨ x = .b ∨ x = .c) (hy : y = .a ∨ y = .b ∨ y = .c)
+    (hxy : x ≠ y) : ι x + ι y = ι M3.o := by
+  rw [ι_modular]
+  have h1 : x ⊔ y = M3.o := by
+    rcases hx with rfl | rfl | rfl <;> rcases hy with rfl | rfl | rfl <;>
+      first | exact absurd rfl hxy | rfl
+  have h2 : x ⊓ y = ⊥ := by
+    rcases hx with rfl | rfl | rfl <;> rcases hy with rfl | rfl | rfl <;>
+      first | exact absurd rfl hxy | rfl
+  rw [h1, h2, ι_bot, add_zero]
+
+/-- **Flags are not unique in `M3`.** `[a] + [⊤] = [c] + [⊤]`. -/
+theorem M3_flag_not_unique : ι M3.a + ι M3.o = ι M3.c + ι M3.o :=
+  calc ι M3.a + ι M3.o = ι M3.a + (ι M3.b + ι M3.c) := by
+        rw [M3_atoms M3.b M3.c (by simp) (by simp) (by decide)]
+    _ = (ι M3.a + ι M3.b) + ι M3.c := (add_assoc _ _ _).symm
+    _ = ι M3.c + ι M3.o := by
+        rw [M3_atoms M3.a M3.b (by simp) (by simp) (by decide), add_comm]
+
+/-- A modular map on `M3` into `[0, ∞]` separating the atoms `b` and `c`. -/
+def m3sep : M3 → ℝ≥0∞
+  | .z => 0
+  | .c => 0
+  | _ => ⊤
+
+theorem m3sep_modular : Modular m3sep := by
+  refine ⟨rfl, fun x y => ?_⟩
+  have hs : x ⊔ y = M3.sup x y := rfl
+  have hi : x ⊓ y = M3.inf x y := rfl
+  rw [hs, hi]
+  cases x <;> cases y <;> simp [m3sep, M3.sup, M3.inf]
+
+/-- **`V M3` is not cancellative.** `[a] + [b] = [a] + [c]` but `[b] ≠ [c]`. -/
+theorem M3_not_cancel : ι M3.a + ι M3.b = ι M3.a + ι M3.c ∧ ι M3.b ≠ ι M3.c := by
+  refine ⟨by rw [M3_atoms M3.a M3.b (by simp) (by simp) (by decide),
+    M3_atoms M3.a M3.c (by simp) (by simp) (by decide)], fun h => ?_⟩
+  have := congrArg (lift m3sep m3sep_modular) h
+  rw [lift_ι, lift_ι] at this
+  exact ENNReal.top_ne_zero this
 
 end VMonoid
 

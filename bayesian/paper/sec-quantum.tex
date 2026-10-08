@@ -5,16 +5,24 @@ In quantum logic the events are the closed subspaces of a Hilbert
 space~\cite{birkhoff-vonneumann1936}. We restrict to rays, the
 one-dimensional subspaces, of $\mathbb{R}^d$. A \emph{context} is an
 orthogonal basis, a maximal set of pairwise orthogonal rays, whose events
-can be observed jointly. A \emph{quantum state} assigns to each ray a
-number in $\ENNReal$ such that the numbers on every context sum to $1$.
-For a unit vector $\psi$, the \emph{Born rule}
-$x_v = (\psi \cdot v)^2 / (v \cdot v)$ gives such an assignment. For
-$d \ge 3$, Gleason's theorem~\cite{gleason1957} states that every quantum
-state on all rays comes from a density matrix, a mixture of Born-rule
-assignments.
+can be observed jointly. A \emph{state} assigns to each ray a number in
+$\ENNReal$ such that the numbers on every context sum to $1$. For a unit
+vector $\psi$, the \emph{Born rule} $x_v = (\psi \cdot v)^2 / (v \cdot
+v)$ gives a state, and mixtures of such states, the density matrices,
+are the \emph{quantum states}. For $d \ge 3$, Gleason's
+theorem~\cite{gleason1957} states that every state on all rays of
+$\mathbb{R}^d$ is a quantum state.
+
+This section tests the construction of Section~\ref{sec:recipe} on this
+event logic. The mathematics is known: the Kochen--Specker
+theorem~\cite{kochen-specker1967}, its $18$-ray
+instance~\cite{cabello1996}, and the bounds of the graph-theoretic
+approach to contextuality~\cite{cabello2014}. What is added is its
+reading in terms of the construction, with the same graph polytopes as
+Section~\ref{sec:second-perfect}, and its mechanization.
 
 The presentation of Definition~\ref{def:mix} takes the rays as events
-and, as certain states, the $\{0,1\}$-valued quantum states, which give
+and, as certain states, the $\{0,1\}$-valued states, which give
 exactly one ray of every context the value $1$. By the Kochen--Specker
 theorem~\cite{kochen-specker1967}, for $d \ge 3$ there are none. We
 formalize a finite instance.
@@ -57,8 +65,8 @@ For the presentation whose events are the $18$ vectors and whose certain
 states are the $\{0,1\}$-valued functions summing to $1$ on every basis,
 the set of certain states and $\mathrm{Mix}$ of it are empty. For every
 $\psi \in \mathbb{R}^4$ with $\psi \cdot \psi = 1$, the Born-rule
-assignment sums to $1$ on every basis, so it is a quantum state that is
-not in $\mathrm{Mix}$ of the certain states.
+assignment sums to $1$ on every basis, so it is a state that is not in
+$\mathrm{Mix}$ of the certain states.
 \end{theorem}
 
 \noindent
@@ -66,13 +74,44 @@ The Born-rule statement is Parseval's identity
 $\sum_{v \in B} (\psi \cdot v)^2 / (v \cdot v) = \psi \cdot \psi$ for
 each orthogonal basis $B$, checked basis by basis\leanref{parseval}.
 
+\paragraph{Allowing divergence.}
+In a probabilistic coherence space an element may have total mass below
+$1$, the missing mass being the probability of
+divergence~\cite{danos-ehrhard2011}. Allowing the same here, a state sums to
+at most $1$ on every context. The certain states are then the $\{0,1\}$-valued functions
+with at most one ray of value $1$ in each basis, the indicators of the
+stable sets of the graph that joins two rays when they lie in a common
+basis. These exist, and the construction is no longer empty.
+
+\begin{theorem}[a stable-set bound\leanref{quantum-partial}]
+\label{thm:quantum-partial}
+Every mixture of these certain states has total weight at most $4$ on the
+$18$ rays, and $4$ is attained. Every Born-rule assignment of a unit
+vector has total weight $\tfrac92$. In particular no Born-rule assignment
+is a mixture of these certain states.
+\end{theorem}
+
+\noindent
+Summing over the nine bases counts every ray twice. A certain state has
+weight at most $1$ on each basis, so its total weight is at most
+$\tfrac92$, hence at most $4$ as it is an integer. A Born-rule assignment
+has weight $1$ on each basis. Summed over the bases, every mixture of
+certain states has weight at most $8$, so it diverges with probability at
+least $\tfrac19$ on some basis, while a quantum state diverges on none.
+The bound $4$ is the independence number of the graph, and the quantum
+value $\tfrac92$ does not depend on the state. This is the comparison of
+Section~\ref{sec:second-perfect} for a different graph, and the gap
+between $4$ and $\tfrac92$ is the Kochen--Specker contradiction in
+quantitative form~\cite{cabello2008,cabello2014}.
+
 Quantum probability therefore fails criterion (1) of
-Section~\ref{sec:intro}: the calculus has no $\{0,1\}$-valued elements,
-so they cannot reconstruct the event logic. Theorem~\ref{thm:quantum}
-proves this for Cabello's set. For all rays of $\mathbb{R}^d$ with
-$d \ge 3$ it follows from the Kochen--Specker theorem, which is not
-formalized. The construction of Section~\ref{sec:recipe} produces
-nothing at this event logic: with no certain states, every affine law is
+Section~\ref{sec:intro}: no state is $\{0,1\}$-valued, so the
+$\{0,1\}$-valued states cannot reconstruct the event logic.
+Theorem~\ref{thm:quantum} proves this for Cabello's set. For all rays of
+$\mathbb{R}^d$ with $d \ge 3$ it follows from the Kochen--Specker theorem, which is not
+formalized. With normalized certain states, the construction of
+Section~\ref{sec:recipe} produces nothing at this event logic: with no
+certain states, every affine law is
 valid on the certain states, including $1 \le 0$, and
 Theorem~\ref{thm:mix-eq-laws} returns the empty set. The mixtures of
 certain states are the noncontextual hidden-variable models of the event

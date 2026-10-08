@@ -1,15 +1,18 @@
 \section{Second-Order Linear Types}
 \label{sec:second}
 
-This section uses the construction of Section~\ref{sec:recipe} at the
-second-order type of a program with two functional arguments, where it
-returns a strict subset of the probabilistic coherence space. By
-computation, not formalized, the construction and the probabilistic
-coherence space agree on $(\mathrm{Bool} \multimap \mathrm{Bool})
-\multimap \mathrm{Bool}$ and $((\mathrm{Bool} \multimap \mathrm{Bool})
-\multimap \mathrm{Bool}) \multimap \mathrm{Bool}$, the two iterated
-implications into $\mathrm{Bool}$ we checked. The type $T$ below is the
-smallest we found where they differ without exponentials.
+This section studies the construction of Section~\ref{sec:recipe} at
+second-order types, where it returns a strict subset of the probabilistic
+coherence space. Section~\ref{sec:second-seq} treats the type $T$ of a
+program with two functional arguments, Section~\ref{sec:second-other}
+extends the strict inclusion to every formula with a negative occurrence
+of the core of $T$, and Sections~\ref{sec:second-shannon}
+and~\ref{sec:second-perfect} relate the gap to coherence spaces and to
+graph polytopes. By computation, not formalized, the construction and the
+probabilistic coherence space agree on $(\mathrm{Bool} \multimap
+\mathrm{Bool}) \multimap \mathrm{Bool}$ and $((\mathrm{Bool} \multimap
+\mathrm{Bool}) \multimap \mathrm{Bool}) \multimap \mathrm{Bool}$, the two
+iterated implications into $\mathrm{Bool}$ we checked.
 
 \subsection{Randomized Sequential Programs}
 \label{sec:second-seq}
@@ -35,11 +38,11 @@ $\sum_c \kappa(a,b,c) \le 1$, and $\rho \le 1$. It is
 \begin{theorem}[second order\leanref{sharp-td-iff}\leanref{recipe-eq-sequentialg}]
 \label{thm:second-order}
 For nonempty finite $X, X'$ and finite $Y, Y'$:
-(i) a $\{0,1\}$-valued $z$ lies in $T$ iff its support lies in a tree
+(i) A $\{0,1\}$-valued $z$ lies in $T$ iff its support lies in a tree
 $\{((a, b), (c(b), d)) \mid b \in Y, d \in Y'\}$ for some $a \in X$ and
 $c : Y \to X'$, or in a tree $\{((a(d), b), (c, d))\}$ that queries $g$
 first, and these are exactly the deterministic sequential
-programs\leanref{sharp-mem-sequentialg};
+programs\leanref{sharp-mem-sequentialg}.
 (ii) $\mathrm{Mix}$ of the $\{0,1\}$-valued elements of $T$ is exactly the
 set of randomized sequential programs.
 \end{theorem}
@@ -128,12 +131,80 @@ definability fails until strategies are restricted to sequential
 probabilistic innocent ones. Kuhn's theorem~\cite{kuhn1953} is the
 classical form of Theorem~\ref{thm:second-order}(ii) for games with
 perfect recall. The tensor of probabilistic coherence spaces has been
-related to no-signalling composition~\cite{simmons-kissinger2022},
-which is the setting of the KCBS comparison below. What is added here is
-an explicit point outside the calculus at a type without exponentials,
-the exact description of the calculus and of the space as $\mathrm{STAB}$
-and $\mathrm{QSTAB}$ of one graph (Theorem~\ref{thm:qstab}), and the
+related to no-signalling composition~\cite{simmons-kissinger2022}. What
+is added here is an explicit point outside the calculus at a type without
+exponentials, its transfer to every formula with a negative occurrence of
+the core (Theorem~\ref{thm:occ-gap}), the description of the calculus and
+of the space as $\mathrm{STAB}$ and $\mathrm{QSTAB}$ of one graph
+(Theorem~\ref{thm:qstab}) with the exact condition for a gap, and the
 mechanization.
+
+\subsection{Other Formulas}
+\label{sec:second-other}
+
+The strict inclusion transfers along a simple kind of embedding of webs.
+
+\begin{definition}[coordinate retract\leanref{retract}]
+\label{def:retract}
+For formulas $D$ and $A$ of Definition~\ref{def:mall}, a \emph{coordinate
+retract} of $D$ into $A$ is an injective map $j : |D| \to |A|$ such that
+the pushforward $j_{*}$, with $(j_{*}x)(j(d)) = x_d$ and value $0$ outside
+the image of $j$, maps $P(D)$ into $P(A)$, and the pullback
+$z \mapsto z \circ j$ maps $P(A)$ into $P(D)$.
+\end{definition}
+
+\begin{theorem}[transfer\leanref{retract-gap}\leanref{retract-ops}]
+\label{thm:retract}
+(i) If $D$ is a coordinate retract of $A$ and the calculus of $D$ is
+strictly smaller than $P(D)$, then the calculus of $A$ is strictly
+smaller than $P(A)$.
+(ii) Coordinate retracts compose. If $D$ is a coordinate retract of $A$,
+then $D^{\perp}$ is a coordinate retract of $A^{\perp}$. The formula $D$
+is a coordinate retract of $D \mathbin{\&} B$, $B \mathbin{\&} D$, and,
+if $|B|$ is nonempty, of $D \otimes B$ and $B \otimes D$.
+\end{theorem}
+
+\noindent
+For (i), take $x \in P(D)$ outside the calculus. If $j_{*}x$ were a
+mixture of $\{0,1\}$-valued elements of $P(A)$, pulling the mixture back
+along $j$ would write $x = (j_{*}x) \circ j$ as a mixture of
+$\{0,1\}$-valued elements of $P(D)$. For negation, the pairing satisfies
+$\sum_a (j_{*}u)_a z_a = \sum_d u_d\, z_{j(d)}$, which exchanges the two
+conditions. For $D \otimes B$, the map is $j(d) = (d, b)$ for a point $b$
+of $B$, so $j_{*}x = x \otimes \delta_b$, and the pullback condition uses
+that every element of $P(B)$ is at most $1$ at $b$
+(Theorem~\ref{thm:mall}(ii)).
+
+An occurrence of a formula $D$ in $A$ is \emph{positive} if it lies under
+an even number of negations and \emph{negative} otherwise, the derived
+connectives $\parr$, $\oplus$, and $\multimap$ being unfolded. So the left
+argument of $\multimap$ is a negative position.
+
+\begin{theorem}[the gap at other formulas\leanref{gap-of-occ}]
+\label{thm:occ-gap}
+Let $n, m, n', m' \ge 2$, and let $A$ be a formula all of whose data types
+are nonempty. If $(\mathbf{n} \multimap \mathbf{m}) \otimes
+(\mathbf{n'} \multimap \mathbf{m'})$ occurs negatively in $A$, the
+calculus of $A$ is strictly smaller than $P(A)$.
+\end{theorem}
+
+\noindent
+A positive occurrence of $D$ gives a coordinate retract of $D$ into $A$,
+and a negative one a coordinate retract of $D^{\perp}$, by
+Theorem~\ref{thm:retract}(ii) and induction on $A$, using that $D$ is a
+coordinate retract of $D^{\perp\perp}$. Theorem~\ref{thm:retract}(i) and
+Theorem~\ref{thm:pentagon} then give the claim. Examples are $T$ itself,
+the type $((\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'}
+\multimap \mathbf{m'})) \multimap B$ of a program that receives two
+functions and returns a value of type $B$, for every $B$ with nonempty data
+types (Lean checks the instance $B = \mathbf{2}$), and every formula
+containing one of these positively. The
+condition is syntactic: the curried type $(\mathbf{n} \multimap
+\mathbf{m}) \multimap ((\mathbf{n'} \multimap \mathbf{m'}) \multimap B)$
+is isomorphic to the uncurried one but is not covered as stated. A
+positive occurrence of the core does not suffice:
+Section~\ref{sec:second-perfect} shows that at the core itself the
+calculus equals the probabilistic coherence space.
 
 \subsection{A Clique Outside the PCS}
 \label{sec:second-shannon}
@@ -160,18 +231,16 @@ and its indicator is not an element of $P((T \otimes T)^{\perp})$.
 \end{theorem}
 
 \noindent
-The theorem is also proved for the web of $T$ given directly by
-$\mathrm{Bool}$\leanref{tensorgap-bool}.
-
-\noindent
 The function $z$ of Theorem~\ref{thm:pentagon}, with value $\tfrac12$ on
 the five points, lies in $P(T)$, so $z \otimes z$ lies in
 $P(T \otimes T)$. Its pairing with the indicator of Shannon's set is
-$5 \cdot \tfrac14 = \tfrac54 > 1$. Two choices of certain states for a
-formula are therefore different from $(T \otimes T)^{\perp}$ on: the
-$\{0,1\}$-valued elements of the PCS, for which the calculus is contained
-in the PCS at every formula (Theorem~\ref{thm:mall}(iv)), and the cliques
-of the coherence space, for which it is not.
+$5 \cdot \tfrac14 = \tfrac54 > 1$. The theorem is also proved for the web
+of $T$ given directly by $\mathrm{Bool}$\leanref{tensorgap-bool}. From
+$(T \otimes T)^{\perp}$ on, the two natural choices of certain states
+therefore differ. With the $\{0,1\}$-valued elements of the PCS, the
+calculus is contained in the PCS at every formula
+(Theorem~\ref{thm:mall}(iv)). With the cliques of the coherence space, it
+is not.
 
 \subsection{When the Calculus Equals the PCS}
 \label{sec:second-perfect}
@@ -206,6 +275,35 @@ The converse of Theorem~\ref{thm:berge} holds: $\mathrm{STAB}(G) =
 $G$ is perfect iff it is Berge, by the strong perfect graph
 theorem~\cite{chudnovsky2006}. The converse is not formalized.
 
+\paragraph{The core and the exact condition.}
+The duality of Definition~\ref{def:pcs} exchanges $\mathrm{STAB}$ and
+$\mathrm{QSTAB}$ of complementary graphs. For every graph $G$,
+$\mathrm{STAB}(G)^{\perp} = \mathrm{QSTAB}(\overline{G})$ directly from
+the definitions, since the stable sets of $G$ are the cliques of
+$\overline{G}$, and therefore $\mathrm{QSTAB}(\overline{G})^{\perp} =
+\mathrm{STAB}(G)$ by Fulkerson's antiblocking
+theorem~\cite{fulkerson1971}. Applied to the exclusivity graph $G$ of
+$T$, Theorem~\ref{thm:qstab} gives $T^{\perp} = \mathrm{QSTAB}(G)^{\perp}
+= \mathrm{STAB}(\overline{G})$, the set of mixtures of the indicators of
+the cliques of $G$, which are the $\{0,1\}$-valued elements of
+$T^{\perp}$. So at the core $T^{\perp} = (X \multimap Y) \otimes (X'
+\multimap Y')$ the calculus equals the probabilistic coherence space, and
+Theorem~\ref{thm:occ-gap} needs the negative occurrence.
+
+The condition of Theorem~\ref{thm:pentagon} that $X, Y, X', Y'$ have at
+least two elements is also necessary. If $X$ has one element, two points
+of $X \multimap Y$ cohere iff they are equal, and $G$ is a disjoint union
+of copies of the graph on $X' \times Y'$ that joins points with
+different inputs, a complete multipartite graph. If $Y$ has one element,
+all points of $X \multimap Y$ cohere, and $G$ is obtained from that
+complete multipartite graph by replacing each vertex with a clique of
+size $|X|$. Both graphs are perfect, the second by Lov\'asz's replacement
+lemma~\cite{lovasz1972}, and the cases of $X'$ and $Y'$ are symmetric. So
+the calculus of $T$ equals $T$ iff one of $X, Y, X', Y'$ has at most one
+element. This direction and the duality argument above are not
+formalized. We checked the condition numerically for ten choices of the
+four sizes between $1$ and $3$.
+
 The \emph{independence number} $\alpha(G)$ is the largest size of a
 stable set, and the \emph{fractional packing number} $\alpha^{*}(G)$ is
 the largest value of $\sum_v x_v$ over $\mathrm{QSTAB}(G)$. The bounds
@@ -218,4 +316,5 @@ satisfying only exclusivity is $\alpha^{*}(G)$. For $C_5$ this is the
 KCBS inequality~\cite{klyachko2008}, with $\vartheta(C_5) = \sqrt5$. A
 calculus for $T$ corresponding to the theta body of the exclusivity
 graph~\cite{gls1988}, which lies between $\mathrm{STAB}$ and
-$\mathrm{QSTAB}$, is not constructed here.
+$\mathrm{QSTAB}$, is not constructed here. Section~\ref{sec:quantum}
+makes the same comparison for a Kochen--Specker set.

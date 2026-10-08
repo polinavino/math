@@ -12,9 +12,18 @@ bound $v(a) + v(\neg a) \le 1$ are his.  What is new here
 is the decomposition of that bound's slack into $\mathrm{dnGap}$ and
 $\mathrm{deMorganGap}$ and its determinacy from $v$ alone
 (Theorem~\ref{thm:slack-explicit}).  
-Paris gives an informal theorem that any modular assignment of
-non-classical truth values is exactly a Dempster--Shafer belief
-function~\cite{paris1994}.  We mechanize the analogous fact for our
+Paris shows that the assignments avoiding a Dutch book are the mixtures
+of a logic's two-valued valuations, and that when the valuations respect
+$\wedge$ and $\vee$, as in intuitionistic and modal logics, they are
+exactly the normalized, monotone, modular
+assignments~\cite{paris2001}. On finite frames this is
+Theorem~\ref{thm:mixture}. Williams obtains the same set from accuracy
+domination, under the name generalized probabilism~\cite{williams2012}.
+Paris also shows, from Shafer's results, that the mixtures of the
+``known true'' valuations, which make a sentence true when it follows
+from what is known, are exactly the Dempster--Shafer belief
+functions~\cite{paris1994,paris2001,shafer1976}. These valuations do not
+respect $\vee$.  We mechanize an analogous fact for our
 intuitionistic setting: the $2$-monotone case follows directly from
 modularity\leanref{two-monotone}, and the full tower is
 Theorem~\ref{thm:infty}.  The
@@ -80,7 +89,9 @@ long-standing precedent for re-basing probability on a non-Boolean
 event logic.  Orthomodular lattices give up distributivity itself,
 while our frames stay distributive by definition
 (Definition~\ref{def:frame}), locating all the non-classical
-behavior in the failure of excluded middle alone.  
+behavior in the failure of excluded middle alone.
+Section~\ref{sec:quantum} applies the construction from certain states
+to a quantum event logic.  
 
 
 
@@ -92,12 +103,16 @@ lattice reduct of a quantale is already an instance of
 Section~\ref{sec:lattice}'s generalization, but $\otimes$ itself is
 not $\sqcap$, and a valuation grading it cannot be phrased in
 Definition~\ref{def:lvaluation}'s vocabulary without first deciding
-what modularity even means for a non-idempotent operation.  The
-probabilistic semantics that does exist for linear logic, Girard's
-probabilistic coherence spaces as developed by Danos and
-Ehrhard~\cite{danos-ehrhard2011}, grades the multiplicative
-structure directly rather than valuing a lattice, and is not a
-special case of the construction studied here.  
+what modularity even means for a non-idempotent operation.
+Section~\ref{sec:recipe} replaces modularity by the affine laws valid on
+the certain states.  The probabilistic semantics that does exist for
+linear logic, Girard's probabilistic coherence spaces as developed by
+Danos and Ehrhard~\cite{danos-ehrhard2011}, grades the multiplicative
+structure directly rather than valuing a lattice.
+Section~\ref{sec:recipe} shows that it contains the calculus of
+certain states at every multiplicative--additive formula and equals it
+at implications between data types, and Section~\ref{sec:second} that
+the inclusion is strict at second order.  
 
 
 

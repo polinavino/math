@@ -57,3 +57,5 @@ import ConstructiveProb.FubiniConstructive
 import ConstructiveProb.ValMonoid
 
 import ConstructiveProb.ProgLang
+
+import ConstructiveProb.Retract
