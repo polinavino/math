@@ -131,15 +131,34 @@ is $0$ if weak excluded middle holds at $a$.
 The single Dempster--Shafer ``ignorance'' number is thus resolved
 into a regularity defect and a De~Morgan defect: the first measures
 failure of double-negation stability, the second corresponds to a
-named intermediate logic (weak excluded middle).  
-Constructively, the contrapositive of a universal
-hypothesis returns only its double-negated form, so for open
-sets, this specification of probability does not fall victim
-to Hempel's
-raven paradox~\cite{hempel1945}: evidence of the white
-sock indoors confirms at most $\neg\neg a$, not $a$ itself, and
-$\mathrm{dnGap}$ is exactly the gap between confirming
-$\neg\neg a$ and confirming $a$ itself.
+named intermediate logic (weak excluded middle).  Each part detects one
+step of the chain of logics from intuitionistic logic through weak
+excluded middle to classical logic:
+
+\begin{theorem}[slack and intermediate logics\leanref{slack-logics}]
+\label{thm:slack-logics}
+For every frame $\Omega$, in a classical metatheory,
+$\mathrm{deMorganGap}(a) = 0$ for every valuation and every $a$ iff
+$\Omega$ satisfies weak excluded middle, and $\mathrm{dnGap}(a) = 0$ for
+every valuation and every $a$ iff every element of $\Omega$ is regular,
+that is, iff $\Omega$ is Boolean.
+\end{theorem}
+
+\noindent
+The forward directions are the vanishing conditions of the slack
+decomposition. The converses use a sharp valuation that is $1$ at $\top$
+and $0$ at $\neg\neg a \sqcup \neg a$, or $1$ at $\neg\neg a$ and $0$ at
+$a$, which the prime ideal theorem provides as for
+Theorem~\ref{thm:hinge}. 
+Intuitionistically, contraposition holds in one direction only: from
+$\neg b \to \neg a$ one obtains $a \to \neg\neg b$, not $a \to b$.
+Hempel's raven paradox~\cite{hempel1945} uses the equivalence of a
+hypothesis with its contrapositive. Where being black is not regular, an
+instance of the contrapositive, the white sock found indoors, bears on
+the double-negated hypothesis and not on the hypothesis itself, and
+$\mathrm{dnGap}$ measures the difference. Where both colours can be
+observed, being black is regular, the equivalence returns, and this
+diagnosis does not apply. Section~\ref{sec:ravens} treats that case.
 
 Because $\mathrm{dnGap}$ and $\mathrm{deMorganGap}$ are themselves
 defined from $v$, the apparent three unknowns $v(a)$, $v(\neg a)$, and

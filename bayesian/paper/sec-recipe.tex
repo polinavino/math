@@ -16,13 +16,15 @@ finite Boolean algebras, it returns exactly the valuations of
 Definition~\ref{def:valuation}, an instance of Paris's theorem for logics
 whose certain states respect $\wedge$ and $\vee$~\cite{paris2001}.
 Linear logic is not such a logic. For every formula of
-multiplicative--additive linear logic over finite data types, its
-output is contained in the probabilistic coherence space
-(Definition~\ref{def:pcs}) of the formula,
-and the certain elements of that space are cliques of Girard's coherence
-space. At implications between data types it returns the probabilistic
-coherence space. At the exponential $!\mathrm{Bool}$ it returns a strict
-subset.
+multiplicative--additive linear logic over finite data types
+(Definition~\ref{def:mall}), its output is contained in the
+probabilistic coherence space (Definition~\ref{def:pcs}) of the formula,
+and the certain elements of that space are cliques (sets of pairwise
+coherent points) of Girard's coherence space
+(Section~\ref{sec:recipe-linear}). At implications between data types it
+returns the probabilistic coherence space. At the exponential
+$!\mathrm{Bool}$ (the type of Booleans that may be used any number of
+times) it returns a strict subset.
 
 \subsection{The Construction}
 
@@ -96,7 +98,8 @@ separates a point outside the convex hull of $S$ by a hyperplane, using
 \textsf{mathlib}'s geometric Hahn--Banach theorem, and reads the
 hyperplane off as an affine law. For rational points and integer certain
 states, Section~\ref{sec:hinge} gives a proof without choice by
-Fourier--Motzkin elimination\leanref{constr-farkas}.
+Fourier--Motzkin elimination (elimination of variables from a system
+of linear inequalities)\leanref{constr-farkas}.
 Theorem~\ref{thm:mix-eq-laws} is the generalization of the three axioms:
 the axioms of the calculus of a presentation are the affine laws valid
 on its certain states, and nothing else. On frames these are the three
@@ -114,7 +117,8 @@ The proof combines Theorem~\ref{thm:mixture} with the fact that a sharp
 valuation on $\mathrm{Low}(P)$ is a point valuation
 $\delta_p$\leanref{eq-deltapoint-of-issharp}. Every finite frame is of
 the form $\mathrm{Low}(P)$ (Section~\ref{sec:representation}), and finite
-Boolean algebras are the case of a discrete $P$, where the valuations are the probability mass functions
+Boolean algebras are the case of a discrete $P$ (no two distinct
+elements comparable), where the valuations are the probability mass functions
 on $P$. So the construction reduces to the valuation calculus on finite
 intuitionistic event algebras and to Kolmogorov's calculus on finite
 classical ones.
@@ -132,7 +136,8 @@ For $x : E \to \ENNReal$ the following are equivalent:
 (ii) For every window $F$, the restriction of $x$ to $F$ lies
 in $\mathrm{Mix}$ of the restrictions of $S$ to $F$.
 (iii) There is a Borel probability measure $\mu$ on $\{0,1\}^E$, with
-the product topology, such that
+the product topology (the topology of convergence at each event), such
+that
 $x_e = \mu\{\sigma \mid \sigma_e = 1\}$ for every $e \in E$, and
 $\mu(\mathrm{bad}_F) = 0$ for every window $F$, where $\mathrm{bad}_F$ is
 the set of $\sigma$ whose restriction to $F$ is the restriction of no
@@ -146,11 +151,13 @@ each window. For (ii)~$\Rightarrow$~(iii), the mixture on a window $F$
 gives a probability measure $\mu_F$ on $\{0,1\}^E$, a finite convex
 combination of point masses at certain states. The windows are directed
 by inclusion. The probability measures on the compact space
-$\{0,1\}^E$ form a compact space in the weak
-topology\footnote{In \textsf{mathlib} this is an instance proved from
+$\{0,1\}^E$ form a compact space in the weak topology (the
+coarsest topology in which $\nu \mapsto \int f \, d\nu$ is continuous
+for every bounded continuous $f$)\footnote{In \textsf{mathlib} this is an instance proved from
 Prokhorov's theorem.}, so the family $(\mu_F)_F$ has a cluster point
 $\mu$. A \emph{cylinder set} is a set of $\sigma$ determined by the
-values of $\sigma$ on a window. Cylinder sets are clopen, so
+values of $\sigma$ on a window. Cylinder sets are clopen (closed and
+open), so
 $\nu \mapsto \nu(C)$ is continuous in the weak topology for every
 cylinder set $C$. The sets $\{\sigma \mid \sigma_e = 1\}$ and
 $\mathrm{bad}_F$ are cylinder sets, and $\mu_F$ has the required values
@@ -172,29 +179,195 @@ affine laws reduce to normalization, monotonicity, and
 modularity~\cite{paris2001}, which gives Theorem~\ref{thm:frame-recipe}.
 Theorem~\ref{thm:barycenter}(iii) is the counterpart, for
 $\{0,1\}$-valued certain states, of the representation of the states of
-an MV-algebra as integrals over its
-valuations~\cite{kroupa2006,panti2008,kuhr-mundici2007}. This section
-adds their mechanization, a proof of Theorem~\ref{thm:mix-eq-laws}
+an MV-algebra (an algebra of \L{}ukasiewicz many-valued logic) as
+integrals over its
+valuations~\cite{kroupa2006,panti2008,kuhr-mundici2007}. Gil Sanchez, Gyenis, and Wro\'nski axiomatize the convex hull for a class
+of non-classical evaluations and question the use of Dutch books outside
+classical logic~\cite{gilsanchez2022}, Bradley studies these convex hulls
+for non-classical probability~\cite{bradley2016}, and Gyenis proves that for
+every logic given by a finite algebra of truth values, each with a
+numerical value, the convex hull of the evaluations has an effective
+axiomatization in an equational calculus, finite for finitely many
+variables and not finite in general~\cite{gyenis2025}.
+Theorem~\ref{thm:mix-eq-laws} is the elementary counterpart without a
+formula language: it applies to an arbitrary set of $\{0,1\}$-valued
+certain states on a finite set of events, and its laws are individual
+affine inequalities, not schemata uniform in the variables. This is what
+lets it apply to the web of a linear formula, whose certain states are
+not evaluations into a fixed algebra of truth values. This section
+adds the mechanization of these results, a proof of Theorem~\ref{thm:mix-eq-laws}
 without choice for rational data, and their use for logics that
 Paris's axiomatization does not cover: for linear logic, where modularity is not available
 (Corollary~\ref{cor:tensor-dichotomy}), in Sections~\ref{sec:recipe-linear}
 and~\ref{sec:second}, and for quantum event logic in
 Section~\ref{sec:quantum}.
 
+\subsection{Uniqueness}
+\label{sec:recipe-unique}
+
 $\mathrm{Mix}(S)$ is the least convex set containing $S$. Criteria
 (1) and (2) of Section~\ref{sec:intro} do not single it out: the
 probabilistic coherence space $!\mathrm{Bool}$ satisfies (1) and strictly
-contains the calculus (Theorem~\ref{thm:bang}). Whether a further
-criterion selects $\mathrm{Mix}(S)$, and how the criteria should treat
-logics without certain states (Section~\ref{sec:quantum}), is open.
+contains the calculus (Theorem~\ref{thm:bang}). Criterion (3) does:
+every affine law that holds on all certain states holds on the whole
+calculus. These laws are, relative to the logic, Boole's conditions of
+possible experience~\cite{pitowsky1994}.
+
+\begin{theorem}[uniqueness\leanref{calculus-unique}]
+\label{thm:unique}
+For finite $E$ and a set $S$ of $\{0,1\}$-valued functions on $E$, let
+$C$ contain $S$, be closed under finite mixtures, and satisfy every
+affine law that every $s \in S$ satisfies. Then $C = \mathrm{Mix}(S)$.
+\end{theorem}
+
+\noindent
+Closure under mixtures gives $\mathrm{Mix}(S) \subseteq C$, and
+Theorem~\ref{thm:mix-eq-laws} gives $C \subseteq \mathrm{Mix}(S)$. The
+sets that contain $S$ and are closed under mixtures have a least element,
+$\mathrm{Mix}(S)$. The sets that satisfy the laws of $S$ have a greatest
+element, the set of solutions of those laws. The theorem holds because
+the two coincide, which is Theorem~\ref{thm:mix-eq-laws}. The mathematics
+is de Finetti's and Paris's~\cite{definetti1974,paris2001}. What the
+theorem adds is the use of the three conditions as criteria for a
+calculus.
+
+For infinitely many events one more condition is needed, since
+$\mathrm{Mix}(S)$ is in general not closed and so is not the solution set
+of any family of laws. A state is checked against finitely many events
+at a time. We therefore require the calculus to be closed in the product
+topology on $\ENNReal^{E}$, the topology of convergence at each event: a
+function that is approximated by states of the calculus on every finite
+window belongs to the calculus.
+
+\begin{theorem}[uniqueness for arbitrary events\leanref{calculus-unique-closed}]
+\label{thm:unique-closed}
+For an arbitrary set $E$ and a set $S$ of $\{0,1\}$-valued functions on
+$E$, let $C$ contain $S$, be closed under finite mixtures and in the
+product topology, and satisfy every finite law that every $s \in S$
+satisfies. Then $C$ is the closure of $\mathrm{Mix}(S)$, and it is the
+set of functions satisfying every finite law valid on $S$.
+\end{theorem}
+
+\noindent
+A function satisfying every finite law valid on $S$ lies, on each window
+$F$, in $\mathrm{Mix}$ of the restrictions of $S$ to $F$
+(Theorem~\ref{thm:barycenter}). So every basic neighbourhood of it,
+which constrains finitely many events, meets
+$\mathrm{Mix}(S)$\leanref{localmix-subset-closure}. The rest of the proof
+is that of Theorem~\ref{thm:unique}.
+
+\begin{corollary}[valuations on frames]
+\label{cor:frame-unique}
+In a classical metatheory, for every frame $\Omega$ the valuations on
+$\Omega$ are the closure of $\mathrm{Mix}$ of its sharp valuations. So
+they are the only set of functions on $\Omega$ that contains the sharp
+valuations, is closed under mixtures and in the product topology, and
+satisfies every finite law valid on the sharp valuations.
+\end{corollary}
+
+\noindent
+A finite set of events generates a finite distributive sublattice $L$
+of $\Omega$. The restriction of a valuation to $L$ is a valuation on
+$L$, hence a mixture of sharp valuations on $L$
+(Theorem~\ref{thm:frame-recipe}, with $L \cong \mathrm{Low}(P)$ by
+Birkhoff's theorem, which presents a finite distributive lattice as
+the lower sets of its join-irreducible elements). Each sharp valuation on $L$ is the restriction of
+a sharp valuation on $\Omega$, by the prime ideal theorem. So every
+valuation satisfies the condition of Theorem~\ref{thm:barycenter}(ii),
+and the valuations satisfy every finite law valid on the sharp
+valuations. Conversely, normalization, monotonicity, and modularity are
+such laws. Theorem~\ref{thm:unique-closed} then applies. This
+corollary is not formalized.
+
+\paragraph{Why the third criterion.}
+The third criterion has four readings, and on finite $E$ they agree.
+\begin{itemize}
+  \item \emph{Coherence.} A law valid on $S$ and violated at $x$ is a
+  Dutch book against $x$, so the criterion excludes every state against
+  which the logic guarantees a loss~\cite{paris2001}.
+  \item \emph{Accuracy.} Williams shows that, for the Brier score (the sum over events of the
+  squared distance to the truth value), the states
+  outside $\mathrm{Mix}(S)$ are exactly those dominated in accuracy by a
+  state inside it~\cite{williams2012}. The criterion excludes dominated states.
+  \item \emph{Ignorance.} For finite $E$, a compact convex set of real-valued
+  functions on $E$ is the convex hull of its extreme points (the points
+  that are not mixtures of other points of the set), by
+  Minkowski's theorem. So a compact convex
+  set containing $S$ satisfies the criterion iff its extreme points are
+  certain states. Uncertainty is then uncertainty about which certain
+  state obtains. This equivalence is not formalized.
+  \item \emph{No new behaviours.} Every known failure of the criterion is
+  a state that no mixture of certain states produces: the point of
+  $!\mathrm{Bool}$ that violates the law $x_{(1,1)} \le 0$, valid on its
+  certain states, the points of the probabilistic coherence space at
+  second order outside the calculus (Section~\ref{sec:second}), and the
+  quantum states on Cabello's set, which violate the bound of
+  Theorem~\ref{thm:quantum-partial}.
+\end{itemize}
+The criterion is therefore a choice and not a consequence of (1) and
+(2). A calculus that drops it is either a semantics of programs with more
+behaviours than its certain states, as for probabilistic coherence
+spaces, or a contextual theory (one whose states are certain only
+within each context, Section~\ref{sec:quantum-local}), as for quantum
+states. How the criteria
+should treat logics without enough certain states is the subject of
+Section~\ref{sec:quantum-local}.
+
+Each condition of Theorem~\ref{thm:unique} is needed. Without (3),
+$!\mathrm{Bool}$ is a counterexample. Without closure under mixtures,
+$S$ itself is one whenever $S$ has two elements. Without $S \subseteq C$,
+every proper convex subset of $\mathrm{Mix}(S)$ is one. Criterion (2) is a
+consequence of the others: at a finite Boolean algebra the certain states
+are the point valuations of its atoms, and their mixtures are the
+probability mass functions on the atoms (Theorem~\ref{thm:frame-recipe}).
+On infinite Boolean algebras they give the finitely additive
+probabilities (Corollary~\ref{cor:frame-unique}), so countable additivity
+would be an additional requirement. Under (3) the criterion is redundant,
+but it still constrains calculi that drop (3). The local calculus of
+Section~\ref{sec:quantum-local} and the probabilistic coherence spaces
+violate (3) and satisfy (2): with a single context the local calculus is
+classical probability on the outcomes, and at first order the
+probabilistic coherence space is the calculus (Theorem~\ref{thm:pcs-recipe}).
+
+\paragraph{Not conflating events.}
+Criteria (1) and (3) are the two halves of one condition. A set that
+contains every certain state satisfies no affine law that some certain
+state violates. So under (1) the calculus imposes no law that the logic
+does not have. Criterion (3) is the converse. Together they say that the
+calculus satisfies exactly the affine laws of the certain
+states\leanref{calculus-laws-iff}. On a frame this excludes two kinds of
+conflation, in a classical metatheory.
+\begin{itemize}
+  \item \emph{Of events.} If $a \ne b$, a sharp valuation separates them
+  (Theorem~\ref{thm:sharp-separating}), so some state of the calculus
+  gives $a$ and $b$ different values.
+  \item \emph{Of negation with complement.} If every sharp valuation
+  satisfies $v(a) + v(\neg a) = 1$, then $a \sqcup \neg a =
+  \top$\leanref{em-of-sharp-compl}. So a calculus that contains the
+  certain states obeys the complement rule at $a$ only where excluded
+  middle holds at $a$.
+\end{itemize}
+The classical alternative has the same numbers and different events. A
+valuation on a frame extends to a finitely additive probability on the
+Boolean algebra the frame generates~\cite{pettis1951}, and reading $\neg
+a$ in that algebra as the Boolean complement of $a$ assigns it $1 - v(a)$.
+This grading satisfies the complement rule and gives the event ``$a$ is
+not verified'' the credence of the event ``$a$ is refuted''. The second
+item says that no calculus satisfying (1) on the frame does this. The
+difference is the slack, which is the boundary mass in the measure model
+(Theorem~\ref{thm:slack-frontier}). For linear logic the analogous
+conflation is of $a$ with $a \otimes a$, which every grading of the event
+lattice by Definition~\ref{def:lvaluation} makes
+(Corollary~\ref{cor:tensor-dichotomy}) and the calculus of
+Section~\ref{sec:recipe-linear} does not.
 
 \subsection{Linear Logic}
 \label{sec:recipe-linear}
 
 \begin{definition}[probabilistic coherence space~\cite{danos-ehrhard2011}\leanref{ispcs-lin}]
 \label{def:pcs}
-For a set $W$ and a set $Q$ of functions $W \to \ENNReal$, let
-$Q^{\perp} = \{y : W \to \ENNReal \mid \sum_{w} x_w y_w \le 1 \text{ for all }
+For a set $W$ and a set $Q$ of functions $W \to \ENNReal$, let the
+\emph{orthogonal} of $Q$ be $Q^{\perp} = \{y : W \to \ENNReal \mid \sum_{w} x_w y_w \le 1 \text{ for all }
 x \in Q\}$. A \emph{probabilistic coherence space} (PCS) with \emph{web}
 $W$ is a set $P$ of functions $W \to \ENNReal$ such that
 $P = P^{\perp\perp}$, every $w \in W$ has some $x \in P$ with $x_w \ne 0$
@@ -222,17 +395,21 @@ elements. In the coherence space $X \multimap Y$ of two data types, two
 points $(a,b)$ and $(a',b')$ cohere iff they are equal or $a \ne a'$.
 
 Probabilistic coherence spaces interpret every formula of linear logic,
-including the exponentials, and model probabilistic
-PCF~\cite{danos-ehrhard2011}. The construction of
+including the exponentials (the modalities $!$ and $?$, which let an
+argument be used any number of times), and model probabilistic PCF (a
+typed functional language with recursion and probabilistic
+choice)~\cite{danos-ehrhard2011}. The construction of
 Definition~\ref{def:mix} applies to every such type, with the
 $\{0,1\}$-valued elements of its probabilistic coherence space as
-certain states. At first order the two agree
-(Theorem~\ref{thm:pcs-recipe}), and the exponential $!\mathrm{Bool}$
+certain states. At first order, the implications between data types,
+the two agree (Theorem~\ref{thm:pcs-recipe}), and the exponential $!\mathrm{Bool}$
 separates them (Theorem~\ref{thm:bang}).
 Section~\ref{sec:recipe-mall} proves the facts that hold at every
 multiplicative--additive formula, and Section~\ref{sec:second-other}
-shows that the two differ at every formula with a negative occurrence of
-a second-order core. Whether they agree at the remaining types is open.
+shows that the two differ at every formula with a negative occurrence
+(an occurrence under an odd number of negations) of a second-order core
+(the formula $(\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'}
+\multimap \mathbf{m'})$ of Section~\ref{sec:second-seq}). Whether they agree at the remaining types is open.
 
 \begin{theorem}[first order\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
 \label{thm:pcs-recipe}
@@ -248,7 +425,8 @@ programs, they are the cliques of the coherence-space model, and the
 calculus is the PCS.
 
 The PCS $!\mathrm{Bool}$ has web the finite
-multisets over $\{t, f\}$, and is the biorthogonal closure of the
+multisets over $\{t, f\}$, and is the biorthogonal closure
+$(\cdot)^{\perp\perp}$ of the
 promotions $x^{!}(i,j) = x_t^{\,i} x_f^{\,j}$ of the elements $x$ of
 $\mathrm{Bool}$, where $(i,j)$ is the multiset with $i$ copies of $t$ and
 $j$ copies of $f$.
@@ -262,15 +440,14 @@ not in $\mathrm{Mix}$ of the $\{0,1\}$-valued elements.
 \end{theorem}
 
 \noindent
-The first statement uses the dual element $4\,\delta_{(i,j)}$, which is
-admissible because $x_t + x_f \le 1$ implies $4 x_t x_f \le 1$. The
-$\{0,1\}$-valued elements are therefore supported on the multisets whose
-underlying set is a clique of $\mathrm{Bool}$. These underlying sets are
-the points of the web of $!\mathrm{Bool}$ in Girard's coherence spaces.
-Danos and Ehrhard~\cite{danos-ehrhard2011} observe that elements of the
-PCS $!\mathrm{Bool}$ are nonzero on multisets whose underlying set is not
-a clique. Theorem~\ref{thm:bang} shows that such elements are not
-mixtures of certain elements.
+Danos and Ehrhard compute the largest value of an element of
+$!\mathrm{Bool}$ at $(i,j)$, which is $i^i j^j / (i+j)^{i+j}$, below $1$
+when $i, j \ge 1$, and note that these multisets are not points of the web
+of $!\mathrm{Bool}$ in Girard's coherence spaces~\cite{danos-ehrhard2011}.
+The first statement of Theorem~\ref{thm:bang} follows, and the second is
+a direct consequence of the first. The Lean proof of the first uses the
+dual element $4\,\delta_{(i,j)}$, which is admissible because
+$x_t + x_f \le 1$ implies $4 x_t x_f \le 1$.
 
 \subsection{All Multiplicative--Additive Formulas}
 \label{sec:recipe-mall}
@@ -292,7 +469,9 @@ $A \mathbin{\&} B$~\cite{danos-ehrhard2011}. The coherence $\coh_A$ is
 equality on $\mathbf{n}$, and $s \coh_{A^{\perp}} t$ iff $s = t$ or not
 $s \coh_A t$. On $A \otimes B$ it is componentwise. On $A \mathbin{\&} B$
 it is $\coh_A$ and $\coh_B$ on the two components, and any two points from
-different components cohere~\cite{girard1987}.
+different components cohere~\cite{girard1987}. The \emph{coherence
+graph} $G_A$ of $A$ has the web $|A|$ as vertices and an edge between
+any two distinct coherent points.
 \end{definition}
 
 \begin{theorem}[every formula\leanref{ispcs-p}\leanref{linear-invariants}\leanref{sharp-isclique}\leanref{recipe-subset-p}]
@@ -318,9 +497,9 @@ $A \otimes B$ is incoherent in one component, where the bound of $A$ or
 $B$ applies. Part (iii) follows from (ii): two incoherent points in the
 support of a $\{0,1\}$-valued element would give it total $2$ on a pair
 bounded by $1$. Part (iv) is Theorem~\ref{thm:mix-basic} together with
-the closure of an orthogonal under mixing\leanref{mix-subset-orth}.
+the closure of an orthogonal $Q^{\perp}$ under mixing\leanref{mix-subset-orth}.
 Girard introduces probabilistic coherence spaces with the intuition that
-two incoherent atoms have weights summing to at most $1$, and then sets
+two incoherent points of the web have weights summing to at most $1$, and then sets
 coherence aside~\cite{girard2004}. Part (ii) shows that the intuition
 holds at every multiplicative--additive formula over data types. The
 converse of (iii) fails (Section~\ref{sec:second-shannon}).

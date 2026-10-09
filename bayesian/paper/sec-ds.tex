@@ -9,7 +9,7 @@ This section makes the identification exact in both statics and
 dynamics.  In each case, it locates the precise point where excluded
 middle makes a difference.
 
-\subsection{Total Monotonicity via Constructive
+\subsection{Total Monotonicity via Intuitionistic
 Inclusion--Exclusion}
 
 The $\neg\neg$-stable (\emph{regular}) elements of a frame form a
@@ -34,7 +34,8 @@ given by $\Pl(A) = 1 - \Bel(\neg A)$.
 \end{definition}
 
 We show $v$, restricted
-to its Booleanization, is such a belief function.  The
+to its Booleanization, is such a belief function. Belief functions have
+also been developed directly on distributive lattices~\cite{zhou2013}.  The
 $2$-monotone case is immediate from modularity
 \leanref{two-monotone}.  The full tower follows from the following
 result:
@@ -84,7 +85,7 @@ The proof of Theorem~\ref{thm:infty} from
 Theorem~\ref{thm:incl-excl} follows from the monotonicity along
 $a \le \neg\neg a$.
 Here, inclusion--exclusion does \emph{not} fail
-constructively.  It is exact for the intuitionistic disjunction.
+on a frame.  It is exact for the intuitionistic disjunction.
 Applying the double-negation nucleus (a closure operator preserving
 finite meets) $\neg\neg$ to the
 join on the equality's right-hand side can only enlarge it. This
@@ -122,7 +123,7 @@ $v(a \sqcap b)/v(b)$ of Section~\ref{sec:valuation}.
 \begin{definition}[Dempster's rule of conditioning\leanref{dempstercond}]
 \label{def:dempster}
 For a valuation $v$ on a frame $\Omega$, elements $a, b \in \Omega$, and
-evidence of nonzero plausibility, $v(b) \neq 0$,
+evidence of nonzero belief, $v(b) \neq 0$,
 \emph{Dempster's rule of conditioning}~\cite{shafer1976}
 states that
 \[
@@ -178,6 +179,25 @@ $1$ only if the slack vanishes.
 Theorem~\ref{thm:cond-hinge} is the valuation-relative analogue of
 Theorem~\ref{thm:hinge}: both are iff statements about the same
 proposition, $b \sqcup \neg b = \top$.
+
+On a finite frame $\mathrm{Low}(P)$ the two rules have a reading in
+certain states. By Theorem~\ref{thm:frame-recipe},
+$v = \sum_{p} w_p\,\delta_p$ is a mixture of point valuations, and
+$\delta_p$ verifies $b$ if $p \in b$, refutes it if $p \in \neg b$, and
+leaves it undecided otherwise. Expanding the definitions,
+\[
+  \frac{v(a \sqcap b)}{v(b)} = \frac{\sum_{p \in a \cap b} w_p}{\sum_{p \in b} w_p},
+  \qquad
+  v(a \,\|\, b) = \frac{\sum_{p \in a \setminus \neg b} w_p}{\sum_{p \notin \neg b} w_p}.
+\]
+Geometric conditioning averages over the certain states that verify the
+evidence, and Dempster's rule over those that do not refute it. The
+undecided states carry total weight $\slack(b)$, so the rules agree iff
+there are none of positive weight, which is
+Theorem~\ref{thm:cond-hinge} on finite frames. This reading is not
+formalized. Neither rule follows from criteria (1)--(3), which constrain
+the calculus and not its updates. The choice between them is the choice
+of which certain states remain possible after the evidence.
 
 We call the frame-level fact \emph{static} and the valuation-level
 fact \emph{dynamic}: the former is an equation in the frame itself,

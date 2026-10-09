@@ -1,0 +1,174 @@
+\documentclass[runningheads]{llncs}
+
+% Submission is double-blind: \anonymoustrue hides the authors.
+% Set \anonymousfalse for the camera-ready version.
+\newif\ifanonymous
+\anonymoustrue
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listingsutf8}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\lstdefinelanguage{Lean}{
+  morekeywords={theorem,lemma,def,noncomputable,structure,instance,
+                variable,import,namespace,end,open,scoped,where,
+                fun,match,with,if,then,else,let,in,by,do,
+                Prop,Type,Sort,deriving,inductive,abbrev,example,
+                forall,exists,class,extends},
+  sensitive=true,
+  morecomment=[s]{/-}{-/},
+  morecomment=[l]{--},
+  literate=
+    {->}{{$\rightarrow$}}{2}
+    {→}{{$\rightarrow$}}{1}
+    {↔}{{$\leftrightarrow$}}{1}
+    {↦}{{$\mapsto$}}{1}
+    {⟺}{{$\iff$}}{2}
+    {∀}{{$\forall$}}{1}
+    {∃}{{$\exists$}}{1}
+    {∧}{{$\wedge$}}{1}
+    {∨}{{$\vee$}}{1}
+    {¬}{{$\neg$}}{1}
+    {≤}{{$\le$}}{1}
+    {≥}{{$\ge$}}{1}
+    {≠}{{$\ne$}}{1}
+    {∈}{{$\in$}}{1}
+    {∉}{{$\notin$}}{1}
+    {⊤}{{$\top$}}{1}
+    {⊥}{{$\bot$}}{1}
+    {⊔}{{$\sqcup$}}{1}
+    {⊓}{{$\sqcap$}}{1}
+    {⋁}{{$\bigvee$}}{1}
+    {⨆}{{$\bigsqcup$}}{1}
+    {∑}{{$\sum$}}{1}
+    {∞}{{$\infty$}}{1}
+    {ℝ}{{$\mathbb{R}$}}{1}
+    {ℕ}{{$\mathbb{N}$}}{1}
+    {ℤ}{{$\mathbb{Z}$}}{1}
+    {Ω}{{$\Omega$}}{1}
+    {δ}{{$\delta$}}{1}
+    {μ}{{$\mu$}}{1}
+    {ρ}{{$\rho$}}{1}
+    {ι}{{$\iota$}}{1}
+    {σ}{{$\sigma$}}{1}
+    {ω}{{$\omega$}}{1}
+    {∪}{{$\cup$}}{1}
+    {∂}{{$\partial$}}{1}
+    {×}{{$\times$}}{1}
+    {⁻¹}{{${}^{-1}$}}{2}
+    {ᶜ}{{${}^{\mathsf{c}}$}}{1}
+    {ᶜᶜ}{{${}^{\mathsf{cc}}$}}{2}
+    {⟨}{{$\langle$}}{1}
+    {⟩}{{$\rangle$}}{1}
+    {∘}{{$\circ$}}{1}
+    {≡}{{$\equiv$}}{1}
+    {∅}{{$\emptyset$}}{1}
+    {▷}{{$\triangleright$}}{1}
+    {⊆}{{$\subseteq$}}{1}
+    {≃}{{$\simeq$}}{1}
+    {Σ}{{$\Sigma$}}{1}
+    {⋃}{{$\bigcup$}}{1}
+    {⨅}{{$\bigsqcap$}}{1}
+    {∣}{{$\mid$}}{1}
+    {β}{{$\beta$}}{1}
+    {κ}{{$\kappa$}}{1}
+    {Θ}{{$\Theta$}}{1}
+    {Γ}{{$\Gamma$}}{1}
+    {Δ}{{$\Delta$}}{1}
+    {α}{{$\alpha$}}{1}
+    {₀}{{$_{0}$}}{1}
+    {₁}{{$_{1}$}}{1}
+    {₂}{{$_{2}$}}{1}
+    {ˢ}{{$^{\mathsf{s}}$}}{1}
+    {↑}{{$\uparrow$}}{1}
+    {↓}{{$\downarrow$}}{1}
+    {ψ}{{$\psi$}}{1}
+    {φ}{{$\varphi$}}{1}
+    {ν}{{$\nu$}}{1}
+    {·}{{$\cdot$}}{1}
+    {•}{{$\bullet$}}{1}
+    {⊂}{{$\subset$}}{1}
+    {∩}{{$\cap$}}{1}
+    {⊕}{{$\oplus$}}{1}
+    {⊗}{{$\otimes$}}{1}
+    {⊸}{{$\multimap$}}{1}
+    {ᵒᵖ}{{${}^{\mathsf{op}}$}}{2}
+    {ᵇ}{{${}^{\mathsf{b}}$}}{1}
+    {⥤}{{$\Rightarrow$}}{1}
+}
+
+\lstset{
+  language=Lean,
+  inputencoding=utf8/latin1,
+  extendedchars=true,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape,
+  showstringspaces=false,
+  breaklines=true,
+  xleftmargin=1em,
+  aboveskip=0.6em,
+  belowskip=0.6em,
+}
+
+\emergencystretch=3em
+
+\newcommand{\ENNReal}{\ensuremath{[0,\infty]}}
+\newcommand{\coh}{\mathrel{\asymp}}
+\newcommand{\parr}{\mathbin{\rotatebox[origin=c]{180}{\&}}}
+\newcommand{\Mix}{\mathrm{Mix}}
+\newcommand{\STAB}{\mathrm{STAB}}
+\newcommand{\QSTAB}{\mathrm{QSTAB}}
+\newcommand{\loc}{\mathrm{loc}}
+\newcommand{\leanref}[1]{\hyperref[lean:#1]{\textsuperscript{\textsf{\tiny Lean}}}}
+
+\begin{document}
+
+\title{Mixtures of Deterministic Programs in\\ Probabilistic Coherence Spaces}
+\titlerunning{Mixtures of Deterministic Programs}
+
+\ifanonymous
+\author{Anonymous Author(s)}
+\authorrunning{Anonymous}
+\institute{Anonymous Institution}
+\else
+% TODO: Alex's surname, both affiliations, emails, ORCIDs.
+\author{Polina Vinogradova\inst{1} \and Alex [SURNAME]\inst{2}}
+\authorrunning{P. Vinogradova and A. [SURNAME]}
+\institute{[AFFILIATION 1] \and [AFFILIATION 2]}
+\fi
+
+\maketitle
+
+\input{abstract}
+
+\input{sec-intro}
+\input{sec-calculi}
+\input{sec-linear}
+\input{sec-second}
+\input{sec-exact}
+\input{sec-other}
+\input{sec-duality}
+\input{sec-quantum}
+\input{sec-related}
+\input{sec-conclusion}
+
+\section*{Data Availability Statement}
+The Lean~4 development that mechanizes every result marked
+\textsuperscript{\textsf{\tiny Lean}} is provided as an anonymized archive
+with this submission. It builds with \textsf{mathlib}, contains no
+\texttt{sorry}, and uses only the axioms \texttt{propext},
+\texttt{Classical.choice}, and \texttt{Quot.sound}. It will be made
+publicly available and submitted for artifact evaluation.
+
+\bibliographystyle{splncs04}
+\bibliography{refs}
+
+\appendix
+\input{app-lean}
+
+\end{document}

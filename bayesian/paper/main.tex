@@ -60,6 +60,8 @@
     {ρ}{{$\rho$}}{1}
     {ι}{{$\iota$}}{1}
     {σ}{{$\sigma$}}{1}
+    {ω}{{$\omega$}}{1}
+    {∪}{{$\cup$}}{1}
     {∂}{{$\partial$}}{1}
     {×}{{$\times$}}{1}
     {⁻¹}{{${}^{-1}$}}{2}
@@ -178,8 +180,11 @@ we define a construct for extending a logic (treated as a parameter in
 our approach) to a calculus of probability, 
 and specify criteria for when this works: (1) when the resulting calculus 
 can reconstruct the original logic in the limiting case of certain 
-($0-$ or $1-$ probability) events, and (2) when the construction, evaluated 
-at classical logic, agrees with classical probability theory.
+($0-$ or $1-$ probability) events, (2) when the construction, evaluated 
+at classical logic, agrees with classical probability theory, and
+(3) when every linear law that holds in all certain states holds
+throughout the calculus. Together with closure under mixtures, the
+criteria determine the calculus uniquely.
 Instantiating the construction at intuitionistic logic gives valuations
 on frames, complete Heyting algebras of open sets, the algebras of
 verifiable propositions. In this setting,
@@ -188,12 +193,18 @@ rule's deficit and boundary mass in the measure model.  Slack
 pinpoints exactly when Bayesian conditioning, which treats the
 evidence as fully decided, gives an incorrect update, disagreeing
 with Dempster's rule.
-A separate obstruction, a five-element counterexample, is why Cox's
-sum rule cannot be derived and must instead be posited.
+A separate obstruction, a five-element counterexample, shows that Cox's
+sum rule cannot be derived from additivity on disjoint events over
+frames and must instead be posited.
 Classical probability credits the slack of a semidecidable property
 to its failure, an event no finite observation can confirm.
+Evaluated at linear logic, the construction agrees with probabilistic
+coherence spaces at first order, and at second order it gives the
+randomized sequential programs, a strict subset. For argument types built
+from $\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$ we characterize exactly
+when the two agree, by a direct proof that avoids perfect graph theory.
 The whole development is machine-checked in Lean~4 over \textsf{mathlib},
-in roughly $5{,}000$ lines with no \texttt{sorry}.
+in roughly $15{,}000$ lines with no \texttt{sorry}.
 \end{abstract}
 
 \begin{CCSXML}

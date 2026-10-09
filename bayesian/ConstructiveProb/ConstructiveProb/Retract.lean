@@ -22,7 +22,7 @@ open Finset
 
 namespace ConstructiveProb.Linear
 
-open ConstructiveProb.PCS (orth pairing subset_orth_orth)
+open ConstructiveProb.PCS (orth pairing subset_orth_orth mem_lin_iff)
 open Fm
 
 /-! ### Pushforward along a map of webs -/
@@ -230,6 +230,158 @@ def Retract.wthR (D B : Fm) : Retract D (Fm.wth B D) where
       rw [pull_push Sum.inr_injective]; exact hx
   pull_mem z hz := hz.2
 
+/-! ### Functoriality in `⊗` -/
+
+theorem push_tvec {X Y X' Y' : Type} [Fintype X] [Fintype Y] [DecidableEq X'] [DecidableEq Y']
+    (j : X → X') (k : Y → Y') (x : X → ℝ≥0∞) (y : Y → ℝ≥0∞) :
+    push (fun d : X × Y => (j d.1, k d.2)) (tvec x y) = tvec (push j x) (push k y) := by
+  funext ⟨a, b⟩
+  simp only [push, tvec, Fintype.sum_prod_type, Prod.mk.injEq, Finset.sum_mul_sum]
+  refine Finset.sum_congr rfl fun d _ => Finset.sum_congr rfl fun e _ => ?_
+  by_cases h1 : j d = a <;> by_cases h2 : k e = b <;> simp [h1, h2]
+
+/-- **Retracts pass through `⊗`.** -/
+def Retract.tens {D A D' A' : Fm} (R : Retract D A) (R' : Retract D' A') :
+    Retract (Fm.tens D D') (Fm.tens A A') where
+  j d := (R.j d.1, R'.j d.2)
+  inj a b h := Prod.ext (R.inj (Prod.mk.inj h).1) (R'.inj (Prod.mk.inj h).2)
+  push_mem x hx := by
+    have hx' : x ∈ orth (orth {z | ∃ u ∈ P D, ∃ v ∈ P D', z = tvec u v}) := hx
+    show _ ∈ orth (orth {z | ∃ u ∈ P A, ∃ v ∈ P A', z = tvec u v})
+    intro f hf
+    rw [pairing_comm', pairing_push, pairing_comm']
+    refine hx' _ ?_
+    rintro _ ⟨u, hu, v, hv, rfl⟩
+    rw [← pairing_push, push_tvec]
+    exact hf _ ⟨_, R.push_mem u hu, _, R'.push_mem v hv, rfl⟩
+  pull_mem z hz := by
+    have hz' : z ∈ orth (orth {z | ∃ u ∈ P A, ∃ v ∈ P A', z = tvec u v}) := hz
+    show _ ∈ orth (orth {z | ∃ u ∈ P D, ∃ v ∈ P D', z = tvec u v})
+    intro g hg
+    rw [← pairing_push]
+    refine hz' _ ?_
+    rintro _ ⟨a, ha, a', ha', rfl⟩
+    rw [pairing_comm', pairing_push, pairing_comm']
+    exact hg _ ⟨_, R.pull_mem a ha, _, R'.pull_mem a' ha', rfl⟩
+
+/-- **The second-order gap, through retracts.** If `n ⊸ m` is a coordinate retract of `X` and
+`n' ⊸ m'` one of `Y`, all four at least `2`, the calculus of `(X ⊗ Y)^⊥` is strictly smaller
+than its PCS. -/
+theorem gap_of_retracts {n m n' m' : ℕ} (hn : 2 ≤ n) (hm : 2 ≤ m) (hn' : 2 ≤ n') (hm' : 2 ≤ m')
+    {X Y : Fm} (RX : Retract (lolli (base n) (base m)) X)
+    (RY : Retract (lolli (base n') (base m')) Y) :
+    recipe (Fm.neg (tens X Y)) ⊂ P (Fm.neg (tens X Y)) := by
+  have h2 := recipe_second_order_ssubset hn hm hn' hm'
+  exact Set.ssubset_iff_subset_ne.2 ⟨recipe_subset_P _, (RX.tens RY).neg.recipe_ne h2.ne⟩
+
+/-! ### Four-cycles of coherence -/
+
+theorem coh_symm : ∀ (A : Fm) {s t : web A}, coh A s t → coh A t s
+  | base _, _, _, h => h.symm
+  | Fm.neg A, _, _, h =>
+    h.elim (fun e => Or.inl e.symm) (fun h' => Or.inr fun h'' => h' (coh_symm A h''))
+  | tens A B, _, _, h => ⟨coh_symm A h.1, coh_symm B h.2⟩
+  | wth A _, Sum.inl _, Sum.inl _, h => coh_symm A h
+  | wth _ B, Sum.inr _, Sum.inr _, h => coh_symm B h
+  | wth _ _, Sum.inl _, Sum.inr _, _ => trivial
+  | wth _ _, Sum.inr _, Sum.inl _, _ => trivial
+
+/-- An induced four-cycle of the coherence graph: `a ⁀ b ⁀ c ⁀ d ⁀ a`, with `a, c` and `b, d`
+incoherent. -/
+structure C4 (X : Fm) where
+  (a b c d : web X)
+  hab : coh X a b
+  hbc : coh X b c
+  hcd : coh X c d
+  hda : coh X d a
+  hac : ¬ coh X a c
+  hbd : ¬ coh X b d
+
+namespace C4
+
+variable {X : Fm} (Q : C4 X)
+
+theorem a_ne_c : Q.a ≠ Q.c := fun h => Q.hac (h ▸ coh_refl X Q.a)
+theorem b_ne_d : Q.b ≠ Q.d := fun h => Q.hbd (h ▸ coh_refl X Q.b)
+theorem a_ne_b : Q.a ≠ Q.b := fun h => Q.hbd (h ▸ coh_symm X Q.hda)
+theorem a_ne_d : Q.a ≠ Q.d := fun h => Q.hac (coh_symm X (h ▸ Q.hcd))
+theorem b_ne_c : Q.b ≠ Q.c := fun h => Q.hac (h ▸ Q.hab)
+theorem c_ne_d : Q.c ≠ Q.d := fun h => Q.hbd (h ▸ Q.hbc)
+
+/-- The four points as the web of `2 ⊸ 2`: input `0` goes to `a, c`, input `1` to `b, d`. -/
+def j : Fin 2 × Fin 2 → web X := fun p => ![![Q.a, Q.c], ![Q.b, Q.d]] p.1 p.2
+
+theorem j_inj : Function.Injective Q.j := by
+  rintro ⟨p1, p2⟩ ⟨q1, q2⟩ h
+  have := Q.a_ne_c; have := Q.b_ne_d; have := Q.a_ne_b; have := Q.a_ne_d
+  have := Q.b_ne_c; have := Q.c_ne_d
+  fin_cases p1 <;> fin_cases p2 <;> fin_cases q1 <;> fin_cases q2 <;> simp_all [j, eq_comm]
+
+theorem edge {u : web X → ℝ≥0∞} (hu : u ∈ orth (P X)) {s t : web X} (hst : s ≠ t)
+    (h : coh X s t) : u s + u t ≤ 1 := by
+  have := hu _ (pair_mem_P X hst h)
+  rwa [pr, pairing_add_left, pairing_single, pairing_single] at this
+
+/-- **A four-cycle of coherence is a copy of `2 ⊸ 2`.** -/
+def retract : Retract (lolli (base 2) (base 2)) X where
+  j := Q.j
+  inj := Q.j_inj
+  push_mem x hx := by
+    have hx' : ∀ r : Fin 2, ∑ q : Fin 2, x (r, q) ≤ 1 :=
+      (mem_lin_iff (X := Fin 2) (Y := Fin 2) x).1 ((P_lolli_base 2 2) ▸ hx)
+    rw [← (isPCS_P X).closed]
+    intro u hu
+    rw [pairing_comm', pairing_push]
+    have e1 := edge hu Q.a_ne_b Q.hab
+    have e2 := edge hu Q.a_ne_d (coh_symm X Q.hda)
+    have e3 := edge hu Q.b_ne_c.symm (coh_symm X Q.hbc)
+    have e4 := edge hu Q.c_ne_d Q.hcd
+    have r0 := hx' 0
+    have r1 := hx' 1
+    simp only [Fin.sum_univ_two] at r0 r1
+    change (∑ p : Fin 2 × Fin 2, x p * u (Q.j p)) ≤ 1
+    simp only [Fintype.sum_prod_type, Fin.sum_univ_two, j]
+    simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+    set M1 := max (u Q.a) (u Q.c)
+    set M2 := max (u Q.b) (u Q.d)
+    have hM : M1 + M2 ≤ 1 := by
+      rcases le_total (u Q.a) (u Q.c) with h1 | h1 <;>
+        rcases le_total (u Q.b) (u Q.d) with h2 | h2 <;>
+        simp only [M1, M2, max_eq_left, max_eq_right, h1, h2] <;> assumption
+    have k1 : x (0, 0) * u Q.a + x (0, 1) * u Q.c ≤ M1 :=
+      calc _ ≤ x (0, 0) * M1 + x (0, 1) * M1 :=
+            add_le_add (mul_le_mul_left' (le_max_left _ _) _)
+              (mul_le_mul_left' (le_max_right _ _) _)
+        _ = (x (0, 0) + x (0, 1)) * M1 := (add_mul _ _ _).symm
+        _ ≤ 1 * M1 := mul_le_mul_right' r0 _
+        _ = M1 := one_mul _
+    have k2 : x (1, 0) * u Q.b + x (1, 1) * u Q.d ≤ M2 :=
+      calc _ ≤ x (1, 0) * M2 + x (1, 1) * M2 :=
+            add_le_add (mul_le_mul_left' (le_max_left _ _) _)
+              (mul_le_mul_left' (le_max_right _ _) _)
+        _ = (x (1, 0) + x (1, 1)) * M2 := (add_mul _ _ _).symm
+        _ ≤ 1 * M2 := mul_le_mul_right' r1 _
+        _ = M2 := one_mul _
+    calc _ = (x (0, 0) * u Q.a + x (0, 1) * u Q.c) + (x (1, 0) * u Q.b + x (1, 1) * u Q.d) := by
+          ring
+      _ ≤ M1 + M2 := add_le_add k1 k2
+      _ ≤ 1 := hM
+  pull_mem z hz := by
+    show _ ∈ P (lolli (base 2) (base 2))
+    rw [P_lolli_base]
+    refine (mem_lin_iff (X := Fin 2) (Y := Fin 2) (fun d => z (Q.j d))).2 fun r => ?_
+    fin_cases r
+    · simpa [Fin.sum_univ_two, j] using (invariants X).2.2 _ _ Q.a_ne_c Q.hac z hz
+    · simpa [Fin.sum_univ_two, j] using (invariants X).2.2 _ _ Q.b_ne_d Q.hbd z hz
+
+end C4
+
+/-- **The gap from two four-cycles.** If the coherence graphs of `X` and `Y` both contain an
+induced four-cycle, the calculus of `(X ⊗ Y)^⊥` is strictly smaller than its PCS. -/
+theorem gap_of_C4 {X Y : Fm} (QX : C4 X) (QY : C4 Y) :
+    recipe (Fm.neg (tens X Y)) ⊂ P (Fm.neg (tens X Y)) :=
+  gap_of_retracts le_rfl le_rfl le_rfl le_rfl QX.retract QY.retract
+
 /-! ### Occurrences -/
 
 /-- Every data type in the formula is nonempty. -/
@@ -298,6 +450,48 @@ theorem gap_of_occ {n m n' m' : ℕ} (hn : 2 ≤ n) (hm : 2 ≤ m) (hn' : 2 ≤ 
   have h2 := recipe_second_order_ssubset hn hm hn' hm'
   have hne : recipe (second n m n' m') ≠ P (second n m n' m') := h2.ne
   exact Set.ssubset_iff_subset_ne.2 ⟨recipe_subset_P A, R.recipe_ne hne⟩
+
+/-- **The gap from two four-cycles, anywhere.** If `X ⊗ Y` occurs negatively in `A` and the
+coherence graphs of `X` and `Y` both contain an induced four-cycle, the calculus of `A` is strictly
+smaller than its PCS. -/
+theorem gap_of_C4_occ {X Y A : Fm} (QX : C4 X) (QY : C4 Y) (hocc : Occ (tens X Y) false A)
+    (hA : NE A) : recipe A ⊂ P A := by
+  obtain ⟨R⟩ := occ_retract hocc hA
+  have h2 := recipe_second_order_ssubset (le_refl 2) (le_refl 2) (le_refl 2) (le_refl 2)
+  exact Set.ssubset_iff_subset_ne.2
+    ⟨recipe_subset_P A, ((QX.retract.tens QY.retract).neg.trans R).recipe_ne h2.ne⟩
+
+/-- The four-cycle of `2 ⊸ 2` itself. -/
+def C4.lolli22 : C4 (lolli (base 2) (base 2)) where
+  a := (0, 0)
+  b := (1, 0)
+  c := (0, 1)
+  d := (1, 1)
+  hab := by simp [coh, lolli]
+  hbc := by simp [coh, lolli]
+  hcd := by simp [coh, lolli]
+  hda := by simp [coh, lolli]
+  hac := by simp [coh, lolli]
+  hbd := by simp [coh, lolli]
+
+/-- The same four-cycle in `((2 ⊸ 2) ⊸ 2)^⊥`, the second argument type of the curried form. -/
+def C4.curried : C4 (Fm.neg (lolli (lolli (base 2) (base 2)) (base 2))) where
+  a := ((0, 0), 0)
+  b := ((1, 0), 0)
+  c := ((0, 1), 0)
+  d := ((1, 1), 0)
+  hab := by simp [coh, lolli]
+  hbc := by simp [coh, lolli]
+  hcd := by simp [coh, lolli]
+  hda := by simp [coh, lolli]
+  hac := by simp [coh, lolli]
+  hbd := by simp [coh, lolli]
+
+/-- **The curried form** `(2 ⊸ 2) ⊸ ((2 ⊸ 2) ⊸ 2)` has a gap too. -/
+theorem gap_curried :
+    recipe (lolli (lolli (base 2) (base 2)) (lolli (lolli (base 2) (base 2)) (base 2)))
+      ⊂ P (lolli (lolli (base 2) (base 2)) (lolli (lolli (base 2) (base 2)) (base 2))) :=
+  gap_of_C4 C4.lolli22 C4.curried
 
 /-- Example: a program receiving two functions and returning a boolean. -/
 example : recipe (lolli (core 2 2 2 2) (base 2)) ⊂ P (lolli (core 2 2 2 2) (base 2)) :=

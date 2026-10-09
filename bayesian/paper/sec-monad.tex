@@ -121,15 +121,18 @@ multiplication exists for unrestricted valuations.  This half of the
 dichotomy is not specific to intuitionism, since powerset-frame
 valuations are exactly the classical finitely additive probability
 measures~\cite{bhaskara-rao1983}. Dropping continuity is what admits
-the non-uniqueness.  A monad therefore requires restricting either
+the non-uniqueness. For continuous valuations on continuous domains the
+product is unique and Fubini's theorem holds~\cite{jones1990}, and they
+form the probabilistic powerdomain~\cite{jones-plotkin1989}.  A monad therefore requires restricting either
 the frames or the valuations.
 
-A first step in the second direction is to restrict $\mathrm{Val}$
-to the valuations given as countable mixtures.  For these, we 
-can demonstrate that the kernels
-compose independently of order, the property that
-Theorem~\ref{thm:product-not-unique} refutes for unrestricted
-valuations:
+A first step in the second direction is to restrict the mixing
+measures to countable ones. The components of a mixture are arbitrary
+valuations, so this restricts how valuations are combined, not which
+valuations occur. With countable weights the order of mixing does not
+matter, by the interchange of double series. In
+Theorem~\ref{thm:product-not-unique} the mixing measures are ultrafilter
+valuations, which are not countable mixtures:
 
 \begin{proposition}[countable kernel composition\leanref{mixcountable}]
 \label{prop:mixcountable}

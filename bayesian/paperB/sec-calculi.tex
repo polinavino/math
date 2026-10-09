@@ -1,0 +1,217 @@
+\section{Calculi from Certain States}
+\label{sec:calculi}
+
+This section sets up the construction that the rest of the paper applies
+to linear logic. It needs no logical connectives: the input is a set of
+events and a set of assignments that settle every event, and the output
+is the set of mixtures of these assignments. The construction and its
+completeness theorem are de Finetti's~\cite{definetti1974}, in the form
+that Paris and Williams use for non-classical
+logics~\cite{paris2001,williams2012}. Values lie in $\ENNReal$, the
+nonnegative reals extended with $\infty$, the codomain of the Lean
+development.
+
+\subsection{Presentations and Mixtures}
+\label{sec:calculi-mix}
+
+\begin{definition}[presentation, calculus\leanref{mix}]
+\label{def:mix}
+A \emph{presentation} is a set $E$, whose elements are the \emph{events},
+together with a set $S$ of functions $E \to \ENNReal$ with values in
+$\{0,1\}$, the \emph{certain states}. A \emph{mixture} of functions
+$s_1, \dots, s_n$ is a function $\sum_{i} w_i\, s_i$ with weights
+$w_i \in \ENNReal$ and $\sum_i w_i = 1$. The \emph{calculus} $\Mix(S)$ is
+the set of mixtures of certain states. A set of functions is
+\emph{closed under mixtures} if it contains every mixture of its
+elements.
+\end{definition}
+
+\noindent
+Mixtures are finite. When $E$ is finite, so is $S$, and a countable
+mixture of elements of $\Mix(S)$ regroups into a finite mixture of
+certain states, so countable mixtures would change nothing. When $E$ is
+infinite they differ. If $S$ contains the indicators of the singletons
+$\{e_1\}, \{e_2\}, \dots$, then $\sum_n 2^{-n}\, 1_{\{e_n\}}$ takes
+infinitely many values, while a finite mixture of $\{0,1\}$-valued
+functions takes finitely many, so it is not in $\Mix(S)$.
+
+\noindent
+A certain state settles every event, with value $1$ or $0$. A mixture
+records uncertainty about which certain state obtains, with $w_i$ the
+weight of $s_i$. In Section~\ref{sec:linear} the events are the points of
+the web of a formula of linear logic and the certain states are the
+deterministic behaviours of that type, so an element of the calculus is a
+probability distribution over deterministic behaviours.
+
+\begin{theorem}[certain elements and mixing\leanref{sharp-mem-mix-iff}\leanref{mix-mix}]
+\label{thm:mix-basic}
+For every presentation $(E, S)$:
+(i) a function with values in $\{0,1\}$ lies in $\Mix(S)$ iff it lies in
+$S$, and
+(ii) $\Mix(\Mix(S)) = \Mix(S)$, so $\Mix(S)$ is the least set that
+contains $S$ and is closed under mixtures.
+\end{theorem}
+
+\noindent
+For (i), let $x = \sum_i w_i s_i$ have values in $\{0,1\}$, and let
+$w_j \ne 0$. At an event $e$ with $x_e = 0$, every $s_i$ with
+$w_i \ne 0$ has $s_i(e) = 0$. At an event with $x_e = 1$, every such
+$s_i$ has $s_i(e) = 1$, since $\sum_i w_i = 1$ and $s_i(e) \le 1$. So
+$s_j = x$. Part (ii) expands a mixture of mixtures into one mixture with
+product weights. Mixing therefore creates no new certain states, and the
+certain states of the calculus are those of the presentation.
+
+\subsection{Affine Laws and Completeness}
+\label{sec:calculi-laws}
+
+The calculus has an axiomatic description by linear inequalities.
+
+\begin{definition}[affine law\leanref{affinelaw}]
+\label{def:affine-law}
+Let $E$ be finite. An \emph{affine law} on $E$ is given by functions
+$a, b : E \to \ENNReal$ and constants $k, k' \in \ENNReal$. A function
+$x : E \to \ENNReal$ \emph{satisfies} it if
+\[
+  \sum_{e \in E} a_e x_e + k \;\le\; \sum_{e \in E} b_e x_e + k'.
+\]
+An affine law is \emph{valid on} a set of functions if every function in
+the set satisfies it.
+\end{definition}
+
+\noindent
+Every linear inequality with real coefficients between the values of
+$x$ can be written in this form, by moving negative coefficients to the
+other side. For example, $x_e \le 1$, $x_e + x_{e'} \le 1$, and the
+equation $x_e + x_{e'} = x_{e''}$, as two inequalities, are affine laws.
+
+\begin{theorem}[completeness~\cite{definetti1974,paris2001}\leanref{mix-eq-laws}\leanref{affinelaw-holds-of-mix}]
+\label{thm:mix-eq-laws}
+Let $E$ be finite and $S$ a set of functions $E \to \ENNReal$ with values
+in $\{0,1\}$. Then $\Mix(S)$ is the set of functions $x : E \to \ENNReal$
+that satisfy every affine law valid on $S$.
+\end{theorem}
+
+\noindent
+Affine laws are preserved by mixtures, which gives the inclusion from
+left to right. For the converse, a point outside the convex hull of the
+finite set $S$ is separated from it by a hyperplane, and the hyperplane
+is an affine law valid on $S$ that the point violates. The Lean proof uses
+the geometric Hahn--Banach theorem of \textsf{mathlib}. For rational
+points and certain states, the development also contains a proof without
+the axiom of choice by Fourier--Motzkin elimination, the elimination of
+variables from a system of linear inequalities\leanref{constr-farkas}.
+
+Read as bets, an affine law valid on $S$ and violated at $x$ is a finite
+system of bets, priced by $x$, that loses money in every certain state.
+Paris and Williams use Theorem~\ref{thm:mix-eq-laws} in this form for
+non-classical logics, and Williams derives from it that the mixtures are
+the assignments that no other assignment dominates in
+accuracy~\cite{paris2001,williams2012}.
+
+\subsection{Laws of Deterministic Programs}
+\label{sec:calculi-unique}
+
+The calculus is determined by its certain states and their laws.
+
+\begin{theorem}[uniqueness\leanref{calculus-unique}\leanref{calculus-laws-iff}]
+\label{thm:unique}
+Let $E$ be finite, let $S$ be a set of functions $E \to \ENNReal$ with
+values in $\{0,1\}$, and let $C$ be a set of functions
+$E \to \ENNReal$ that contains $S$.
+(i) $C$ satisfies no affine law that some element of $S$ violates. If
+$C$ satisfies every affine law valid on $S$, then the affine laws valid
+on $C$ are exactly those valid on $S$.
+(ii) If $C$ is closed under mixtures and satisfies every affine law valid
+on $S$, then $C = \Mix(S)$.
+\end{theorem}
+
+\noindent
+Part (i) holds because $S \subseteq C$. For (ii), closure under mixtures
+gives $\Mix(S) \subseteq C$, and Theorem~\ref{thm:mix-eq-laws} gives
+$C \subseteq \Mix(S)$. So $\Mix(S)$ is at once the least set that
+contains the certain states and is closed under mixtures and the largest
+set that obeys their laws. The mathematics is de Finetti's and
+Paris's~\cite{definetti1974,paris2001}.
+
+In the rest of the paper $C$ is the probabilistic coherence space of a
+formula, which contains its certain states and is closed under mixtures,
+and $\Mix(S)$ is the calculus of the same formula. The question is which
+of the two cases of the following definition holds.
+
+\begin{definition}[gap]
+\label{def:gap}
+Let $(E, S)$ be a presentation and $C \supseteq S$ a set of functions
+$E \to \ENNReal$ that is closed under mixtures. Then $\Mix(S) \subseteq C$,
+and $C$ has a \emph{gap} over $S$ if the inclusion is strict.
+\end{definition}
+
+\begin{corollary}[a gap is a violated law\leanref{mix-eq-laws}]
+\label{cor:gap-law}
+For finite $E$, the set $C$ of Definition~\ref{def:gap} has a gap over
+$S$ iff some element of $C$ violates an affine law valid on $S$.
+\end{corollary}
+
+\noindent
+This is Theorem~\ref{thm:mix-eq-laws} applied to the elements of $C$
+outside $\Mix(S)$. When the certain states are the deterministic
+programs of a type, an affine law valid on $S$ is an inequality that
+every deterministic program obeys, and every probabilistic program that
+flips coins and then runs a deterministic program obeys it too. A gap is
+an element of the probabilistic coherence space that violates such an
+inequality. The witnesses found below are of this kind: a five-term
+inequality at the type of a program with two functional arguments, with
+the bounds of the KCBS inequality (Section~\ref{sec:second}), and the
+CHSH inequality at the dual type (Section~\ref{sec:duality}).
+
+\subsection{Why Not Lattice Valuations}
+\label{sec:calculi-lattice}
+
+For intuitionistic and classical logic, the calculus of a finite event
+algebra is also given by the familiar axioms of a valuation: a grading
+$v$ of the events with $v(\bot) = 0$ and $v(\top) = 1$ that is monotone
+and \emph{modular}, $v(a) + v(b) = v(a \sqcup b) + v(a \sqcap b)$, where
+$\sqcup$ and $\sqcap$ are the join and meet of the algebra of
+events~\cite{paris2001}\leanref{frame-recipe}. The event algebras of linear logic are
+\emph{quantales}, complete lattices with an associative multiplication
+$\otimes$ that distributes over arbitrary joins and need not be
+idempotent~\cite{girard1987}. The tensor $\otimes$ is not the meet, so
+modularity does not apply to it as it stands. Replacing the meet by the
+tensor in the modularity axiom does not work either.
+
+\begin{definition}[tensor valuation\leanref{tensor-valuation}]
+\label{def:tensor-valuation}
+Let $\Omega$ be a \emph{join-semilattice}, a partial order in which every
+two elements have a least upper bound $a \sqcup b$, and let $\otimes$ be
+a binary operation on $\Omega$. A \emph{tensor valuation} for $\otimes$
+is a function $v : \Omega \to \ENNReal$ such that
+$v(a) + v(b) = v(a \sqcup b) + v(a \otimes b)$ for all $a, b \in \Omega$.
+\end{definition}
+
+\begin{theorem}[tensor collapse\leanref{tensor-collapse}\leanref{tensor-dichotomy}]
+\label{thm:tensor-collapse}
+Let $\Omega$ be a join-semilattice, $\otimes$ a binary operation on
+$\Omega$, and $v$ a tensor valuation for $\otimes$. Then
+$v(a \otimes a) = v(a)$ for every $a$ with $v(a) < \infty$.
+\end{theorem}
+
+\noindent
+Setting $b = a$ in the defining equation and using $a \sqcup a = a$ gives
+$v(a) + v(a) = v(a) + v(a \otimes a)$, and $v(a)$ cancels because it is
+finite. No property of $\otimes$ is used.
+
+\begin{example}[a constant valuation\leanref{tensor-witness}]
+\label{ex:tensor-witness}
+On $\mathbb{N}$ with $\sqcup = \max$ and $\otimes = +$, an associative
+operation that distributes over $\max$ and has $1 + 1 \ne 1$, setting $a = 0$ in the defining equation gives
+$v(n) = v(0)$ for every $n$, so every tensor valuation is constant.
+\end{example}
+
+\noindent
+So a grading of the events of a quantale by this law cannot separate one
+copy of a resource, $a$, from two copies, $a \otimes a$, which is the
+distinction that the tensor of linear logic exists to make.
+Probabilistic coherence spaces make the distinction by assigning weights
+to the points of a web, with $a \otimes a$ interpreted on a product of
+webs, and not by grading formulas~\cite{danos-ehrhard2011}. The
+construction of this section applies to them, because it needs a set of
+events and a set of certain states and no operations on events.

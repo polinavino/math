@@ -8,8 +8,9 @@ orthogonal basis, a maximal set of pairwise orthogonal rays, whose events
 can be observed jointly. A \emph{state} assigns to each ray a number in
 $\ENNReal$ such that the numbers on every context sum to $1$. For a unit
 vector $\psi$, the \emph{Born rule} $x_v = (\psi \cdot v)^2 / (v \cdot
-v)$ gives a state, and mixtures of such states, the density matrices,
-are the \emph{quantum states}. For $d \ge 3$, Gleason's
+v)$ gives a state, and mixtures of such states, the density matrices
+(positive semidefinite operators of trace $1$), are the \emph{quantum
+states}. For $d \ge 3$, Gleason's
 theorem~\cite{gleason1957} states that every state on all rays of
 $\mathbb{R}^d$ is a quantum state.
 
@@ -17,7 +18,11 @@ This section tests the construction of Section~\ref{sec:recipe} on this
 event logic. The mathematics is known: the Kochen--Specker
 theorem~\cite{kochen-specker1967}, its $18$-ray
 instance~\cite{cabello1996}, and the bounds of the graph-theoretic
-approach to contextuality~\cite{cabello2014}. What is added is its
+approach to contextuality (the impossibility of assigning outcomes
+independently of the context in which they are measured)~\cite{cabello2014}. Cox's method has been
+applied to non-distributive lattices of this kind, giving
+non-Kolmogorovian probability measures for quantum
+mechanics~\cite{holik2014}. What is added is its
 reading in terms of the construction, with the same graph polytopes as
 Section~\ref{sec:second-perfect}, and its mechanization.
 
@@ -119,3 +124,491 @@ logic, and Theorem~\ref{thm:ks} is the statement that this event logic
 has none~\cite{kochen-specker1967}. For lattice valuations,
 Theorem~\ref{thm:m3-no-sharp} shows the corresponding absence on the
 non-distributive lattice $M_3$, which has no sharp valuation.
+
+\subsection{Local Certainty}
+\label{sec:quantum-local}
+
+The construction of Section~\ref{sec:recipe} mixes states that are
+certain on every context at once, and the Kochen--Specker theorem rules
+these out. A weaker requirement asks for certainty only within each
+context.
+
+\begin{definition}[local and global calculi\leanref{local-calc}]
+\label{def:local}
+Let $E$ be a finite set of outcomes and $\mathcal{C}$ a family of subsets
+of $E$, the contexts. The \emph{local calculus} is the set of
+$x : E \to \ENNReal$ with $\sum_{e \in C} x_e = 1$ for every context $C$,
+and the \emph{global calculus} is $\mathrm{Mix}$ of its $\{0,1\}$-valued
+elements. With divergence allowed, the sums are at most $1$.
+\end{definition}
+
+\noindent
+An element of the local calculus restricts on every context to an element
+of that context's classical calculus. Global states are local, and with a
+single context the two calculi agree and are classical probability on the
+outcomes\leanref{local-calc}, as criterion (2) of Section~\ref{sec:intro}
+requires. In the sheaf-theoretic approach to
+contextuality~\cite{abramsky-brandenburger2011}, the local calculus
+corresponds to the compatible families of local distributions
+(distributions on the contexts that agree on their overlaps) and the
+global calculus to the global sections (distributions on assignments of
+outcomes to all events), the noncontextual hidden-variable models. For
+hypergraphs of contexts (families of contexts on a common set of
+outcomes), Ac\'in, Fritz, Leverrier, and Sainz
+study the same two sets, the general probabilistic models and the
+classical models~\cite{acin2015}. Contexts of this kind are
+the tests (sets of outcomes of one experiment) of Foulis and
+Randall~\cite{foulis-randall1972}.
+
+\begin{theorem}[local certainty in linear logic\leanref{loc-linear}]
+\label{thm:loc-linear}
+For a formula $A$ of Definition~\ref{def:mall}, take as contexts the
+supports of the $\{0,1\}$-valued elements of $P(A^{\perp})$, with
+divergence allowed. The calculus of $A$ is contained in $P(A)$, which is
+contained in the local calculus, and $P(A)$ equals the local calculus iff
+the calculus of $A^{\perp}$ equals $P(A^{\perp})$. At $T$ the first
+inclusion is strict and the second is an equality. At $(T \otimes
+T)^{\perp}$ the second inclusion is strict.
+\end{theorem}
+
+\noindent
+The local calculus is the orthogonal of the calculus of $A^{\perp}$, and
+$P(A)$ is the orthogonal of $P(A^{\perp})$. Both the calculus and $P$ are
+biorthogonally closed (Section~\ref{sec:second-perfect}), which gives the
+equivalence. At $T$ the dual is the core, which has no gap
+(Theorem~\ref{thm:second-exact}), and the first inclusion is strict by
+Theorem~\ref{thm:pentagon}. At $(T \otimes T)^{\perp}$ the indicator of
+Shannon's set (Theorem~\ref{thm:shannon}) is a $\{0,1\}$-valued element
+of the local calculus outside $P$. So the probabilistic coherence space
+is in general neither the global nor the local calculus of its formula.
+It is determined by the duality between a formula and its negation. We
+did not find this placement in the literature.
+
+\begin{theorem}[local certainty in quantum logic\leanref{loc-quantum}]
+\label{thm:loc-quantum}
+On Cabello's set with the nine bases of Definition~\ref{def:cabello} as
+contexts, the local calculus is the set of states and the global calculus
+is empty. Born-rule assignments are local. The function $h$ with value
+$\tfrac12$ on the nine rays $\bar{1}111$, $0001$, $0010$, $0100$,
+$1\bar{1}\bar{1}1$, $1\bar{1}1\bar{1}$, $11\bar{1}1$, $111\bar{1}$,
+$1111$ and $0$ elsewhere is local and is not a mixture of Born-rule
+assignments.
+\end{theorem}
+
+\noindent
+Every basis contains exactly two of the nine rays, so $h$ is local. The
+ray $0001$ lies in the span of the orthogonal rays $1001$ and
+$100\bar{1}$, and every Born-rule assignment satisfies
+$x_{0001} \le x_{1001} + x_{100\bar{1}}$, since the difference of the two
+sides is $\psi_1^2$. The function $h$ gives these rays the values
+$\tfrac12$, $0$, and $0$. The local calculus sees orthogonality within
+contexts but not the order of the subspaces across them, the
+monotonicity law of Definition~\ref{def:valuation}. On a finite set of
+rays local certainty therefore admits states that are not mixtures of
+Born-rule assignments of those rays. This does not decide whether $h$ is
+quantum for some other assignment of projections to the rays, in a Hilbert
+space of any dimension, with the same contexts. Ac\'in, Fritz, Leverrier,
+and Sainz state that they do not know whether every local state on
+Cabello's set is quantum in that sense~\cite{acin2015}. On
+all rays of $\mathbb{R}^d$ with $d \ge 3$ it does not: there every local
+state is a quantum state by Gleason's theorem~\cite{gleason1957}, which
+is not formalized. Holik, Plastino, and Sáenz reach the quantum states
+from Cox's approach on non-distributive lattices~\cite{holik2014}.
+
+Criterion (1) must be weakened as well, since no state is
+$\{0,1\}$-valued. A weaker form asks that the events each state is
+certain of, together with the events of probability $0$, determine the
+event logic, a condition in the spirit of Mackey's order-determining sets
+of states (sets of states whose values determine the order of the event
+lattice)~\cite{mackey1963}.
+
+\begin{proposition}[Born states determine the event
+logic\leanref{born-ray}]
+\label{prop:born-ray}
+For rays $u, v$ of Cabello's set, let $x^u$ be the Born-rule assignment
+of the unit vector of $u$. Then $x^u_v = 0$ iff $u$ and $v$ are
+orthogonal, and $x^u_v = 1$ iff $u = v$.
+\end{proposition}
+
+\noindent
+So the extension of quantum event logic to a probability calculus needs
+two changes to the construction. Certainty is required within each
+context and not on all of them at once, and criterion (1) is read through
+the certainty and impossibility of events instead of through
+$\{0,1\}$-valued states. On all rays of $\mathbb{R}^d$, $d \ge 3$, the
+resulting calculus is the set of quantum states. On a finite fragment it
+is larger, and excluding the extra states needs the order of the
+subspace lattice across contexts.
+
+\section{Four Categorical Readings}
+\label{sec:categorical}
+
+The construction $S \mapsto \mathrm{Mix}(S)$ and criteria (1)--(3) can be
+read in four categorical settings: free algebras of a probability monad,
+orthogonality, effect algebras, and limits. The mathematics of each
+reading is standard, and we credit it below. This section records what
+each reading says about the calculi of this paper, with the new
+statements mechanized.
+
+\subsection{Free Convex Algebras and Simplices}
+\label{sec:cat-simplex}
+
+Convex sets are the algebras of the finite distribution monad
+$D$~\cite{swirszcz1974,fritz2009,jacobs2011}. The monad sends a set to
+the finitely supported probability distributions on it, and an algebra
+of it is a set with an operation that evaluates such a distribution as a
+mixture. For a presentation $(E, S)$, the inclusion
+$S \subseteq \ENNReal^{E}$ extends to a unique affine map (a map
+preserving mixtures) $D(S) \to \ENNReal^{E}$, and its image is
+$\mathrm{Mix}(S)$. The certain states are the image of the unit of $D$
+(the map sending an element to the point mass at it). Abramsky and Brandenburger
+describe the noncontextual models of a measurement scenario in the same
+way, as the image of the distributions on global
+assignments~\cite{abramsky-brandenburger2011}, and Pitowsky's
+correlation polytopes are the same sets~\cite{pitowsky1991}. In these
+terms, criterion (1) with closure under mixtures says that the calculus
+contains the image of the free algebra on the certain states, and
+criterion (3) says that it lies in the solution set of their laws.
+Theorem~\ref{thm:unique} says the two coincide.
+
+The calculus is a \emph{simplex} when the map $D(S) \to \mathrm{Mix}(S)$
+is injective, that is, when every state is a mixture of certain states in
+only one way. For finite $S$ this holds iff $S$ is affinely independent.
+In the theory of generalized probabilistic theories, which describes a
+system by a convex set of states and a set of effects (the affine maps
+from states to $[0,1]$ that give the probabilities of outcomes), a system
+is called classical when its state space is a simplex~\cite{barrett2007,plavala2023}.
+
+\begin{theorem}[simplices\leanref{mix-deltapoint-inj}\leanref{lin-not-simplex}\leanref{rep-unique}]
+\label{thm:cat-simplex}
+(i) For a finite poset $P$, two mixtures of point valuations on
+$\mathrm{Low}(P)$ that agree on every lower set have the same weights.
+(ii) At $\mathbf{2} \multimap \mathbf{2}$ the even mixture of the
+identity and negation equals the even mixture of the two constant
+programs.
+(iii) Let $(E, S)$ be a presentation with an event certain in every
+$s \in S$, and for all events $a, b$ an event certain in $s \in S$ iff
+$a$ and $b$ are. Two probability measures on $\{0,1\}^{E}$ that vanish
+on $\mathrm{bad}_F$ for every window $F$ and give each event the same
+mass agree on the $\sigma$-algebra generated by the events. The sharp
+valuations of every frame satisfy the hypothesis, with $\top$ and
+$a \sqcap b$.
+\end{theorem}
+
+\noindent
+Part (i) evaluates the mixtures at $\downarrow\! p$ and at
+$\downarrow\! p \setminus \{p\}$, whose difference is the weight of $p$.
+It is the Möbius inversion (the inversion of summation over a partial
+order) of a valuation on a finite distributive lattice~\cite{rota1964,geissinger1973}. Part (ii) is the centre of the
+square of $2 \times 2$ stochastic matrices, Barrett's gbit~\cite{barrett2007}.
+Part (iii) applies the uniqueness of measures on a $\pi$-system (a
+family of sets closed under finite intersections): the
+finite intersections of events form one, and off the bad set of a window
+an intersection of events is the event of their meet.
+
+So the valuation calculus of a finite frame is a simplex. The calculus
+of linear logic is not one already at first order. Part (iii) with
+Theorem~\ref{thm:barycenter} and Corollary~\ref{cor:frame-unique} gives,
+in a classical metatheory, that every valuation on a frame $\Omega$ is the
+barycenter of a probability measure on $\{0,1\}^{\Omega}$ that vanishes
+on every bad set, unique on the $\sigma$-algebra of the events. The certain states here are all sharp
+valuations, the prime filters, and not only the points: on the powerset
+of $\mathbb{N}$ the non-principal ultrafilters can carry mass. With the
+extension theorem of Smiley, Horn and Tarski, and
+Pettis~\cite{smiley1944,horn-tarski1948,pettis1951} and the
+correspondence between additive functionals on a Boolean algebra and
+Radon (inner regular) measures on its Stone space~\cite{fremlin2003},
+this makes the valuations a Bauer simplex (a compact convex set whose
+extreme points form a closed set and in which every point is the
+barycenter of a unique probability measure on them). For Boolean algebras, and more generally for
+MV-algebras, this is Kroupa's theorem~\cite{kroupa2006}, and for
+continuous valuations on stably compact spaces (the spaces of domain
+theory whose patch topology is compact Hausdorff) it is the theorem of
+Lawson and of Alvarez-Manilla, Jung, and Keimel~\cite{ajk2004}. For
+valuations on frames without continuity we found it only as a
+combination of these parts. It is not formalized.
+
+This gives a reading of intuitionistic probability as a generalized
+probabilistic theory, which we did not find in the literature. On a
+finite frame its state space is a simplex, so it is classical in that
+sense. What is not classical is the set of effects, the convex hull of
+the indicators of opens, which is closed under pointwise $\wedge$ and
+$\vee$ and not under complement. Restricted theories in the sense of
+Janotta and Lal assume closure under complement~\cite{janotta-lal2013}.
+Filippov, Gudder, Heinosaari, and Leppäjärvi derive it from the
+requirement that every effect belong to a measurement, a family of
+effects summing to the unit effect~\cite{filippov2020}. Here the
+indicator of an open $U$ belongs to a measurement iff $U$ is clopen,
+since the other effects of the measurement sum to the indicator of the
+complement of $U$, and a $\{0,1\}$-valued nonnegative combination of
+indicators of opens is the indicator of their union. The
+effects do satisfy the conditions that Plávala lists: they are convex,
+contain $0$ and the unit, and separate the states~\cite{plavala2023}.
+With the states taken as the measures on certain states, part (iii) says
+that the opens separate them. The states cannot be recovered from the
+effects by the duality of generalized probabilistic theories. On the
+Sierpiński space, with points $\bot \le \top$ and the open $\{\top\}$,
+the functional $(1 + t)\,\delta_{\top} - t\,\delta_{\bot}$ is nonnegative on
+every effect and $1$ at the unit for every $t \ge 0$, and gives
+$\{\top\}$ the value $1 + t$. The calculus fixes its states by mixing
+certain states instead.
+The simplex reading depends on enough certain
+states. Heunen, Landsman, and Spitters represent the quasi-states
+(functionals linear on each commuting family of observables) of a
+quantum system, which are its states when Gleason's theorem applies, as
+valuations on a locale internal to a topos (a category that behaves as a
+universe of sets with an intuitionistic internal logic), and this locale has no
+points when the Hilbert space has dimension greater than
+$2$~\cite{heunen-landsman-spitters2009}. So quantum states are
+intuitionistic valuations without certain states, and the separation of
+intuitionistic from quantum probability above holds in a classical
+metatheory, where the prime ideal theorem supplies the certain states.
+
+\subsection{Orthogonality}
+\label{sec:cat-orth}
+
+States and affine laws form a Galois connection (a pair of
+order-reversing maps, sending a set of states to the laws they all
+satisfy and a set of laws to the states satisfying all of them, whose
+composite is a closure operator), and Theorem~\ref{thm:mix-eq-laws} says
+that $\mathrm{Mix}(S)$ is the closure of $S$. A probabilistic coherence space is closed for a smaller class of
+tests, the nonnegative $y$ with $\sum_w x_w y_w \le 1$, by Girard's
+bipolar theorem~\cite{girard2004}, and the category of probabilistic
+coherence spaces is an orthogonality category in the sense of Hyland and
+Schalk~\cite{hyland-schalk2003,fiore-galal-jafarrahmani2023,tsukada-asada2022}.
+An object of such a category is a tight pair, a set of states and a set
+of tests each of which is the orthogonal of the other. We ask when the
+calculi of a formula and of its negation form a tight pair.
+
+\begin{theorem}[duality\leanref{orth-recipe}\leanref{tight}]
+\label{thm:cat-duality}
+For every formula $A$ of Definition~\ref{def:mall}, the orthogonal of
+the calculus of $A$ is the local calculus of $A^{\perp}$, and the
+orthogonal of the local calculus of $A$ is the calculus of $A^{\perp}$.
+The calculi of $A$ and of $A^{\perp}$ form a tight pair iff the calculus
+of $A$ equals its local calculus, iff neither $A$ nor $A^{\perp}$ has a
+gap. At the core $T^{\perp}$ they do not form a tight pair.
+\end{theorem}
+
+\noindent
+The first two statements combine the biorthogonal closure of the
+calculus with the fact that orthogonals do not see mixing. The third
+follows with Theorem~\ref{thm:loc-linear}, and the last with
+Theorem~\ref{thm:second-exact} and the gap at $T$
+(Theorem~\ref{thm:pentagon}). Linear negation therefore exchanges the
+global and the local calculus, and the probabilistic coherence space
+$P(A)$, with $P(A^{\perp}) = P(A)^{\perp}$, is the self-dual set between
+them. The calculus of certain states is not a model of linear negation,
+since it is not tight at $T^{\perp}$. The failure arises at a tensor of
+tight types.
+
+\begin{corollary}[tightness and the tensor\leanref{tight-tensor}]
+\label{cor:cat-tensor}
+For all $n$ and $m$, the local calculus of $\mathbf{n} \multimap
+\mathbf{m}$ is $P(\mathbf{n} \multimap \mathbf{m})$, so
+$\mathbf{n} \multimap \mathbf{m}$ is tight. For
+$n, m, n', m' \ge 2$, the tensor $(\mathbf{n} \multimap \mathbf{m})
+\otimes (\mathbf{n'} \multimap \mathbf{m'})$ of two tight types is not
+tight.
+\end{corollary}
+
+\noindent
+The indicator of a row $\{a\} \times \{1, \dots, m\}$ is a certain state
+of the dual of $\mathbf{n} \multimap \mathbf{m}$, and these indicators
+cut out the row-substochastic matrices, which form
+$P(\mathbf{n} \multimap \mathbf{m})$. With
+Theorem~\ref{thm:pcs-recipe} the calculus is the local calculus. The
+second statement is Theorem~\ref{thm:cat-duality} with the gap of
+Theorem~\ref{thm:pentagon}. So the assignment of the certain-state
+calculus to formulas is not compositional: tightness at $A$ and at $B$
+does not imply tightness at $A \otimes B$. The probabilistic coherence space is compositional by
+construction.
+
+The convex geometry is the antiblocking duality of Fulkerson and
+Lovász~\cite{fulkerson1971,lovasz1972}. When the certain states of $A$
+and of $A^{\perp}$ are the cliques of their coherence graphs, the calculus and the local calculus are the
+stable set polytope and the clique-constrained polytope of the
+complementary graph, the duality is Knuth's
+$\mathrm{STAB}(\overline{G})^{\perp} = \mathrm{QSTAB}(G)$, and
+tightness is $\mathrm{STAB} = \mathrm{QSTAB}$, which holds iff the graph is
+perfect~\cite{knuth1994,chvatal1975}. Lovász's theta body lies between
+the two polytopes and is also self-dual~\cite{knuth1994}, and the chain
+of the three is Cabello, Severini, and Winter's classical, quantum, and
+exclusivity bounds~\cite{cabello2014}. The set $P(A)$ is not the theta
+body: at $T$ it is the local calculus (Theorem~\ref{thm:loc-linear}).
+Two sources state parts of this. In an exercise sheet, Ehrhard
+assigns to a coherence space $E$ the probabilistic coherence space
+$p(E)$ of the $x \ge 0$ with total weight at most $1$ on every clique of
+$E^{\perp}$, and asks for proofs that $p(E^{\perp}) = p(E)^{\perp}$ for the
+coherence spaces generated from $\mathbf{1}$ by $\perp$ and $\mathbin{\&}$,
+and that this fails whenever the five-cycle embeds in
+$E$~\cite{ehrhard-td2}. When the certain states of the dual are all its
+cliques, $p(E)$ is the local calculus. Borodulin-Nadzieja, Farkas, and
+Pelczar-Barwacz show that a family of finite sets and its orthogonal
+family are geometrically dual (each family's norm ball is the dual of
+the other's) iff they are the cliques and the anticliques (stable sets)
+of a perfect graph~\cite{bfp2026}. We did not find the
+tight-pair formulation for the calculus of the certain states of a
+formula, whose certain states can be fewer than the cliques
+(Theorem~\ref{thm:shannon}), its equivalence with the absence of a gap
+at the formula and at its negation, or the failure at the core.
+
+At the core the failure of tightness is Bell's theorem. A point
+$((x, a), (y, b))$ of the web of $T^{\perp} = (\mathbf{2} \multimap
+\mathbf{2}) \otimes (\mathbf{2} \multimap \mathbf{2})$ is the event that
+two parties with inputs $x$ and $y$ give outputs $a$ and $b$. Two events
+are \emph{locally orthogonal} if some party has equal inputs and
+different outputs. This is the opposite of the exclusivity of points of
+$T$ in Section~\ref{sec:second-seq}, since the web of $T$ is the web of
+$T^{\perp}$ and its points are read as tests instead of outcomes.
+
+\begin{theorem}[Bell at the core\leanref{bell}]
+\label{thm:cat-bell}
+The $\{0,1\}$-valued elements of $P(T)$ are indicators of sets of
+pairwise locally orthogonal events. The Popescu--Rohrlich box, with value
+$\tfrac12$ on the events with $a + b \equiv xy \pmod 2$ and $0$
+elsewhere, lies in the local calculus of $T^{\perp}$ and not in
+$P(T^{\perp})$.
+\end{theorem}
+
+\noindent
+Two events that are not locally orthogonal are both hit by one
+deterministic product strategy (a pair of deterministic programs, one
+for each party), which lies in $P(T^{\perp})$ and pairs to $2$ with
+their indicator. So the local calculus of $T^{\perp}$ is the set of
+functions with total weight at most $1$ on every set of pairwise
+locally orthogonal events, the principle of local orthogonality, and no
+three events in the support of the box are pairwise locally orthogonal. The box is
+outside $P(T^{\perp})$ because every product of two substochastic
+matrices satisfies the CHSH inequality, total weight at most $3$ on the
+eight winning events, which the box violates with $4$. By
+Theorem~\ref{thm:second-exact}, $P(T^{\perp})$ is the calculus, the
+mixtures of the cliques of the core, which are the subsets of the
+supports of deterministic product strategies. Its normalized elements,
+with total weight $1$ for each pair of inputs, are therefore the
+Bell-local behaviours. For two
+parties local orthogonality is equivalent to no-signalling on normalized
+behaviours~\cite{fritz-lo2013}, so on normalized behaviours the local
+calculus of $T^{\perp}$ is the no-signalling polytope (the behaviours
+in which each party's output distribution does not depend on the other
+party's input), which is also Kissinger and Uijlen's tensor of the two
+first-order types in their category of causal processes (processes
+compatible with a causal order)~\cite{kissinger-uijlen2019}. The identification
+of the normalized faces is not formalized. By
+Theorem~\ref{thm:loc-linear}, the gap between $P$ and the local calculus at
+$T^{\perp}$ and the gap between the calculus and $P$ at $T$ are equivalent,
+so the pentagon point at $T$ and the box at $T^{\perp}$ witness one
+phenomenon from its two sides.
+
+\subsection{Effect Algebras and Extension of Scalars}
+\label{sec:cat-effect}
+
+An effect algebra is a set with a partial commutative associative
+addition $\oplus$, a unit $1$, and for each $a$ a unique orthosupplement
+$a^{\perp}$ with $a \oplus a^{\perp} = 1$, in which $a \oplus 1$ is
+defined only for $a = 0$~\cite{foulis-bennett1994}. Its
+states are the maps to $[0,1]$ that preserve $\oplus$ and $1$, so they
+satisfy the complement rule. Jacobs and Mandemaker extend a logic to
+probability by tensoring its effect algebra with the unit interval, and
+they state Gleason's theorem as the equation of the effects on a Hilbert
+space with the free effect module (the effect algebra with scalars from
+$[0,1]$ freely generated by a given one) on its
+projections~\cite{jacobs-mandemaker2012,jacobs2015}. This reading does not reach intuitionistic logic,
+for three reasons.
+
+\begin{theorem}[effect-algebra states on frames\leanref{em-of-complemented}\leanref{partial-sum}]
+\label{thm:cat-effect}
+(i) If every element of a frame has a complement, the frame is Boolean.
+(ii) Call $q : \Omega \to \ENNReal$ a partial-sum state if it is
+normalized, monotone, and additive on joins of disjoint elements. Every
+valuation is a partial-sum state. On the five-element frame of
+Example~\ref{thm:no-functional}, some partial-sum state violates
+modularity, an affine law valid on every valuation.
+\end{theorem}
+
+\noindent
+Part (i) is known in substance: in a Heyting effect algebra (an effect
+algebra that is also a Heyting algebra in a compatible way) the Heyting
+negation lies below the orthosupplement, with equality exactly at the
+central elements (those that split the algebra as a
+product)~\cite{foulis2000}. Part (ii) uses Darst's
+example~\cite{darst1970}. Reading a frame as an effect algebra, with
+disjoint join as partial sum and with an orthosupplement, forces it to be
+Boolean by (i). Keeping the partial sum and dropping the orthosupplement
+gives the partial-sum states, which can violate criterion (3), by (ii)
+and Theorem~\ref{thm:unique}. The extension of scalars that does satisfy the
+criteria on frames replaces partial addition by modularity. It is the
+valuation monoid of Definition~\ref{def:vmonoid}, the monoid of Tarski
+and of Horn and Tarski~\cite{tarski1938,horn-tarski1948}, whose
+normalized monotone homomorphisms to $\ENNReal$ are the valuations
+(Theorem~\ref{thm:vmonoid}). State notions on residuated lattices
+(lattices with a monoid operation and implications adjoint to it) that
+keep the complement rule fail criterion (1) instead. Bosbach and Riečan
+states (two notions of state for residuated lattices, defined by
+additivity conditions on their operations) on a Heyting algebra satisfy $s(\neg x) = 1 - s(x)$ and factor
+through its regular elements~\cite{dvurecenskij-rachunek2006}. By the
+second item of the paragraph on conflation in
+Section~\ref{sec:recipe-unique}, on a frame that is not Boolean some sharp
+valuation violates this equation, so these states do not contain the
+certain states. For quantum logic, the local calculus of
+Section~\ref{sec:quantum-local} is the set of states of a test
+space~\cite{foulis-randall1972,acin2015}, and on all rays of
+$\mathbb{R}^d$ with $d \ge 3$ Gleason's theorem identifies it with the
+quantum states, the case that Jacobs and Mandemaker treat.
+
+\subsection{Limits of Finite Calculi}
+\label{sec:cat-limit}
+
+For arbitrarily many events, the calculi on finite windows form a
+functor (an assignment of sets to windows and of maps to inclusions that
+preserves identities and composition) from the opposite of the poset of
+finite windows to sets, sending a window $F$ to $\mathrm{Mix}$ of the
+restrictions of $S$ to $F$ and an inclusion of windows to restriction.
+Its limit is the set of families of window states that agree under
+restriction.
+
+\begin{theorem}[limit\leanref{window-limit}]
+\label{thm:cat-limit}
+For every presentation $(E, S)$, the set of functions satisfying every
+finite law valid on $S$, which is the calculus of
+Theorem~\ref{thm:unique-closed}, is in bijection with the limit of this
+functor, by restriction to windows.
+\end{theorem}
+
+\noindent
+The proof identifies the limit with the compatible families of window
+states and reads a family off its values on singleton windows.
+Theorem~\ref{thm:barycenter} gives the rest. So the closure condition
+of Theorem~\ref{thm:unique-closed} says that the calculus on all events
+is determined by its finite windows. For frames the same holds with
+finite sublattices in place of windows: the valuations on a distributive
+lattice $L$ are the limit, over its finite sublattices $L_0$, of the
+simplices $D(\mathrm{pt}\,L_0)$ of distributions on their prime filters.
+Distributive lattices are the filtered colimits (directed unions) of
+their finite sublattices, and valuations turn these colimits into
+limits, so the valuation functor is the right Kan extension of
+$D \circ \mathrm{pt}$ (its extension from finite lattices to all
+lattices by taking limits) along the inclusion of finite distributive
+lattices~\cite{adamek-rosicky1994}. This is folklore. We did not find it
+stated, but Gehrke, Jakl, and Reggio prove the same continuity for
+lattice-valued measures on distributive
+lattices~\cite{gehrke-jakl-reggio2022}. It is not formalized.
+
+The closest results are codensity theorems. The codensity monad of a
+functor $G$ is the right Kan extension of $G$ along itself. It
+generalizes the monad $G \circ F$ that $G$ induces when it has a left
+adjoint $F$. Leinster shows that the
+ultrafilter monad (sending a set to its ultrafilters) is the codensity
+monad of the inclusion of finite sets into sets~\cite{leinster2013}. Avery shows that the finitely additive
+Giry monad is a codensity monad~\cite{avery2016}, and Van Belle that it
+is the codensity monad of the functor sending a finite set to its
+simplex of distributions~\cite{vanbelle2022}. The ultrafilters on a set
+are the certain states of its powerset frame, and the finitely additive
+probabilities are its calculus (Corollary~\ref{cor:frame-unique}). So
+Leinster's theorem concerns the certain states of the powerset frame and
+Van Belle's its calculus. The valuation functor on distributive lattices
+goes from lattices to convex sets and is not an endofunctor (a functor
+from a category to itself), which is why
+the statement above is a Kan extension and not a codensity monad.
+We do not know whether the valuations on frames arise as a codensity
+monad in a suitable category of spaces.

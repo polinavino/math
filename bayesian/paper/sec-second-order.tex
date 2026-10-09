@@ -2,13 +2,16 @@
 \label{sec:second}
 
 This section studies the construction of Section~\ref{sec:recipe} at
-second-order types, where it returns a strict subset of the probabilistic
-coherence space. Section~\ref{sec:second-seq} treats the type $T$ of a
-program with two functional arguments, Section~\ref{sec:second-other}
-extends the strict inclusion to every formula with a negative occurrence
-of the core of $T$, and Sections~\ref{sec:second-shannon}
+second-order types (types of programs whose arguments are functions),
+where it returns a strict subset of the probabilistic coherence space. A
+formula has a \emph{gap} if its calculus is strictly smaller than its
+probabilistic coherence space. Section~\ref{sec:second-seq} treats the
+type $T$ of a program with two functional arguments,
+Section~\ref{sec:second-other} extends the strict inclusion to every
+formula with a negative occurrence of the core of $T$, the formula whose
+negation is $T$, and Sections~\ref{sec:second-shannon}
 and~\ref{sec:second-perfect} relate the gap to coherence spaces and to
-graph polytopes. By computation, not formalized, the construction and the
+graph polytopes and characterize it at second order. By computation, not formalized, the construction and the
 probabilistic coherence space agree on $(\mathrm{Bool} \multimap
 \mathrm{Bool}) \multimap \mathrm{Bool}$ and $((\mathrm{Bool} \multimap
 \mathrm{Bool}) \multimap \mathrm{Bool}) \multimap \mathrm{Bool}$, the two
@@ -20,7 +23,9 @@ iterated implications into $\mathrm{Bool}$ we checked.
 At second order, let
 $T = ((X \multimap Y) \otimes (X' \multimap Y'))^{\perp}$, the type of a
 program that receives $f : X \multimap Y$ and $g : X' \multimap Y'$,
-uses each once, and halts or diverges. We take $T$ to be the set of
+uses each once, and halts or diverges. Its negation
+$(X \multimap Y) \otimes (X' \multimap Y')$ is the \emph{core} of $T$. We
+take $T$ to be the set of
 $t : (X \times Y) \times (X' \times Y') \to \ENNReal$ with
 $\sum_{p,q} y_p\, t(p,q)\, z_q \le 1$ for all $y$ in $X \multimap Y$ and
 $z$ in $X' \multimap Y'$, the orthogonal of the products $y \otimes z$.
@@ -113,6 +118,42 @@ vertices\leanref{pent-cycle}, and
 embeds the five points into larger types by injections from
 $\mathrm{Bool}$.
 
+The witness is partial: for some pairs of total functions it halts with
+probability less than $1$. At $T$ this is necessary. An element of $T$
+that halts with probability $1$ for every pair of total functions is a
+two-party classical process without predefined causal order (a process
+in which the order of the two calls may depend on the inputs), and every
+such process is a mixture of processes in a fixed
+order~\cite{baumeler-wolf2016}. For $X = Y = X' = Y' = \mathrm{Bool}$ we
+checked by vertex enumeration, not formalized, that these elements form a
+polytope whose $12$ vertices are $\{0,1\}$-valued. With three functional
+arguments the gap remains among the elements that halt with probability
+$1$.
+
+\begin{proposition}[a gap among total programs\leanref{gap-t3}]
+\label{prop:t3}
+Let $T_3 = ((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2}
+\multimap \mathbf{2}) \otimes (\mathbf{2} \multimap \mathbf{2}))^{\perp}$.
+Some element of $P(T_3)$ halts with probability $1$ on every triple of
+total functions and is not in the calculus of $T_3$.
+\end{proposition}
+
+\noindent
+The witness has value $1$ at one point of the web and $\tfrac12$ at
+fourteen others. Every $\{0,1\}$-valued element of
+$P(\mathbf{2} \multimap \mathbf{2})$ and of
+$P((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2} \multimap
+\mathbf{2}))$ lies below the graph of a total function or a product of
+two, so by the description of $P((X \otimes Y)^{\perp})$ in
+Section~\ref{sec:second-perfect} membership reduces to the $64$ triples
+of total functions, on each of which the witness has mass exactly $1$.
+Five of its points of value $\tfrac12$ are pairwise exclusive along a
+$5$-cycle, so, as for Theorem~\ref{thm:pentagon}, every mixture of
+$\{0,1\}$-valued elements has weight at most $2$ on them, against
+$\tfrac52$. The witness is an instance of the three-party processes of
+Baumeler and Wolf that are not mixtures of deterministic
+ones~\cite{baumeler-wolf2016}.
+
 The semantics of Definition~\ref{def:mall} computes $T$:
 $P(((\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'} \multimap
 \mathbf{m'}))^{\perp})$ is $T$ for $X = \{1,\dots,n\}$, $Y =
@@ -122,22 +163,27 @@ Theorem~\ref{thm:pentagon} are statements about these
 formulas\leanref{recipe-formula}.
 
 \paragraph{Related work.}
-Full abstraction of probabilistic coherence spaces for probabilistic
+Full abstraction (the model identifies exactly the programs that no
+context distinguishes) of probabilistic coherence spaces for probabilistic
 PCF~\cite{ehrhard-pagani-tasson2018} is proved from the analyticity of
-the morphisms, not from definability of every point, and in the
-concurrent game model of
+the morphisms (their power-series form), not from definability of every
+point, and in the concurrent game model of
 Castellan, Clairambault, Paquet and Winskel~\cite{castellan2018}
 definability fails until strategies are restricted to sequential
-probabilistic innocent ones. Kuhn's theorem~\cite{kuhn1953} is the
-classical form of Theorem~\ref{thm:second-order}(ii) for games with
-perfect recall. The tensor of probabilistic coherence spaces has been
-related to no-signalling composition~\cite{simmons-kissinger2022}. What
+probabilistic innocent ones (strategies that call one argument at a time
+and depend only on the history they observe). Kuhn's
+theorem~\cite{kuhn1953} is the classical form of
+Theorem~\ref{thm:second-order}(ii) for games with perfect recall (each
+player remembers its own past moves and observations). The tensor of
+probabilistic coherence spaces has been related to no-signalling
+composition (composition in which neither component's outputs depend on
+the other's inputs)~\cite{simmons-kissinger2022}. What
 is added here is an explicit point outside the calculus at a type without
 exponentials, its transfer to every formula with a negative occurrence of
 the core (Theorem~\ref{thm:occ-gap}), the description of the calculus and
 of the space as $\mathrm{STAB}$ and $\mathrm{QSTAB}$ of one graph
-(Theorem~\ref{thm:qstab}) with the exact condition for a gap, and the
-mechanization.
+(Theorem~\ref{thm:qstab}), the exact condition at second order
+(Theorem~\ref{thm:second-exact}), and the mechanization.
 
 \subsection{Other Formulas}
 \label{sec:second-other}
@@ -198,13 +244,39 @@ the type $((\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'}
 \multimap \mathbf{m'})) \multimap B$ of a program that receives two
 functions and returns a value of type $B$, for every $B$ with nonempty data
 types (Lean checks the instance $B = \mathbf{2}$), and every formula
-containing one of these positively. The
-condition is syntactic: the curried type $(\mathbf{n} \multimap
-\mathbf{m}) \multimap ((\mathbf{n'} \multimap \mathbf{m'}) \multimap B)$
-is isomorphic to the uncurried one but is not covered as stated. A
+containing one of these positively. A
 positive occurrence of the core does not suffice:
 Section~\ref{sec:second-perfect} shows that at the core itself the
 calculus equals the probabilistic coherence space.
+
+The occurrence condition of Theorem~\ref{thm:occ-gap} is syntactic. The
+following version depends only on
+the coherence graphs of Definition~\ref{def:mall}. An \emph{induced $4$-cycle} of a formula $X$ is a
+quadruple of points $a, b, c, d$ with $a \coh b \coh c \coh d \coh a$
+and with $a, c$ and $b, d$ incoherent.
+
+\begin{theorem}[four-cycles\leanref{retract-tens}\leanref{c4-retract}\leanref{gap-of-c4}]
+\label{thm:c4}
+If $X$ and $Y$ both have an induced $4$-cycle, the calculus of
+$(X \otimes Y)^{\perp}$ is strictly smaller than its probabilistic
+coherence space, and so is the calculus of every formula over nonempty
+data types in which $X \otimes Y$ occurs negatively.
+\end{theorem}
+
+\noindent
+The four points form a coordinate retract of $\mathbf{2} \multimap
+\mathbf{2}$, with input $0$ sent to $a, c$ and input $1$ to $b, d$. The
+pushforward lands in $P(X)$ because the coherent pairs of the cycle lie in
+$P(X)$, and the pullback lands in $P(\mathbf{2} \multimap \mathbf{2})$
+because the incoherent pairs sum to at most $1$
+(Theorem~\ref{thm:mall}(ii)). Coordinate retracts pass through $\otimes$,
+so Theorems~\ref{thm:pentagon} and~\ref{thm:retract} give the claim. The
+coherence graph of $\mathbf{n} \multimap \mathbf{m}$ has an induced
+$4$-cycle iff $n, m \ge 2$, so Theorem~\ref{thm:occ-gap} is the case of a
+literal occurrence of the core. The curried type $(\mathbf{2} \multimap
+\mathbf{2}) \multimap ((\mathbf{2} \multimap \mathbf{2}) \multimap
+\mathbf{2})$, which Theorem~\ref{thm:occ-gap} does not cover, is an
+instance\leanref{gap-curried}.
 
 \subsection{A Clique Outside the PCS}
 \label{sec:second-shannon}
@@ -218,10 +290,13 @@ coherence graph on them is the complement of this cycle, again a
 $5$-cycle. Two distinct points of $T \otimes T$ are incoherent iff they
 are incoherent in one component. A clique of $(T \otimes T)^{\perp}$
 contained in $\{c_0, \dots, c_4\}^2$ is therefore a stable set of the
-strong product of the two coherence graphs, a copy of
+strong product of the two coherence graphs (the graph on pairs in which
+two distinct pairs are adjacent iff each coordinate is equal or
+adjacent), a copy of
 $C_5 \boxtimes C_5$. The set $\{(c_i, c_{2i}) \mid i \in \mathbb{Z}/5\}$
 is such a stable set, of size $5$. It is Shannon's stable set, which
-shows that the Shannon capacity of $C_5$ is at least
+shows that the Shannon capacity of $C_5$ (the growth rate of the largest
+stable sets of its strong powers) is at least
 $\sqrt5$~\cite{lovasz1979}.
 
 \begin{theorem}[a clique outside the PCS\leanref{shannon-clique}\leanref{shannon-not-mem}]
@@ -275,46 +350,161 @@ The converse of Theorem~\ref{thm:berge} holds: $\mathrm{STAB}(G) =
 $G$ is perfect iff it is Berge, by the strong perfect graph
 theorem~\cite{chudnovsky2006}. The converse is not formalized.
 
-\paragraph{The core and the exact condition.}
-The duality of Definition~\ref{def:pcs} exchanges $\mathrm{STAB}$ and
-$\mathrm{QSTAB}$ of complementary graphs. For every graph $G$,
-$\mathrm{STAB}(G)^{\perp} = \mathrm{QSTAB}(\overline{G})$ directly from
-the definitions, since the stable sets of $G$ are the cliques of
-$\overline{G}$, and therefore $\mathrm{QSTAB}(\overline{G})^{\perp} =
-\mathrm{STAB}(G)$ by Fulkerson's antiblocking
-theorem~\cite{fulkerson1971}. Applied to the exclusivity graph $G$ of
-$T$, Theorem~\ref{thm:qstab} gives $T^{\perp} = \mathrm{QSTAB}(G)^{\perp}
-= \mathrm{STAB}(\overline{G})$, the set of mixtures of the indicators of
-the cliques of $G$, which are the $\{0,1\}$-valued elements of
-$T^{\perp}$. So at the core $T^{\perp} = (X \multimap Y) \otimes (X'
-\multimap Y')$ the calculus equals the probabilistic coherence space, and
-Theorem~\ref{thm:occ-gap} needs the negative occurrence.
+\paragraph{The exact condition at second order.}
+A formula $X$ has the \emph{clique property} if $P(X)$ is the set of
+mixtures of the indicators of the cliques of its coherence graph $G_X$.
+Data types, their negations, and $\mathbf{n} \multimap \mathbf{m}$
+(Theorem~\ref{thm:pcs-recipe}) have it, and so does every formula built
+from data types with $\mathbin{\&}$ and $\oplus$, since $P(A \mathbin{\&}
+B)$ is the product of $P(A)$ and $P(B)$ and $P(A \oplus B)$ is their convex
+hull, embedded in the two summands~\cite{danos-ehrhard2011}. Lean
+checks this for formulas built from $\mathbf{1}$ with $\mathbin{\&}$
+and $\oplus$\leanref{recipe-code}. The coherence graphs of the latter
+are the \emph{cographs}, the graphs with no induced path on four
+vertices, with $\mathbin{\&}$ as join (all edges between the two parts
+added) and $\oplus$ as disjoint union.
 
-The condition of Theorem~\ref{thm:pentagon} that $X, Y, X', Y'$ have at
-least two elements is also necessary. If $X$ has one element, two points
-of $X \multimap Y$ cohere iff they are equal, and $G$ is a disjoint union
-of copies of the graph on $X' \times Y'$ that joins points with
-different inputs, a complete multipartite graph. If $Y$ has one element,
-all points of $X \multimap Y$ cohere, and $G$ is obtained from that
-complete multipartite graph by replacing each vertex with a clique of
-size $|X|$. Both graphs are perfect, the second by Lov\'asz's replacement
-lemma~\cite{lovasz1972}, and the cases of $X'$ and $Y'$ are symmetric. So
-the calculus of $T$ equals $T$ iff one of $X, Y, X', Y'$ has at most one
-element. This direction and the duality argument above are not
-formalized. We checked the condition numerically for ten choices of the
-four sizes between $1$ and $3$.
+\begin{theorem}[second order\leanref{closure}\leanref{recipe-core}\leanref{second-iff}]
+\label{thm:second-exact}
+Let $X$ and $Y$ have the clique property.
+(i) The calculus of $X \otimes Y$ equals its probabilistic coherence
+space, and the calculus of $(X \otimes Y)^{\perp}$ equals its
+probabilistic coherence space iff the strong product $G_X \boxtimes G_Y$
+is perfect.
+(ii) If $G_X$ and $G_Y$ are cographs, this holds iff $G_X$ or $G_Y$ has no
+induced $4$-cycle.
+\end{theorem}
+
+\noindent
+If the calculus equals the probabilistic coherence space at $X$ and at
+$Y$, it does so at $X \otimes Y$, $X \mathbin{\&} Y$, and $X \oplus Y$,
+and $P((X \otimes Y)^{\perp})$ is cut out by the products of
+$\{0,1\}$-valued elements of $P(X)$ and $P(Y)$. The Lean proof derives a
+bipolar theorem for downward-closed sets of $\{0,1\}$-vectors from
+Theorem~\ref{thm:mix-eq-laws}. With the clique property these products
+are the indicators of the products $K \times L$ of cliques, which are the
+maximal cliques of $F = G_X \boxtimes G_Y$. So $P((X \otimes Y)^{\perp})
+= \mathrm{QSTAB}(F)$, its $\{0,1\}$-valued elements are the stable sets of
+$F$, and the calculus is $\mathrm{STAB}(F)$, which equals
+$\mathrm{QSTAB}(F)$ iff $F$ is perfect~\cite{lovasz1972,chvatal1975}. In
+(ii), if both graphs have an induced $4$-cycle the gap is
+Theorem~\ref{thm:c4}. The closure statements, the description of
+$P((X \otimes Y)^{\perp})$, and (ii) are formalized, and the equivalence
+with perfection in (i) is cited.
+
+\paragraph{A direct proof of (ii).}
+The converse in (ii) has a direct proof, by an explicit decomposition,
+that does not use perfect graph theory. Its Lean proof uses classical
+case distinctions on real numbers, through the library. If neither side of $A \mathbin{\&} B$ is a clique, an
+incoherent pair in $A$ and one in $B$ form an induced $4$-cycle. So a
+formula built from $\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$ that has
+no induced $4$-cycle is isomorphic to one built from $\mathbf{1}$ with
+$\oplus$ and $A \mapsto A \mathbin{\&} \mathbf{1}$, by a bijection of the
+webs that preserves coherence in both directions\leanref{tree-of-noc4}.
+Such bijections, and the exchange of the factors of $\otimes$, are
+coordinate retracts, so we may assume that $X$ is built in this way. Its
+points are the nodes of a rooted forest, the point of $\mathbf{1}$ in
+$A \mathbin{\&} \mathbf{1}$ being the root above the forest of $A$, and
+two points cohere iff one lies on the path from a root to the other. So
+$G_X$ is the comparability graph of the forest (two nodes adjacent iff
+one is an ancestor of the other)~\cite{wolk1962,golumbic1978}. For
+$v : |Y| \to [0, \infty)$ let $\omega(v)$ be the largest weight of a
+clique of $G_Y$, a sum at $\mathbin{\&}$ and a maximum at $\oplus$. With
+$z_x = z(x, \cdot)$, a nonnegative $z$ on $|X| \times |Y|$ lies in
+$P((X \otimes Y)^{\perp})$ iff $\omega(\sum_{x \in \pi} z_x) \le 1$ for
+every path $\pi$ from a root\leanref{mem-p-iff}.
+
+Every such $z$ is a mixture of $\{0,1\}$-valued functions whose sums
+along the paths are indicators of stable sets of $G_Y$, and these are
+elements of the calculus\leanref{decompose}. The proof is an induction on
+the forest. At a root $r$ above a forest $X'$, the pair of $m = z_r$ and
+the restriction $y$ of $z$ to $X'$ is a mixture of pairs $(1_I, y')$ with
+$I$ stable and $\omega(1_I + \sum_{x \in \pi} y'_x) \le 1$ for every path
+$\pi$ of $X'$, and the induction continues at $y'$. This root step is an
+induction on $Y$. At $Y_1 \oplus Y_2$ the two components are decomposed
+separately and combined with product weights. At $Y_1 \mathbin{\&} Y_2$
+a stable set lies in one component. With $m_j$ the restriction of $m$ to
+$Y_j$, the set $I$ is drawn in $Y_j$ with probability $\omega(m_j)$ and is
+empty with probability $1 - \omega(m_1) - \omega(m_2)$. Before the draw,
+the restriction $y_j$ of $y$ to $Y_j$ is split as $p_j + q_j$ with
+$\omega(m_j + \sum_{x \in \pi} p_{j,x}) = \omega(m_j)$ and
+$\omega(\sum_{x \in \pi} q_{j,x}) \le \omega(m_j + \sum_{x \in \pi}
+y_{j,x}) - \omega(m_j)$ along every path $\pi$. The part $p_j$ is
+assigned to the draws in $Y_j$ and $q_1 + q_2$ to the empty set. The
+split is built by induction on $Y_j$ and a pass down the forest that
+keeps the value at a node while $\omega$ stays within the level and, at
+the first node where it does not, keeps the part that raises $\omega$
+exactly to the level\leanref{absorb}.
+
+Lean checks (ii) in both directions for $X$ and $Y$ built from
+$\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$\leanref{second-iff}. For
+the other formulas in (ii) with nonempty webs, the clique property makes
+a coherence-preserving bijection onto such a formula a coordinate retract
+in both directions, and this transfer is not formalized. With (i), the
+proof shows that the strong product of a forest comparability graph and
+a cograph is perfect. Ravindra proved that the strong product of two
+graphs with no induced path on four vertices and no induced $4$-cycle,
+which are exactly the forest comparability graphs, is perfect, and
+characterized the perfect strong products of two bipartite
+graphs~\cite{ravindra1978}. The case of a forest comparability graph and
+an arbitrary cograph extends the first result, and we did not find it in
+the literature. For a single coherence space, an exercise of Ehrhard's
+asks for the self-duality of its clique-constrained probabilistic
+coherence space when the space is generated from $\mathbf{1}$ by
+$\perp$ and $\mathbin{\&}$, so that its graph is a cograph, and for its
+failure at the five-cycle~\cite{ehrhard-td2}. A proof through perfection is also
+possible, and is not formalized: the product has no induced cycle of
+length at least $5$ and no complement of one of length at least $6$, so
+it is perfect by Hayward's theorem~\cite{hayward1985}.
+
+For $X = \mathbf{n} \multimap \mathbf{m}$ the coherence graph is complete
+multipartite (vertices in classes, adjacent iff in different classes)
+with $n$ classes of size $m$, which has an induced $4$-cycle
+iff $n, m \ge 2$. So the calculus of $T$ equals $T$ iff one of $X, Y, X',
+Y'$ has at most one element, and at the core $(X \multimap Y) \otimes
+(X' \multimap Y')$ itself the calculus equals the probabilistic coherence
+space.
+
+\paragraph{Beyond second order.}
+The condition of Theorem~\ref{thm:c4} is not necessary in general.
+
+\begin{proposition}[a gap without four-cycles\leanref{gap-f3}]
+\label{prop:f3}
+The calculus of $(\mathbf{2} \mathbin{\&} \mathbf{1}) \multimap
+((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2} \multimap
+\mathbf{2}))$ is strictly smaller than its probabilistic coherence space.
+Every tensor occurring negatively in it has a factor with at most three
+points, so none has an induced $4$-cycle.
+\end{proposition}
+
+\noindent
+The formula is $((\mathbf{2} \mathbin{\&} \mathbf{1}) \otimes T)^{\perp}$.
+The witness has value $\tfrac12$ at five points of the web. Its membership
+uses four incoherent pairs of $T$. The five points form a $5$-cycle of the
+coherence graph, so every $\{0,1\}$-valued element is $1$ at no more than
+two of them, and every mixture has total weight at most $2$ there,
+against $\tfrac52$. The coherence graph of $T$ contains an induced house,
+a $5$-cycle with one chord, and on fifteen points of the web the space is
+$\mathrm{QSTAB}$ of the strong product of a path on three vertices with
+the house, which is not perfect. Beyond second order the coherence graphs
+are no longer cographs, and an exact condition would have to account for
+the imperfect strong products of the graphs that arise.
 
 The \emph{independence number} $\alpha(G)$ is the largest size of a
 stable set, and the \emph{fractional packing number} $\alpha^{*}(G)$ is
 the largest value of $\sum_v x_v$ over $\mathrm{QSTAB}(G)$. The bounds
 $2$ and $\tfrac52$ of Theorem~\ref{thm:pentagon} are $\alpha(C_5)$ and
 $\alpha^{*}(C_5)$. Cabello, Severini and Winter~\cite{cabello2014} show
-that in a contextuality scenario with exclusivity graph $G$ the
-noncontextual bound is $\alpha(G)$, the quantum bound is the Lov\'asz
-number $\vartheta(G)$~\cite{lovasz1979}, and the bound for theories
-satisfying only exclusivity is $\alpha^{*}(G)$. For $C_5$ this is the
-KCBS inequality~\cite{klyachko2008}, with $\vartheta(C_5) = \sqrt5$. A
-calculus for $T$ corresponding to the theta body of the exclusivity
-graph~\cite{gls1988}, which lies between $\mathrm{STAB}$ and
+that in a contextuality scenario (a set of outcomes with a family of
+jointly measurable subsets) with exclusivity graph $G$ the noncontextual
+bound is $\alpha(G)$, the quantum bound is the Lov\'asz number
+$\vartheta(G)$ (the largest total weight on the theta body of $G$, a
+convex set defined by orthonormal representations of the
+graph)~\cite{lovasz1979}, and the bound for theories satisfying only
+exclusivity is $\alpha^{*}(G)$. For $C_5$ this is the KCBS
+inequality (the five-outcome noncontextuality inequality of Klyachko,
+Can, Binicio\u{g}lu, and Shumovsky)~\cite{klyachko2008}, with
+$\vartheta(C_5) = \sqrt5$. A calculus for $T$ corresponding to the theta
+body of the exclusivity graph~\cite{gls1988}, which lies between $\mathrm{STAB}$ and
 $\mathrm{QSTAB}$, is not constructed here. Section~\ref{sec:quantum}
 makes the same comparison for a Kochen--Specker set.

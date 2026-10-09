@@ -40,7 +40,8 @@ side, valuations on
 frames are standard objects of constructive measure theory, with
 Vickers's work and the Coquand--Spitters development as canonical
 references~\cite{vickers2008,coquand-spitters2009}.  These normally
-build in Scott continuity and target additive, Riesz-style goals.
+build in Scott continuity and target additive, Riesz-style goals
+(representations of valuations as integrals).
 Section~\ref{sec:representation} shows Scott continuity to be a
 substantive assumption (it decides point-representability on the
 frames we examine), so our base structure omits it.  Cox, Jaynes,
@@ -53,34 +54,42 @@ the sum-rule half without that move, at the price of positing
 modularity as an axiom rather than deriving it
 (Example~\ref{thm:no-functional}).  Van Horn observes
 that dropping axiom R3 yields an interval-valued theory, exactly the
-belief/plausibility pair our slack separates.  To our knowledge, no
-prior work, informal or formal, states either characterization
-theorem: complement rule $\iff$ excluded middle
-(Theorem~\ref{thm:hinge}), or Dempster $=$ Bayes $\iff$ zero slack
-at the evidence (Theorem~\ref{thm:cond-hinge}).
+belief/plausibility pair our slack separates.  Weatherson derives the
+complement rule from excluded middle~\cite{weatherson2003}, which is the
+forward direction of Theorem~\ref{thm:hinge}, and Gaines states the same
+for valuations on lattices of propositions~\cite{gaines1978}. The
+converse reduces, through sharp valuations, to Nachbin's theorem that a
+distributive lattice whose prime filters are all maximal is
+Boolean~\cite{nachbin1947}. We did not find the equivalence of
+Dempster's rule with Bayesian conditioning and zero slack at the evidence
+(Theorem~\ref{thm:cond-hinge}) stated in the literature.
 
 \paragraph{Prior formalizations.}
-Two bodies of mechanized work are adjacent, and neither overlaps.
+Three bodies of mechanized work are adjacent, and none overlaps.
 ALEA~\cite{audebaud-paulin2009} formalizes a discrete distribution
 monad in Coq for randomized programs: additive probability, no
 event logic in our sense.  Closest is the
 HoTT/Coq line of Faissole and Spitters on \emph{valuations} over
-lower reals~\cite{faissole-spitters2017}, done constructively with
+lower reals (reals given by their rational lower
+bounds)~\cite{faissole-spitters2017,bidlingmaier2021}, done constructively with
 Scott continuity and aimed at integration (Riesz) and a Giry-style
 valuation \emph{monad}.  Their valuations differ from ours in
 carrying Scott continuity, and their monad is the Scott-continuous
 instance of the question examined in
 Section~\ref{sec:monad}.  Our development drops the continuity
 their base structure builds in, and the two mechanizations do not
-otherwise overlap.  On the domain-theoretic side, commutativity of
+otherwise overlap. Belief functions on finite Boolean algebras are
+formalized in Coq, for games of incomplete information~\cite{pomeret2023}.
+On the domain-theoretic side, commutativity of
 the full valuations monad on the category of directed-complete
-partial orders is open.  A hierarchy of commutative submonads,
+partial orders (orders in which every directed set has a supremum) is
+open.  A hierarchy of commutative submonads,
 generated from simple valuations (finite mixtures of point
 valuations), has been constructed
 instead~\cite{jia2021commutative}.  
-Our countably-presented fragment, the valuations given as countable
-mixtures (Proposition~\ref{prop:mixcountable}), is the frame-side
-analogue.
+Proposition~\ref{prop:mixcountable}, on mixtures with countable weights
+of arbitrary valuations, is a first step in a similar direction for
+frames.
 
 \paragraph{Non-Boolean probability elsewhere.}
 Quantum probability on orthomodular lattices, with Gleason's
@@ -99,7 +108,7 @@ Linear logic
 marks a different kind of departure.  Its event algebras are
 quantales, complete lattices equipped with an associative tensor
 $\otimes$ that need not be idempotent~\cite{girard1987}.  The
-lattice reduct of a quantale is already an instance of
+lattice reduct (the underlying lattice) of a quantale is already an instance of
 Section~\ref{sec:lattice}'s generalization, but $\otimes$ itself is
 not $\sqcap$, and a valuation grading it cannot be phrased in
 Definition~\ref{def:lvaluation}'s vocabulary without first deciding
@@ -116,15 +125,16 @@ the inclusion is strict at second order.
 
 
 
-Free probability,
-fuzzy measures, and imprecise
+Free probability (probability for noncommuting random variables),
+fuzzy measures (monotone set functions without additivity), and imprecise
 probability~\cite{walley1991} vary other parameters (independence,
 additivity, single-valuedness).  Where Walley's coherent lower
-previsions posit the belief/plausibility gap directly as a
+previsions (lower expectations that avoid a sure loss) posit the belief/plausibility gap directly as a
 coherence primitive, our slack (Section~\ref{sec:valuation}) is
 derived, forced by modularity and negation rather than assumed.
 Fritz's synthetic Markov-category
-framework~\cite{fritz2020markov} varies the ambient structure
+framework (symmetric monoidal categories axiomatizing stochastic
+maps)~\cite{fritz2020markov} varies the ambient structure
 categorically rather than order-theoretically, axiomatizing
 conditional independence and sufficient statistics abstractly
 across discrete, measure-theoretic, and Gaussian probability alike.

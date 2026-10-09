@@ -1,0 +1,56 @@
+\section{Introduction}
+\label{sec:intro}
+
+\paragraph{Mixtures of determinism.}
+\paragraph{Coherence spaces model.}
+\paragraph{Definability question.}
+\paragraph{Certain-state calculus.}
+\paragraph{First order agrees.}
+\paragraph{Second-order gap.}
+\paragraph{Exact condition.}
+\paragraph{Transfer.}
+\paragraph{Duality, Bell.}
+\paragraph{Quantum contrast.}
+\paragraph{Mechanization.}
+Every result is mechanized in Lean~4 over
+\textsf{mathlib}~\cite{moura-ullrich2021,mathlib2020}, except steps the
+text marks as not formalized. A superscript
+\textsuperscript{\textsf{\tiny Lean}} links a statement to its Lean
+counterpart in Appendix~\ref{app:lean}, which also describes the
+development.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+  \item \textbf{Cliques.} At every multiplicative--additive formula, the
+  certain elements of the coherence space are cliques of the coherence
+  space and incoherent pairs carry total weight at most $1$, so Girard's
+  intuition holds throughout. The converse fails at
+  $(T \otimes T)^{\perp}$ through Shannon's set.
+  \item \textbf{Second order.} At $T$ the calculus is $\STAB$ and the
+  coherence space is $\QSTAB$ of one exclusivity graph. An explicit
+  pentagon point lies outside the calculus, and with three arguments
+  there is a gap among always-halting programs.
+  \item \textbf{Exact condition.} For formulas built from data types with
+  $\mathbin{\&}$ and $\oplus$, the calculus and the coherence space of
+  $(X \otimes Y)^{\perp}$ coincide iff one coherence graph has no induced
+  $4$-cycle. The mechanized proof avoids perfect graph theory and extends
+  Ravindra's theorem.
+  \item \textbf{Transfer.} Coordinate retracts carry the gap to every
+  formula with a negative occurrence of a tensor whose factors both have
+  induced $4$-cycles. Beyond second order, a gap also exists without
+  such a tensor.
+  \item \textbf{Duality and Bell.} Linear negation exchanges the calculus
+  and the local calculus, and the two are tight iff neither the formula
+  nor its dual has a gap. Tightness holds at every
+  $\mathbf{n} \multimap \mathbf{m}$ and fails at the tensor of two of
+  them, so the certain-state calculus is not compositional. At the core
+  the gap is Bell's theorem, equivalent to the pentagon gap at $T$.
+  \item \textbf{Mechanization.} All of the above is in Lean~4 over
+  \textsf{mathlib}, with no \texttt{sorry} and standard axioms. The
+  results of this paper take about $9{,}200$ lines in $29$ files. The
+  general theorems are proved for arbitrary finite data types, and the
+  finite facts behind the witnesses (the five-cycle of the pentagon
+  point, the support of the Popescu--Rohrlich box, and the bases of the
+  Kochen--Specker set) are checked by evaluation on explicit finite types
+  (Appendix~\ref{app:lean}).
+\end{enumerate}

@@ -40,7 +40,7 @@ An event algebra consists of a set of events together with operations
 interpreting the logic's connectives and structural rules, while a probability 
 calculus is differentiated from an arbitrary grading of events by satisfying 
 certain axioms. We specify how to construct such extensions, and
-propose two criteria for when the extension of a logic is a probability
+propose three criteria for when the extension of a logic is a probability
 calculus:
 
 \begin{itemize}
@@ -50,7 +50,17 @@ This is what we take ``extended logic'' to mean.
   \item[(2)] the construction evaluated at 
 classical logic must return the classical theory, ensuring it is a genuine generalization 
 of classical probability.
+  \item[(3)] every linear inequality between probabilities that holds in all 
+states of complete certainty must hold in every state of the calculus, so that 
+uncertainty is uncertainty about which certain state obtains.
 \end{itemize}
+
+\noindent
+Criteria (1) and (3) together say that the calculus obeys exactly the
+laws of the logic's certain states, so it neither conflates events the
+logic distinguishes nor misses a law the logic imposes. With closure
+under mixtures they determine the calculus uniquely
+(Section~\ref{sec:recipe-unique}).
 
 We propose two fixes for the identifications above. Both extend a logic
 to a probability calculus, and on finite frames the second reduces to
@@ -62,8 +72,9 @@ The extension of the event algebra to a probability calculus is then given by
 the \emph{valuations}, i.e. the maps from events to numbers satisfying monotonicity, 
 normalization, and modularity~\cite{weatherson2003,paris2001}. The resulting extension does not guarantee
 defining a probability calculus, and we specify the conditions under which it
-does: the $\{0,1\}$-valued valuations are the points of the event algebra,
-and they reconstruct its order when it is distributive. 
+does: the $\{0,1\}$-valued valuations are the prime filters of the event
+algebra, and in a classical metatheory they reconstruct its order when it
+is distributive. 
 Intuitionistic logic, in
 particular, is a case for which this approach yields an extension, and we
 work it out in detail. Its event algebras are the Heyting algebras, and we 
@@ -115,7 +126,10 @@ set of randomized sequential programs, a strict subset of the
 probabilistic coherence space (Section~\ref{sec:second}). The probabilistic
 coherence space, the standard model of probabilistic programs at this
 type, therefore admits behaviours that no sequential program flipping coins can
-produce in a linear probabilistic language for this type. Reasoning in
+produce in a linear probabilistic language for this type. At this type
+these behaviours diverge with positive probability, and with three
+functional arguments the gap occurs among programs that always halt.
+Reasoning in
 it can certify only weaker guarantees than the programs satisfy. The gap
 has the same numerical form as the gap between classical and
 non-classical correlations in quantum foundations~\cite{cabello2014}. At
@@ -133,79 +147,82 @@ $3$. We prove this for an $18$-ray configuration in
 $\mathbb{R}^4$~\cite{cabello1996}, so the calculus of the second fix is
 empty there. Quantum states, which by Gleason's
 theorem~\cite{gleason1957} are given by density matrices, nevertheless
-exist, and they fail criterion (1).
+exist, and they fail criterion (1). Requiring certainty only within each
+context, and reading criterion (1) through the events of probability $1$
+and $0$, extends the construction to quantum logic
+(Section~\ref{sec:quantum-local}).
 
 
 \paragraph{Contributions.}
 
 \begin{enumerate}
 \item \textbf{Characterizations} (Sections~\ref{sec:valuation},
-  \ref{sec:hinge} and~\ref{sec:ds}).  The complement rule holds for
-  every valuation iff the frame satisfies excluded middle, Dempster's
-  rule agrees with Bayesian conditioning iff the evidence has zero
-  slack, and slack splits exactly into a double-negation part and a
-  De Morgan part.
+  \ref{sec:hinge} and~\ref{sec:ds}).  Dempster's rule on evidence $b$
+  with $v(b) \neq 0$ agrees with Bayesian conditioning
+  $v(a \sqcap b)/v(b)$ at every $a$ iff the slack at $b$ is zero, the
+  slack splits exactly into a double-negation part and a De Morgan
+  part.
 
-\item \textbf{Structure theorems} (Sections~\ref{sec:representation}
-  and~\ref{sec:ds}).  Every valuation on the lower sets of a poset
-  splits into an atomic part carried by points and a diffuse remainder, and on its Boolean core it
-  is a belief function.
+\item \textbf{Cox's theorem} (Section~\ref{sec:cox}).  Darst's
+  five-element lattice of sets~\cite{darst1970}, which carries an
+  assignment additive on disjoint joins without being modular, is a frame
+  satisfying weak excluded middle, so the derivation of the sum rule from
+  additivity on disjoint joins, which Knuth and Skilling state for
+  distributive lattices~\cite{knuth-skilling2012}, does not extend to
+  frames, and the sum rule must be posited.
 
-\item \textbf{Cox's theorem} (Section~\ref{sec:cox}).  The sum-rule
-  half admits no derivation over a frame, even with weak excluded
-  middle, since on a five-element frame a disjunction's value is not a
-  function of its disjuncts' values.
+\item \textbf{Beyond frames} (Section~\ref{sec:lattice}).  For a lattice
+  with a least element, every element of the commutative monoid through
+  which its modular maps factor is a sum over a chain, which is not
+  unique at $M_3$, and a function satisfying the modular law with
+  $\otimes$ in place of $\sqcap$ gives $a$ and $a \otimes a$ the same
+  finite value.
 
-\item \textbf{Grounding models} (Section~\ref{sec:bridges}).  For a
-  classical measure read on the opens, slack is boundary mass, and a
-  classical posterior overstates refutation by exactly the conditional
-  boundary mass $\mu(\partial A \cap B)/\mu(B)$.
-
-\item \textbf{Products} (Section~\ref{sec:monad}).  Product valuations
-  are unique on $\mathrm{Low}(\mathbb{N} \times \mathbb{N})$, and the
-  countably-presented valuations compose associatively and
-  commutatively.
-
-\item \textbf{Beyond frames} (Section~\ref{sec:lattice}).  Lattice
-  valuations are the normalized monotone homomorphisms out of a
-  valuation monoid in which every element is a sum over a chain, and
-  no modular grading of linear logic's $\otimes$ distinguishes $a$
-  from $a \otimes a$.
-
-\item \textbf{Calculi from certain states} (Section~\ref{sec:recipe}).
-  The completeness theorem of generalized probabilism has a proof
-  without choice for rational points, and on arbitrary sets of events
-  the functions satisfying its laws are the barycenters of measures
-  concentrated on the certain states.
-
-\item \textbf{Linear logic} (Sections~\ref{sec:recipe-linear}
-  and~\ref{sec:recipe-mall}).  The calculus of a
-  multiplicative--additive formula is contained in its probabilistic
-  coherence space, whose certain elements are cliques, with equality
-  at implications between data types and strict inclusion at
-  $!\mathrm{Bool}$.
+\item \textbf{Linear logic} (Sections~\ref{sec:recipe-mall}
+  and~\ref{sec:second-shannon}).  At every multiplicative--additive
+  formula over finite data types, every $\{0,1\}$-valued element of the
+  probabilistic coherence space is the indicator of a clique of Girard's
+  coherence space, and at $(T \otimes T)^{\perp}$, for
+  $T = ((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2} \multimap
+  \mathbf{2}))^{\perp}$, the converse fails.
 
 \item \textbf{Second-order linear types} (Section~\ref{sec:second}).
-  For a program with two functional arguments over data types with
-  at least two elements, the calculus is the
-  stable-set polytope of a graph whose clique-constrained polytope is
-  the probabilistic coherence space, and the resulting strict inclusion
-  transfers to every formula in which this type occurs positively.
+  For a program with two functional arguments, which may diverge, the
+  calculus is the stable-set polytope of a graph whose clique-constrained
+  polytope is the probabilistic coherence space, and for $X$ and $Y$
+  built from $\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$ a mechanized
+  proof that avoids perfect graph theory shows that the calculus and the
+  probabilistic coherence space of $(X \otimes Y)^{\perp}$ coincide iff
+  the coherence graph of $X$ or of $Y$ has no induced $4$-cycle.
 
-\item \textbf{Quantum event logic} (Section~\ref{sec:quantum}).  On
-  Cabello's Kochen--Specker set the calculus is empty, and with
-  divergence allowed every mixture of certain states has total weight
-  at most $4$, against $\tfrac92$ for every quantum state.
+\item \textbf{Four-cycles} (Sections~\ref{sec:second-other}
+  and~\ref{sec:second-perfect}).  Two formulas whose coherence graphs
+  have induced $4$-cycles give a gap at every formula over nonempty data
+  types in which their tensor occurs negatively, and
+  $(\mathbf{2} \mathbin{\&} \mathbf{1}) \multimap ((\mathbf{2} \multimap
+  \mathbf{2}) \otimes (\mathbf{2} \multimap \mathbf{2}))$ has a gap
+  although no tensor occurring negatively in it has an induced $4$-cycle
+  in both factors.
 
-\item \textbf{A first formal treatment.}  Every result above is machine-checked in
-  Lean~4 over \textsf{mathlib}, except cited theorems the text marks as
-  not formalized, which to our knowledge is the first mechanization of
-  non-additive probability over intuitionistic logic.
+\item \textbf{Local certainty} (Sections~\ref{sec:quantum-local}
+  and~\ref{sec:cat-orth}).  The probabilistic coherence space of every
+  multiplicative--additive formula lies between its calculus and its
+  local calculus, the functions of total weight at most $1$ on the
+  support of every $\{0,1\}$-valued element of the dual, linear negation
+  exchanges the two, and at $T^{\perp}$ the Popescu--Rohrlich box lies in
+  the local calculus and not in the probabilistic coherence space, so the
+  gap at $T$ and Bell's theorem at its dual are equivalent.
+
+\item \textbf{A first formal treatment.}  Every result above is
+  machine-checked in Lean~4 over \textsf{mathlib}, except the steps the
+  text marks as not formalized, and to our knowledge it is the first
+  mechanization of valuations on arbitrary frames without a continuity
+  assumption.
 \end{enumerate}
 
 \paragraph{Mechanization.}
 The development is carried out in Lean~4~\cite{moura-ullrich2021} over
-\textsf{mathlib}~\cite{mathlib2020}, in roughly $12{,}000$ lines with no
+\textsf{mathlib}~\cite{mathlib2020}, in roughly $15{,}000$ lines with no
 \texttt{sorry}, and is included in full as anonymous supplementary
 material.\footnote{Claude (Anthropic) was used to assist with
 drafting and debugging the Lean formalization.} Two points are specific

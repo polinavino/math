@@ -5,11 +5,14 @@ Cox's theorem~\cite{cox1946,jaynes2003} derives the probability
 calculus from conditions on plausibility.  After Halpern's
 counterexample~\cite{halpern1999}, its repaired
 forms~\cite{vanhorn2003,arnborg-sjodin2000} fix the calculus up to
-monotone regraduation.  Every known derivation is classical, and
-Section~\ref{sec:hinge} showed why: the negation axiom R3 \emph{is}
-excluded middle.  Dropping R3 leaves the product rule
+monotone regraduation.  Cox's derivation is classical through the
+negation axiom R3, which Section~\ref{sec:hinge} shows \emph{is}
+excluded middle. The lattice derivation of Knuth and
+Skilling~\cite{knuth-skilling2012} avoids R3 and derives the sum rule from
+additivity on disjoint joins, and Example~\ref{thm:no-functional} shows
+that this step needs more than a distributive lattice.  Dropping R3 leaves the product rule
 unaffected, since it is logic-free, and requires the sum rule to become an axiom
-rather than a theorem.  Separately, the naive constructive statement,
+rather than a theorem.  Separately, the naive statement over frames,
 demanding a regraduation strictly monotone on all of $\mathbb{R}$, is
 unsatisfiable (Section~\ref{sec:cox-theorem}).
 
@@ -43,7 +46,7 @@ this constraint\leanref{coxmodelennreal}, as $a = \top$ is provably decidable.
 
 Classically, additivity is \emph{derived}: R3 turns disjunction into
 negated conjunction via De~Morgan, and the product rule does the
-rest.  Constructively that route is closed, since
+rest.  Intuitionistically that route is closed, since
 $a \sqcup b \neq \neg(\neg a \sqcap \neg b)$ in general:
 
 \begin{example}[the sum rule is irreducible\leanref{no-disjunction-functional}]
@@ -60,18 +63,24 @@ but joins valued $\tfrac12$ and $1$.
 \end{example}
 
 \noindent
-Unlike for a conjunction, a disjunction's plausibility cannot
-generally be expressed as its disjuncts'
-plausibilities via conditioning.  So, a constructive Cox
-theorem \emph{must} posit the sum-rule half.  Modularity,
-which says that the calculus is closed
-under mixing certainties, is what
-posits this, justified by Theorem~\ref{thm:mixture}.
-The failure is not repaired by strengthening the logic short of
-Boolean: the counterexample frame satisfies weak excluded
-middle\leanref{isdemorgan-lowersetv}, since every nonempty lower set
-contains the bottom point $o$, so the irreducibility persists under
-that intermediate assumption.
+Darst gives this lattice, as the lattice of sets $\emptyset$, $\{1\}$,
+$\{1,2\}$, $\{1,3\}$, $\{1,2,3\}$, with a function that is additive on
+disjoint sets and not modular~\cite{darst1970}. The absence of a binary
+disjunction functional is not specific to
+frames: for a probability with $P(A) = \tfrac12$ the pairs $(A, A)$ and
+$(A, \neg A)$ behave in the same way. What is specific is the failure of
+modularity under additivity on disjoint joins. Knuth and Skilling derive
+the sum rule from the disjoint case and state it for distributive
+lattices~\cite{knuth-skilling2012}, and Goertzel applies their symmetries
+to Heyting algebras~\cite{goertzel2017}. The derivation decomposes elements
+into disjoint parts. In this distributive frame every two nonempty lower
+sets meet, the disjoint case carries no information, and modularity
+fails. So Cox's theorem over frames must posit the sum rule. It is
+posited as modularity, which says that the calculus is closed under
+mixing certainties, justified by Theorem~\ref{thm:mixture}. The failure
+persists under weak excluded middle: the counterexample frame satisfies
+it\leanref{isdemorgan-lowersetv}, since every nonempty lower set contains
+the bottom point $o$.
 
 \subsection{Cox Model Theorem}
 \label{sec:cox-theorem}
@@ -84,7 +93,7 @@ The repair (strictness only on $[0,1]$, where plausibilities live)
 is exactly the same domain restriction that Halpern's critique of
 the classical theorem turns on.  The corrected statement is:
 
-\begin{theorem}[the constructive Cox theorem\leanref{constructive-cox}]
+\begin{theorem}[Cox's theorem over frames\leanref{constructive-cox}]
 \label{thm:cox}
 For every frame $\Omega$, every Cox model on $\Omega$ whose
 unconditional plausibility is modular
@@ -108,8 +117,10 @@ property is \emph{derived} from continuity and positivity rather than
 assumed, and the interval form of divisibility follows from the
 intermediate value theorem\leanref{exists-diag-eq} applied to a
 plain divisibility hypothesis\leanref{scale}.  The
-constructive/classical divide is therefore \emph{entirely} in the
-sum rule: nothing in the product-rule apparatus mentions $\Omega$.
+dependence on the logic of $\Omega$ is therefore \emph{entirely} in the
+sum rule: nothing in the product-rule apparatus mentions $\Omega$. That
+apparatus uses classical real analysis in the metatheory
+(Table~\ref{tab:classical}).
 Appendix~\ref{app:aczel} gives the construction.  The residual
 analytic gap is discussed in
 Section~\ref{sec:conclusion}.

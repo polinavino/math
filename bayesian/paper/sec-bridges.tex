@@ -79,8 +79,92 @@ that the evidence leaves neither confirmed nor refuted. The classical
 posterior does not discard this mass. It credits all of it to $A^{c}$,
 an event no finite observation confirms. For the halting event of
 Section~\ref{sec:computability-guard} with $B = \top$, the classical
-credence in non-termination is $1 - p$ while the constructive one is
+credence in non-termination is $1 - p$ while the intuitionistic one is
 $0$, and the difference $1 - p$ is exactly the slack.
+
+\subsection{Universal Laws}
+\label{sec:ravens}
+
+Theorem~\ref{thm:classical-overconfidence} applies to universal laws such
+as ``all ravens are black''~\cite{hempel1945}. Let $I$ be an infinite set
+of objects and $O$ a topological space of kinds of object, with an open
+set $\mathit{bad} \subseteq O$ of counterexamples, the non-black ravens. A
+world is a function $x : I \to O$, and the worlds carry the product
+topology, so an open set of worlds is a property verified by observing
+finitely many objects. The law is
+$H = \{x \mid x_i \notin \mathit{bad} \text{ for every } i\}$, and the
+counterexample event is its complement
+$C = \{x \mid x_i \in \mathit{bad} \text{ for some } i\}$, which is open.
+For $j \in I$ and $A \subseteq O$ let $B_A = \{x \mid x_j \in A\}$, and
+let $C_j$ be the event of a counterexample at an object other than $j$.
+
+\begin{theorem}[universal laws\leanref{ravens}]
+\label{thm:ravens}
+Let $\mathit{bad}$ be nonempty.
+(i) $\neg C = \bot$ in $\mathcal{O}(I \to O)$. So every valuation $v$
+has $v(\neg C) = 0$, also after conditioning on any open, and
+$\slack(C) = 1 - v(C)$.
+(ii) For every probability measure $\mu$ on the worlds whose open sets
+are measurable, $\mu(H) = \slack(C)$, and
+$\mu(H \cap B)/\mu(B) = \mu(\partial C \cap B)/\mu(B)$ for every open
+$B$ with $\mu(B) \ne 0$.
+(iii) Let $A \subseteq O$ be open with $\mu(B_A) \ne 0$, and let $C_j$ be
+independent of $B_A$ and of $B_{A \cap \mathit{bad}}$ under $\mu$. Then
+\[
+  \frac{\mu(C \cap B_A)}{\mu(B_A)}
+  = \mu(C_j) + \frac{\mu(B_{A \cap \mathit{bad}})}{\mu(B_A)}\,
+    \mu(C_j^{c}).
+\]
+\end{theorem}
+
+\noindent
+For (i), a neighbourhood of a world constrains finitely many objects, so
+it contains a world with a counterexample at another object. Hence $C$
+is dense and $H$ has empty interior. No finite observation verifies $H$,
+and the intuitionistic credence in it is $0$ on any evidence. Part (ii)
+follows from (i) and Theorems~\ref{thm:slack-frontier}
+and~\ref{thm:classical-overconfidence}, since $\partial C = H$. The
+classical credence in the law, prior or posterior, is boundary mass of
+$C$, the mass of worlds the evidence has not refuted and cannot verify.
+Part (iii) splits $C \cap B_A$ at object $j$. When $O$ is discrete,
+$B_A$ is clopen, so $\slack(B_A) = 0$ and Dempster's rule gives the same
+posteriors (Theorem~\ref{thm:cond-hinge}). The choice of update rule
+plays no part below.
+
+Hempel's paradox arises because $H$ is classically equivalent to ``every
+non-black thing is a non-raven'', so a white sock found indoors is an
+instance of $H$ and classically confirms it. In $\mathcal{O}(I \to O)$
+the law is not an event: its intuitionistic counterpart $\neg C$ is
+$\bot$, and evidence bears on it only through the open event $C$. Part
+(iii) measures that bearing. Let $B_A$ say that object $j$ is a raven,
+or that it is non-black. With $O$ discrete, observing its full kind, a black raven or a
+white sock, is the case of $A$ a single kind outside $\mathit{bad}$,
+and it gives the credence $\mu(C_j)$ in a counterexample in both cases.
+The difference from the credence after selection alone is
+$\mu(B_{A \cap \mathit{bad}})/\mu(B_A)$, the probability that the
+selected object is a counterexample, times $\mu(C_j^{c})$. For a
+selected raven the first factor is the probability that a raven is
+non-black. For a selected non-black thing it is the probability that a
+non-black thing is a raven, which is small when non-black things far
+outnumber non-black ravens. So when $\mu(C_j^{c}) > 0$ the white sock
+lowers the credence in a counterexample, by much less than the black
+raven does. Both conditions matter. Without independence the direction
+can reverse: Good gives a prior under which a black raven lowers the
+credence in $H$~\cite{good1967}. And under an independent prior in which
+every object is a counterexample with probability at least some
+$\varepsilon > 0$, the second Borel--Cantelli lemma gives $\mu(C) = 1$,
+so $\mu(H) = 0$ and no observation moves either. This is the
+Bayesian resolution of Hosiasson-Lindenbaum and its successors, surveyed
+by Fitelson and Hawthorne~\cite{hosiasson1940,fitelson-hawthorne2010}.
+What the verification topology changes is the reading of the decrease
+of $\mu(C)$. With finitely many objects and $O$ discrete, every set of
+worlds is open, $\neg C = H$, and the two calculi coincide. With
+infinitely many objects they differ. Classically, a decrease of $\mu(C)$
+is an equal increase of the credence $\mu(H) = 1 - \mu(C)$ in the law.
+Intuitionistically $v(\neg C)$ stays $0$ by (i), so the same decrease is
+an increase of $\slack(C)$, the mass that is unrefuted and that no
+evidence turns into verification. The resolution uses only the open
+event $C$ and never treats $H$ as an event.
 
 To characterize weak excluded middle spaces, we give the 
 (standard) definitions required: 
@@ -309,7 +393,7 @@ uncomputability result.
 
 \noindent
 We can conclude that slack is not a defect of
-the constructive theory. On $\mathcal{O}(\mathbb{S})$, forcing the
+the intuitionistic theory. On $\mathcal{O}(\mathbb{S})$, forcing the
 complement rule at $\mathit{halts}$ leaves the single value
 $v(\mathit{halts}) = 1$, so every code is assigned certain
 termination. That assignment is computable but false of every

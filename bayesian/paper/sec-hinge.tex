@@ -16,11 +16,13 @@ case-splits on $x \le y$ for such numbers uses
 \texttt{Classical.propDecidable}, and so do the library's finite sums
 and finite sets. A theorem that never invokes excluded middle for frame
 elements $a \in \Omega$ can therefore still depend on the axiom through
-the library. Almost every theorem of this development does. This
-dependence is incidental: it comes from the library, not from the
-argument. Table~\ref{tab:classical} lists the classical principles the
-arguments themselves use, and what a constructive version would
-require.
+the library. Almost every theorem of this development does. For most of
+them this dependence is incidental: it comes from the library, not from
+the argument. Table~\ref{tab:classical} lists the arguments that use a
+classical principle themselves, and what a constructive version would
+require. We call a result constructive only in this metatheoretic sense,
+and we call the logic of the frame intuitionistic. A theorem about an
+intuitionistic frame can have a classical proof.
 
 \begin{table}[tp]
 \centering\small
@@ -29,10 +31,18 @@ require.
 Result & Classical principle & Constructive version \\
 \midrule
 Converse of Theorem~\ref{thm:hinge}, separation (Sec.~\ref{sec:lattice}) &
-  prime ideal theorem &
+  prime ideal theorem, proof by contradiction &
   finite lattices: proved without
   choice\leanref{exists-sharp-separating-fin}. Infinite frames: only for
   frames with enough points \\
+Sharp valuations as prime ideals (Thm.~\ref{thm:sharp-iff-point}) &
+  decidable membership in an ideal &
+  for ideals with decidable membership. Finite lattices with decidable
+  order: proved without choice\leanref{exists-sharp-separating-fin} \\
+Closure under $\otimes$, $\mathbin{\&}$, $\oplus$, and
+  Thms.~\ref{thm:second-exact}(ii), \ref{thm:loc-linear} &
+  bipolar theorem, by Hahn--Banach over $\mathbb{R}$ &
+  finite rational data: Fourier--Motzkin elimination, not done \\
 Completeness (Thm.~\ref{thm:mix-eq-laws}) &
   Hahn--Banach over $\mathbb{R}$ &
   for rational points and integer certain states, proved without choice
@@ -85,9 +95,12 @@ finite sums, which depend on \texttt{Classical.choice}.}
 \end{table}
 
 \noindent
-The finite combinatorial results ($M_3$, the pentagon, the perfect-graph
-criterion, the Kochen--Specker set, and the multiplicative--additive
-formulas) need none of these principles. The Cox model of
+The arguments for $M_3$, the pentagon, the perfect-graph criterion, the
+Kochen--Specker set, and Theorem~\ref{thm:mall} use none of these
+principles, although their Lean proofs depend on
+\texttt{Classical.choice} through the library. The closure statements of
+Section~\ref{sec:second-perfect} and the results built on them use the
+bipolar theorem. The Cox model of
 Section~\ref{sec:cox} is given an explicit computable \texttt{Decidable}
 instance.
 
@@ -96,11 +109,13 @@ Van Horn's repaired Cox theorem~\cite{vanhorn2003} axiomatizes
 plausibility over classical propositions.  Its negation axiom, called
 \emph{R3}, posits that the plausibility of $\neg A$ is a fixed
 non-increasing function $S$ of the plausibility of $A$.  Consistency
-forces the involution $S \circ S = \mathrm{id}$, and therefore the
-complement rule $p \mapsto 1 - p$.  We show that the 
+forces the involution $S \circ S = \mathrm{id}$, and after regraduation
+the complement rule $p \mapsto 1 - p$.  We show that the 
 involutive negation \emph{is}
 double-negation elimination, so R3 is where classical logic enters
-every known Cox-style derivation.  To do this, we first 
+Cox's derivation and Van Horn's. The lattice derivation of Knuth and
+Skilling~\cite{knuth-skilling2012} avoids R3, and is classical through
+its decompositions into disjoint elements (Section~\ref{sec:cox}).  To do this, we first 
 isolate the exact content of
 R3's conclusion as a predicate on valuations, then prove equivalence
 to excluded middle.
@@ -112,13 +127,23 @@ classical negation if $v(a) + v(\neg a) = 1$ for every $a \in \Omega$.
 \label{thm:hinge}
 For every frame $\Omega$, every valuation on $\Omega$ has a classical
 negation \emph{iff} $a \sqcup \neg a = \top$ for every
-$a \in \Omega$.
+$a \in \Omega$. The converse is proved in a classical metatheory.
 \end{theorem}
 
 The forward direction is a
-calculation.  The content is the converse: wherever excluded
-middle fails, a valuation with genuine slack must be
-\emph{constructed}.  Suppose $a \sqcup \neg a \neq \top$.
+calculation, $v(a) + v(\neg a) = v(a \sqcup \neg a) + v(a \sqcap \neg a) =
+v(\top) + v(\bot)$, which is valid intuitionistically. Gaines states it
+for valuations on lattices of propositions~\cite{gaines1978}, and
+Weatherson for intuitionistic probability~\cite{weatherson2003}. The
+converse is, in substance, Nachbin's theorem. A sharp valuation with
+classical negation is the indicator of a prime filter that contains $a$ or
+$\neg a$ for every $a$, that is, of a maximal filter, and a distributive
+lattice whose prime filters are all maximal is Boolean~\cite{nachbin1947}.
+The proof below is direct: wherever excluded middle fails, it produces a
+valuation with genuine slack. Its proof is classical in three places. It argues by
+contradiction, it uses the prime ideal theorem, and the valuation it
+builds is a $\{0,1\}$-valued function only because membership in an
+ideal is classically decidable. Suppose $a \sqcup \neg a \neq \top$.
 
 \begin{definition}[ideal, prime ideal]
 An \emph{ideal} $J \subseteq \Omega$ is a downward closed set which is also closed under finite joins. An ideal $J$ is \emph{prime} if $\top \notin J$ and $a \sqcap b \in J$ implies $a \in J$ or $b \in J$.
@@ -137,7 +162,7 @@ is a valuation.  Modularity in the only nontrivial case ($x, y
 \Rightarrow x \in J \vee y \in J$.  And this valuation assigns
 $v(a) + v(\neg a) = 0 \neq 1$.
 
-\paragraph{Sharp valuations are the points of the locale.}
+\paragraph{Sharp valuations are prime filters.}
 The construction above is one half of an exact
 correspondence.  Call $v$ \emph{sharp} if it is $\{0,1\}$-valued, a
 state of full certainty.  Sharpness characterizes exactly the
@@ -156,8 +181,10 @@ and the map taking
 $J$ to its complement-indicator (the valuation of
 Theorem~\ref{thm:hinge}'s construction).  $Z(v)$ is prime exactly
 because $v$ is sharp, and the complement-indicator of $Z(v)$
-recovers $v$ itself.  In locale-theoretic terms, sharp valuations
-recover the \emph{points} of the locale.  A prime ideal is
+recovers $v$ itself.  The theorem pairs sharp valuations with the prime
+ideals whose membership is decidable, which classically are all of them.
+Their complements are the prime filters of $\Omega$, not yet the points
+of the locale.  A prime ideal is
 \emph{completely prime} when it is also closed under arbitrary
 (not just finite) suprema of its members. 
 The finitely prime points 
@@ -188,7 +215,12 @@ excluded middle fails at some $a$, the failure occurs at a
 point of the locale.
 
 \paragraph{Points and the adjunction with spaces.}
-Write $[1] = \{0 < 1\}$, the initial frame. For a lattice $P$, monotone maps
+Classically the initial frame is $[1] = \{0 < 1\}$. Intuitionistically it
+is the frame of truth values, a frame homomorphism into it need not be
+$\{0,1\}$-valued, and the $\{0,1\}$-valued ones are the points with
+decidable membership. \textsf{mathlib} defines points as frame
+homomorphisms into \texttt{Prop}, and the comparison below is classical.
+For a lattice $P$, monotone maps
 $P \to [1]$ correspond to upper sets (the preimage of $1$), bounded
 lattice homomorphisms to prime filters, and frame homomorphisms to
 completely prime filters, those $F$ with $\bigsqcup S \in F$ only if
@@ -209,21 +241,26 @@ $\top$-indicator on $\mathrm{Low}(\mathbb{N})$ of
 Section~\ref{sec:representation}\leanref{topindicator-not-scott}.
 
 \paragraph{Finite frames without choice.}
-The prime ideal theorem is a choice principle. Without it, a frame can
-have no points at all~\cite{johnstone1982}, and then it has no sharp
-valuations, so the converse of Theorem~\ref{thm:hinge} and the
-statement that sharp valuations reconstruct the logic (the first
-criterion of Section~\ref{sec:intro}) hold only in a classical
-metatheory. On a finite distributive lattice with decidable order the
+The prime ideal theorem is a choice principle, and it is not available
+constructively. Without it, a nontrivial distributive lattice can have no
+prime filters, and then it has no sharp valuations. Independently of
+choice, a frame can have no points, that is, no Scott-continuous sharp
+valuations~\cite{johnstone1982}. So the converse of
+Theorem~\ref{thm:hinge} and the statement that sharp valuations
+reconstruct the logic (the first criterion of Section~\ref{sec:intro})
+are proved here only in a classical metatheory. On a finite distributive lattice with decidable order the
 needed prime filter is found by search: an element below $a$ and not
 below $b$ that is minimal for the size of its downset is join-prime, and
 the indicator of its principal filter is a sharp valuation. This proves
 the finite separation theorem and the finite form of the converse of
 Theorem~\ref{thm:hinge} without
 \texttt{Classical.choice}\leanref{exists-sharp-separating-fin}\leanref{em-of-sharp-complement-fin},
-for $\mathbb{N}$-valued valuations. In a constructive metatheory the
-first criterion therefore holds for finite event algebras and for frames
-with enough points, and not in general.
+for $\mathbb{N}$-valued valuations. In a constructive metatheory we
+therefore have the first criterion for finite event algebras with
+decidable order. For an infinite frame it would require enough points
+with decidable membership, which the open sets of the real line do not
+offer, since constructively it is not decidable whether a real number
+lies in an open interval.
 
 \paragraph{A development in Rocq.}
 Rocq's kernel, like Lean's, does not assume excluded middle or choice,
@@ -233,10 +270,11 @@ differences would be the following.
 \item \emph{Finite results.} The Mathematical Components
   library~\cite{mathcomp} works with types with decidable equality and
   finite types, and avoids classical axioms in its algebraic core.
-  The finite theorems of this paper (the finite representation, the
-  frame recipe, $M_3$, the pentagon, the perfect-graph criterion, and
-  the Kochen--Specker set) would be proved there without classical
-  axioms and could be extracted to programs.
+  We expect the finite theorems of this paper (the finite
+  representation, the frame recipe, $M_3$, the pentagon, the
+  perfect-graph criterion, and the Kochen--Specker set) to be provable
+  there without classical axioms and to extract to programs. We have not
+  checked this.
 \item \emph{Values.} $\ENNReal$ is a classical object. A constructive
   development would use rational values for finite results and lower
   reals, approximable from below, for valuations in
