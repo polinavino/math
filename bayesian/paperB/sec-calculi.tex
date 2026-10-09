@@ -1,15 +1,18 @@
 \section{Calculi from Certain States}
 \label{sec:calculi}
 
-This section sets up the construction that the rest of the paper applies
-to linear logic. It needs no logical connectives: the input is a set of
-events and a set of assignments that settle every event, and the output
-is the set of mixtures of these assignments. The construction and its
+We describe how to construct, for a given set of
+events together with a set of assignments that settle every event, 
+the set of mixtures of these assignments. The construction and its
 completeness theorem are de Finetti's~\cite{definetti1974}, in the form
 that Paris and Williams use for non-classical
-logics~\cite{paris2001,williams2012}. Values lie in $\ENNReal$, the
-nonnegative reals extended with $\infty$, the codomain of the Lean
-development.
+logics~\cite{paris2001,williams2012}. All functions take values in the
+nonnegative reals $\mathbb{R}_{\ge 0}$.\footnote{The Lean development
+works in the extended nonnegative reals $[0,\infty]$ of \textsf{mathlib},
+the type in which measures take values. Every function in this paper takes
+finite values, so the statements are the same, except that some Lean statements
+carry a finiteness hypothesis that is automatic over $\mathbb{R}_{\ge 0}$,
+as in Theorem~\ref{thm:tensor-collapse}.}
 
 \subsection{Presentations and Mixtures}
 \label{sec:calculi-mix}
@@ -17,10 +20,10 @@ development.
 \begin{definition}[presentation, calculus\leanref{mix}]
 \label{def:mix}
 A \emph{presentation} is a set $E$, whose elements are the \emph{events},
-together with a set $S$ of functions $E \to \ENNReal$ with values in
+together with a set $S$ of functions $E \to \mathbb{R}_{\ge 0}$ with values in
 $\{0,1\}$, the \emph{certain states}. A \emph{mixture} of functions
 $s_1, \dots, s_n$ is a function $\sum_{i} w_i\, s_i$ with weights
-$w_i \in \ENNReal$ and $\sum_i w_i = 1$. The \emph{calculus} $\Mix(S)$ is
+$w_i \in \mathbb{R}_{\ge 0}$ and $\sum_i w_i = 1$. The \emph{calculus} $\Mix(S)$ is
 the set of mixtures of certain states. A set of functions is
 \emph{closed under mixtures} if it contains every mixture of its
 elements.
@@ -69,8 +72,8 @@ The calculus has an axiomatic description by linear inequalities.
 \begin{definition}[affine law\leanref{affinelaw}]
 \label{def:affine-law}
 Let $E$ be finite. An \emph{affine law} on $E$ is given by functions
-$a, b : E \to \ENNReal$ and constants $k, k' \in \ENNReal$. A function
-$x : E \to \ENNReal$ \emph{satisfies} it if
+$a, b : E \to \mathbb{R}_{\ge 0}$ and constants $k, k' \in \mathbb{R}_{\ge 0}$. A function
+$x : E \to \mathbb{R}_{\ge 0}$ \emph{satisfies} it if
 \[
   \sum_{e \in E} a_e x_e + k \;\le\; \sum_{e \in E} b_e x_e + k'.
 \]
@@ -86,8 +89,8 @@ equation $x_e + x_{e'} = x_{e''}$, as two inequalities, are affine laws.
 
 \begin{theorem}[completeness~\cite{definetti1974,paris2001}\leanref{mix-eq-laws}\leanref{affinelaw-holds-of-mix}]
 \label{thm:mix-eq-laws}
-Let $E$ be finite and $S$ a set of functions $E \to \ENNReal$ with values
-in $\{0,1\}$. Then $\Mix(S)$ is the set of functions $x : E \to \ENNReal$
+Let $E$ be finite and $S$ a set of functions $E \to \mathbb{R}_{\ge 0}$ with values
+in $\{0,1\}$. Then $\Mix(S)$ is the set of functions $x : E \to \mathbb{R}_{\ge 0}$
 that satisfy every affine law valid on $S$.
 \end{theorem}
 
@@ -115,9 +118,9 @@ The calculus is determined by its certain states and their laws.
 
 \begin{theorem}[uniqueness\leanref{calculus-unique}\leanref{calculus-laws-iff}]
 \label{thm:unique}
-Let $E$ be finite, let $S$ be a set of functions $E \to \ENNReal$ with
+Let $E$ be finite, let $S$ be a set of functions $E \to \mathbb{R}_{\ge 0}$ with
 values in $\{0,1\}$, and let $C$ be a set of functions
-$E \to \ENNReal$ that contains $S$.
+$E \to \mathbb{R}_{\ge 0}$ that contains $S$.
 (i) $C$ satisfies no affine law that some element of $S$ violates. If
 $C$ satisfies every affine law valid on $S$, then the affine laws valid
 on $C$ are exactly those valid on $S$.
@@ -141,7 +144,7 @@ of the two cases of the following definition holds.
 \begin{definition}[gap]
 \label{def:gap}
 Let $(E, S)$ be a presentation and $C \supseteq S$ a set of functions
-$E \to \ENNReal$ that is closed under mixtures. Then $\Mix(S) \subseteq C$,
+$E \to \mathbb{R}_{\ge 0}$ that is closed under mixtures. Then $\Mix(S) \subseteq C$,
 and $C$ has a \emph{gap} over $S$ if the inclusion is strict.
 \end{definition}
 
@@ -183,7 +186,7 @@ tensor in the modularity axiom does not work either.
 Let $\Omega$ be a \emph{join-semilattice}, a partial order in which every
 two elements have a least upper bound $a \sqcup b$, and let $\otimes$ be
 a binary operation on $\Omega$. A \emph{tensor valuation} for $\otimes$
-is a function $v : \Omega \to \ENNReal$ such that
+is a function $v : \Omega \to \mathbb{R}_{\ge 0}$ such that
 $v(a) + v(b) = v(a \sqcup b) + v(a \otimes b)$ for all $a, b \in \Omega$.
 \end{definition}
 
@@ -191,13 +194,12 @@ $v(a) + v(b) = v(a \sqcup b) + v(a \otimes b)$ for all $a, b \in \Omega$.
 \label{thm:tensor-collapse}
 Let $\Omega$ be a join-semilattice, $\otimes$ a binary operation on
 $\Omega$, and $v$ a tensor valuation for $\otimes$. Then
-$v(a \otimes a) = v(a)$ for every $a$ with $v(a) < \infty$.
+$v(a \otimes a) = v(a)$ for every $a \in \Omega$.
 \end{theorem}
 
 \noindent
 Setting $b = a$ in the defining equation and using $a \sqcup a = a$ gives
-$v(a) + v(a) = v(a) + v(a \otimes a)$, and $v(a)$ cancels because it is
-finite. No property of $\otimes$ is used.
+$v(a) + v(a) = v(a) + v(a \otimes a)$, and $v(a)$ cancels. No property of $\otimes$ is used.
 
 \begin{example}[a constant valuation\leanref{tensor-witness}]
 \label{ex:tensor-witness}
