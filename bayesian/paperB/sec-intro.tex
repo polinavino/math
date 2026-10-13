@@ -1,56 +1,132 @@
+% !TEX root = main.tex
 \section{Introduction}
 \label{sec:intro}
 
-\paragraph{Mixtures of determinism.}
-\paragraph{Coherence spaces model.}
-\paragraph{Definability question.}
-\paragraph{Certain-state calculus.}
-\paragraph{First order agrees.}
-\paragraph{Second-order gap.}
-\paragraph{Exact condition.}
-\paragraph{Transfer.}
-\paragraph{Duality, Bell.}
-\paragraph{Quantum contrast.}
-\paragraph{Mechanization.}
-Every result is mechanized in Lean~4 over
-\textsf{mathlib}~\cite{moura-ullrich2021,mathlib2020}, except steps the
-text marks as not formalized. A superscript
-\textsuperscript{\textsf{\tiny Lean}} links a statement to its Lean
-counterpart in Appendix~\ref{app:lean}, which also describes the
-development.
+A randomized program can be run by choosing a deterministic program at
+random and running it. For first-order while programs, this gives the same
+semantics as linear operators on measures~\cite{kozen1981}. We ask
+whether it holds at higher types.
+
+Probabilistic coherence spaces are a model of linear logic in which a type
+denotes a set of weight vectors on a set of points, its
+web~\cite{girard2004,danos-ehrhard2011}. They are fully abstract for
+probabilistic PCF, the extension of PCF (Programming Computable
+Functions) with probabilistic
+choice~\cite{ehrhard-pagani-tasson2018}. The proof of full abstraction
+uses the form of the morphisms as power series, and not the definability
+of every element of a space. In a concurrent game model of probabilistic
+PCF, definability holds for the strategies that call one argument at a
+time and depend only on the history they observe~\cite{castellan2018}.
+We ask which elements of a space are mixtures of its elements with values in
+$\{0,1\}$. Full abstraction does not settle this question, since it
+concerns the equivalence of programs and not the laws valid on a whole
+space. Such laws bound the behaviour of every program of a type at once. They
+can fail on a space that contains more than the mixtures of deterministic
+programs.
+
+We call these elements the \emph{certain states} of a type. They are its
+deterministic elements, and the set of their mixtures is their convex
+hull, so we call it the \emph{deterministic hull} of the type. This is the construction of
+generalized probabilism~\cite{paris2001,williams2012}, applied to the
+points of a web. We work in multiplicative--additive linear logic (MALL)
+over finite data types, whose programs use each argument exactly once. At
+every MALL formula the deterministic hull lies inside the coherence space. Each certain state is a clique of
+Girard's coherence space. A
+\emph{gap} is an element of the coherence space outside the deterministic
+hull. It violates a linear inequality that every certain state
+satisfies~\cite{definetti1974,paris2001}.
+
+The coherence space also has an upper bound defined from certain states.
+The \emph{local relaxation} of a formula is the set of weight vectors with
+total weight at most $1$ on the support of every certain state of its
+negation. It contains the coherence space. Its orthogonal is the deterministic hull
+of the negation. So every coherence space lies between two sets defined from certain
+states, and Table~\ref{tab:sandwich} shows where.
+
+\begin{table}[t]
+\centering
+\caption{The coherence space $P(A)$ between the deterministic hull and the
+local relaxation of $A$. Strictness needs data types with at least two
+elements, and in the last row it is shown over $\mathrm{Bool}$.}
+\label{tab:sandwich}
+\begin{tabular}{@{}llll@{}}
+\toprule
+$A$ & hull and $P(A)$ & $P(A)$ and relaxation & Sections \\
+\midrule
+$\mathbf{n} \multimap \mathbf{m}$ (first order) & equal & equal & \ref{sec:linear}, \ref{sec:duality-tight} \\
+$T$ (second order) & strictly smaller & equal & \ref{sec:second}--\ref{sec:other}, \ref{sec:duality-local} \\
+dual of $T$ & equal & strictly smaller & \ref{sec:exact-perfect}, \ref{sec:duality-bell} \\
+$(T \otimes T)^{\perp}$ & contained & strictly smaller & \ref{sec:duality-shannon} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At first order the three sets coincide: a probabilistic program from one
+data type to another is a mixture of deterministic programs. At the type
+$T$ of a program that calls two functions once each, the deterministic
+hull is the set of randomized sequential programs, by Kuhn's
+theorem~\cite{kuhn1953}. It is the stable set polytope of a graph whose
+clique-constrained polytope is the coherence space. The coherence space
+is the whole local relaxation. When the data types have at least two
+elements, the function with value $\tfrac12$ on five points of the web lies in the coherence space and violates the
+Klyachko--Can--Binicio\u{g}lu--Shumovsky (KCBS)
+inequality~\cite{klyachko2008}, which every randomized sequential program
+satisfies. So every law valid on the coherence space of $T$ holds for
+sequential programs, but not conversely.
+
+At the dual of $T$, the tensor of the two argument types, the picture is
+reversed. The coherence space is the deterministic hull. When the data types have
+at least two elements, it lies strictly inside the local relaxation. The Popescu--Rohrlich
+box~\cite{popescu-rohrlich1994} lies in the local relaxation and outside
+the coherence space, so this gap is Bell's theorem. The two gaps are equivalent by the duality above. The deterministic hulls of a formula
+and of its negation form a tight pair, each the orthogonal of the other,
+iff neither has a gap. Tightness holds at first order and can fail at a tensor of first-order
+types. So the deterministic hull is not
+compositional.
+
+For the dual of a tensor of two formulas built from data types with
+$\mathbin{\&}$ and $\oplus$, the gap is governed by induced four-cycles of
+the coherence graphs. The direction without a gap has an explicit
+decomposition, mechanized for formulas built from the unit type without
+perfect graph theory. Coordinate retracts, embeddings of webs that
+preserve the coherence spaces in both directions, carry the gap to every
+formula over nonempty data types in which such a tensor occurs
+negatively. In quantum event logic no state has values in
+$\{0,1\}$~\cite{kochen-specker1967}, so only the local relaxation
+applies.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-  \item \textbf{Cliques.} At every multiplicative--additive formula, the
-  certain elements of the coherence space are cliques of the coherence
-  space and incoherent pairs carry total weight at most $1$, so Girard's
-  intuition holds throughout. The converse fails at
-  $(T \otimes T)^{\perp}$ through Shannon's set.
-  \item \textbf{Second order.} At $T$ the calculus is $\STAB$ and the
-  coherence space is $\QSTAB$ of one exclusivity graph. An explicit
-  pentagon point lies outside the calculus, and with three arguments
-  there is a gap among always-halting programs.
+  \item \textbf{Cliques.} Every certain state of a MALL formula is a clique
+  of its coherence space, but not conversely (Theorems~\ref{thm:mall}
+  and~\ref{thm:shannon}).
+  \item \textbf{Second order.} At $T$ the deterministic hull and the
+  coherence space are the stable set and the clique-constrained polytopes
+  of one graph, with explicit gaps for two functional arguments and, among
+  the always-terminating programs, for three (Theorems~\ref{thm:qstab}
+  and~\ref{thm:pentagon}, Proposition~\ref{prop:t3}).
   \item \textbf{Exact condition.} For formulas built from data types with
-  $\mathbin{\&}$ and $\oplus$, the calculus and the coherence space of
-  $(X \otimes Y)^{\perp}$ coincide iff one coherence graph has no induced
-  $4$-cycle. The mechanized proof avoids perfect graph theory and extends
-  Ravindra's theorem.
+  $\mathbin{\&}$ and $\oplus$, the dual of a tensor has no gap iff one
+  factor has no induced four-cycle, with a direct proof mechanized over the
+  unit type (Theorem~\ref{thm:second-exact}).
   \item \textbf{Transfer.} Coordinate retracts carry the gap to every
-  formula with a negative occurrence of a tensor whose factors both have
-  induced $4$-cycles. Beyond second order, a gap also exists without
-  such a tensor.
-  \item \textbf{Duality and Bell.} Linear negation exchanges the calculus
-  and the local calculus, and the two are tight iff neither the formula
-  nor its dual has a gap. Tightness holds at every
-  $\mathbf{n} \multimap \mathbf{m}$ and fails at the tensor of two of
-  them, so the certain-state calculus is not compositional. At the core
-  the gap is Bell's theorem, equivalent to the pentagon gap at $T$.
-  \item \textbf{Mechanization.} All of the above is in Lean~4 over
-  \textsf{mathlib}, with no \texttt{sorry} and standard axioms. The
-  results of this paper take about $9{,}200$ lines in $29$ files. The
-  general theorems are proved for arbitrary finite data types, and the
-  finite facts behind the witnesses (the five-cycle of the pentagon
-  point, the support of the Popescu--Rohrlich box, and the bases of the
-  Kochen--Specker set) are checked by evaluation on explicit finite types
-  (Appendix~\ref{app:lean}).
+  formula over nonempty data types with such a tensor occurring negatively,
+  a condition not necessary beyond second order (Theorem~\ref{thm:c4},
+  Proposition~\ref{prop:f3}).
+  \item \textbf{Duality.} The deterministic hulls of a formula and of its
+  negation are tight iff neither has a gap, which holds at first order and
+can fail at a tensor of first-order types (Theorem~\ref{thm:duality},
+  Corollary~\ref{cor:tensor}).
+  \item \textbf{Bell.} At the dual of $T$, the Popescu--Rohrlich box lies in
+  the local relaxation and outside the coherence space
+  (Theorem~\ref{thm:bell}).
+  
 \end{enumerate}
+
+
+Every result of the paper is mechanized in Lean~4 over
+\textsf{mathlib}~\cite{moura-ullrich2021,mathlib2020}, in about
+$8{,}300$ lines, except steps the text marks as not formalized. A superscript number such as
+\textsuperscript{\textsf{\tiny L1}} links a statement to its numbered
+Lean counterpart. The supplementary material lists the Lean statements and describes the
+development.

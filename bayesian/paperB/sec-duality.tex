@@ -1,12 +1,215 @@
+% !TEX root = main.tex
 \section{Local Certainty and Duality}
 \label{sec:duality}
 
-\emph{(from \S12.2, \S11.3, \S13.2)}
+The deterministic hull mixes states that are certain on all events at once. A
+weaker requirement is certainty within each of a family of contexts. This section places the coherence space between the deterministic hull
+and the resulting local relaxation. It ends with a quantum event logic,
+which has no certain states.
 
-\subsection{The local calculus}
+\subsection{The Local Relaxation}
+\label{sec:duality-local}
 
-\subsection{A clique outside the coherence space (Shannon)}
+\begin{definition}[local relaxation~\cite{acin2015}\leanref{local-calc}]
+\label{def:local}
+For a given finite set $E$ of events and a family $\mathcal{C}$ of
+subsets of $E$, the \emph{contexts}, the \emph{local relaxation} is the set
+of $x : E \to \mathbb{R}_{\ge 0}$ such that $\sum_{e \in C} x_e \le 1$
+for every context $C$. The \emph{deterministic hull} is $\Mix$ of the
+elements of the local relaxation with values in $\{0,1\}$. The
+\emph{normalized} local relaxation and deterministic hull are the sets defined in the
+same way with $=$ in place of $\le$.
+\end{definition}
 
-\subsection{Negation, tightness, and the tensor (Cor \texttt{cor:cat-tensor})}
+\noindent
+The local relaxation contains its
+$\{0,1\}$-valued elements and is closed under mixtures, so
+Definition~\ref{def:gap} applies to it, with the deterministic hull as
+$\Mix$ of its certain states. The normalized local relaxation and deterministic hull are
+the general probabilistic models and the classical models of a family of
+contexts~\cite{acin2015}.
 
-\subsection{Bell's theorem at the core}
+For a formula $A$, take as contexts the supports of the certain states of
+$A^{\perp}$. The pairing with a $\{0,1\}$-valued function is the sum over
+its support, so the local relaxation of $A$ is the orthogonal of the certain
+states of $A^{\perp}$\leanref{loc-linear}. We write $\loc(A)$ for it,
+and we prove that it bounds the coherence space from above.
+
+\begin{theorem}[local certainty\leanref{loc-linear}\leanref{recipe-core}\leanref{recipe-formula}]
+\label{thm:loc-linear}
+For every formula $A$, the deterministic hull of $A$ is contained in $P(A)$, which is contained in $\loc(A)$. Moreover, $P(A) = \loc(A)$ iff $A^{\perp}$
+has no gap.
+At $T$ the second inclusion is an equality, and if $X, Y, X', Y'$ have at
+least two elements each, the first is strict.
+\end{theorem}
+
+\noindent
+An orthogonal does not change when a set is replaced by its mixtures, so
+$\loc(A)$ is the orthogonal of the deterministic hull of $A^{\perp}$. By
+Definition~\ref{def:mall}(iii), $P(A)$ is the orthogonal of $P(A^{\perp})$. The deterministic hull of $A^{\perp}$ is contained
+in $P(A^{\perp})$, which gives $P(A) \subseteq \loc(A)$. The deterministic hull and
+the coherence space of every formula are equal to their biorthogonals, the
+deterministic hull by the bipolar theorem in the proof of
+Theorem~\ref{thm:second-exact}, which gives the equivalence. At $T$ the dual is the core, which has no gap
+(Theorem~\ref{thm:second-exact}(i)), and the first inclusion is strict by
+Theorem~\ref{thm:pentagon}.
+
+\subsection{A Clique Outside the Coherence Space}
+\label{sec:duality-shannon}
+
+The converse of the last statement of Theorem~\ref{thm:mall} fails: some
+cliques of the coherence space are not certain states. Let
+$X = Y = X' = Y' = \mathrm{Bool}$. On the five points of
+Theorem~\ref{thm:pentagon}, two distinct points cohere in $T$ iff they are
+not exclusive. Order them as $c_0, \dots, c_4$ along the cycle of length
+$5$ of the exclusivity graph. The coherence graph on them is the
+complement of this cycle, again a cycle of length $5$. Two distinct points
+of $T \otimes T$ are incoherent iff they are incoherent in one component,
+so a clique of $(T \otimes T)^{\perp}$ contained in
+$\{c_0, \dots, c_4\}^2$ is a stable set of the strong product of two
+cycles of length $5$. The set $\{(c_i, c_{2i}) \mid i \in \mathbb{Z}/5\}$
+is such a stable set, of size $5$, Shannon's stable
+set~\cite{lovasz1979}. We show that it gives a clique outside the
+coherence space.
+
+\begin{theorem}[a clique outside the PCS\leanref{shannon-clique}\leanref{shannon-not-mem}\leanref{tensorgap-bool}]
+\label{thm:shannon}
+Shannon's set is a clique of the coherence space $(T \otimes T)^{\perp}$,
+and its indicator does not lie in $P((T \otimes T)^{\perp})$.
+\end{theorem}
+
+\noindent
+The function $z$ of Theorem~\ref{thm:pentagon}, with value $\tfrac12$ on
+the five points, lies in $P(T)$, so $z \otimes z$ lies in $P(T \otimes T)$.
+Its pairing with the indicator of Shannon's set is
+$5 \cdot \tfrac14 = \tfrac54 > 1$.
+
+The indicator of every clique of $A$ lies in $\loc(A)$. The certain
+states of $A^{\perp}$ are cliques of $A^{\perp}$ (Theorem~\ref{thm:mall}). A clique of $A$ and a
+clique of $A^{\perp}$ share at most one point,
+since two distinct points cannot cohere in both. This allows us to prove
+that Shannon's set also separates the coherence space from the local
+relaxation.
+
+\begin{corollary}[the second inclusion\leanref{loc-linear}]
+\label{cor:tt}
+At $(T \otimes T)^{\perp}$, the coherence space is strictly contained in
+the local relaxation.
+\end{corollary}
+
+\noindent
+We did not find the placement of the coherence space between the
+deterministic hull and the local relaxation
+(Theorem~\ref{thm:loc-linear}) in the literature.
+
+\subsection{Negation, Tightness, and the Tensor}
+\label{sec:duality-tight}
+
+Two sets $U$ and $V$ of weight vectors on one web form a \emph{tight
+pair} if each is the orthogonal of the other, $U = V^{\perp}$ and
+$V = U^{\perp}$~\cite{hyland-schalk2003}. A coherence space and its
+orthogonal form a tight pair. The question is when the deterministic hulls of a formula and of its negation form a tight
+pair, and we prove the following answer.
+
+\begin{theorem}[duality\leanref{orth-recipe}\leanref{tight}]
+\label{thm:duality}
+Let $A$ be a formula.
+(i) The orthogonal of the deterministic hull of $A$ is $\loc(A^{\perp})$, and the
+orthogonal of $\loc(A)$ is the deterministic hull of $A^{\perp}$.
+(ii) The deterministic hulls of $A$ and of $A^{\perp}$ form a tight pair iff the
+deterministic hull of $A$ is $\loc(A)$, iff neither $A$ nor $A^{\perp}$ has a gap.
+(iii) If $X, Y, X', Y'$ have at least two elements each, the deterministic hulls of
+the core $K$ and of $T$ do not form a tight pair.
+\end{theorem}
+
+\noindent
+Part (i) combines the biorthogonal closure of the deterministic hull with the fact
+that an orthogonal does not change when a set is replaced by its
+mixtures. Each of the two equations of a tight pair of deterministic hulls implies the
+other, since the deterministic hull is equal to its biorthogonal. Part (ii) follows
+with Theorem~\ref{thm:loc-linear}, and (iii)
+with Theorem~\ref{thm:second-exact}(i) and the gap at $T$
+(Theorem~\ref{thm:pentagon}).
+
+When the certain states of $A$ and of $A^{\perp}$ are the cliques of their
+coherence graphs, (i) is the antiblocking identity between the stable set
+polytope of a graph and the clique-constrained polytope of its
+complement, which joins two distinct vertices iff the graph does
+not~\cite{fulkerson1971,knuth1994}. In that case tightness holds iff the
+coherence graph is perfect~\cite{lovasz1972,chvatal1975}. For a coherence space $E$, let $p(E)$ be the set of $x \ge 0$ with total
+weight at most $1$ on every clique of $E^{\perp}$. Then
+$p(E^{\perp}) = p(E)^{\perp}$ when $E$ is generated from $\mathbf{1}$ by
+$\perp$ and $\mathbin{\&}$, so that its coherence graph is a cograph, and
+not when its coherence graph has an induced cycle of length
+$5$~\cite{ehrhard-td2}. A family of finite sets and its orthogonal family
+have dual norm balls iff they are the cliques and the stable sets of a
+perfect graph~\cite{bfp2026}. These results concern the cliques of a coherence space.
+Theorem~\ref{thm:duality} concerns its certain states, which can be fewer
+than the cliques (Theorem~\ref{thm:shannon}). To our knowledge, part (ii), the equivalence of tightness with the
+absence of a gap at $A$ and at $A^{\perp}$, does not appear in the
+literature.
+
+We show that tightness holds at first order and fails at a tensor of
+first-order types.
+
+\begin{corollary}[tightness and the tensor\leanref{tight-tensor}]
+\label{cor:tensor}
+For all $n$ and $m$, the local relaxation of $\mathbf{n} \multimap
+\mathbf{m}$ is $P(\mathbf{n} \multimap \mathbf{m})$, so the deterministic hulls of
+$\mathbf{n} \multimap \mathbf{m}$ and of its negation form a tight pair.
+For $n, m, n', m' \ge 2$, the deterministic hulls of $(\mathbf{n} \multimap
+\mathbf{m}) \otimes (\mathbf{n'} \multimap \mathbf{m'})$ and of its
+negation do not.
+\end{corollary}
+
+\noindent
+The indicator of a row $\{a\} \times \{1, \dots, m\}$ is a certain state
+of the negation of $\mathbf{n} \multimap \mathbf{m}$. These indicators cut
+out the row-substochastic matrices, which form
+$P(\mathbf{n} \multimap \mathbf{m})$. With
+Proposition~\ref{prop:first-order} the deterministic hull is the local relaxation. The
+second statement is Theorem~\ref{thm:duality} with the gap of
+Theorem~\ref{thm:pentagon}. So the deterministic hull is not
+compositional: tightness at $A$ and at $B$ does not imply tightness at
+$A \otimes B$. The coherence space is compositional by construction.
+
+\subsection{Bell's Theorem at the Core}
+\label{sec:duality-bell}
+
+Let $X = Y = X' = Y' = \mathbf{2}$. A point $((x, a), (y, b))$ of the web
+of the core $K$ is the event that two parties with inputs $x$ and $y$ give
+outputs $a$ and $b$. Two events are \emph{locally orthogonal} if some
+party has equal inputs and different outputs. For distinct events this is the negation of exclusivity
+(Section~\ref{sec:second-pentagon}). An element of $P(K)$ is \emph{normalized} if it has total
+weight $1$ for each pair of inputs. We prove the following form of Bell's
+theorem~\cite{bell1964} at the core.
+
+\begin{theorem}[Bell at the core\leanref{bell}]
+\label{thm:bell}
+Every certain state of $T$ is the indicator of a set of pairwise locally
+orthogonal events. The Popescu--Rohrlich box~\cite{popescu-rohrlich1994},
+with value $\tfrac12$ on the
+events with $a + b \equiv xy \pmod 2$ and $0$ elsewhere, lies in
+$\loc(K)$ and not in $P(K)$.
+\end{theorem}
+
+\noindent
+Two events that are not locally orthogonal are both produced by one
+deterministic product strategy, a pair of deterministic programs, one for
+each party, which lies in $P(K)$ and has pairing $2$ with their
+indicator. No three events in the support of the box are pairwise
+locally orthogonal, so the box has total weight at most $1$ on the support
+of every certain state of $T$, and lies in $\loc(K)$. By
+Theorem~\ref{thm:second-exact}, $P(K)$ is the deterministic hull of $K$. Every
+certain state of $K$ lies below a deterministic product strategy, which
+has total weight at most $3$ on the eight events with $a + b \equiv xy$,
+the CHSH inequality~\cite{chsh1969}. The box has total weight $4$ there.
+By Theorem~\ref{thm:loc-linear}, $P(K) \ne \loc(K)$ iff $T$ has a gap.
+
+The normalized elements of $P(K)$ are the Bell-local behaviours, i.e. the
+mixtures of deterministic product strategies that always terminate. A set
+of pairwise locally orthogonal events meets each clique of $K$ in at most
+one event, so $\loc(K)$ is the set of functions with total weight at most
+$1$ on every such set. Its normalized elements are the no-signalling
+behaviours~\cite{fritz-lo2013}. These two identifications are not
+formalized.

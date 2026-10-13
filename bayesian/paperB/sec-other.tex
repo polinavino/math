@@ -1,8 +1,100 @@
+% !TEX root = main.tex
 \section{Other Formulas}
 \label{sec:other}
 
-\emph{(from \S11.2)}
+A gap transfers along a kind of embedding of webs. This section uses it
+to carry the gap of Theorem~\ref{thm:pentagon} to every formula with a
+negative occurrence of a suitable tensor.
 
-\subsection{Coordinate retracts}
+\subsection{Coordinate Retracts}
+\label{sec:other-retract}
 
-\subsection{Negative occurrences and four-cycles}
+\begin{definition}[coordinate retract\leanref{retract}]
+\label{def:retract}
+For given formulas $D$ and $A$, the \emph{coordinate retracts} of $D$
+into $A$ are the injective maps $j : |D| \to |A|$ such that the
+pushforward $j_{*}$, defined by $(j_{*}x)(j(d)) = x_d$ and value $0$
+outside the image of $j$, maps $P(D)$ into $P(A)$, and the pullback
+$z \mapsto z \circ j$ maps $P(A)$ into $P(D)$. We say that $D$ is a
+coordinate retract of $A$ if such a map exists.
+\end{definition}
+
+\noindent
+The pullback of $j_{*}x$ is $x$, and this allows us to prove that gaps
+transfer along coordinate retracts.
+
+\begin{theorem}[transfer\leanref{retract-gap}\leanref{retract-ops}]
+\label{thm:retract}
+(i) If $D$ is a coordinate retract of $A$ and $D$ has a gap, then $A$ has
+a gap.
+(ii) Coordinate retracts compose. If $D$ is a coordinate retract of $A$,
+then $D^{\perp}$ is a coordinate retract of $A^{\perp}$. The formula $D$
+is a coordinate retract of $D \mathbin{\&} B$, of $B \mathbin{\&} D$,
+and, if the web of $B$ is nonempty, of $D \otimes B$ and of $B \otimes D$.
+\end{theorem}
+
+\noindent
+For (i), take $x \in P(D)$ outside the deterministic hull of $D$. If $j_{*}x$ were a
+mixture of certain states of $A$, pulling the mixture back along $j$
+would write $x = (j_{*}x) \circ j$ as a mixture of certain states of $D$.
+For negation, the pairing satisfies
+$\langle j_{*}u, z \rangle = \langle u, z \circ j \rangle$, which exchanges
+the two conditions of Definition~\ref{def:retract}. For $D \otimes B$,
+the map is $j(d) = (d, b)$ for a point $b$ of $B$, so
+$j_{*}x = x \otimes \delta_b$, where $\delta_b$ is the indicator of $b$. The pullback condition uses that every element of $P(B)$ is at most
+$1$ at $b$ (Theorem~\ref{thm:mall}).
+
+\subsection{Negative Occurrences and Four-Cycles}
+\label{sec:other-occ}
+
+With positive and negative occurrences as defined in
+Section~\ref{sec:exact-beyond}, we prove the following.
+
+\begin{theorem}[the gap at other formulas\leanref{gap-of-occ}]
+\label{thm:occ-gap}
+Let $n, m, n', m' \ge 2$, and let $A$ be a formula all of whose data types
+are nonempty. If $(\mathbf{n} \multimap \mathbf{m}) \otimes
+(\mathbf{n'} \multimap \mathbf{m'})$ occurs negatively in $A$, then $A$
+has a gap.
+\end{theorem}
+
+\noindent
+A positive occurrence of $D$ gives a coordinate retract of $D$ into $A$,
+and a negative one a coordinate retract of $D^{\perp}$, by
+Theorem~\ref{thm:retract}(ii) and induction on $A$, using that $D$ is a
+coordinate retract of $D^{\perp\perp}$. Theorem~\ref{thm:retract}(i) and
+Theorem~\ref{thm:pentagon} then give the claim. Examples are $T$ itself,
+the type $((\mathbf{n} \multimap \mathbf{m}) \otimes (\mathbf{n'}
+\multimap \mathbf{m'})) \multimap B$ of a program that receives two
+functions and returns a value of type $B$, for every $B$ with nonempty
+data types (Lean checks the instance $B = \mathbf{2}$). A positive occurrence of the core
+does not suffice: the core itself has no gap
+(Theorem~\ref{thm:second-exact}(i)).
+
+The occurrence condition of Theorem~\ref{thm:occ-gap} refers to one
+syntactic subformula. We also prove a version that depends only on the
+coherence graphs of the factors.
+
+\begin{theorem}[four-cycles\leanref{retract-tens}\leanref{c4-retract}\leanref{gap-of-c4}]
+\label{thm:c4}
+If $X$ and $Y$ both have an induced $4$-cycle, then
+$(X \otimes Y)^{\perp}$ has a gap, and so does every formula over
+nonempty data types in which $X \otimes Y$ occurs negatively.
+\end{theorem}
+
+\noindent
+The four points of an induced $4$-cycle of $X$ form a coordinate retract of
+$\mathbf{2} \multimap \mathbf{2}$ into $X$, with input $0$ sent to $a$ and
+$c$ and input $1$ to $b$ and $d$. The pushforward lands in $P(X)$ because
+the indicators of the coherent pairs of the cycle lie in $P(X)$ (Theorem~\ref{thm:mall}). The pullback lands in
+$P(\mathbf{2} \multimap \mathbf{2})$ because the incoherent pairs have
+total weight at most $1$ (Theorem~\ref{thm:mall}). Coordinate retracts
+pass through $\otimes$, so Theorems~\ref{thm:pentagon}
+and~\ref{thm:retract} give the claim. The coherence graph of
+$\mathbf{n} \multimap \mathbf{m}$ has an induced $4$-cycle iff
+$n, m \ge 2$, so Theorem~\ref{thm:occ-gap} is the case
+$X = \mathbf{n} \multimap \mathbf{m}$ and
+$Y = \mathbf{n'} \multimap \mathbf{m'}$. The curried type $(\mathbf{2} \multimap
+\mathbf{2}) \multimap ((\mathbf{2} \multimap \mathbf{2}) \multimap
+\mathbf{2})$, which Theorem~\ref{thm:occ-gap} does not cover, is an
+instance\leanref{gap-curried}.

@@ -6,8 +6,8 @@
 has three points, so its coherence graph has no induced four-cycle (`X3_no_C4`) and `gap_of_C4`
 does not apply.
 
-The witness `y3` is `½` on five points. It lies in `P F3` because four pairs of the five points of
-`T` used are incoherent in `T` (`y3_mem`). The five points form a five-cycle of coherence in `F3`,
+The witness `y3` is `½` on five points. It lies in `P F3` by the bounds at three incoherent pairs and at one point of `T`
+(`y3_mem`). The five points form a five-cycle of coherence in `F3`,
 so every `{0,1}`-valued element of `P F3` is `1` on at most two of them (`sharp3_le`), while `y3`
 has total weight `5/2` there.
 -/

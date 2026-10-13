@@ -177,6 +177,13 @@ theorem P_S2_eq_loc : P S2 = loc S2 := by
   show recipe (Fm.neg (Fm.neg (core 2 2 2 2))) = P (Fm.neg (Fm.neg (core 2 2 2 2)))
   rw [recipe_negneg, P_negneg, recipe_core]
 
+/-- **At every second-order type `T` the PCS is the local calculus**, since its dual, the core,
+has no gap. -/
+theorem P_second_eq_loc (n m n' m' : ℕ) : P (second n m n' m') = loc (second n m n' m') := by
+  rw [P_eq_loc_iff]
+  show recipe (Fm.neg (Fm.neg (core n m n' m'))) = P (Fm.neg (Fm.neg (core n m n' m')))
+  rw [recipe_negneg, P_negneg, recipe_core]
+
 /-- **At `(T ⊗ T)^⊥` the PCS is strictly smaller than the local calculus**: Shannon's set is a
 local `{0,1}`-valued state outside the PCS. -/
 theorem P_TT_ssubset_loc : P TT ⊂ loc TT := by

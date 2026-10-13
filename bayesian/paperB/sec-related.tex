@@ -1,14 +1,41 @@
+% !TEX root = main.tex
 \section{Related Work}
 \label{sec:related}
 
-\paragraph{Probabilistic coherence spaces and full abstraction.}
-Ehrhard--Pagani--Tasson, Castellan et al.
-\paragraph{Generalized probabilism.}
-Paris, Williams, Gyenis.
-\paragraph{Contextuality.}
-Cabello--Severini--Winter, Ac\'in--Fritz--Leverrier--Sainz, Abramsky--Brandenburger.
-\paragraph{Causal processes.}
-Baumeler--Wolf, Kissinger--Uijlen, Simmons--Kissinger.
-\paragraph{Antiblocking duality and perfect graphs.}
-Fulkerson, Knuth, Ravindra. Ehrhard's TD~2 exercise sheet.
-Borodulin-Nadzieja--Farkas--Pelczar-Barwacz.
+\textbf{Probabilistic semantics.}
+In quasi-Borel spaces, a
+model of higher-order probability, every distribution is the image of a
+distribution on the real line under a map into the
+space~\cite{heunen2017qbs}. The elements of a probabilistic coherence
+space are not given in this form.
+
+\textbf{Generalized probabilism.}
+The construction of Section~\ref{sec:calculi} is generalized
+probabilism~\cite{paris2001,williams2012}. The laws valid on all truth
+assignments to a set of events are Boole's conditions of possible
+experience~\cite{pitowsky1994}. Other
+derivations obtain the sum and product rules of probability from
+properties of a lattice of events~\cite{cox1946,vanhorn2003,knuth-skilling2012}.
+In these approaches the events are formulas or lattice elements. For a formula, the events are the points of its web, which carry no
+connectives.
+
+\textbf{Probabilistic theories and contextuality.}
+Generalized probabilistic theories describe a system by its states and
+its effects, the outcomes of measurements~\cite{barrett2007,plavala2023},
+and under the no-restriction hypothesis every map from states to $[0,1]$
+that respects mixtures is an effect~\cite{janotta-lal2013}. Contextuality has
+combinatorial formulations by exclusivity graphs~\cite{cabello2014}, by
+hypergraphs of contexts~\cite{acin2015}, and by
+sheaves~\cite{abramsky-brandenburger2011}. Its noncontextual models form
+correlation polytopes~\cite{pitowsky1991}, and it also occurs in other
+domains~\cite{abramsky2013}. In these formulations the scenario is given
+by its measurements and outcomes. Here, we work with webs of a type, with
+exclusivity defined by coherence.
+
+\textbf{Causal processes.}
+Probabilistic coherence spaces model the deep-inference logic BV, which
+adds a noncommutative connective for sequential
+composition~\cite{blute-panangaden-slavnov2012}. Higher-order causal
+theories, built from categories of processes compatible with a causal
+order~\cite{kissinger-uijlen2019}, also model BV. Over matrices of nonnegative numbers they give this model of probabilistic coherence spaces
+restricted to normalized maps~\cite{simmons-kissinger2022}.

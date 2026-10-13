@@ -1,12 +1,167 @@
-\section{Linear Logic Background}
+% !TEX root = main.tex
+\section{Linear Logic}
 \label{sec:linear}
 
-\emph{(from sec-recipe \S10.3 and \S10.5)}
+In probabilistic coherence spaces a formula denotes a set of weight
+vectors on a set of points~\cite{danos-ehrhard2011}. The construction of
+Section~\ref{sec:calculi} applies to them, with the points as events and
+the elements with values in $\{0,1\}$ as certain states.
 
-\subsection{Coherence spaces, data types, first order}
+\subsection{Coherence Spaces, Data Types, First Order}
+\label{sec:linear-first}
 
-\subsection{MALL formulas and their semantics}
+\begin{definition}[probabilistic coherence space\leanref{ispcs-lin}]
+\label{def:pcs}
+\begin{enumerate}
+  \item[(i)] For a given finite set $W$, the \emph{web}, whose elements are the
+\emph{points}, the \emph{weight vectors} on $W$ are the functions
+  $W \to \mathbb{R}_{\ge 0}$, and their pairing is
+  $\langle x, y \rangle = \sum_{w \in W} x_w y_w$.
+  \item[(ii)] For a given set $Q$ of weight vectors, the \emph{orthogonal}
+  $Q^{\perp}$ is the set of weight vectors $y$ such that
+  $\langle x, y \rangle \le 1$ for every $x \in Q$, and $Q^{\perp\perp}$
+  is the \emph{biorthogonal} of $Q$.
+  \item[(iii)] For a given web $W$, the \emph{probabilistic coherence
+  spaces} (PCS) with web $W$ are the sets $P$ of weight vectors on $W$
+  such that $P = P^{\perp\perp}$, every point $w$ has some $x \in P$ with
+  $x_w \ne 0$, and for every point $w$ the values $x_w$ with $x \in P$
+  are bounded~\cite{danos-ehrhard2011}.
+\end{enumerate}
+\end{definition}
 
-\subsection{Coherence at every formula}
+\noindent
+Every orthogonal is closed under mixtures, since
+$\langle x, \sum_i w_i y_i \rangle = \sum_i w_i \langle x, y_i \rangle \le
+\sum_i w_i = 1$\leanref{mix-subset-orth}. A PCS is the orthogonal of
+$P^{\perp}$, so it is closed under mixtures.
 
-\subsection{The exponential $!\mathrm{Bool}$ (credit Danos--Ehrhard)}
+For a finite set $X$, the \emph{data type} $X$ is the PCS of the
+$x : X \to \mathbb{R}_{\ge 0}$ with $\sum_{a \in X} x_a \le 1$, the
+subprobability distributions on $X$\leanref{ispcs-lin}. An element is
+the output distribution of a computation with values in $X$, and
+$1 - \sum_a x_a$ is the probability that it does not terminate. We write
+$\mathbf{n}$ for the data type $\{1, \dots, n\}$, and $\mathrm{Bool}$ for
+$\mathbf{2}$ with values $t$ and $f$. For data types $X$ and $Y$, the PCS
+$X \multimap Y$ on the web $X \times Y$ is the set of
+$t : X \times Y \to \mathbb{R}_{\ge 0}$ with
+$\sum_{b} \sum_{a} x_a\, t(a,b) \le 1$ for every $x$ in $X$, equivalently
+$\sum_{b} t(a,b) \le 1$ for every $a \in X$\leanref{mem-lin-iff}. These
+are the substochastic matrices, the probabilistic programs from $X$ to
+$Y$ that may not terminate, with $t(a,b)$ the probability of output $b$
+on input $a$.
+
+A \emph{coherence space} is a set with a reflexive and symmetric
+relation, its \emph{coherence}~\cite{girard1987}. A \emph{clique} is a
+set of pairwise coherent elements. In the coherence space
+$X \multimap Y$, two points $(a, b)$ and $(a', b')$ cohere iff they are
+equal or $a \ne a'$. So the cliques are the graphs of partial functions
+from $X$ to $Y$.
+
+The implications $X \multimap Y$ between data types are the
+\emph{first-order} types. Take as certain states the elements of
+$X \multimap Y$ with values in $\{0,1\}$. Write $Y_{\bot}$ for $Y$ with
+an added value $\bot$ for non-termination. For $f : X \to Y_{\bot}$, let $\det f(a, b) = 1$ if $f(a) = b$ and $0$ otherwise. We show that the
+certain states are these deterministic programs and that
+$X \multimap Y$ has no gap over them.
+
+\begin{proposition}[first order\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
+\label{prop:first-order}
+Let $X$ and $Y$ be finite.
+(i) $X \multimap Y = \Mix\{\det f \mid f : X \to Y_{\bot}\}$.
+(ii) A function $t : X \times Y \to \mathbb{R}_{\ge 0}$ with values in
+$\{0,1\}$ lies in $X \multimap Y$ iff its support is a clique of the
+coherence space $X \multimap Y$.
+\end{proposition}
+
+\noindent
+Both parts are elementary. For (i), each row $t(a, \cdot)$ is a
+subprobability distribution on $Y$, and so a mixture of the point masses
+and the zero vector. Choosing one of these independently for each row,
+with the product of the weights, allows for expressing 
+$t$ as a mixture of deterministic
+programs. For (ii), a substochastic matrix with values in $\{0,1\}$ has
+at most one entry $1$ in each row.
+
+\subsection{MALL Formulas and Their Semantics}
+\label{sec:linear-mall}
+
+Multiplicative--additive linear logic (MALL) builds formulas from data
+types with linear negation and two conjunctions~\cite{girard1987}. The
+formula $A \otimes B$ is the type of a pair of independent elements of $A$
+and of $B$. The formula $A \mathbin{\&} B$ is the type of an element that can be used
+as an element of $A$ or of $B$, at the choice of its user.
+
+\begin{definition}[formulas and their semantics\leanref{linear-fm}]
+\label{def:mall}
+\begin{enumerate}
+  \item[(i)] The \emph{formulas} are the terms generated from the data
+  types $\mathbf{n}$, for $n \in \mathbb{N}$, by linear negation
+  $A^{\perp}$, the tensor $A \otimes B$, and the product
+  $A \mathbin{\&} B$. The derived connectives are
+  $A \parr B = (A^{\perp} \otimes B^{\perp})^{\perp}$,
+  $A \oplus B = (A^{\perp} \mathbin{\&} B^{\perp})^{\perp}$, and
+  $A \multimap B = (A \otimes B^{\perp})^{\perp}$.
+  \item[(ii)] For a given formula $A$, the \emph{web} $|A|$ is
+  $\{1, \dots, n\}$ for $\mathbf{n}$, $|A|$ for $A^{\perp}$,
+  $|A| \times |B|$ for $A \otimes B$, and the disjoint union
+  $|A| \sqcup |B|$ for $A \mathbin{\&} B$.
+  \item[(iii)] For a given formula $A$, the PCS $P(A)$ is the data type
+  $\mathbf{n}$ for $\mathbf{n}$, $P(A)^{\perp}$ for $A^{\perp}$,
+  $\{ x \otimes y \mid x \in P(A),\ y \in P(B) \}^{\perp\perp}$ for
+  $A \otimes B$, where $(x \otimes y)(a, b) = x_a y_b$, and the set of
+  $z$ whose restrictions to $|A|$ and $|B|$ lie in $P(A)$ and $P(B)$ for
+  $A \mathbin{\&} B$~\cite{danos-ehrhard2011}.
+  \item[(iv)] For a given formula $A$, the \emph{coherence} $\coh_A$ is
+  the relation on $|A|$ such that $s \coh_{\mathbf{n}} t$ iff $s = t$,
+  $s \coh_{A^{\perp}} t$ iff $s = t$ or not $s \coh_A t$, two pairs cohere
+  in $A \otimes B$ iff their first components cohere and their second
+  components cohere, and points of $A \mathbin{\&} B$ cohere iff they
+  cohere in $A$ or in $B$, or lie in different parts~\cite{girard1987}.
+  The \emph{coherence graph} $G_A$ is the graph on $|A|$ whose edges are
+  the pairs of distinct coherent points.
+\end{enumerate}
+\end{definition}
+
+\noindent
+The semantics computes the spaces of Section~\ref{sec:linear-first}:
+$P(\mathbf{n} \multimap \mathbf{m})$ is the PCS
+$\{1, \dots, n\} \multimap \{1, \dots, m\}$\leanref{p-lolli-base}, with
+the coherence described there. So Proposition~\ref{prop:first-order} is
+a statement about the formulas
+$\mathbf{n} \multimap \mathbf{m}$\leanref{recipe-formula}.
+
+Each formula $A$ gives a presentation. Its events are the points of
+$|A|$, and its certain states are the elements of $P(A)$ with values in
+$\{0,1\}$. The \emph{deterministic hull} of $A$ is $\Mix$ of these certain states.
+Every $P(A)$ is a PCS~\cite{danos-ehrhard2011}\leanref{ispcs-p}, so it
+contains the deterministic hull of $A$\leanref{recipe-subset-p}. Definition~\ref{def:gap}
+therefore applies to it. We say that $A$ has a \emph{gap}
+if $P(A)$ has a gap over the certain states of $A$, that is, if the
+presentation of $A$ is not sound for $P(A)$ (Corollary~\ref{cor:gap-law}).
+
+\subsection{Coherence at Every Formula}
+\label{sec:linear-coherence}
+
+We prove that the coherence space bounds the weights of pairs of points,
+and so constrains the certain states.
+
+\begin{theorem}[coherence at every formula\leanref{linear-invariants}\leanref{sharp-isclique}]
+\label{thm:mall}
+Let $A$ be a formula. The indicator of every point and of every pair of
+distinct coherent points lies in $P(A)$. Every $x \in P(A)$ satisfies
+$x_s \le 1$ for every point $s$, and $x_s + x_t \le 1$ for every pair of
+distinct incoherent points $s, t$. In particular, every certain state of
+$A$ is the indicator of a clique of the coherence space $A$.
+\end{theorem}
+
+\noindent
+The proof is a simultaneous induction on $A$. Negation exchanges the
+statement about coherent pairs with the statement about incoherent pairs.
+For $A \otimes B$, the indicator of a coherent pair is bounded by the
+tensor of the indicators of its two projections. A pair incoherent in
+$A \otimes B$ is incoherent in one component, where the bound of $A$ or of
+$B$ applies together with the bound on single points. So the bound on
+incoherent pairs, the motivating intuition for probabilistic coherence
+spaces~\cite{girard2004}, holds at every multiplicative--additive formula
+over data types.
+

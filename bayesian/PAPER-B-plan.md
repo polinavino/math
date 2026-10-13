@@ -1,6 +1,6 @@
 # Paper B plan: linear logic and contextuality
 
-Status: skeleton paper in `bayesian/paperB/` (LNCS, anonymous). Section 2 is written, and the other sections hold only this plan (2026-10-09). Source material is in the current `bayesian/paper/` files. Each section below names the file and section it comes from.
+Status: skeleton paper in `bayesian/paperB/` (LNCS, anonymous). Sections 2–9 are written and audited (2026-10-12). The introduction and conclusion hold only this plan. Source material is in the current `bayesian/paper/` files. Each section below names the file and section it comes from.
 
 ## Working title
 
@@ -48,22 +48,20 @@ All results are mechanized in Lean 4.
 
 1. **Introduction**
 2. **Calculi from Certain States** (from sec-recipe §10.1–10.2 and §10.4)
-   - 2.1 Presentations and mixtures
-   - 2.2 Affine laws and completeness (credit de Finetti, Paris)
-   - 2.3 Laws of deterministic programs: the calculus is the unique convex set containing the certain states and obeying exactly their affine laws (uniqueness, credit de Finetti/Paris). A gap is a coherence-space element that violates a law obeyed by every deterministic program, as the pentagon and CHSH inequalities are. No justification of the criteria here (that is paper A).
-   - 2.4 Why not lattice valuations (tensor collapse, from sec-lattice)
+   - No subsections (cut 2026-10-13). Definition of presentation and calculus, affine laws, completeness cited inline (de Finetti, Paris), soundness/completeness of a presentation, Def gap, Cor gap-law, counting laws, and a "Grading formulas" paragraph with the tensor collapse inline.
+   - Removed as known and unused: Prop 1 (cube vertices, distribution monad), uniqueness theorem, bets/accuracy paragraph, Heyting valuations, the finite-mixture remark.
 3. **Linear Logic Background** (from sec-recipe §10.3 and §10.5)
-   - 3.1 Coherence spaces, data types, first order
+   - 3.1 Coherence spaces, data types, first order. Open with: probabilistic coherence spaces separate a from a⊗a by putting weights on points of a web, with a⊗a on pairs of points, instead of grading formulas [Danos–Ehrhard], so the construction of §2 applies to them.
    - 3.2 MALL formulas and their semantics
-   - 3.3 Coherence at every formula
-   - 3.4 The exponential !Bool (credit Danos–Ehrhard)
+   - 3.3 Coherence at every formula. State here that the PCS of a formula contains its certain states and is closed under mixtures, so the gap definition of §2.3 applies with C = the PCS.
+   - The exponential: a paragraph at the end of 3.3, a corollary of the Danos–Ehrhard bound (subsection removed 2026-10-13). "P(A) is a PCS" is cited inline, not a proposition.
 4. **Second Order** (from sec-second-order §11.1)
    - 4.1 Sequential programs and Kuhn
-   - 4.2 A language for T
+   - The language for T is one paragraph at the end of 4.1 (subsection removed 2026-10-13).
    - 4.3 The pentagon gap
    - 4.4 Divergence and total programs (Baumeler–Wolf, T₃)
 5. **The Exact Condition** (from §11.4)
-   - 5.1 STAB and QSTAB
+   - 5.1 STAB and QSTAB (odd-hole theorem removed, STAB = QSTAB iff perfect cited inline)
    - 5.2 Clique property and perfection
    - 5.3 Four-cycles: a direct proof
    - 5.4 Beyond second order
@@ -75,18 +73,17 @@ All results are mechanized in Lean 4.
    - 7.2 A clique outside the coherence space (Shannon)
    - 7.3 Negation, tightness, and the tensor (Cor `cor:cat-tensor`)
    - 7.4 Bell's theorem at the core
-8. **Quantum Event Logic** (from §12)
-   - 8.1 Kochen–Specker for Cabello's set
-   - 8.2 Divergence and the stable-set bound
-   - 8.3 Local certainty and Born states
-9. **Related Work**
+7.5 **Quantum Event Logic** (from §12; merged into §7 as its last subsection, 2026-10-13)
+   - No subsections (cut 2026-10-13, about 1 page). Known results (KS for Cabello's set, empty global calculus, 4 vs 9/2) cited inline with Lean links. Only Thm loc-quantum (h) is stated. Prop born-ray and the Mackey remark removed.
+8. **Related Work**
     - Probabilistic coherence spaces and full abstraction (Ehrhard–Pagani–Tasson, Castellan et al.)
     - Generalized probabilism (Paris, Williams, Gyenis)
     - Contextuality (Cabello–Severini–Winter, Acín–Fritz–Leverrier–Sainz, Abramsky–Brandenburger)
     - Causal processes (Baumeler–Wolf, Kissinger–Uijlen, Simmons–Kissinger)
-    - Antiblocking duality and perfect graphs (Fulkerson, Knuth, Ravindra); Ehrhard TD 2; Borodulin-Nadzieja–Farkas–Pelczar-Barwacz
+    - Antiblocking duality and perfect graphs: no separate paragraph. Fulkerson, Knuth, Chvátal, Ravindra and Hayward are credited in §5, and Ehrhard TD 2 and Borodulin-Nadzieja–Farkas–Pelczar-Barwacz next to Thm duality in §7.3.
+    - Related Work states only results of others. It does not restate this paper's results or repeat credits given next to theorems.
 
-10. **Conclusion**
+9. **Conclusion**
 
 Mechanization has no section of its own. It is a short paragraph in the intro and the elaboration of contribution 6. The file map, finite checks, axioms and size are in Appendix A (Lean definitions and theorems).
 
@@ -102,7 +99,7 @@ Mechanization has no section of its own. It is a short paragraph in the intro an
   - a theta-body (quantum) calculus for programs;
   - exponentials beyond !Bool;
   - a characterization of the tight formulas;
-  - whether h is quantum (Acín–Fritz–Leverrier–Sainz);
+  - 
   - a comparison with Kissinger–Uijlen's causal processes.
 
 ## Decisions
@@ -114,7 +111,8 @@ Mechanization has no section of its own. It is a short paragraph in the intro an
 ## Venue: FoSSaCS 2027 (ETAPS, Copenhagen, 10–15 April 2027)
 
 - Deadline **Thursday 2026-10-15** (firm). 18 pp, LNCS (`llncs.cls`), double-blind. Rebuttal 7–9 Dec, notification 2026-12-22, voluntary artifact evaluation from 2027-01-11. Source: etaps.org/2027/cfp.
-- The appendix policy is not stated in the joint CfP. Check the FoSSaCS page before relying on one.
+- Checked 2026-10-13: "All page limits are given excluding the bibliography." The data availability statement does not count. The CfP grants an optional appendix to TACAS but not to FoSSaCS, so the Lean listings (Appendix A) must move to the supplementary material before submission.
+- Length on 2026-10-13 after the first cut: body ends on page 18 with the intro and conclusion still skeletons. Writing them will add about 0.5–1 page.
 - **No dual-submission conflict with CPP.** CPP notification is 2026-11-10, after this deadline. All paper-B material (sec-recipe, sec-second-order, sec-quantum, §13.2, sec-lattice tensor collapse) was committed after the 2026-09-10 CPP submission.
 - **Scope fit.** FoSSaCS covers semantics, logics, and probabilistic and quantum computation, and coherence-space papers have appeared there (e.g. the free exponential of probabilistic coherence spaces, 2017).
 - **Cut to 18 pp (target page budget):**
@@ -134,3 +132,5 @@ Mechanization has no section of its own. It is a short paragraph in the intro an
 
   If space is short, drop the !Bool subsection (3.4) and the language subsection (4.2) first.
 - Anonymized Lean supplement: same recipe as CPP (Lean and build files only, archive upload).
+  - Build closure (checked 2026-10-13): the 25 files of the appendix table (8,289 lines) also need Basic, Representation, Barycenter, SumIrreducible and DeMorgan to build, so 30 files and 9,979 lines in all. `paperB/app-lean-body.tex` is stale and unused, so leave it out of the source upload.
+  - `P_second_eq_loc` was added to LocalCalculus.lean on 2026-10-13 for Thm loc-linear at general T. The full project builds.

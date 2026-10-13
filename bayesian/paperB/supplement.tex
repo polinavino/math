@@ -1,0 +1,28 @@
+\documentclass[runningheads]{llncs}
+
+\newif\ifanonymous
+\anonymoustrue
+
+\input{preamble}
+\usepackage{xr}
+\externaldocument{main}
+
+\begin{document}
+
+\title{Supplementary Material for\\ Mixtures of Deterministic Programs in\\
+Probabilistic Coherence Spaces}
+\titlerunning{Supplementary Material}
+\ifanonymous
+\author{Anonymous Author(s)}
+\authorrunning{Anonymous}
+\institute{Anonymous Institution}
+\else
+\author{Polina Vinogradova\inst{1} \and Alex [SURNAME]\inst{2}}
+\authorrunning{P. Vinogradova and A. [SURNAME]}
+\institute{[AFFILIATION 1] \and [AFFILIATION 2]}
+\fi
+\maketitle
+
+\input{app-lean}
+
+\end{document}

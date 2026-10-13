@@ -1,12 +1,169 @@
+% !TEX root = main.tex
 \section{The Exact Condition}
 \label{sec:exact}
 
-\emph{(from \S11.4)}
+This section describes the deterministic hull and the coherence space of $T$ as two
+polytopes of one graph, and gives an exact condition for a gap at the dual
+of a tensor of two formulas.
 
 \subsection{$\STAB$ and $\QSTAB$}
+\label{sec:exact-stab}
 
-\subsection{Clique property and perfection}
+For a finite graph $G$ with vertex set $V$, a \emph{clique} is a set of
+pairwise adjacent vertices and a \emph{stable set} a set of pairwise
+non-adjacent vertices. The \emph{stable set polytope} $\STAB(G)$ is $\Mix$
+of the indicators of the stable sets, and the \emph{clique-constrained
+polytope} $\QSTAB(G)$ is the set of $x : V \to \mathbb{R}_{\ge 0}$ with
+$\sum_{v \in C} x_v \le 1$ for every clique $C$~\cite{gls1988}. A stable
+set meets every clique in at most one vertex, so
+$\STAB(G) \subseteq \QSTAB(G)$. We prove that the two polytopes describe
+the coherence space and the deterministic hull of $T$.
 
-\subsection{Four-cycles: a direct proof}
+\begin{theorem}[graph polytopes\leanref{td-eq-qstab}\leanref{recipe-eq-stab}]
+\label{thm:qstab}
+Let $G$ be the exclusivity graph of $T$. Then $P(T) = \QSTAB(G)$, and the
+deterministic hull of $T$ is $\STAB(G)$.
+\end{theorem}
 
-\subsection{Beyond second order}
+\noindent
+Every element of $P(X \multimap Y)$ is a mixture of certain states
+(Proposition~\ref{prop:first-order}). Every certain state lies below
+the indicator of the graph of a total function. So $P(T)$ is cut out by
+the products of two such indicators. Their supports are the maximal
+cliques of $G$, so $P(T) = \QSTAB(G)$. An element of $\QSTAB(G)$ with values in $\{0,1\}$
+is the indicator of a stable set, so the deterministic hull is $\STAB(G)$.
+
+So $T$ has a gap iff $\STAB(G) \ne \QSTAB(G)$. A graph is \emph{perfect}
+if every induced subgraph has chromatic number equal to its largest
+clique size. Then $\STAB(G) = \QSTAB(G)$ iff $G$ is
+perfect~\cite{lovasz1972,chvatal1975}. The cycle of length $5$ of
+Theorem~\ref{thm:pentagon} is an induced subgraph of $G$ that is not
+perfect.
+
+\subsection{The Clique Property and Perfection}
+\label{sec:exact-perfect}
+
+A formula $X$ has the \emph{clique property} if $P(X)$ is the set of
+mixtures of the indicators of the cliques of its coherence graph $G_X$.
+Data types, their negations, and the formulas $\mathbf{n} \multimap
+\mathbf{m}$ (Proposition~\ref{prop:first-order}) have it. So does every
+formula built from data types with $\mathbin{\&}$ and $\oplus$, since
+$P(A \mathbin{\&} B)$ is the product of $P(A)$ and $P(B)$ and
+$P(A \oplus B)$ is the convex hull of the copies of $P(A)$ and $P(B)$ on
+the two parts of the web~\cite{danos-ehrhard2011}. Lean checks this for the
+formulas built from the data type $\mathbf{1}$ with $\mathbin{\&}$ and
+$\oplus$\leanref{recipe-code}. Their coherence graphs are the
+\emph{cographs}, the graphs with no induced path on four
+vertices~\cite{corneil1981}, with $\mathbin{\&}$ as join, which adds all
+edges between the two parts, and $\oplus$ as disjoint union.
+
+An \emph{induced $4$-cycle} of a formula $X$ is a quadruple of points
+$a, b, c, d$ with $a \coh b \coh c \coh d \coh a$ and with $a, c$ and
+$b, d$ incoherent. The \emph{strong product} $G \boxtimes H$ of two
+graphs has the pairs of vertices as vertices, and two distinct pairs are
+adjacent iff each coordinate is equal or adjacent. By
+Definition~\ref{def:mall}(iv), the coherence graph of $X \otimes Y$ is
+$G_X \boxtimes G_Y$. We prove the following exact condition.
+
+\begin{theorem}[second order\leanref{closure}\leanref{recipe-core}\leanref{second-iff}]
+\label{thm:second-exact}
+Let $X$ and $Y$ have the clique property.
+(i) $X \otimes Y$ has no gap. Moreover, $(X \otimes Y)^{\perp}$ has no gap
+iff
+$G_X \boxtimes G_Y$ is perfect.
+(ii) If $G_X$ and $G_Y$ are cographs, then $(X \otimes Y)^{\perp}$ has no
+gap iff $G_X$ or $G_Y$ has no induced $4$-cycle.
+\end{theorem}
+
+\noindent
+If neither $X$ nor $Y$ has a gap, then neither do $X \otimes Y$,
+$X \mathbin{\&} Y$, and $X \oplus Y$. Moreover, $P((X \otimes Y)^{\perp})$ is
+cut out by the products of the certain states of $X$ and of $Y$. The Lean proof shows a bipolar theorem for downward-closed sets of
+$\{0,1\}$-valued functions by hyperplane separation, as for the
+completeness theorem of Section~\ref{sec:calculi}. With the
+clique property these products are the indicators of the products
+$K \times L$ of cliques, which are the maximal cliques of
+$F = G_X \boxtimes G_Y$. So $P((X \otimes Y)^{\perp}) = \QSTAB(F)$, and its certain states are the
+indicators of the stable sets of $F$. The deterministic hull is therefore $\STAB(F)$, which equals $\QSTAB(F)$ iff $F$ is
+perfect. In (ii), the gap when both graphs
+have an induced $4$-cycle follows from Theorem~\ref{thm:c4}, which holds for all
+formulas. The closure statements, the description of
+$P((X \otimes Y)^{\perp})$ as the orthogonal of the products of certain
+states, and (ii) for $X$ and $Y$ built from $\mathbf{1}$ with
+$\mathbin{\&}$ and $\oplus$ are formalized. The description as
+$\QSTAB(F)$ is formalized at $T$ (Theorem~\ref{thm:qstab}), and the
+equivalence with perfection in (i) is cited.
+
+For $X = \mathbf{n} \multimap \mathbf{m}$ the coherence graph is complete
+multipartite, with the inputs as the $n$ classes of $m$ points each and
+two points adjacent iff they lie in different classes. It has an induced
+$4$-cycle iff $n, m \ge 2$: two points in each of two classes form one,
+for $n = 1$ the graph has no edges, and for $m = 1$ it is complete. So $T$ has a gap iff each of $X, Y, X', Y'$
+has at least two elements, and the core has no gap\leanref{recipe-core}.
+The gap when all four have at least two elements follows from Theorem~\ref{thm:pentagon}. The absence of a gap otherwise uses (ii) for
+formulas not built from $\mathbf{1}$, through the transfer below, which is
+not formalized.
+
+\subsection{Four-Cycles: a Direct Proof}
+\label{sec:exact-direct}
+
+We prove the direction of (ii) without a gap by an explicit
+decomposition, without perfect graph theory. If neither side of
+$A \mathbin{\&} B$ is a clique, an incoherent pair in $A$ and one in $B$
+form an induced $4$-cycle. So a formula built from $\mathbf{1}$ with
+$\mathbin{\&}$ and $\oplus$ that has no induced $4$-cycle is isomorphic,
+by a bijection of the webs that preserves coherence in both directions, to
+one built from $\mathbf{1}$ with $\oplus$ and
+$A \mapsto A \mathbin{\&} \mathbf{1}$\leanref{tree-of-noc4}. Its points
+are the nodes of a rooted forest, and two points cohere iff one lies on the
+path from a root to the other. So $G_X$ is the comparability graph of the
+forest~\cite{wolk1962,golumbic1978}. For $v : |Y| \to \mathbb{R}_{\ge 0}$
+let $\omega(v)$ be the largest total weight of a clique of $G_Y$. Then
+$z$ lies in $P((X \otimes Y)^{\perp})$ iff
+$\omega(\sum_{x \in \pi} z(x, \cdot)) \le 1$ for every path $\pi$ from a
+root\leanref{mem-p-iff}. Every such $z$ is a mixture of
+$\{0,1\}$-valued functions whose sums along the paths are indicators of
+stable sets of $G_Y$\leanref{decompose}. The proof is an induction on the
+forest, whose step at a root is an induction on $Y$. At $\oplus$ the two
+components are decomposed separately. At $\mathbin{\&}$ a stable set lies
+in one component, and is drawn there with probability given by $\omega$,
+after a split of the weights below the root that keeps $\omega$ within its
+level along every path\leanref{absorb}.
+
+Lean checks (ii) in both directions for $X$ and $Y$ built from
+$\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$\leanref{second-iff}. For the
+other formulas in (ii) with nonempty webs, the clique property makes a
+coherence-preserving bijection onto such a formula preserve the coherence spaces. This transfer is not formalized. With the cited part of (i), the proof shows that the strong product of a
+forest comparability graph and a cograph is perfect. This consequence is
+not formalized. This extends the theorem that the strong product of two forest
+comparability graphs, the graphs with no induced path on four vertices
+and no induced $4$-cycle, is perfect~\cite{ravindra1978}. We did not find the extension in the literature.
+
+\subsection{Beyond Second Order}
+\label{sec:exact-beyond}
+
+An occurrence of a formula $D$ in a formula $A$ is \emph{positive} if it
+lies under an even number of negations and \emph{negative} otherwise, the
+derived connectives $\parr$, $\oplus$, and $\multimap$ being unfolded. So
+the left argument of $\multimap$ is a negative position. Beyond second
+order, we find a gap even when no negatively occurring tensor has an
+induced $4$-cycle in both factors.
+
+\begin{proposition}[a gap without four-cycles\leanref{gap-f3}]
+\label{prop:f3}
+The formula $(\mathbf{2} \mathbin{\&} \mathbf{1}) \multimap
+((\mathbf{2} \multimap \mathbf{2}) \otimes (\mathbf{2} \multimap
+\mathbf{2}))$ has a gap. Every tensor occurring negatively in it has a
+factor with at most three points, so none has an induced $4$-cycle in
+both factors.
+\end{proposition}
+
+\noindent
+The formula is $((\mathbf{2} \mathbin{\&} \mathbf{1}) \otimes T)^{\perp}$.
+An element outside the deterministic hull has value $\tfrac12$ at five points of the
+web. Its membership in the coherence space uses the bounds of Theorem~\ref{thm:mall} at three incoherent pairs and
+at one point of $T$. The five points form an induced cycle of length $5$ in the
+coherence graph, so by Theorem~\ref{thm:mall} every certain state is $1$
+at no more than two of them. So every mixture has total weight at most $2$
+there, against $\tfrac52$. The second statement of the proposition is
+checked by inspection of the formula.

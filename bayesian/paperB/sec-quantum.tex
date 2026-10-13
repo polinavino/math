@@ -1,10 +1,52 @@
-\section{Quantum Event Logic}
+% !TEX root = main.tex
+\subsection{Quantum Event Logic}
 \label{sec:quantum}
 
-\emph{(from \S12)}
+In quantum logic, the events are the closed subspaces of a Hilbert
+space~\cite{birkhoff-vonneumann1936}. A context is an orthogonal
+basis, a maximal set of pairwise orthogonal rays. We take as events the
+$18$ rays of Cabello's set in $\mathbb{R}^4$, spanned by vectors with
+coordinates in $\{0, \pm 1\}$, and as contexts its $9$ orthogonal bases,
+each ray lying in exactly two of them~\cite{cabello1996}\leanref{cabello-set}\leanref{basis-orth}.
+We write $1\bar{1}00$ for the ray spanned by $(1, -1, 0, 0)$. A
+\emph{state} is an element of the normalized local relaxation of
+Definition~\ref{def:local}. For a unit vector $\psi$, the \emph{Born rule}
+gives the ray spanned by $v$ the value $x_v = (\psi \cdot v)^2 / (v \cdot v)$. This is a state\leanref{born-state}\leanref{parseval}. The mixtures of these states are
+the \emph{quantum states}.
 
-\subsection{Kochen--Specker for Cabello's set}
+The construction of Section~\ref{sec:calculi} gives the empty deterministic hull
+here: no state has values in
+$\{0,1\}$~\cite{kochen-specker1967,cabello1996}, so the normalized deterministic
+hull is empty. We formalize this known
+fact\leanref{no-ks}\leanref{no-certain-state}. We also prove that the
+normalized local relaxation contains states that are not mixtures of
+Born-rule assignments of these rays.
 
-\subsection{Divergence and the stable-set bound}
+\begin{theorem}[local certainty in quantum logic\leanref{loc-quantum}]
+\label{thm:loc-quantum}
+On Cabello's set, the function $h$ with value $\tfrac12$ on the nine rays
+$\bar{1}111$, $0001$, $0010$, $0100$, $1\bar{1}\bar{1}1$,
+$1\bar{1}1\bar{1}$, $11\bar{1}1$, $111\bar{1}$, $1111$ and $0$ elsewhere is
+a state and is not a mixture of Born-rule assignments.
+\end{theorem}
 
-\subsection{Local certainty and Born states}
+\noindent
+Every basis contains exactly two of the nine rays, so $h$ is a state. The
+ray $0001$ lies in the plane of the orthogonal rays $1001$ and
+$100\bar{1}$, so every Born-rule assignment satisfies
+$x_{0001} \le x_{1001} + x_{100\bar{1}}$, the difference being
+$\psi_1^2$. The function $h$ violates this law, with values $\tfrac12$,
+$0$, and $0$. No basis contains $0001$ and either of the other two rays,
+while each condition of the local relaxation involves a single basis.
+
+In Theorem~\ref{thm:loc-quantum}, each ray $v$ is represented by the
+projection onto $v$ in $\mathbb{R}^4$. A state $x$ has a \emph{quantum
+model} if some Hilbert space has a projection $P_v$ for each ray $v$,
+summing to the identity on each basis, and a positive operator
+$\rho$ of trace $1$ with $x_v = \mathrm{tr}(\rho P_v)$ for every ray $v$.
+Whether every state on Cabello's set has a quantum model was left
+open~\cite{acin2015}. The state $h$ has none in finite dimension. It is
+the only state that vanishes outside its nine rays, so it is an extreme point of the set of states. This step is not
+formalized. An extreme state with a value outside
+$\{0,1\}$ has no quantum model~\cite{sujan-kunjwal2025}. On all rays of $\mathbb{R}^d$
+with $d \ge 3$, every state is a quantum state~\cite{gleason1957}.

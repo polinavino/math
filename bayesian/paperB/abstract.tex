@@ -1,23 +1,23 @@
+% !TEX root = main.tex
 \begin{abstract}
-Probabilistic coherence spaces are the standard denotational model of
-higher-order probabilistic programs. We ask which of their elements are
-mixtures of deterministic ones. For each type we take the mixtures of its
-certain states, the elements with values in $\{0,1\}$, as its probability
-calculus. At every formula of multiplicative--additive linear logic over
-finite data types, the certain states are cliques of Girard's coherence
-space and the calculus lies inside the probabilistic coherence space. The
-two agree at first order and differ from second order on. For a program
-with two functional arguments, the calculus is the stable set polytope of
-a graph whose clique-constrained polytope is the coherence space, and five
-web points separate them, with the bounds of the KCBS inequality. For the
-dual of a tensor of two additive types, the two coincide iff one of the
-two coherence graphs has no induced four-cycle, and the gap transfers to
-every formula in which such a tensor occurs negatively. Linear negation
-exchanges the calculus with a local calculus cut out by the certain states
-of the dual, and the coherence space is the self-dual set between them.
-The calculus is not compositional: first-order types are tight, but their
-tensor is not. At the dual of the second-order type, the gap is Bell's
-theorem, witnessed by the Popescu--Rohrlich box. All results are
+Probabilistic coherence spaces model higher-order probabilistic programs.
+We ask which elements of these spaces are mixtures of deterministic
+programs, the results of choosing a deterministic program at random. For
+each type of multiplicative--additive linear logic, we call the convex
+hull of its deterministic elements its deterministic hull. Every coherence
+space lies between its deterministic hull and a local relaxation cut out
+by the deterministic elements of the dual type. The orthogonal of the
+deterministic hull of a type is the local relaxation of its dual. We
+locate the coherence space between these two bounds. At first order all
+three sets coincide. At the type of a program that calls two functions,
+the coherence space is the whole local relaxation. When the data types
+have at least two elements, it contains behaviours that no randomized
+sequential program has, so some laws of sequential programs fail in the
+model. At the dual type the coherence space is the deterministic hull.
+Its gap to the local relaxation is Bell's theorem. For duals of tensors of
+additive types, induced four-cycles in the coherence graphs decide whether
+a gap occurs. The gap then transfers to every formula over nonempty data
+types in which such a tensor occurs negatively. The main results are
 mechanized in Lean~4.
 
 \keywords{Probabilistic coherence spaces \and Linear logic \and
