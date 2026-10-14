@@ -50,3 +50,6 @@ Makefile.coq.conf
 
 # Claude Code local settings
 .claude/
+
+# Archives (artifact and supplement zips)
+*.zip

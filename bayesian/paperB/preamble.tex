@@ -127,8 +127,8 @@
 \newcommand{\leanitem}[1]{\par\noindent\refstepcounter{leanitem}\label{lean:#1}%
   \textsf{\textbf{\theleanitem}}\nopagebreak}
 \makeatletter
-\newcommand{\leanref}[1]{\textsuperscript{\textsf{\tiny\ref*{lean:#1}}}%
-  \@ifnextchar\leanref{\textsuperscript{\textsf{\tiny,}}}{}}
+\newcommand{\leanref}[1]{\textsuperscript{\textsf{\scriptsize\ref*{lean:#1}}}%
+  \@ifnextchar\leanref{\textsuperscript{\textsf{\scriptsize,}}}{}}
 \makeatother
 \newcommand{\leanfootnotemark}{\textsuperscript{\textsf{\tiny$*$}}}
 \newcommand{\leanfootnotetext}[1]{\begingroup

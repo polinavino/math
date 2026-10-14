@@ -50,9 +50,9 @@ are the substochastic matrices, the probabilistic programs from $X$ to
 $Y$ that may not terminate, with $t(a,b)$ the probability of output $b$
 on input $a$.
 
-A \emph{coherence space} is a set with a reflexive and symmetric
-relation, its \emph{coherence}~\cite{girard1987}. A \emph{clique} is a
-set of pairwise coherent elements. In the coherence space
+A \emph{coherence space} in the sense of Girard is a set with a reflexive
+and symmetric relation, its \emph{coherence}~\cite{girard1987}. A
+\emph{clique} is a set of pairwise coherent elements. In
 $X \multimap Y$, two points $(a, b)$ and $(a', b')$ cohere iff they are
 equal or $a \ne a'$. So the cliques are the graphs of partial functions
 from $X$ to $Y$.
@@ -62,19 +62,21 @@ The implications $X \multimap Y$ between data types are the
 $X \multimap Y$ with values in $\{0,1\}$. Write $Y_{\bot}$ for $Y$ with
 an added value $\bot$ for non-termination. For $f : X \to Y_{\bot}$, let $\det f(a, b) = 1$ if $f(a) = b$ and $0$ otherwise. We show that the
 certain states are these deterministic programs and that
-$X \multimap Y$ has no gap over them.
+$X \multimap Y$ has no gap over them. Part (i) is known for stochastic
+matrices~\cite[Prop.~1.5]{levin-peres-wilmer2009}, and we formalize it
+for substochastic ones.
 
-\begin{proposition}[first order\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
+\begin{proposition}[first order~\cite{levin-peres-wilmer2009}\leanref{pcs-recipe}\leanref{sharp-lin-iff-clique}]
 \label{prop:first-order}
 Let $X$ and $Y$ be finite.
 (i) $X \multimap Y = \Mix\{\det f \mid f : X \to Y_{\bot}\}$.
 (ii) A function $t : X \times Y \to \mathbb{R}_{\ge 0}$ with values in
-$\{0,1\}$ lies in $X \multimap Y$ iff its support is a clique of the
-coherence space $X \multimap Y$.
+$\{0,1\}$ lies in $X \multimap Y$ iff its support is a clique of
+$X \multimap Y$.
 \end{proposition}
 
 \noindent
-Both parts are elementary. For (i), each row $t(a, \cdot)$ is a
+For (i), each row $t(a, \cdot)$ is a
 subprobability distribution on $Y$, and so a mixture of the point masses
 and the zero vector. Choosing one of these independently for each row,
 with the product of the weights, allows for expressing 
@@ -89,7 +91,7 @@ Multiplicative--additive linear logic (MALL) builds formulas from data
 types with linear negation and two conjunctions~\cite{girard1987}. The
 formula $A \otimes B$ is the type of a pair of independent elements of $A$
 and of $B$. The formula $A \mathbin{\&} B$ is the type of an element that can be used
-as an element of $A$ or of $B$, at the choice of its user.
+as an element of $A$ or of $B$.
 
 \begin{definition}[formulas and their semantics\leanref{linear-fm}]
 \label{def:mall}
@@ -130,9 +132,10 @@ the coherence described there. So Proposition~\ref{prop:first-order} is
 a statement about the formulas
 $\mathbf{n} \multimap \mathbf{m}$\leanref{recipe-formula}.
 
-Each formula $A$ gives a presentation. Its events are the points of
-$|A|$, and its certain states are the elements of $P(A)$ with values in
-$\{0,1\}$. The \emph{deterministic hull} of $A$ is $\Mix$ of these certain states.
+The \emph{presentation} of a formula $A$ is $(|A|, S_A)$, where $S_A$ is
+the set of elements of $P(A)$ with values in $\{0,1\}$, the
+\emph{certain states} of $A$. The \emph{deterministic hull} of $A$ is
+$\Mix(S_A)$.
 Every $P(A)$ is a PCS~\cite{danos-ehrhard2011}\leanref{ispcs-p}, so it
 contains the deterministic hull of $A$\leanref{recipe-subset-p}. Definition~\ref{def:gap}
 therefore applies to it. We say that $A$ has a \emph{gap}
@@ -142,7 +145,7 @@ presentation of $A$ is not sound for $P(A)$ (Corollary~\ref{cor:gap-law}).
 \subsection{Coherence at Every Formula}
 \label{sec:linear-coherence}
 
-We prove that the coherence space bounds the weights of pairs of points,
+We prove that the coherence bounds the weights of pairs of points,
 and so constrains the certain states.
 
 \begin{theorem}[coherence at every formula\leanref{linear-invariants}\leanref{sharp-isclique}]
@@ -151,7 +154,7 @@ Let $A$ be a formula. The indicator of every point and of every pair of
 distinct coherent points lies in $P(A)$. Every $x \in P(A)$ satisfies
 $x_s \le 1$ for every point $s$, and $x_s + x_t \le 1$ for every pair of
 distinct incoherent points $s, t$. In particular, every certain state of
-$A$ is the indicator of a clique of the coherence space $A$.
+$A$ is the indicator of a clique of the coherence graph $G_A$.
 \end{theorem}
 
 \noindent

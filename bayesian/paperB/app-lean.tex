@@ -37,13 +37,13 @@ File & Lines & Content \\
 \texttt{ProgLang} & 235 & a language for $T$ \\
 \texttt{PCSGraph}, \texttt{PerfectGraph} & 314 & $\STAB$ and $\QSTAB$ \\
 \texttt{ThreeArg} & 237 & a gap among total programs \\
-\texttt{Retract} & 501 & coordinate retracts and the gap at other formulas \\
+\texttt{Retract} & 517 & coordinate retracts and the gap at other formulas \\
 \texttt{Closure} & 284 & closure of the absence of a gap under $\otimes$ and $\mathbin{\&}$ \\
 \texttt{CographBasic}, \texttt{CographCore} & 1439 & forests, cographs, the decomposition \\
 \texttt{CographPCS}, \texttt{CographClass} & 629 & the exact condition at second order \\
 \texttt{ThirdOrder} & 160 & a gap without two four-cycles \\
 \texttt{TensorGap} & 81 & Shannon's clique outside the PCS \\
-\texttt{LocalCalculus} & 324 & local relaxations in linear and quantum logic \\
+\texttt{LocalCalculus} & 331 & local relaxations in linear and quantum logic \\
 \texttt{Categorical} & 461 & duality and tightness (in part) \\
 \texttt{Bell} & 214 & the Popescu--Rohrlich box at the core \\
 \texttt{Quantum} & 203 & Cabello's Kochen--Specker set \\
@@ -511,6 +511,9 @@ def sequential : Set (W × W → ℝ≥0∞) :=
 theorem seq_pent_le_two {t : W × W → ℝ≥0∞} (ht : t ∈ sequential) : ∑ pq ∈ pent, t pq ≤ 2
 
 theorem seq_pent_tight : ∃ t ∈ sequential, ∑ pq ∈ pent, t pq = 2
+
+theorem recipe_second_order_eq_sequential' :
+    Mix {z | z ∈ tensDual ∧ ∀ pq, z pq = 0 ∨ z pq = 1} = sequential
 
 theorem pentElt_mem : pentElt ∈ tensDual
 
@@ -1043,6 +1046,17 @@ theorem shannon_clique : IsClique cohTTdual (· ∈ shannon)
 
 theorem shannon_not_mem :
     (fun u => if u ∈ shannon then (1 : ℝ≥0∞) else 0) ∉ PTTdual
+\end{lstlisting}
+
+\leanitem{tt-gap}
+\begin{lstlisting}
+def C4.second22 : C4 S2 where
+  a := ((0, 0), (0, 0))
+  b := ((0, 0), (0, 1))
+  c := ((1, 0), (0, 0))
+  d := ((1, 0), (0, 1))
+
+theorem gap_TT : recipe TT ⊂ P TT
 \end{lstlisting}
 
 \leanitem{orth-recipe}

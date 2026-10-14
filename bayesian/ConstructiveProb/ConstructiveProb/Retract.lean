@@ -498,4 +498,20 @@ example : recipe (lolli (core 2 2 2 2) (base 2)) ⊂ P (lolli (core 2 2 2 2) (ba
   gap_of_occ le_rfl le_rfl le_rfl le_rfl (Occ.neg (Occ.tensL _ Occ.self))
     (by simp [NE, lolli])
 
+/-- An induced four-cycle of the second-order type `T = S2` over two-element data types. -/
+def C4.second22 : C4 S2 where
+  a := ((0, 0), (0, 0))
+  b := ((0, 0), (0, 1))
+  c := ((1, 0), (0, 0))
+  d := ((1, 0), (0, 1))
+  hab := by simp only [S2, second, lolli] at *; simp [coh]
+  hbc := by simp only [S2, second, lolli] at *; simp [coh]
+  hcd := by simp only [S2, second, lolli] at *; simp [coh]
+  hda := by simp only [S2, second, lolli] at *; simp [coh]
+  hac := by simp only [S2, second, lolli] at *; simp [coh]
+  hbd := by simp only [S2, second, lolli] at *; simp [coh]
+
+/-- **The gap at `(T ⊗ T)^⊥`.** The calculus of `(T ⊗ T)^⊥` is strictly smaller than its PCS. -/
+theorem gap_TT : recipe TT ⊂ P TT := gap_of_C4 C4.second22 C4.second22
+
 end ConstructiveProb.Linear

@@ -2,7 +2,7 @@
 \section{The Exact Condition}
 \label{sec:exact}
 
-This section describes the deterministic hull and the coherence space of $T$ as two
+This section describes the deterministic hull and the PCS of $T$ as two
 polytopes of one graph, and gives an exact condition for a gap at the dual
 of a tensor of two formulas.
 
@@ -17,7 +17,7 @@ polytope} $\QSTAB(G)$ is the set of $x : V \to \mathbb{R}_{\ge 0}$ with
 $\sum_{v \in C} x_v \le 1$ for every clique $C$~\cite{gls1988}. A stable
 set meets every clique in at most one vertex, so
 $\STAB(G) \subseteq \QSTAB(G)$. We prove that the two polytopes describe
-the coherence space and the deterministic hull of $T$.
+the PCS and the deterministic hull of $T$.
 
 \begin{theorem}[graph polytopes\leanref{td-eq-qstab}\leanref{recipe-eq-stab}]
 \label{thm:qstab}
@@ -65,7 +65,7 @@ adjacent iff each coordinate is equal or adjacent. By
 Definition~\ref{def:mall}(iv), the coherence graph of $X \otimes Y$ is
 $G_X \boxtimes G_Y$. We prove the following exact condition.
 
-\begin{theorem}[second order\leanref{closure}\leanref{recipe-core}\leanref{second-iff}]
+\begin{theorem}[exact condition\leanref{closure}\leanref{recipe-core}\leanref{second-iff}]
 \label{thm:second-exact}
 Let $X$ and $Y$ have the clique property.
 (i) $X \otimes Y$ has no gap. Moreover, $(X \otimes Y)^{\perp}$ has no gap
@@ -107,8 +107,12 @@ not formalized.
 \subsection{Four-Cycles: a Direct Proof}
 \label{sec:exact-direct}
 
-We prove the direction of (ii) without a gap by an explicit
-decomposition, without perfect graph theory. If neither side of
+It remains to prove the other direction of (ii): if $G_X$ has no induced
+$4$-cycle, then $(X \otimes Y)^{\perp}$ has no gap (the case of $G_Y$ is
+symmetric). By (i), this is equivalent to the perfection of
+$G_X \boxtimes G_Y$. We prove it directly, by decomposing every element of
+$P((X \otimes Y)^{\perp})$ into a mixture of certain states, and obtain the
+perfection as a consequence at the end of this section. If neither side of
 $A \mathbin{\&} B$ is a clique, an incoherent pair in $A$ and one in $B$
 form an induced $4$-cycle. So a formula built from $\mathbf{1}$ with
 $\mathbin{\&}$ and $\oplus$ that has no induced $4$-cycle is isomorphic,
@@ -133,11 +137,13 @@ level along every path\leanref{absorb}.
 Lean checks (ii) in both directions for $X$ and $Y$ built from
 $\mathbf{1}$ with $\mathbin{\&}$ and $\oplus$\leanref{second-iff}. For the
 other formulas in (ii) with nonempty webs, the clique property makes a
-coherence-preserving bijection onto such a formula preserve the coherence spaces. This transfer is not formalized. With the cited part of (i), the proof shows that the strong product of a
+coherence-preserving bijection onto such a formula preserve the PCS. This transfer is not formalized. With the cited part of (i), the proof shows that the strong product of a
 forest comparability graph and a cograph is perfect. This consequence is
 not formalized. This extends the theorem that the strong product of two forest
 comparability graphs, the graphs with no induced path on four vertices
-and no induced $4$-cycle, is perfect~\cite{ravindra1978}. We did not find the extension in the literature.
+and no induced $4$-cycle, is perfect~\cite{ravindra1978}. Which strong products are perfect is open
+in general~\cite{mandrescu2022}, and we did not find the extension in the
+literature.
 
 \subsection{Beyond Second Order}
 \label{sec:exact-beyond}
@@ -161,7 +167,7 @@ both factors.
 \noindent
 The formula is $((\mathbf{2} \mathbin{\&} \mathbf{1}) \otimes T)^{\perp}$.
 An element outside the deterministic hull has value $\tfrac12$ at five points of the
-web. Its membership in the coherence space uses the bounds of Theorem~\ref{thm:mall} at three incoherent pairs and
+web. Its membership in the PCS uses the bounds of Theorem~\ref{thm:mall} at three incoherent pairs and
 at one point of $T$. The five points form an induced cycle of length $5$ in the
 coherence graph, so by Theorem~\ref{thm:mall} every certain state is $1$
 at no more than two of them. So every mixture has total weight at most $2$

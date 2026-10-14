@@ -2,24 +2,24 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-At first order the coherence space of a type is the set of mixtures of
+At first order the PCS of a type is the set of mixtures of
 deterministic programs. At second order it also contains behaviours that
 no randomized sequential program has, and induced four-cycles decide when
-this happens. By duality the gap is equivalent to Bell's theorem at the
-dual type. The deterministic hull is not compositional. The coherence space
-is, at the cost of these behaviours. So a law of sequential programs, such as the KCBS inequality, need not
-hold in the model.
+this happens. So a law of sequential programs, such as the KCBS
+inequality, need not hold in the model. By duality the gap is equivalent
+to Bell's theorem at the dual type, and the tensor does not preserve
+tightness of the deterministic hulls.
 
 These results bear on three uses of the model. First, arguments that
 replace a randomized program by a distribution over deterministic ones, as
 in Yao's minimax principle~\cite{yao1977}, are valid in the model exactly
-at the types without a gap, such as the first-order types, and not at $T$ over $\mathrm{Bool}$. Second, a bound proved over a coherence space holds for every program
+at the types without a gap, such as the first-order types, and not at $T$ over $\mathrm{Bool}$. Second, a bound proved over a PCS holds for every program
 of its type, and the deterministic hull shows when it is tight. On the
-five points of the pentagon, the coherence space allows total weight
+five points of the pentagon, the PCS allows total weight
 $\tfrac52$, while every sequential program has at most $2$. Third, if the
 environments of a categorical framework for composable
-security~\cite{broadbent-karvonen2022} are interpreted in coherence
-spaces, they include non-sequential ones, so security proved against them
+security~\cite{broadbent-karvonen2022} are interpreted in
+PCS, they include non-sequential ones, so security proved against them
 is stronger than security against programs.
 
 Open questions include other models of probabilistic programs, an exact
