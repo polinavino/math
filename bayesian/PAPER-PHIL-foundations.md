@@ -639,3 +639,155 @@ There are four readings. The mathematics of each is standard. What is ours is th
   - On normalized boxes: P = the local polytope, and loc = no-signalling (Fritz et al. 2013, LO = NS for two parties; not formalized). loc is also Kissinger–Uijlen's causal tensor.
   - By P_eq_loc_iff, the pentagon gap at T and Bell's theorem at the core are equivalent.
 - **The hinge's converse is Nachbin 1947 in substance** (prime filters all maximal ⇒ Boolean). It is now cited in sec-hinge and sec-related, and removed from the contributions list.
+
+---
+
+## 17. Additions 2026-10-15: what the mathematics justifies, plurality of calculi, ravens revisited
+
+### 17.1 Does the formal work justify the calculus, or is that purely philosophical?
+
+**Short answer.** The mathematics justifies the calculus *relative to criteria*, says exactly what each criterion buys, and says what you get if you drop it. It cannot justify the criteria from nothing. That last step is philosophical, but the mathematics reduces it to one stated premise per criterion.
+
+**What the formal work supplies, by kind of justification.**
+- *Categoricity.* Criteria (1) certain states reconstruct the logic, mixture closure, and (3) every law valid on the certain states holds on the calculus force the calculus to be Mix(S) (`calculus_unique`, `calculus_unique_closed`). The engine is the de Finetti–Paris completeness theorem.
+- *Independence.* Each criterion is needed (counterexamples: proper convex subsets, S itself, !Bool).
+- *No-go results.* These justify the generalizations, in the form "nothing else is possible given X".
+  - The hinge: the complement rule holds for every valuation iff excluded middle holds. Over a Heyting logic, criterion (1) rules out additivity.
+  - The tensor collapse: every lattice valuation on linear formulas gives a and a⊗a the same value. A calculus that separates them must live on webs, not formulas.
+- *Transfer theorems.* Dutch-book (Paris 2001) and accuracy (Williams 2012) results derive criterion (3) from "no sure loss" or "no accuracy domination". They do not remove a premise, but they let one choose which premise to defend.
+- *Classification.* Dropping (3) gives the PCS or quantum states. Dropping excluded middle gives Dempster–Shafer. The criteria sort known calculi rather than legislate.
+
+**What stays philosophical.**
+- Why credence should answer to sure loss, accuracy, or ignorance at all.
+- Which logic governs the events in question (verifiability gives the intuitionistic logic, and so on).
+- What counts as a certain state. Paper B shows the logic does not settle this: one linear type, two semantics (deterministic sequential programs versus the PCS).
+
+**What would count as a sufficient answer.**
+- *Mathematical standard.* The von Neumann–Morgenstern / Cox shape: axioms, a unique representation, and a list of what each axiom excludes. Add a universal property (Mix(S) is the free convex algebra on the certain states, "no more laws, no fewer laws"), so that the properties are forced by "extend the logic and add nothing". This is essentially in hand.
+- *Philosophical standard.* Trace each criterion to one independent, widely shared commitment. Show that independent routes converge (Dutch book, accuracy and ignorance all give (3)), which is evidence of naturalness in the way Church–Turing convergence is, not a proof. Give an account of where a criterion legitimately fails (quantum, PCS), so that it is not ad hoc.
+- *Honest limit.* Necessity is never a theorem. The strongest claim is: "any calculus that violates criterion k is one of these known alternatives, and this is the commitment it gives up."
+
+### 17.2 What do different calculi for different logics tell us about probability?
+
+**Thesis candidate.** Probability is a construction on logics, like Kripke semantics: one construction, many instances. Classical probability is its value at the one logic where all of its properties coincide.
+
+- The calculus's laws are not chosen. They are the affine laws valid on the certain states (the logic's linear shadow, §15 point 5), and at sharp states the calculus coincides with the logic by construction.
+- **Classical probability bundles properties that come apart elsewhere.**
+  - Additivity goes with excluded middle. Heyting logic keeps certain states and gains slack.
+  - Having certain states goes with distributivity. Quantum logic has none (Kochen–Specker).
+  - Probability on formulas goes with contraction and weakening. Linear logic gives the tensor collapse.
+- **The ignorance reading is a special case.** In quantum mechanics and in the PCS, uncertainty is not a mixture of certain states (criterion (3) fails). "Probability is ignorance about which sharp state obtains" is a theorem about distributive logics with enough points, not a definition of probability.
+- **A calculus extends a semantics, not a syntax.** One must also say what a sharp state is (the second dial, §15 point 3).
+- **Not fixed by any of this:** the prior, and the update rule (Bayes and Dempster agree iff the evidence has zero slack).
+- **Disanalogy with logic.** A logic's rules preserve truth. A calculus's laws are inequalities that survive mixing.
+
+### 17.3 Ravens: the unstated closed-world assumption
+
+**The diagnosis (revised from 16.4–16.9, final wording 2026-10-15).**
+
+> In a closed world the classical logic and the logic of verifiable claims coincide, and the paradox's conclusion holds, but the sock's effect on the chance of a counterexample is negligible. In an open world they come apart. In the logic of verifiable claims no instance changes the credence in the law, and the asymmetry the intuition expects appears in the probability of a counterexample: a black raven lowers it noticeably, a white sock negligibly. The paradox arises only in the classical logic, which counts that drop as confirmation of the law. The cost is Nicod's criterion: in an open world instances corroborate laws but do not confirm them.
+
+- *Not a deliberate move.* Classically one *can* apply the calculus to an open world: on infinitely many objects the law is a measurable event (a countable intersection), and Carnap- and Hintikka-style theories do this on purpose. The answer the classical calculus gives is credence in "not yet refuted" (`classical_law_eq_slack`). In the logic of verifiable claims the law is not an event, and its credence is 0 under every valuation (`compl_cexOpens`).
+- *Closed world* (fixed finite list of objects). The law is decidable, a white sock rules out one candidate counterexample, and it raises P(law) by about the chance that this object was a white raven (`posterior_cex_select`). This is the Hosiasson-Lindenbaum / Fitelson–Hawthorne resolution, which makes the assumption explicit by fixing population sizes.
+- *Open world.* Instances confirm the law in neither calculus by default. In the verification logic nothing confirms it. Classically, independent priors give P(law) = 0 (Borel–Cantelli, Carnap's problem) and nothing moves, while priors with positive mass on the law (Hintikka) let both ravens and socks raise it, and the asymmetry returns.
+- *Corrections to the first version of the idea.*
+  - Finiteness is not what makes the sock count. Independence and how the object was selected are (`posterior_cex_select` holds with finitely or infinitely many objects).
+  - A fixed total is not needed. Hosiasson's numbers need non-black things to vastly outnumber ravens.
+- *Candidate small result (unchecked).* With the total N unknown, observing an object carries information about N. A larger world has more room for a white raven, so a white sock could *lower* P(law). Good 1967 shows sign flips under dependent priors. Formalize a random-N model only after the literature check below.
+
+**Framing decision (2026-10-15).** Present 17.3 as an illustration of the main thesis (the logic the events obey decides what the calculus can say), not as a contribution. Both halves of the diagnosis are known in substance (closed world: Hosiasson-Lindenbaum, Good, Fitelson–Hawthorne; open world: Popper, Carnap). At most the joint statement and the placement of the open-world failure in the event logic, rather than in the prior, could be new, pending 17.4.
+
+**Literature check.** See 17.4.
+
+### 17.4 Ravens literature check (search of 2026-10-15)
+
+Citations checked against Crossref, publisher metadata or scans unless marked UNVERIFIED.
+
+**Sources of the paradox.**
+- Hempel 1937, "Le problème de la vérité", *Theoria* 3: 206–246, p. 222 (first statement, per Hempel 1967).
+- Hempel 1943, "A purely syntactical definition of confirmation", *JSL* 8(4): 122–143.
+- Hempel 1945, "Studies in the logic of confirmation (I.)/(II.)", *Mind* 54(213): 1–26 and 54(214): 97–121 (S1/S2 at p. 11).
+- Hempel 1946, "A note on the paradoxes of confirmation", *Mind* 55(217): 79–82. Hempel 1967, "The white shoe: no red herring", *BJPS* 18(3): 239–240.
+- Goodman, *Fact, Fiction, and Forecast* (1955), "indoor ornithology" at p. 71 (1st ed., checked in a scan).
+- Hosiasson-Lindenbaum 1940, "On confirmation", *JSL* 5(4): 133–148.
+
+**Verdict on the 17.3 statement, piece by piece.**
+- *(i) Closed versus open world: partly anticipated.* Hempel 1945 notes that Hosiasson's numerical assumption fails when the class of raven-containing regions has the power of the continuum (Part I, p. 21 n. 2), but does not use it to dissolve the paradox. Franceschi 1999 ("Comment l'urne de Carter et Leslie se déverse dans celle de Hempel", *Can. J. Phil.* 29(1): 139–156) argues that Bayesian confirmation holds when the complement class is finite and fixed in advance, and that otherwise no object objectively confirms. Rathmanner & Hutter 2011 (*Entropy* 13(6): 1076–1136, §5.5, §5.7) contrast finite and infinite populations. The finite-population Bayesian analyses (Good 1960, *BJPS* 11(42): 145–149; Good 1967, *BJPS* 17(4): 322; Vranas 2004, *BJPS* 55(3): 545–560, n. 10; Maher 1999, *Phil. Sci.* 66(1): 50–70; Karmon 2026, *Phil. Sci.* 93(4): 852–872) assume a closed world without diagnosing the paradox by it.
+- *Counter-position.* Hutter 2007 ("On universal prediction and Bayesian confirmation", *TCS* 384(1): 33–48) explicitly denies that the crux is the infinite population. Cite and answer.
+- *Informal precursor, almost word for word.* Said Achmiz, LessWrong comment on "Raven Paradox Revisited", 15 Apr 2018: the critical issue is "whether the number of objects in the universe is finite or infinite", and in the infinite case the law "can never be confirmed". Similar forum remarks: Philosophy Forum thread 1027 (2017), Chappell's blog (2005).
+- *(ii) Refutable but not verifiable: known as a property, not as the diagnosis.* Hempel 1945 Part II pp. 112–113, Nicod 1930 p. 219, Popper, Kelly 1996, Genin & Kelly 2017, Schulte (SEP "Formal Learning Theory"). None ties it to the ravens.
+- *(iii) Credence 0 for the law in the logic of verifiable claims: not found anywhere.* Nearest relative: Ramsey 1929, laws as "rules for judging" rather than propositions (UNVERIFIED wording and page). No Dempster–Shafer, intuitionistic or topological treatment of the ravens was found.
+- *(iv) Classical credence in the law = "not yet refuted": the interpretation was not found.* The formal ingredient is Gaifman 1964 (*Israel J. Math.* 2(1): 1–18), P(∀xφ) = lim P(φa₁ ∧ … ∧ φaₙ). Close in spirit: Carnap's instance confirmation (*Logical Foundations of Probability*, 1950, §110G, pp. 571–574) and Jeffreys, *Theory of Probability* §1.6.
+- *(v) Prior dependence in the open world: well known.* Carnap 1950 §110F (c* of a law is 0 in the infinite system). Hintikka 1969 ("Inductive independence and the paradoxes of confirmation", in Rescher (ed.), *Essays in Honor of Carl G. Hempel*, Reidel, pp. 24–46). Wrinch & Jeffreys 1919 (*Phil. Mag.* 38(228): 715–731) and 1921 (*Phil. Mag.* 42(249): 369–390). Popper 1959, appendix *vii (UNVERIFIED title).
+- *Related paradoxes.* Laplace's sunrise and the rule of succession (Broad 1918, *Mind* 27(4): 389–404, (m+1)/(N+1) → 0; Zabell 1989, *Erkenntnis* 31: 283–321) have the finite/infinite dependence of a law's probability but no closed-world diagnosis. Grue in Schulte's treatment is a verifiability-topology point without a domain-closure diagnosis. No source frames Hume's problem as "the population is never closed".
+- *Side note.* Intuitionistically ∀x(¬B → ¬R) does not give ∀x(R → B) unless B is decidable. Paper A already handles this (sec-valuation: contraposition dissolves the paradox only for non-regular predicates).
+- *Citation correction for later.* Quine, "Natural Kinds", is at pp. 5–23 of the Rescher volume, not pp. 41–56 as SEP and Wikipedia print.
+
+**Recommendation.** Keep the framing decision of 17.3 (illustration of the main thesis, not a headline contribution). The statement as a single thesis is not in the academic literature, so it may be stated as ours, with (iii) and (iv) as the new parts. Credit Hempel 1945 (p. 21 n. 2, pp. 112–113), Franceschi 1999 and Rathmanner & Hutter 2011 for the closed/open dependence, Carnap and Hintikka for the prior dependence, acknowledge Achmiz 2018 as an informal precursor, and answer Hutter 2007.
+
+### 17.5 Open and debated questions in philosophy of statistics (2026-10-15)
+
+*Citations are from memory and must be verified before use.*
+
+**Targets (strongest fits with our results).**
+1. **Imprecise credence and updating.**
+   - Debate: must rational credence be a single number? Elga 2010 ("Subjective probabilities should be sharp") argues yes. Dilation (Seidenfeld & Wasserman 1993) is the main problem for set-valued credence. Dempster's rule has a long record of criticism.
+   - Our angle: slack is a fact about which events are verifiable, not a hedge, which answers Elga structurally. The logic decides the update rule: Bayes and Dempster agree iff the evidence has zero slack (`thm:cond-hinge`).
+   - To do: test the framework against dilation.
+2. **M-open inference.**
+   - Debate: Bernardo & Smith 1994 call the case where the true model is in the model set M-closed, and the case where it is not M-open. What Bayesian updating means in the M-open case is unsettled. Gelman & Shalizi 2013 argue that practice relies on model checking that is not Bayesian.
+   - Our angle: the ravens diagnosis (17.3) is an M-closed assumption left implicit. The open-world law is not a verifiable event.
+   - To do: check whether the M-open literature already links model openness to verifiability.
+3. **Finite versus infinite exchangeability.**
+   - Fact: de Finetti's representation theorem (uncertainty as a mixture of deterministic possibilities) needs an infinite exchangeable sequence. Finite exchangeable sequences need not be mixtures of i.i.d. sequences (Diaconis & Freedman 1980).
+   - Our angle: this is a "mixtures of certain states" result whose validity depends on the world being open. It connects directly to the certain-state construction and to criterion (3).
+   - To do: state the finite case in our terms and see which criterion fails.
+
+**Other live debates.**
+- Significance testing and the replication crisis: ASA statement (Wasserstein & Lazar 2016), "Redefine statistical significance" (Benjamin et al. 2018), Mayo's severe testing (2018).
+- The likelihood principle: Birnbaum's 1962 derivation and Mayo's 2014 objection. Optional stopping is the practical side.
+- Regularity and probability zero: Williamson 2007 (infinite coin flips), conditioning on probability-zero events (Borel–Kolmogorov, Hájek 2003, Popper functions). Relevant because laws have credence 0 in our verification logic.
+- Causal inference: graphical models (Pearl) versus potential outcomes (Rubin), and the faithfulness assumption.
+- Generalization in machine learning: overparameterized models and double descent.
+- Statistical evidence in law: Cohen's gatecrasher (1977).
+
+**Long-standing open problems.**
+- Old evidence (Glymour 1980).
+- The reference class problem.
+- Marginalization paradoxes (Dawid, Stone & Zidek 1973) and improper priors.
+- Objective priors: Bertrand's paradox and its relatives (already in §10).
+- Finite versus countable additivity (de Finetti against Kolmogorov). Our valuations on frames are finitely additive and are the same data as finitely additive measures (Pettis), which fits the de Finetti side.
+- Humean chance and the Principal Principle (§10, §15 point 4).
+
+### 17.6 What the axioms section (paper A §14) adds to the philosophy paper (2026-10-16)
+
+Source: paper A §14 "The Axioms of a Probability Calculus" and `Axiomatization.lean`. Definitions used there: a *probability calculus* is the unique extension of a logic (a set that contains the certain states, is closed under mixtures and satisfies the laws), and its *axioms* are a minimal finite set of laws that makes the extension unique. For finitely many events the axioms are the facet laws of the convex hull of the certain states, unique up to positive factors and the choice of laws for the affine hull.
+
+**1. The mathematical half of "why these axioms?" is closed (answers 17.1). Core argument.**
+- Before: categoricity (all valid laws determine the calculus) and independence of the three criteria.
+- Now: for finite event algebras there is also a canonical minimal axiom set, the facet laws.
+- So the paper can define "probability calculus" and "its axioms" instead of presupposing axioms. Kolmogorov's axioms are the output for Boolean logic. Rival axiomatizations (Cox, de Finetti) are larger determining sets, not competing choices.
+- The remaining philosophical premise is one question: why require uniqueness? Answer: uniqueness means the logic alone fixes the space of credal states. Where it fails (PCS, quantum states) there is no ignorance reading, which matches 16.3.
+
+**2. How much intuitionistic probability adds to Kolmogorov. Short remark.**
+- Weatherson's intuitionistic axioms include full monotonicity (A ⊢ B gives P(A) ≤ P(B)).
+- On finite frames monotonicity follows from the others except at points with something below them (`frame_axioms_iff`, `frame_axiom_needed`).
+- Uniform statement for both logics: total mass 1, modularity, and nonnegative mass at every point. In a Boolean algebra every point is an atom, so this is nonnegativity. At a non-minimal point of a Heyting algebra it is a genuine monotonicity axiom.
+- So when the logic changes, additivity becomes modularity and nonnegativity appears as local monotonicity.
+- To check before claiming: Weatherson 2003 and the Paris–Williams line, for whether this minimality has been stated.
+
+**3. Contextuality as failure of the logic's own axioms. Best illustration of the thesis.**
+- At the second-order linear type over Bool, the PCS satisfies exactly the 16 clique laws and violates exactly the 8 other axioms, which are CHSH-type Bell inequalities (`recipe_satisfies_laws`, `clique_law_needed`, `chsh_law_needed`. That these 24 laws are all the facets is a cddlib computation, not formalized).
+- Each clique law concerns one context (the outcomes of one pair of deterministic programs). The CHSH-type laws span contexts.
+- So the coherence space keeps the axioms that hold context by context and drops the ones that relate contexts. This turns "contextuality without physics" (16.5 point 6) into a statement with a theorem behind it, with programs in place of measurements. The non-sequential behaviours are violations of probability's own axioms for that logic.
+
+**Credits required.**
+- Pitowsky (1989 *Quantum Probability, Quantum Logic*, 1991 correlation polytopes, 1994 BJPS): Bell inequalities as facets of correlation polytopes, "Boole's conditions of possible experience". Point 3 carries his idea to a logic of programs. The cross-logic uniformity is ours, the facet reading of Bell is his.
+- Fine 1982 (PRL 48: 291–295): the CHSH inequalities are necessary and sufficient for a local model in the two-party binary scenario.
+- Paris 2001 and Williams 2012: the maximal axiom set (all laws valid on the certain states).
+- Ziegler 1995: facets as the irredundant description of a polytope.
+- Trivial case, no novelty: Kolmogorov's axioms as the facets of the probability simplex.
+
+**Limits.** Finitely many events only. The T result is computed over Bool only. The characterization "axioms = facet laws" is cited, not formalized (Coq-Polyhedra would make it formalizable, see paper A's Rocq paragraph).
+
+**Placement.** Point 1 in the core argument, as the answer to 17.1. Point 3 as the main illustration that the logic of the events decides what the calculus can say. Point 2 as a remark in the comparison with Weatherson.

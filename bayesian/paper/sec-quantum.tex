@@ -612,3 +612,224 @@ from a category to itself), which is why
 the statement above is a Kan extension and not a codensity monad.
 We do not know whether the valuations on frames arise as a codensity
 monad in a suitable category of spaces.
+
+\section{The Axioms of a Probability Calculus}
+\label{sec:axioms}
+
+Theorem~\ref{thm:unique} singles out $\mathrm{Mix}(S)$ by all affine laws
+valid on the certain states. This section asks which of these laws are
+needed. We call a finite set of laws \emph{axioms} of the calculus when
+exactly one extension of the logic satisfies it and no proper subset has
+this property. We prove that an extension satisfying a set of laws exists
+iff the laws are valid on the certain states, and that it is unique iff
+the functions satisfying the laws are exactly $\mathrm{Mix}(S)$. For
+finitely many events, known facts about polytopes then identify the axioms
+with the laws that define the facets of $\mathrm{Mix}(S)$. So for finitely
+many events the axioms of a probability calculus are determined by the
+logic, up to positive factors and the choice of laws implying the
+equations of the affine hull of $\mathrm{Mix}(S)$. We determine them in three cases. For a Boolean
+algebra they are Kolmogorov's axioms. For a finite frame they are
+normalization, modularity, and one instance of monotonicity at each point
+that is not minimal. At the second-order type $T$ over $\mathrm{Bool}$
+they are the clique laws of $T$ and eight laws of the form of the CHSH
+inequality, so what separates $T$ from its calculus is a set of Bell
+inequalities.
+
+In this section functions take finite values. Every element of
+$\mathrm{Mix}(S)$ does, and some affine laws hold trivially at infinite
+values, for instance $x_a \le x_b$ whenever $x_b = \infty$.
+
+\subsection{Existence and Uniqueness}
+\label{sec:axioms-unique}
+
+\begin{definition}[extension, axioms]
+\label{def:axioms}
+Let $(E, S)$ be a presentation with $E$ finite, and let $\Lambda$ be a
+set of affine laws on $E$. An \emph{extension} of $S$ satisfying
+$\Lambda$ is a set of functions $E \to [0, \infty)$ that contains $S$,
+is closed under mixtures, and satisfies every law in $\Lambda$. The set
+$\Lambda$ \emph{determines the calculus} if exactly one extension of $S$
+satisfies $\Lambda$. A finite set of \emph{axioms} of the calculus is a
+finite set of laws that determines the calculus and has no proper subset
+that does.
+\end{definition}
+
+\noindent
+We prove the following.
+
+\begin{theorem}[existence and uniqueness\leanref{exists-extension}\leanref{existsunique-finextension}\leanref{finextension-mono}]
+\label{thm:axioms-unique}
+Let $(E, S)$ be a presentation with $E$ finite, and let $\Lambda$ be a
+set of affine laws on $E$.
+(i) An extension of $S$ satisfying $\Lambda$ exists iff every law in
+$\Lambda$ is valid on $S$.
+(ii) $\Lambda$ determines the calculus iff every law in $\Lambda$ is
+valid on $S$ and $\mathrm{Mix}(S)$ is the set of finite-valued functions
+satisfying $\Lambda$. The extension is then $\mathrm{Mix}(S)$.
+(iii) The laws valid on $S$ determine the calculus, and so does every set
+of laws valid on $S$ that contains a set determining it.
+\end{theorem}
+
+\noindent
+If the laws are valid on $S$, they hold on $\mathrm{Mix}(S)$, which is
+then an extension. The finite-valued functions satisfying $\Lambda$ form
+an extension too, and every extension lies between $\mathrm{Mix}(S)$
+and this set. The first statement of (iii) is Theorem~\ref{thm:unique}.
+So the sets of laws that determine the calculus are the sets of valid
+laws whose finite-valued solutions are $\mathrm{Mix}(S)$. They are closed
+under adding valid laws, the largest of them is the set of all valid
+laws, and the finite sets of axioms are the minimal finite ones.
+
+\subsection{Axioms and Facets}
+\label{sec:axioms-facets}
+
+For finite $E$ the set $\mathrm{Mix}(S)$ is a polytope, the convex hull
+of finitely many points. Its \emph{affine hull} is the set of solutions of
+the linear equations that hold on all of $\mathrm{Mix}(S)$, and a
+\emph{facet} is a face whose dimension is one less than that of
+$\mathrm{Mix}(S)$. Every linear inequality with real coefficients is an
+affine law after its negative terms are moved to the other side. The
+following is known~\cite{ziegler1995}, and we do not formalize it.
+
+\begin{theorem}[axioms are facets~\cite{ziegler1995}]
+\label{thm:axioms-facets}
+Let $E$ be finite and $\Lambda$ a finite set of laws valid on $S$. Then
+$\Lambda$ determines the calculus iff the laws in $\Lambda$ imply the
+equations of the affine hull of $\mathrm{Mix}(S)$ and, for every facet $F$
+of $\mathrm{Mix}(S)$ on which no coordinate $x_e$ vanishes without
+vanishing on all of $\mathrm{Mix}(S)$, $\Lambda$ contains a law that holds with equality on $F$ and not on all of
+$\mathrm{Mix}(S)$. So a finite set of axioms consists of one such law for
+each such facet, together with a minimal set of laws implying the
+equations of the affine hull.
+\end{theorem}
+
+\noindent
+A linear inequality that follows from finitely many linear inequalities
+is a nonnegative combination of them, up to a constant (Farkas's lemma).
+Every inequality with positive weight in such a combination for a facet
+law is tight on the facet. So the facet law is obtained only from a law
+that defines the same facet, or from the constraints $x_e \ge 0$ when a
+coordinate vanishes on the facet and not everywhere. Conversely, the affine hull and one
+defining inequality for each facet describe the
+polytope~\cite{ziegler1995}. The facet laws are unique up to positive
+factors and the equations of the affine hull. The laws implying those
+equations are not unique, since any minimal generating set of them will
+do. For infinite sets of laws the theorem fails. On the square
+$[0,1]^2$, the laws $x_1 + \varepsilon x_2 \le 1 + \varepsilon$ for all
+$\varepsilon > 0$, together with the other three facet laws, determine
+the square without the law $x_1 \le 1$. This is why
+Definition~\ref{def:axioms} asks for finite sets.
+
+On Cabello's set no state is certain (Theorem~\ref{thm:ks}), so
+$\mathrm{Mix}(S)$ is empty, and the single law $1 \le 0$ is a set of
+axioms. In this sense quantum event logic has an empty probability
+calculus, and its states lie in the local relaxation of
+Section~\ref{sec:quantum-local}.
+
+\subsection{Finite Frames}
+\label{sec:axioms-frames}
+
+The axioms of a valuation (Definition~\ref{def:valuation}) are
+normalization, monotonicity and modularity. On a finite frame most
+instances of monotonicity follow from the others. For a finite poset $P$
+and $p \in P$ we write $\pdowns p = \pdown p \setminus \{p\}$, as in
+Section~\ref{sec:representation}. We prove the following.
+
+\begin{theorem}[axioms on finite frames\leanref{eq-sum-rmass}\leanref{frame-axioms}\leanref{frame-axiom-needed}]
+\label{thm:axioms-frames}
+Let $P$ be finite and $x : \mathrm{Low}(P) \to [0, \infty)$.
+(i) $x$ is a valuation iff $x(\emptyset) = 0$, $x(P) = 1$, $x$ is
+modular, and $x(\pdowns p) \le x(\pdown p)$ for every $p \in P$.
+(ii) For every $p \in P$ with some $q < p$, the law
+$x(\pdowns p) \le x(\pdown p)$ is needed: some $x$ satisfies all the
+other laws of (i) and is not a valuation.
+\end{theorem}
+
+\noindent
+Over the real numbers, $x(\emptyset) = 0$ and modularity alone give
+$x(L) = \sum_{p \in L} \mathrm{mass}(p)$ by the induction of
+Theorem~\ref{thm:finite-rep}, which uses monotonicity only to subtract
+in $\ENNReal$. This is the Möbius inversion of $x$ over
+$P$~\cite{rota1964}. The law at $p$ says $\mathrm{mass}(p) \ge 0$, so
+the laws give monotonicity. For (ii), give $p$ mass $-1$, $q$ mass $2$,
+and every other point mass $0$. Every lower set that contains $p$
+contains $q$, so $x \ge 0$, and $x(\pdown p) < x(\pdowns p)$.
+
+By Theorem~\ref{thm:frame-recipe} the valuations on $\mathrm{Low}(P)$
+form $\mathrm{Mix}$ of the sharp valuations. This is a simplex whose
+barycentric coordinates are the masses (Theorem~\ref{thm:cat-simplex}),
+so its facets are the sets on which one mass vanishes. At a minimal point
+$p$ the mass is $x(\{p\})$, a coordinate that vanishes on the facet and
+not on all of $\mathrm{Mix}(S)$. At a point that is not minimal, the only
+coordinate that vanishes on the facet is $x(\emptyset)$, which vanishes
+everywhere. With Theorem~\ref{thm:axioms-facets}, the axioms of the calculus
+of a finite frame are therefore normalization, a minimal set of instances
+of modularity, and the law $x(\pdowns p) \le x(\pdown p)$ at each point
+$p$ that is not minimal. Monotonicity is an axiom only at those points.
+In a Boolean algebra every point is minimal, so its axioms are
+normalization and instances of additivity, Kolmogorov's axioms for a
+finite algebra with nonnegativity built into the values.
+
+\subsection{The Second-Order Type}
+\label{sec:axioms-second}
+
+Let $X = Y = X' = Y' = \mathrm{Bool}$, and let $G$ be the exclusivity
+graph of $T$ (Section~\ref{sec:second-perfect}). For total functions
+$f, g : \mathrm{Bool} \to \mathrm{Bool}$, the four points produced by the
+pair $(f, g)$ form a maximal clique $K_{f,g}$ of $G$. For
+$\alpha, \beta, \gamma \in \{0,1\}$, let $S_{\alpha\beta\gamma}$ be the
+set of points $((x,a),(y,b))$ with
+$a \oplus b = (x \oplus \alpha)(y \oplus \beta) \oplus \gamma$, the
+support of a relabelled Popescu--Rohrlich box
+(Theorem~\ref{thm:cat-bell}). We prove the following.
+
+\begin{theorem}[axioms at second order\leanref{second-order-laws}\leanref{clique-law-needed}\leanref{chsh-law-needed}]
+\label{thm:axioms-second}
+Let $X = Y = X' = Y' = \mathrm{Bool}$.
+(i) Every element $x$ of $\mathrm{Mix}$ of the $\{0,1\}$-valued elements
+of $T$ satisfies $\sum_{e \in K_{f,g}} x_e \le 1$ for all total $f, g$,
+and $\sum_{e \in S_{\alpha\beta\gamma}} x_e \le 2$ for all $\alpha,
+\beta, \gamma$.
+(ii) Each of these $24$ laws is independent of the other $23$: some
+function satisfies the other $23$ laws and violates it. For each of the
+eight laws of the second kind such a function lies in $T$. In particular
+$T$ violates each of these eight laws.
+\end{theorem}
+
+\noindent
+The laws of the first kind hold on $T$. No three points of a set
+$S_{\alpha\beta\gamma}$ are pairwise non-exclusive, which Lean checks by
+evaluation, so a stable set of $G$ meets $S_{\alpha\beta\gamma}$ in at
+most two points, and the law holds on $\mathrm{STAB}(G)$, the calculus
+(Theorem~\ref{thm:qstab}). For the law of $K_{f,g}$, the function with
+value $\tfrac13$ on $K_{f,g}$ satisfies the other laws: another clique
+meets $K_{f,g}$ in at most three points, since $K_{f,g}$ is maximal, and
+$S_{\alpha\beta\gamma}$ meets it in at most three, since a deterministic
+pair wins at most three of the four rounds of a CHSH game. For the law
+of $S_{\alpha\beta\gamma}$, take value $\tfrac12$ on five points of
+$S_{\alpha\beta\gamma}$ with no triangle in $G$. This function lies in
+$T$ by Theorem~\ref{thm:qstab}, and every other set
+$S_{\alpha'\beta'\gamma'}$ contains at most four of the five points.
+
+By an exact computation with the double description method in
+\textsf{cddlib}, not formalized, $\mathrm{Mix}$ of the $\{0,1\}$-valued
+elements of $T$ has exactly $40$ facets. On $16$ of them a coordinate
+vanishes, and the others are the facets of the $16$ clique laws and of
+the $8$ laws of the second kind in Theorem~\ref{thm:axioms-second}. The
+polytope has dimension $16$, so its affine hull imposes no equations.
+With Theorem~\ref{thm:axioms-facets}, the $24$ laws are the axioms of the
+calculus of $T$ over $\mathrm{Bool}$, and as a set of inequalities the
+only finite set of axioms up to positive factors. The pentagon law of Theorem~\ref{thm:pentagon},
+total weight at most $2$ on its five points, is not among them: the five
+points lie in one set $S_{\alpha\beta\gamma}$, and the law of that set
+implies it.
+
+So $T$ satisfies the $16$ clique laws, which cut it out
+(Theorem~\ref{thm:qstab}), and violates the other $8$ axioms of the
+calculus. On the normalized behaviours of the core, the eight CHSH
+inequalities and positivity are necessary and sufficient for a local
+model, by Fine's theorem~\cite{fine1982}. The eight laws of the second
+kind are the CHSH inequalities in the form that local orthogonality gives
+them on $T$ (Theorem~\ref{thm:cat-bell}). At $T$ over $\mathrm{Bool}$,
+the axioms of the calculus are therefore the axioms of the probabilistic
+coherence space together with eight Bell inequalities.

@@ -272,7 +272,9 @@ differences would be the following.
   finite types, and avoids classical axioms in its algebraic core.
   We expect the finite theorems of this paper (the finite
   representation, the frame recipe, $M_3$, the pentagon, the
-  perfect-graph criterion, and the Kochen--Specker set) to be provable
+  perfect-graph criterion, the Kochen--Specker set, and the axioms of
+  finite frames and of the second-order type over $\mathrm{Bool}$ in
+  Section~\ref{sec:axioms}) to be provable
   there without classical axioms and to extract to programs. We have not
   checked this.
 \item \emph{Values.} $\ENNReal$ is a classical object. A constructive
@@ -281,7 +283,18 @@ differences would be the following.
   general~\cite{vickers2008,coquand-spitters2009}. The value of the
   halting event, Chaitin's $\Omega$, is a lower real of this kind: it is
   approximated from below by the halting programs found so far, and no
-  better.
+  better. Finite values would also remove the restriction to
+  finite-valued functions in Section~\ref{sec:axioms}.
+\item \emph{Polytopes.} Section~\ref{sec:axioms} does not formalize
+  that the axioms of a calculus are its facet laws, and it computes the
+  facets at the second-order type without a proof. The Coq-Polyhedra
+  library, built on Mathematical Components, contains proofs of Farkas's
+  lemma, linear programming duality and Minkowski's
+  theorem~\cite{allamigeon-katz2019} and of the structure of the face
+  lattice of a polyhedron~\cite{allamigeon-katz-strub2022}, and
+  computational certificates of this kind have been checked for polytopes
+  with tens of thousands of vertices~\cite{allamigeon-canu-strub2023}.
+  Both steps would be within reach in Rocq.
 \item \emph{Analysis.} MathComp-Analysis~\cite{mathcomp-analysis}
   assumes classical axioms, as \textsf{mathlib} does. The completeness
   theorem for rational points is the Fourier--Motzkin argument above,
@@ -307,7 +320,9 @@ content is a property to be checked theorem by theorem with
 A natural direction for future work is to develop the extension of logics to
 probability calculi in a constructive metatheory throughout. This would give
 algorithms in place of existence proofs, for instance the weights of a convex
-combination and the separating laws of Theorem~\ref{thm:mix-eq-laws}, and would
+combination, the separating laws of Theorem~\ref{thm:mix-eq-laws}, and the
+axioms of Section~\ref{sec:axioms}, computed from the certain states by facet
+enumeration, and would
 match the semidecidable reading of events with value types such as lower reals.
 It would also restrict the results that depend on points existing to
 frames with enough points.

@@ -2498,3 +2498,120 @@ def closedCalc (S : Set (E → ℝ≥0∞)) : Type :=
 noncomputable def closedCalcEquivLimit {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s) :
     closedCalc S ≃ Limits.limit (windowCalc S)
 \end{lstlisting}
+
+\subsection{The Axioms of a Probability Calculus}
+
+\phantomsection\label{lean:exists-extension}
+\begin{lstlisting}
+def Sol (Λ : Set (AffineLaw E)) : Set (E → ℝ≥0∞) := {x | ∀ L ∈ Λ, L.Holds x}
+
+def ValidLaws (S : Set (E → ℝ≥0∞)) : Set (AffineLaw E) := {L | ∀ s ∈ S, L.Holds s}
+
+theorem exists_extension_iff {S : Set (E → ℝ≥0∞)} {Λ : Set (AffineLaw E)} :
+    (∃ C : Set (E → ℝ≥0∞), S ⊆ C ∧ Mix C ⊆ C ∧ ∀ L ∈ Λ, ∀ x ∈ C, L.Holds x) ↔
+      Λ ⊆ ValidLaws S
+
+def FinVal : Set (E → ℝ≥0∞) := {x | ∀ e, x e ≠ ⊤}
+
+theorem Mix_finVal {S : Set (E → ℝ≥0∞)} (hS : S ⊆ FinVal) : Mix S ⊆ FinVal
+\end{lstlisting}
+
+\phantomsection\label{lean:existsunique-finextension}
+\begin{lstlisting}
+theorem existsUnique_finExtension_iff {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s)
+    {Λ : Set (AffineLaw E)} :
+    (∃! C : Set (E → ℝ≥0∞), C ⊆ FinVal ∧ S ⊆ C ∧ Mix C ⊆ C ∧ ∀ L ∈ Λ, ∀ x ∈ C, L.Holds x) ↔
+      Λ ⊆ ValidLaws S ∧ FinVal ∩ Sol Λ = Mix S
+\end{lstlisting}
+
+\phantomsection\label{lean:finextension-mono}
+\begin{lstlisting}
+theorem existsUnique_finExtension_validLaws {S : Set (E → ℝ≥0∞)}
+    (hS : ∀ s ∈ S, IsSharpVec s) :
+    ∃! C : Set (E → ℝ≥0∞), C ⊆ FinVal ∧ S ⊆ C ∧ Mix C ⊆ C ∧
+      ∀ L ∈ ValidLaws S, ∀ x ∈ C, L.Holds x
+
+theorem existsUnique_finExtension_mono {S : Set (E → ℝ≥0∞)} (hS : ∀ s ∈ S, IsSharpVec s)
+    {Λ Λ' : Set (AffineLaw E)} (h : Λ ⊆ Λ') (hΛ' : Λ' ⊆ ValidLaws S)
+    (hd : ∃! C : Set (E → ℝ≥0∞), C ⊆ FinVal ∧ S ⊆ C ∧ Mix C ⊆ C ∧
+      ∀ L ∈ Λ, ∀ x ∈ C, L.Holds x) :
+    ∃! C : Set (E → ℝ≥0∞), C ⊆ FinVal ∧ S ⊆ C ∧ Mix C ⊆ C ∧
+      ∀ L ∈ Λ', ∀ x ∈ C, L.Holds x
+\end{lstlisting}
+
+\phantomsection\label{lean:eq-sum-rmass}
+\begin{lstlisting}
+noncomputable def rmass (f : LowerSet P → ℝ) (p : P) : ℝ :=
+  f (LowerSet.Iic p) - f (LowerSet.Iio p)
+
+def IsModularR (f : LowerSet P → ℝ) : Prop :=
+  ∀ U V : LowerSet P, f (U ⊔ V) + f (U ⊓ V) = f U + f V
+
+theorem eq_sum_rmass {f : LowerSet P → ℝ} (h0 : f ⊥ = 0) (hmod : IsModularR f)
+    (U : LowerSet P) : f U = ∑ p ∈ U.toFinset, rmass f p
+
+theorem monotone_of_rmass_nonneg {f : LowerSet P → ℝ} (h0 : f ⊥ = 0) (hmod : IsModularR f)
+    (hloc : ∀ p, f (LowerSet.Iio p) ≤ f (LowerSet.Iic p)) : Monotone f
+\end{lstlisting}
+
+\phantomsection\label{lean:frame-axioms}
+\begin{lstlisting}
+theorem frame_axioms_iff {x : LowerSet P → ℝ≥0∞} (hfin : ∀ U, x U ≠ ⊤) :
+    (x ⊥ = 0 ∧ x ⊤ = 1 ∧ (∀ U V, x U + x V = x (U ⊔ V) + x (U ⊓ V)) ∧
+        ∀ p, x (LowerSet.Iio p) ≤ x (LowerSet.Iic p)) ↔
+      ∃ v : Valuation (LowerSet P), v.toFun = x
+\end{lstlisting}
+
+\phantomsection\label{lean:frame-axiom-needed}
+\begin{lstlisting}
+theorem frame_axiom_needed {p q : P} (hqp : q < p) :
+    ∃ x : LowerSet P → ℝ≥0∞, (∀ U, x U ≠ ⊤) ∧ x ⊥ = 0 ∧ x ⊤ = 1 ∧
+      (∀ U V, x U + x V = x (U ⊔ V) + x (U ⊓ V)) ∧
+      (∀ r, r ≠ p → x (LowerSet.Iio r) ≤ x (LowerSet.Iic r)) ∧
+      ¬ ∃ v : Valuation (LowerSet P), v.toFun = x
+\end{lstlisting}
+
+\phantomsection\label{lean:second-order-laws}
+\begin{lstlisting}
+abbrev W4 := (Bool × Bool) × (Bool × Bool)
+
+abbrev exclB : W4 → W4 → Prop := excl (X := Bool) (Y := Bool) (X' := Bool) (Y' := Bool)
+
+def chshSupp (α β γ : Bool) : Finset W4 :=
+  Finset.univ.filter fun e => (e.1.2 ^^ e.2.2) = (((e.1.1 ^^ α) && (e.2.1 ^^ β)) ^^ γ)
+
+theorem chsh_no_three : ∀ α β γ : Bool, ∀ a ∈ chshSupp α β γ, ∀ b ∈ chshSupp α β γ,
+    ∀ c ∈ chshSupp α β γ, a ≠ b → a ≠ c → b ≠ c → exclB a b ∨ exclB a c ∨ exclB b c
+
+theorem recipe_satisfies_laws {x : W4 → ℝ≥0∞}
+    (hx : x ∈ Mix {z | z ∈ tD Bool Bool Bool Bool ∧ ∀ u, z u = 0 ∨ z u = 1}) :
+    (∀ C, IsCliqueG exclB C → ∑ e ∈ C, x e ≤ 1) ∧
+      ∀ α β γ, ∑ e ∈ chshSupp α β γ, x e ≤ 2
+\end{lstlisting}
+
+\phantomsection\label{lean:clique-law-needed}
+\begin{lstlisting}
+def cliq (f g : Bool → Bool) : Finset W4 :=
+  Finset.univ.filter fun e => f e.1.1 = e.1.2 ∧ g e.2.1 = e.2.2
+
+theorem cliq_isClique : ∀ f g : Bool → Bool, IsCliqueG exclB (cliq f g)
+
+theorem cliq_maximal : ∀ f g : Bool → Bool, ∀ v : W4, v ∉ cliq f g →
+    ∃ u ∈ cliq f g, ¬ exclB u v
+
+theorem clique_law_needed (f g : Bool → Bool) : ∃ x : W4 → ℝ≥0∞,
+    (∀ C, IsCliqueG exclB C → C ≠ cliq f g → ∑ e ∈ C, x e ≤ 1) ∧
+    (∀ α β γ : Bool, ∑ e ∈ chshSupp α β γ, x e ≤ 2) ∧
+    1 < ∑ e ∈ cliq f g, x e
+\end{lstlisting}
+
+\phantomsection\label{lean:chsh-law-needed}
+\begin{lstlisting}
+theorem chsh_law_needed (α β γ : Bool) : ∃ x ∈ tD Bool Bool Bool Bool,
+    (∀ C, IsCliqueG exclB C → ∑ e ∈ C, x e ≤ 1) ∧
+    (∀ α' β' γ' : Bool, (α', β', γ') ≠ (α, β, γ) → ∑ e ∈ chshSupp α' β' γ', x e ≤ 2) ∧
+    2 < ∑ e ∈ chshSupp α β γ, x e
+
+theorem tD_violates_chsh (α β γ : Bool) :
+    ∃ x ∈ tD Bool Bool Bool Bool, 2 < ∑ e ∈ chshSupp α β γ, x e
+\end{lstlisting}
